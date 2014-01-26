@@ -23,6 +23,7 @@ gem 'prawn'
 # For spambots
 gem "honeypot-captcha"
 gem 'activeadmin', github: 'gregbell/active_admin'
+gem 'foundation-rails'
 
 # group :assets do
 gem 'sass-rails'
@@ -48,13 +49,11 @@ group :development, :test do
   gem 'rb-fsevent', require: false
   gem 'rb-fchange', require: false
   gem "database_cleaner"
-  # gem "livereload"
-  # gem "spork"
   gem "guard"
   gem 'guard-rails-assets'
   gem "guard-sprockets"
-  gem "guard-test"
-  # gem "guard-spork"
+  # gem "guard-test"
+  gem "guard-bundler"
   gem "guard-livereload"
   gem 'guard-rspec'
   gem 'guard-zeus'

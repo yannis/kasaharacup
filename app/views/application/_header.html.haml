@@ -1,0 +1,8 @@
+%header#header.group
+  = link_to "Logo of the Kasahara Cup 2013", root_path, :id => 'logo'
+  = render "navigation"
+  %h1#banner
+    = content_tag :a, :href => root_path do
+      = t 'layout.header.title'
+      %em= t 'layout.header.title_em'
+  = render "sub_navigation"

@@ -1,0 +1,25 @@
+@import variables
+body
+  background: $red
+.in_construction-text
+  width: 100%
+  position: fixed
+  padding: 0 20px 20px 20px
+  margin-top: 50%
+  left: 0
+  text-align: center
+  font
+    family: $sans-serif
+    size: 24px
+  color: white
+.in_construction-logo
+  position: fixed
+  z-index: 4
+  top: 20px
+  left: 30%
+  width: 40%
+  height: 0
+  padding-bottom: 40%
+  +replace-text(asset-url("kasaLogo.svg"))
+  +background-size(contain)
+  border: 0
