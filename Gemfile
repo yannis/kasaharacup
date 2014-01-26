@@ -5,7 +5,6 @@ gem 'rails', '4.0.2'
 gem 'pg'
 gem 'jquery-rails'
 gem 'haml-rails'
-gem "jquery-rails"
 gem "jquery-ui-rails"
 gem 'newrelic_rpm'
 
@@ -62,6 +61,7 @@ group :development, :test do
   gem "selenium-webdriver"
   gem "timecop"
 end
-group :production do
+group :production, :staging do
   gem 'unicorn'
+  gem 'rails_12factor'
 end
