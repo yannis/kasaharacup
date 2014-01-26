@@ -51,7 +51,6 @@ group :development, :test do
   gem "guard"
   gem 'guard-rails-assets'
   gem "guard-sprockets"
-  # gem "guard-test"
   gem "guard-bundler"
   gem "guard-livereload"
   gem 'guard-rspec'
@@ -63,5 +62,6 @@ group :development, :test do
 end
 group :production, :staging do
   gem 'unicorn'
-  gem 'rails_12factor'
+  gem 'rails_12factor' #required by heroku
+  gem 'unf' #required by asset_sync
 end
