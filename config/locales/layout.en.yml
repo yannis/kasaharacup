@@ -1,0 +1,11 @@
+en:
+  layout:
+    header:
+      title: Kasahara Cup 2014
+      title_em: "September 27-28, Geneva, Switzerland"
+    footer:
+      cright: www.kasaharacup.com is made by the kendo section of the
+      media: "Pics, vids, links and more…"
+    form:
+      mandatory: marks mandatory fields
+      date_placeholder: dd-mm-yyyy

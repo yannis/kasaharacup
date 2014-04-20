@@ -1,0 +1,53 @@
+class User < ActiveRecord::Base
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable, :confirmable, :omniauthable
+
+  belongs_to :club
+  has_many :kenshis, dependent: :destroy
+
+  validates_presence_of :email, unless: lambda{
+    Rails.logger.debug "SELF: #{self.inspect}"
+    Rails.logger.debug "SELF BLANK?: #{self.uid.blank? && self.provider.blank?}"
+    self.uid.blank? && self.provider.blank?
+  }
+  # validates :email, presence: { unless: :uid? }
+  validates :last_name, presence: true
+  validates :first_name, presence: true, uniqueness: {scope: :last_name}
+
+
+  def self.find_for_facebook_oauth(auth, signed_in_resource=nil)
+    user = User.where(provider: auth.provider, uid: auth.uid).first
+    unless user
+      birthday = auth.extra.raw_info.birthday.present? ? Date.strptime(auth.extra.raw_info.birthday, '%m/%d/%Y') : nil
+      user = User.new(first_name:auth.extra.raw_info.first_name, last_name:auth.extra.raw_info.last_name, female:(auth.extra.raw_info.gender=='female'), dob:birthday, provider:auth.provider, uid:auth.uid, email:auth.info.email, password:Devise.friendly_token[0,20])
+      user.skip_confirmation!
+      user.save
+      user
+    end
+    return user
+  end
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
+  def has_kenshis?
+    kenshis.count > 0
+  end
+
+  # def self.find_for_twitter_oauth(auth, signed_in_resource=nil)
+  #   user = User.where(provider: auth.provider, uid: auth.uid).first
+  #   unless user
+  #     birthday = auth.extra.raw_info.birthday.present? ? Date.strptime(auth.extra.raw_info.birthday, '%m/%d/%Y') : nil
+  #     name = auth.info.name.split(' ')
+  #     user = User.new(first_name: name.first, last_name: name.last, dob: birthday, provider: auth.provider, uid: auth.uid, password: Devise.friendly_token[0,20])
+  #     user.skip_confirmation!
+  #     user.save
+  #     Rails.logger.info "AUTH: #{auth.to_yaml}"
+  #     Rails.logger.info "USER: #{user.inspect}"
+  #     user
+  #   end
+  #   return user
+  # end
+end

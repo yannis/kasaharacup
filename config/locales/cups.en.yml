@@ -1,0 +1,56 @@
+en:
+  cups:
+    show:
+      tournament:
+        title: The tournament
+        a: |
+          The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
+          <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
+        b: "The tournament is organized in Geneva since 1995 by the kendo branch of the <a href='http://sdkbudo.ch'>Shung Do Kwan Budo</a>. In 2012, it gathered more than 150 kenshis from from France, Italy, Japan, Austria, Germany and, of course, Switzerland. In 2013, the 27h Kasahara cup will be held on September 28th-29th, at «Le stade du Bout-du-Monde», close to Geneva's city center."
+      categories:
+        title: Categories
+        team: 5 fighters over 16 years old
+        open: over 16 years old
+        ladies: over 16 years old
+        juniors: from 12 to 16 years old
+      program:
+        title: Program
+      contact:
+        title: 'Contact'
+        text: 'Contact us by email at'
+      fees:
+        title: Registration fees
+        adults:
+          title: Adults (over 16 yo)<br><em>+ Sunday lunch</em>
+          fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
+        juniors:
+          title: Juniors (12 to 16 years old)<br><em>+ Sunday lunch</em>
+          fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
+        night:
+          title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>
+          fee: "%{dormitory_fees_chf} CHF or %{dormitory_fees_eur} €"
+        dinner:
+          title: Saturday night dinner
+          fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
+      newsletter:
+        register: "Subscribe to our mailing list to get the latest new about the competition"
+        email: Email address
+        button: Subscribe
+      enrollments:
+        all: "See all %{number} registrations"
+      social:
+        title: Follow us on
+      love:
+        title: Share your love
+      results:
+        team: Team results
+        open: Open results
+        ladies: Ladies results
+        juniors: Juniors results
+        downloads: Downloads
+
+      venue:
+        title: Venue
+        a: "Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}."
+        address: Coordinates
+        map_link: Larger map

@@ -1,0 +1,28 @@
+#wrap
+  a:not(.btn)
+    // display: inline-block
+    +transition-property(color)
+    +transition-duration(0.5s)
+    +transition-timing-function(ease-in)
+    // color: $bioseminars_brand
+    // text-decoration: none
+    // border-bottom: 1px dotted $bioseminars_brand
+    &:hover, &:focus
+      // color: $bioseminars_brand_secondary
+      // border-bottom: 1px dotted $bioseminars_brand_secondary
+    &[href^="http:"]
+      &:after
+        content: "\f0ac"
+        font-family: FontAwesome
+        font-weight: normal
+        font-style: normal
+        display: inline-block
+        margin-left: 0.2em
+        // color: $bioseminars_brand
+    &[href*=".pdf"]
+      +add_icon("\f15c")
+    &[href*=".ics"]
+      &:after
+        content: none
+    &[href^="mailto:"]
+      +add_icon("\f0e0")

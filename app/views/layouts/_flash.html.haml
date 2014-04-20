@@ -1,0 +1,4 @@
+#flash.l-wrapper
+  - flash.each do |key, value|
+    %div{ title: key.to_s.humanize, class: "#{key} alert alert-#{key}" }
+      %p= value

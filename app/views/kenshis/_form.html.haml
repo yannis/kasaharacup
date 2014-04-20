@@ -1,0 +1,56 @@
+= form_for [@user, @kenshi], url: polymorphic_path([@user, @kenshi]), remote: (request.format == 'text/javascript') do |f|
+  = render "layouts/error_messages", target: f.object
+  = mandatory_fields
+  %fieldset
+    %legend Details
+    .field.inline
+      .label=raw t('activerecord.attributes.kenshi.gender')
+      =raw f.starred_label :female, t('activerecord.attributes.kenshi.female')
+      = f.radio_button :female, true, checked: @kenshi.female
+      = f.starred_label :female, t('activerecord.attributes.kenshi.male')
+      = f.radio_button :female, false, checked: !@kenshi.female
+    .field
+      =raw f.starred_label :first_name, t('activerecord.attributes.kenshi.first_name')
+      = f.text_field :first_name
+    .field
+      = f.starred_label :last_name, t('activerecord.attributes.kenshi.last_name')
+      = f.text_field :last_name
+    .field
+      = f.starred_label :dob, t('activerecord.attributes.kenshi.dob')
+      = f.text_field :dob, {type: 'my_date', placeholder: t('layout.form.date_placeholder')}
+    .field
+      = f.starred_label :email
+      = f.text_field :email
+    .field
+      = f.starred_label :club_id
+      = f.collection_select :club_id, Club.all, :id, :name, prompt: true
+      or
+      = label_tag "#{f.object_name}[new_team_name]", "enters its name here"
+      = text_field_tag "#{f.object_name}[new_club_name]"
+      / = f.fields_for :club, Club.new do |c|
+      /   = c.label :name, "enters its name here"
+      /   = c.text_field :name
+    .field
+      = f.starred_label :grade
+      = f.select :grade, options_for_select(Kenshi::GRADES, f.object.grade)
+  %fieldset
+    %legend Categories
+    = f.fields_for :participations, f.object.participations do |g|
+      %p
+        - category = g.object.category
+        - if category.is_a? TeamCategory
+          %h4= category.name
+          = g.hidden_field :category_type
+          = g.hidden_field :category_id
+          = g.label :ronin
+          = g.check_box :ronin
+          = g.collection_select :team_id, category.teams, :id, :name, prompt: true
+          = text_field_tag "#{g.object_name}[new_team_name]"
+        - else
+          -if category
+            = f.label category.name
+            = g.hidden_field :category_type
+            = g.check_box :category_id, {}, category.id
+  .actions
+    = submit_or_cancel_form(f, f.object.new_record? ? t(".button.create") : t(".button.update"))
+    %p.info= t '.button_info', deadline: l(@cup.deadline, format: :long)

@@ -1,0 +1,38 @@
+- if user_signed_in?
+  .row#user-account
+    .col-xs-12.col-md-12
+      %p
+        - if Time.now.hour <= 10
+          Ohayō gozaimasu
+        - elsif Time.now.hour >= 22
+          Konbanwa
+        - else
+          Konnichiwa
+        %em= current_user.first_name
+      - if current_user.has_kenshis?
+        %h3
+          Here are your registrations
+        %table
+          - current_user.kenshis.each do |kenshi|
+            %tr
+              %td
+                = kenshi.full_name
+              %td
+                = kenshi.participations.map{|p| p.category.name}.join(", ")
+              %td
+                = link_to "edit", edit_kenshi_path(kenshi)
+      - else
+        You have no registrations yet.
+        Would you like to
+        = link_to "register someone?", new_user_kenshi_path(current_user)
+      / .registration-deadline= t 'registration.deadline', deadline: l(@cup.deadline, format: :long)
+      /   %p
+      /     = link_to current_user.full_name, user_path(current_user)
+
+      /     =raw t('registration.link.title')
+      /     = current_user.kenshis.count
+      /   / =raw link_to pluralize(, t('registration.link.registration')), user_registrations_path(current_user, locale: I18n.locale)
+      /   / - if Time.current < @cup.deadline
+      /   /   %br
+      /   /   =raw link_to t('registrations.new.title'), new_user_registration_path(current_user, locale: I18n.locale)
+      /   /   =raw "(#{link_to t('registration.new.yourself'), new_user_registration_path(current_user, locale: I18n.locale, self: true)})"
