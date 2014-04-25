@@ -1,0 +1,12 @@
+%thead
+  %tr
+    %th Name
+    - if user_signed_in?
+      %th E-mail
+      %th DOB
+    %th Gender
+    %th Club
+    %th Grade
+    - if user_signed_in?
+      %th Registered by
+      %th

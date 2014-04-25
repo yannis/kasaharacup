@@ -6,7 +6,7 @@ describe "A smart pooler" do
 
   24.times do |i|
     let!("participation#{i+1}"){
-      create :participation, individual_category: individual_category, kenshi: create(:kenshi, cup: cup)
+      create :participation, category: individual_category, kenshi: create(:kenshi, cup: cup)
     }
   end
 

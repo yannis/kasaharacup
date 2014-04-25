@@ -4,5 +4,8 @@
 #= require modernizr-2.6.2
 #= require bootstrap
 #= require autocomplete-rails
+#= require select2
+#= require select2_locale_fr
+#= require navigation
 #= require_tree ./utilities
 #= require_tree .

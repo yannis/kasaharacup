@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   end
 
   def show
+    @title = (@user == current_user ? t("users.show.title.show_self") : t("users.show.title.show"))
     respond_with @user
   end
 
@@ -20,37 +21,37 @@ class UsersController < ApplicationController
 
   def edit
     if @user == current_user
-      @title = @user.registered? ? t("users.edit.title.edit_self") : t("users.edit.title.edit")
+      @title = @user.registered_for_cup?(@cup) ? t("users.edit.title.edit_self") : t("users.edit.title.edit")
     else
       @title = t("users.edit.title.edit_someone", full_name: @user.full_name)
     end
     respond_with @user
   end
 
-  def create
-    if @user.save
-      respond_with @user do |format|
-        format.html { redirect_to new_user_enrollment_path(@user, locale: I18n.locale), notice: 'User registered' }
-        format.js {
-          @origin = params[:origin]
-          flash.now[:notice] = 'Kenshi registered'
-          render '/layouts/create_and_insert_in_select', layout: false
-        }
-      end
-    else
-      respond_with @user do |format|
-        flash.now[:alert] = 'User not created'
-        format.html { render :new }
-        format.js{
-          @origin = params[:origin]
-          render template: 'layouts/new', layout: false
-        }
-      end
-    end
-  end
+  # def create
+  #   if @user.save
+  #     respond_with @user do |format|
+  #       format.html { redirect_to new_user_enrollment_path(@user, locale: I18n.locale), notice: 'User registered' }
+  #       format.js {
+  #         @origin = params[:origin]
+  #         flash.now[:notice] = 'Kenshi registered'
+  #         render '/layouts/create_and_insert_in_select', layout: false
+  #       }
+  #     end
+  #   else
+  #     respond_with @user do |format|
+  #       flash.now[:alert] = 'User not created'
+  #       format.html { render :new }
+  #       format.js{
+  #         @origin = params[:origin]
+  #         render template: 'layouts/new', layout: false
+  #       }
+  #     end
+  #   end
+  # end
 
   def update
-    if @user.update_attributes(params[:user])
+    if @user.update_attributes(my_sanitizer)
       respond_with @user do |format|
         format.html { redirect_back_or_default user_path(@user, locale: I18n.locale) , notice: 'User updated' }
         format.js {
@@ -106,9 +107,9 @@ class UsersController < ApplicationController
     def my_sanitizer
       if current_user.present?
         if current_user.admin?
-          params.require(:kenshi).permit!
+          params.require(:user).permit!
         else
-          params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :new_club_name, participations_attributes: [:category_type, :category_id, :ronin, :team_id, :new_team_name])
+          params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :new_club_name)
         end
       end
     end

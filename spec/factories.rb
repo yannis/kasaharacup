@@ -48,7 +48,7 @@ FactoryGirl.define do
   end
 
   factory :participation do
-    # association :category
+    association :category, factory: :individual_category
     association :kenshi
   end
 

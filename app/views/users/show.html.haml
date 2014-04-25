@@ -1,2 +1,44 @@
-%h1 Users#show
-%p Find me in app/views/users/show.html.haml
+- title @title
+.row[@user]
+  .col-xs-12.col-md-6
+    %h2= @title
+    - if @user == current_user
+      %table.table
+        %tr.even
+          %th= User.human_attribute_name :last_name
+          %td= @user.last_name
+        %tr.odd
+          %th= User.human_attribute_name :first_name
+          %td= @user.first_name
+        %tr.even
+          %th= User.human_attribute_name :dob
+          %td= @user.dob.to_s
+        %tr.odd
+          %th= User.human_attribute_name :gender
+          %td= @user.gender
+        %tr.even
+          %th= User.human_attribute_name :email
+          %td= @user.email
+        %tr.odd
+          %th= User.human_attribute_name :club
+          %td= @user.club.name if @user.club
+          / # %td= mail_to(@user.email, 'Email', encode: 'hex', class: 'email')
+    - else
+    .admin_links
+      = link_to("edit", edit_user_registration_path(@user), class: "btn btn-info") if can?(:update, @user)
+      = link_to("delete account", user_path(@user, method: :delete), class: "btn btn-danger") if can?(:destroy, @user)
+  .col-xs-12.col-md-6
+    %h2
+      = t(".your_registrations")
+      %span.add_kenshi=raw "(#{link_to t(".register_someone_else"), new_user_kenshi_path(current_user, locale: I18n.locale)})" if @user.kenshis.present?
+    - if @user.kenshis.present?
+      %table.table
+        = render 'kenshis/table_head'
+        %tbody
+          = render @user.kenshis
+    - else
+      %p
+        Aucune inscription pour l'instant. Voulez-vous
+        = link_to 'vous inscrire', new_user_kenshi_path(current_user, self: true, locale: I18n.locale)
+        à la compétion? ou inscrire
+        = link_to("quelqu'un d'autre", new_user_kenshi_path(current_user, locale: I18n.locale))+'?'

@@ -10,31 +10,18 @@
       = link_to "Kasahara Cup 2014", root_path, class: "navbar-brand"
     #bs-example-navbar-collapse-1.collapse.navbar-collapse
       %ul.nav.navbar-nav
-        / %li.active
-        /   %a{href: "#"} Link
-        / %li
-        /   %a{href: "#"} Link
-        / %li.dropdown
-        /   %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
-        /     Dropdown
-        /     %b.caret
-        /   %ul.dropdown-menu
-        /     %li
-        /       %a{href: "#"} Action
-        /     %li
-        /       %a{href: "#"} Another action
-        /     %li
-        /       %a{href: "#"} Something else here
-        /     %li.divider
-        /     %li
-        /       %a{href: "#"} Separated link
-        /     %li.divider
-        /     %li
-        /       %a{href: "#"} One more separated link
-      / %form.navbar-form.navbar-left{role: "search"}
-      /   .form-group
-      /     %input.form-control{placeholder: "Search", type: "text"}/
-      /   %button.btn.btn-default{type: "submit"} Submit
+        %li
+          = link_to "Home", root_path
+        %li
+          = link_to "Registrations", kenshis_path
+        %li
+          = link_to "Teams", teams_path
+      .navbar-form.navbar-left
+        - if user_signed_in?
+          = link_to "Register", user_path(current_user), class: "btn btn-info navbar-btn"
+        - else
+          %button.btn.btn-info.navbar-btn.nav-register{type: "button"}
+            Register
       %ul.nav.navbar-nav.navbar-right
         %li#lang
           = link_to (@inverse_locale == 'fr' ? 'français' : 'english'), {locale: @inverse_locale}
@@ -46,9 +33,14 @@
               %b.caret
             %ul.dropdown-menu
               %li
-                = link_to "Settings", '#'
+                = link_to "Settings", user_path(current_user)
               %li
                 = link_to t('subnav.signedin.signout'), signout_path
         - else
-          %li
-            = link_to "Sign in", "#{root_path}#registrations"
+          %li.dropdown.nav-signin
+            = link_to new_session_path('user'), data: {toggle: 'dropdown',  target: "#"}, class: "dropdown-toggle" do
+              Sign in
+              %b.caret
+            .dropdown-menu
+              = render template: "devise/sessions/new"
+    = render "layouts/registrations"

@@ -8,12 +8,15 @@ class Participation < ActiveRecord::Base
   validates_presence_of :category_id
   # validates_presence_of :kenshi_id
   validates_presence_of :pool_position, if: lambda{|p| p.pool_number.present?}
+  validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
 
-  def new_team_name=(new_team_name)
-    if new_team_name.present?
+  # before_validate
+
+  def team_name=(team_name)
+    if team_name.present?
       self.team_id = nil
       self.ronin = nil
-      self.team = Team.new team_category: self.category, name: new_team_name
+      self.team = Team.new team_category: self.category, name: team_name
     end
   end
 end

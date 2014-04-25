@@ -12,9 +12,10 @@ class User < ActiveRecord::Base
     self.uid.blank? && self.provider.blank?
   }
   # validates :email, presence: { unless: :uid? }
-  validates :last_name, presence: true
-  validates :first_name, presence: true, uniqueness: {scope: :last_name}
+  validates :last_name, presence: true, uniqueness: {scope: :first_name,  unless: Proc.new { |u| u.first_name.blank? }}
+  validates :first_name, presence: true
 
+  before_validation :format
 
   def self.find_for_facebook_oauth(auth, signed_in_resource=nil)
     user = User.where(provider: auth.provider, uid: auth.uid).first
@@ -28,12 +29,32 @@ class User < ActiveRecord::Base
     return user
   end
 
+  def club_name=(club_name)
+    self.club = Club.find_or_initialize_by name: club_name
+  end
+
   def full_name
     "#{first_name} #{last_name}"
   end
 
+  def registered_for_cup?(cup)
+    cup.present? && cup.kenshis.where("kenshis.first_name = ? AND kenshis.last_name = ?", first_name, last_name).present?
+  end
+
   def has_kenshis?
     kenshis.count > 0
+  end
+
+  def gender
+    female? ? '♀' : '♂'
+  end
+
+  private
+
+  def format
+    self.last_name = self.last_name.gsub(/\w+/){|w| w.capitalize } if self.last_name
+    self.first_name = self.first_name.gsub(/\w+/){|w| w.capitalize } if self.first_name
+    self.email = self.email.downcase if self.email
   end
 
   # def self.find_for_twitter_oauth(auth, signed_in_resource=nil)

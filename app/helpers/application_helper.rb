@@ -4,10 +4,32 @@ module ApplicationHelper
     "<p class='mandatory_fields'><span class='red_star'>*</span> #{t('layout.form.mandatory')}</p>".html_safe
   end
 
+  def title(content, options={page_title: true, meta_title: true})
+    content_for(:title) {content} if options[:page_title]
+    content_for(:header_title){ content_tag( :header, content_tag(:h1, content))} if options[:meta_title]
+  end
+
   def submit_or_cancel_form(f, text=nil)
     link = [f.button(text, class: 'btn')]
     link << t("form.or")
     link << link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: 'ESC', title: "Cancel #{f.object_name} form", class: "cancel #{request.format == 'application/javascript' ? 'close_div' : ''}")
     link.join(' ').html_safe
+  end
+
+  def destroy_link(object, title: "Destroy", remote: false, confirm: nil, classes: "")
+    confirm ||= "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?"
+    classes += "btn btn-danger"
+    link_to("#{title}".html_safe, polymorphic_path(object),
+        confirm: confirm,
+        method: :delete,
+        remote: remote,
+        title: "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "'+object.name+'"' if object.respond_to?(:name)}",
+        class: classes
+      ).html_safe
+  end
+
+  def edit_link(object, title: "Edit", classes: "")
+    classes += 'btn btn-info'
+    link_to( "#{title}".html_safe, polymorphic_path([:edit, object]), title: "Edit #{object.class.to_s.humanize}#{object.respond_to?(:name) ? " #{object.name}" : ''}", class: classes)
   end
 end

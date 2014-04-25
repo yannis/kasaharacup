@@ -23,7 +23,6 @@ gem 'ransack',     github: 'activerecord-hackery/ransack'
 gem 'formtastic',  github: 'justinfrench/formtastic'
 
 gem 'sass-rails', '~> 4.0'
-gem "jquery-ui-rails"
 gem 'coffee-rails'
 gem 'haml-rails'
 gem 'html5-rails'
@@ -36,6 +35,7 @@ gem "bootstrap-sass", git: "git://github.com/twbs/bootstrap-sass"
 gem "calendar_helper"
 gem 'momentjs-rails', '~> 2.5.0'
 gem 'compass-rails'
+gem "select2-rails"
 
 gem 'airbrake'
 gem "newrelic_rpm"

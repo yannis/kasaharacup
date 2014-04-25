@@ -1,19 +1,5 @@
 Rails.application.routes.draw do
 
-  get 'users/index'
-
-  get 'users/show'
-
-  get 'users/new'
-
-  get 'users/edit'
-
-  get 'users/update'
-
-  get 'users/create'
-
-  get 'users/destroy'
-
   devise_for :users, controllers: {
       registrations: "users/registrations",
       # skip: :omniauth_callbacks
@@ -31,7 +17,9 @@ Rails.application.routes.draw do
         get :autocomplete_kenshi_club, on: :collection
       end
 
-      resources :users do
+      resources :teams, only: [:index, :show]
+
+      resources :users, only: [:index, :show, :edit, :update, :destroy] do
         resources :kenshis
       end
 

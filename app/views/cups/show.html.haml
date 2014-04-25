@@ -1,15 +1,10 @@
-.row#banner
+.row#banner.page-header
   .col-xs-12.col-md-12
     %h1
       = t 'layout.header.title'
-      %em= t 'layout.header.title_em'
+      %small= t 'layout.header.title_em'
 = render "current_user_resume"
 .row#competition
-  .col-xs-12.col-md-4
-    %figure
-      = image_tag 'kasahara_toshiaki.jpg'
-      %legend Kasahara Toshiaki sensei
-
   .col-xs-12.col-md-8
     .row
       .col-xs-12.col-md-12
@@ -18,6 +13,11 @@
         %p=raw t '.tournament.a'
       .col-xs-12.col-md-6
         %p=raw t '.tournament.b'
+
+  .col-xs-12.col-md-4
+    %figure
+      = image_tag 'kasahara_toshiaki.jpg'
+      %figcaption Kasahara Toshiaki sensei
 
 .row#categories_and_fees
   #categories.col-xs-12.col-md-6
@@ -67,31 +67,6 @@
                 = event.start_on.to_s(:time_only)
               %td
                 = event.name_en
-- unless user_signed_in?
-  .row#registrations
-    Current user
-    = current_user.try(:first_name)
-    .col-xs-12.col-md-12
-      %h2= t 'registration.title'
-      %p=raw t('registrations.form.explanation')
-      .row
-        .col-xs-12.col-md-2
-          = render template: 'devise/registrations/new'
-          / = render "devise/shared/links"
-        .col-xs-12.col-md-2
-          or
-        .col-xs-12.col-md-2
-          = render template: "devise/sessions/new"
-        .col-xs-12.col-md-2
-          - if devise_mapping.recoverable?
-            = link_to "Forgot your password?", new_password_path(resource_name)
-          - if devise_mapping.confirmable?
-            = link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name)
-          - if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email)
-            = link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name)
-          - if devise_mapping.omniauthable?
-            - resource_class.omniauth_providers.each do |provider|
-              = link_to "Sign in with #{provider.to_s.titleize}", omniauth_authorize_path(resource_name, provider)
 .row#venue_and_contact
   .col-xs-12.col-md-6#venue
     %h2= t '.venue.title'

@@ -68,6 +68,7 @@ RSpec.configure do |config|
     if example.metadata[:js]
       page.driver.browser.manage.window.resize_to(1366,768)
     end
+    I18n.locale = 'en'
     DatabaseCleaner.start
   end
 
@@ -82,12 +83,13 @@ RSpec.configure do |config|
 
   def should_be_asked_to_sign_in
     it {response.should redirect_to(new_user_session_path)}
-    it {flash[:alert].should =~ /Please sign in/}
+    it {flash[:alert].should =~ /Vous devez vous connecter ou vous inscrire pour continuer/}
   end
 
   def should_not_be_authorized
     it {expect(response.status).to eq 401}
-    it {expect(response.body).to match /You are not authorized to access this page/ }
+    # it {expect(response.body).to match /You are not authorized to access this page/ }
+    it {expect(flash[:alert]).to match /You are not authorized to access this page/ }
   end
 
   def should_not_find_model

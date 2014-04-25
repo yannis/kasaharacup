@@ -1,0 +1,20 @@
+%tr
+  %td= kenshi.full_name
+  - if current_user_admin_or_owner?(kenshi)
+    %td= kenshi.email
+    %td= kenshi.dob
+  - elsif user_signed_in?
+    %td nd
+    %td nd
+  %td= kenshi.female ? 'female' : 'male'
+  %td= kenshi.norm_club
+  %td= kenshi.grade
+  - if current_user_admin_or_owner?(kenshi)
+    %td= kenshi.user.full_name
+    %td=raw kenshi_admin_links(kenshi)
+  - elsif user_signed_in?
+    %td nd
+    %td nd
+    %td nd
+    %td nd
+    %td nd

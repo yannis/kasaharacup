@@ -7,6 +7,15 @@ class ApplicationController < ActionController::Base
   before_filter :configure_permitted_parameters, if: :devise_controller?
   before_filter :set_locale, :set_cup
 
+  rescue_from CanCan::AccessDenied do |exception|
+    # Rails.logger.debug "Access denied on #{exception.action} #{exception.subject.inspect}"
+    if current_user.present?
+      redirect_to root_path, alert: exception.message, status: 401
+    else
+      redirect_to new_user_session_path, alert: I18n.t("devise.failure.unauthenticated")
+    end
+  end
+
   def default_url_options
     {
       locale: I18n.locale,
@@ -45,11 +54,25 @@ class ApplicationController < ActionController::Base
   end
 
 
+  def back
+    redirect_back_or_default('/')
+  end
+
+  def redirect_back_or_default(default, options={})
+    options.merge(:locale => I18n.locale) if options[:locale].blank?
+    redirect_to(session[:return_to] || default, options)
+    session[:return_to] = nil
+  end
+
   protected
 
     def configure_permitted_parameters
-      unless current_user.admin?
+      unless current_user_admin?
         devise_parameter_sanitizer.for(:sign_up) << :admin
       end
+    end
+
+    def current_user_admin?
+      user_signed_in? && current_user.admin?
     end
 end

@@ -2,12 +2,12 @@
 class KenshisController < ApplicationController
 
   prepend_before_filter :set_user
-  load_and_authorize_resource :kenshi,  param_method: :my_sanitizer, through: [:user], shallow: true, except: [:autocomplete_kenshi_club]
+  load_and_authorize_resource :kenshi,  param_method: :my_sanitizer, through: [:user], shallow: true
   before_filter :set_variables, only: [:new, :edit, :update, :create]
   before_filter :check_deadline, only: [:new, :edit, :update, :create, :destroy]
   respond_to :html
 
-  autocomplete :kenshi, :club, scopes: [:unique_by_club], full_model: true
+  # autocomplete :kenshi, :club, scopes: [:unique_by_club], full_model: true
 
   def index
     if @user && !user_signed_in?
@@ -63,12 +63,14 @@ class KenshisController < ApplicationController
     else
       @title = t('kenshis.new.title')
     end
-    @cup.team_categories.each do |cat|
-      @kenshi.participations.build category: cat
-    end
-    @cup.individual_categories.each do |cat|
-      @kenshi.participations.build category: cat
-    end
+    # @cup.team_categories.each do |cat|
+    #   @kenshi.participations.build category: cat
+    # end
+    # @cup.individual_categories.each do |cat|
+    #   @kenshi.participations.build category: cat
+    # end
+    # @participations_to_teams = @kenshi.participations.select{|p| p.category.is_a? TeamCategory}
+    # @participations_to_ind = @kenshi.participations.select{|p| p.category.is_a? IndividualCategory}
     respond_with @kenshi
   end
 
@@ -107,7 +109,7 @@ class KenshisController < ApplicationController
   end
 
   def update
-    if @kenshi.update_attributes(params[:kenshi])
+    if @kenshi.update_attributes(my_sanitizer)
       notice = t('kenshis.update.flash.notice')
       respond_with @kenshi do |format|
         format.html { redirect_to user_path(@kenshi.user, locale: I18n.locale) , notice: notice }
@@ -118,7 +120,6 @@ class KenshisController < ApplicationController
         }
       end
     else
-      @kenshi.team_name = @team_name
       @title = t('kenshis.edit.title', full_name: @kenshi.full_name)
       respond_with @kenshi do |format|
         flash.now[:alert] = 'Kenshi not updated'
@@ -179,6 +180,6 @@ class KenshisController < ApplicationController
     end
 
     def my_sanitizer
-      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :new_club_name, participations_attributes: [:category_type, :category_id, :ronin, :team_id, :new_team_name])
+      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :club_name, participation_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :participate])
     end
 end

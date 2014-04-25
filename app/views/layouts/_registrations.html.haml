@@ -1,0 +1,10 @@
+- unless user_signed_in?
+  .row#registrations
+    .col-xs-12.col-md-6
+      %h2= t 'registration.title'
+      %p
+        If you already have an account, please
+        = link_to "Sign in", "#", class: "registrations-signin-link"
+      %p=raw t('registrations.form.explanation')
+    .col-xs-12.col-md-6
+      = render template: 'devise/registrations/new'

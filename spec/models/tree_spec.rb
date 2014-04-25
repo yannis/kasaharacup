@@ -10,7 +10,7 @@ describe Tree do
     before {
       25.times do
         k = create :kenshi, cup: cup
-        create :participation, individual_category: open, kenshi: k
+        create :participation, category: open, kenshi: k
       end
     }
 

@@ -2,6 +2,7 @@ class CreateFights < ActiveRecord::Migration
   def change
     create_table :fights do |t|
       t.belongs_to :individual_category, index: true
+      t.belongs_to :team_category, index: true
       t.belongs_to :winner, index: true
       t.belongs_to :parent_fight_1, index: true
       t.belongs_to :parent_fight_2, index: true

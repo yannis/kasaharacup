@@ -29,9 +29,9 @@ describe "A individual_category “open”" do
   it {expect(individual_category).to be_valid_verbose}
 
   context "with a pool of 3 participations" do
-    let!(:participation1){create :participation, individual_category: individual_category, pool_number: 1, pool_position: 1, kenshi: create(:kenshi, cup: individual_category.cup)}
-    let!(:participation2){create :participation, individual_category: individual_category, pool_number: 1, pool_position: 2, kenshi: create(:kenshi, cup: individual_category.cup)}
-    let!(:participation3){create :participation, individual_category: individual_category, pool_number: 1, pool_position: 3, kenshi: create(:kenshi, cup: individual_category.cup)}
+    let!(:participation1){create :participation, category: individual_category, pool_number: 1, pool_position: 1, kenshi: create(:kenshi, cup: individual_category.cup)}
+    let!(:participation2){create :participation, category: individual_category, pool_number: 1, pool_position: 2, kenshi: create(:kenshi, cup: individual_category.cup)}
+    let!(:participation3){create :participation, category: individual_category, pool_number: 1, pool_position: 3, kenshi: create(:kenshi, cup: individual_category.cup)}
 
     it{expect(individual_category.pools.size).to eq 1}
   end
@@ -40,7 +40,7 @@ describe "A individual_category “open”" do
     before {
       24.times do
         kenshi = create :kenshi, cup: individual_category.cup
-        participation = create :participation, individual_category: individual_category, kenshi: kenshi
+        participation = create :participation, category: individual_category, kenshi: kenshi
       end
     }
 
