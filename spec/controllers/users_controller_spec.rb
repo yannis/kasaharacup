@@ -16,10 +16,8 @@ describe UsersController do
     USER_CONT_METHODS.each do |m|
       describe "on #{m}" do
         before :each do
-          I18n.locale = 'fr'
           eval(m)
         end
-        # should_not_be_authorized
         should_be_asked_to_sign_in
       end
     end
@@ -162,7 +160,7 @@ describe UsersController do
 
       it "redirects to the users list" do
         delete :destroy, id: admin_user.to_param
-        response.should redirect_to(users_path(locale: I18n.locale))
+        response.should redirect_to(users_path)
       end
     end
 
@@ -176,7 +174,7 @@ describe UsersController do
 
       it "redirects to the users list" do
         delete :destroy, id: another_user.to_param
-        response.should redirect_to(users_path(locale: I18n.locale))
+        response.should redirect_to(users_path)
       end
     end
   end

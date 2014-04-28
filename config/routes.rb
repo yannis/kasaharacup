@@ -17,6 +17,8 @@ Rails.application.routes.draw do
         get :autocomplete_kenshi_club, on: :collection
       end
 
+      resources :participations, only: [:destroy]
+
       resources :teams, only: [:index, :show]
 
       resources :users, only: [:index, :show, :edit, :update, :destroy] do

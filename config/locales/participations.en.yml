@@ -1,0 +1,7 @@
+en:
+  participations:
+    destroy:
+      title: Destroy
+      confirm: Are you sure you want to destroy this participation? This is irreversible…
+      notice: "Participation successfully destroyed"
+      alert: "Unable to destroy participation"

@@ -38,6 +38,8 @@ en:
     destroy:
       title: Destroy
       confirm: Are you sure you want to destroy this registration? This is irreversible…
+      notice: "Kenshi successfully destroyed"
+      alert: "Unable to destroy kenshi"
     edit:
       title: "Edit registration of %{full_name}"
     new:

@@ -9,7 +9,7 @@ class Kenshi < ActiveRecord::Base
   belongs_to :cup, inverse_of: :kenshis
   belongs_to :user, inverse_of: :kenshis
   belongs_to :club, inverse_of: :kenshis
-  has_many :participations, inverse_of: :kenshi, dependent: :destroy
+  has_many :participations, dependent: :destroy, autosave: true
   has_many :individual_categories, through: :participations
   has_many :teams, through: :participations
 
@@ -24,45 +24,6 @@ class Kenshi < ActiveRecord::Base
   validates_inclusion_of :grade, in: GRADES
 
   accepts_nested_attributes_for :participations, allow_destroy: true
-  # accepts_nested_attributes_for :club, allow_destroy: true
-
-  def club_name=(club_name)
-    self.club = Club.find_or_initialize_by name: club_name
-  end
-
-  def participation_attributes=(participation_attributes)
-    participation_attributes.each do |k,a|
-
-
-      category_type = a.fetch :category_type, nil
-      category_id = a.fetch :category_id, nil
-      participation_id = a.fetch :id, nil
-      team_name = a.fetch :team_name, nil
-      ronin = a.fetch :ronin, nil
-      # participate a.fetch :participate, nil
-
-      participation = self.participations.find(participation_id) if participation_id
-      Rails.logger.debug "PARTICIPATION: #{participation.inspect}"
-
-      if category_type == "TeamCategory"
-        category = TeamCategory.find category_id
-        params = {team_name: team_name, ronin: ronin}
-        if participation.present?
-          participation.update_attributes params
-        else
-          self.participations.new params.merge! category: category
-        end
-      elsif category_type == "IndividualCategory"
-        category = IndividualCategory.find category_id
-        if participation
-          participation.destroy unless participate
-        else
-          self.participations.new category: category
-        end
-      end
-    end
-  end
-
 
   def self.from(user)
     enrollment = self.new(
@@ -75,10 +36,25 @@ class Kenshi < ActiveRecord::Base
     )
   end
 
+  def club_name=(club_name)
+    self.club = Club.find_or_initialize_by name: club_name
+  end
+
+
+  def takes_part_to?(category)
+    self.participations.map(&:category).include? category
+  end
+
+  def individual_category_ids=(ids)
+    Rails.logger.debug "INDIVIDUAL_CATEGORY_IDS: #{ids}"
+    ids.each do |id|
+      self.participations.new category: IndividualCategory.find(id)
+    end
+  end
+
   def full_name
     "#{first_name} #{last_name}"
   end
-
 
   def norm_first_name
     first_name.try :titleize

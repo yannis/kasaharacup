@@ -1,8 +1,0 @@
-90 examples, 7 failures (1 pending) in 24.6832 seconds
-./spec/models/tree_spec.rb:17
-./spec/models/tree_spec.rb:18
-./spec/models/tree_spec.rb:19
-./spec/models/tree_spec.rb:20
-./spec/models/tree_spec.rb:24
-./spec/models/tree_spec.rb:25
-./spec/models/tree_spec.rb:26

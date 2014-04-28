@@ -13,6 +13,9 @@ class Ability
       # can [:create, :update, :destroy], Kenshi do |kenshi|
       #   Time.current < Kasahara::Application::REGISTRATION_DEADLINE
       # end
+      can [:destroy], Participation do |participation|
+        participation.kenshi.user_id == user.id
+      end
       can [:read, :update, :destroy], User, id: user.id
       if user.admin?
         can :manage, :all

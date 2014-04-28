@@ -3,9 +3,9 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-
   before_filter :configure_permitted_parameters, if: :devise_controller?
   before_filter :set_locale, :set_cup
+  before_filter :store_location_if_html, :only => [:index, :show]
 
   rescue_from CanCan::AccessDenied do |exception|
     # Rails.logger.debug "Access denied on #{exception.action} #{exception.subject.inspect}"
@@ -44,22 +44,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_cup
-    @cup = Cup.where("EXTRACT(YEAR FROM start_on) = ?", params[:year]).first
-  end
-
   # restrict access to admin module for non-admin users
   def authenticate_admin_user!
     redirect_to root_url unless current_user.try(:admin?)
   end
 
-
   def back
-    redirect_back_or_default('/')
+    redirect_back_or_default
   end
 
-  def redirect_back_or_default(default, options={})
-    options.merge(:locale => I18n.locale) if options[:locale].blank?
+  def redirect_back_or_default(default=root_path, options={})
     redirect_to(session[:return_to] || default, options)
     session[:return_to] = nil
   end
@@ -75,4 +69,26 @@ class ApplicationController < ActionController::Base
     def current_user_admin?
       user_signed_in? && current_user.admin?
     end
+
+    def set_cup
+      year = params[:year] ? params[:year] : Date.current.year
+      @cup = Cup.where("EXTRACT(YEAR FROM start_on) = ?", year).first
+    end
+
+    def check_deadline
+      set_cup if @cup.blank?
+      if Time.current > @cup.deadline
+        redirect_back_or_default root_path, alert:  t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch')
+        return
+      end
+    end
+
+    def store_location_if_html
+      store_location if ['text/html', 'application/javascript', 'text/javascript'].include?(request.format) && !['application/json'].include?(request.format)
+    end
+
+    def store_location
+      session[:return_to] = request.fullpath
+    end
+
 end

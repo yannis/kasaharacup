@@ -1,0 +1,14 @@
+module ParticipationsHelper
+
+  def participation_admin_links(participation, nav: nil)
+    links = []
+    links << destroy_link(participation, {title: t('participations.destroy.title'), confirm: t('participations.destroy.confirm')}) if can?(:destroy, participation)
+
+    return content_tag(:div, class: "admin_links #{nav}", id: "#{participation.class.to_s.tableize}_#{participation.id}_admin_links") do
+      for link in links
+        concat(link)
+      end
+    end
+  end
+
+end

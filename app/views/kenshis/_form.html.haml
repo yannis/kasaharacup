@@ -39,7 +39,7 @@
         - p = Participation.new(category: c); pid = p.object_id
       - else
         - p = participation; pid = p.id
-      = f.fields_for "participation_attributes[#{pid}]", p do |g|
+      = f.fields_for :participations, p do |g|
         .form-group
           = g.label :team_name, c.name, class: "col-sm-2"
           .col-sm-10
@@ -55,6 +55,18 @@
               = hidden_field_tag "#{g.object_name}[team_name]", p.team.try(:name), class: "select2 col-sm-12", data: {options: c.teams.all.map{|c| {id: c.name, text: c.name}}}
               %br/
               %p.help-block= t '.team_info'
+    - @cup.individual_categories.all.each do |c|
+      %p
+        - if @kenshi.takes_part_to?(c)
+          - p = @kenshi.participations.detect{|p| p.category == c}
+          = f.fields_for :participations, p do |g|
+            = g.label :_destroy, c.name
+            = g.hidden_field :id
+            = hidden_field_tag "#{g.object_name}[_destroy]", 1
+            = check_box_tag "#{g.object_name}[_destroy]", 0, true
+        - else
+          = label_tag "kenshi_individual_categories_#{c.id}", c.name
+          = check_box_tag "kenshi[individual_category_ids][]", c.id, false, id: "kenshi_individual_categories_#{c.id}"
 
   .actions
     = submit_or_cancel_form(f, f.object.new_record? ? t(".button.create") : t(".button.update"))

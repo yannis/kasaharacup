@@ -18,3 +18,11 @@
     %td nd
     %td nd
     %td nd
+- kenshi.participations.each do |participation|
+  %tr
+    %th{colspan: 3}
+      = participation.category.name
+    %td{colspan: 3}
+      = participation.team.try(:name)
+    %td{colspan: 3}
+      = participation_admin_links participation

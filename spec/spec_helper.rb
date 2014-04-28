@@ -167,6 +167,11 @@ RSpec.configure do |config|
   #   # page.execute_script("editor.setValue('#{text}')")
   # end
 
+  def deadline_passed
+    it {response.should redirect_to root_path(locale: I18n.locale)}
+    it {flash[:alert].should eq I18n.t("kenshis.deadline_passed", email: 'info@kendo-geneve.ch')}
+  end
+
   def drag_to(source, target)
     builder = page.driver.browser.action
     source = source.native

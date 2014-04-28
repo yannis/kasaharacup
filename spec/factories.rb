@@ -2,7 +2,8 @@ FactoryGirl.define do
 
   sequence(:integer) { |n| n }
   factory :cup do
-    sequence(:start_on) {|n| "#{n}-09-27"}
+    sequence(:start_on) {rand(Date.civil(2000, 1, 1)..Date.civil(Date.current.year, 12, 31))}
+    deadline {|c| c.start_on-2.weeks}
   end
 
   factory :club do

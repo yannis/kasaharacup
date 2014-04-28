@@ -20,7 +20,7 @@ module ApplicationHelper
     confirm ||= "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?"
     classes += "btn btn-danger"
     link_to("#{title}".html_safe, polymorphic_path(object),
-        confirm: confirm,
+        "data-confirm" => confirm,
         method: :delete,
         remote: remote,
         title: "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "'+object.name+'"' if object.respond_to?(:name)}",

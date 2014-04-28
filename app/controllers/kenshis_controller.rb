@@ -133,9 +133,10 @@ class KenshisController < ApplicationController
   end
 
   def destroy
-    @kenshi.destroy ? notice = "Kenshi destroyed" : alert = "Unable to destroy kenshi"
+    @kenshi.destroy ? notice = t('kenshis.destroy.notice') : alert = t('kenshis.destroy.notice')
     respond_with @kenshi do |format|
-      format.html{
+      format.html {
+        flash[:notice] = notice
         redirect_to user_path(@kenshi.user, locale: I18n.locale)
       }
       format.js{
@@ -172,14 +173,7 @@ class KenshisController < ApplicationController
       # @team_name = params[:kenshi][:team_name] if params[:kenshi] && params[:kenshi][:team_name]
     end
 
-    def check_deadline
-      if Time.current > @cup.deadline
-        redirect_back_or_default root_path, alert:  t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch')
-        return
-      end
-    end
-
     def my_sanitizer
-      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :club_name, participation_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :participate])
+      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :club_name, individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy])
     end
 end
