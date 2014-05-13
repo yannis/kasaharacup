@@ -1,0 +1,22 @@
+en:
+  activerecord:
+    attributes:
+      teams:
+        name: Name
+        kenshis: Kenshis
+    # errors:
+    #   models:
+    #     kenshi:
+    #       attributes:
+    #         dob:
+    #           blank: 'Date of birth (DOB) is required for junior registrations'
+  teams: #views
+    show:
+      title: "Team “%{team_name}”"
+    index:
+      title: All teams
+    destroy:
+      title: Destroy
+      confirm: Are you sure you want to destroy this team? This is irreversible…
+      notice: "Team successfully destroyed"
+      alert: "Unable to destroy team"

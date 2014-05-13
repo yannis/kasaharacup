@@ -41,7 +41,7 @@ fr:
       duplicate: "Dupliquez l'inscription de %{full_name}"
       button: Confirmez l'inscription
     form:
-      explanation: "Pour vous inscrire à la compétition, vous devez d'abord créez un compte. Ce compte vous permettra ensuite de vous inscrire vous et vos-coéquipiers à la compétition et de modifer ces inscriptions le cas échéant."
+      explanation: "Pour vous inscrire à la compétition, vous devez d'abord vous connecter ou créez un compte. Ce compte vous permettra ensuite de vous inscrire vous et vos-coéquipiers à la compétition et de modifer ces inscriptions le cas échéant."
       button:
         create: "Confirmez l'inscription"
         update: "Modifiez l'inscription"

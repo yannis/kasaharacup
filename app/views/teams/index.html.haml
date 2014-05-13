@@ -1,2 +1,8 @@
-%h1 Teams#index
-%p Find me in app/views/teams/index.html.haml
+- @title ||= t(".index"); title @title
+.row.teams
+  .col-xs-12.col-md-12
+    %h2= @title
+    %table.table.teams-table
+      = render "table_head"
+      - @teams.each do |team|
+        = render partial: "team_row", locals: {team: team}

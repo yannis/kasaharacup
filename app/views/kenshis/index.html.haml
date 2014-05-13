@@ -1,2 +1,8 @@
-%h1 Kenshis#index
-%p Find me in app/views/kenshis/index.html.haml
+- @title ||= t(".index"); title @title
+.row.kenshis
+  .col-xs-12.col-md-12
+    %h2= @title
+    %table.table.kenshis-table
+      = render "table_head"
+      - @kenshis.each do |kenshi|
+        = render partial: "kenshi_row", locals: {kenshi: kenshi}

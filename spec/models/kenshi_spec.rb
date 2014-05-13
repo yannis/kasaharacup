@@ -34,4 +34,25 @@ describe Kenshi do
     it {expect(kenshi.full_name).to eq "Yannis Jaquet"}
   end
 
+  describe "Updating a kenshi with participations data" do
+    let(:kenshi){create :kenshi, first_name: "Yannis", last_name: "Jaquet"}
+    let(:individual_category) {create :individual_category, cup: kenshi.cup}
+    let(:team_category) {create :team_category, cup: kenshi.cup}
+
+    context "creating a team and an individual participations" do
+      before {
+        kenshi.update_attributes individual_category_ids: [individual_category.id], participations_attributes: {"0" => {category_type: "TeamCategory", category_id: team_category.id, team_name: "sdk1"}}
+      }
+      it {expect(kenshi.participations.count).to eql 2}
+      it {expect(kenshi.participations.map{|p| p.category.name}).to match_array [individual_category.name, team_category.name]}
+
+      context "and deleting the team participation" do
+        before {
+          kenshi.update_attributes participations_attributes: {"0" => {id: kenshi.participations.first.id, _destroy: 1}}
+        }
+        it {expect(kenshi.participations.count).to eq 1}
+      end
+    end
+  end
+
 end

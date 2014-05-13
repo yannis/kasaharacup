@@ -26,7 +26,7 @@ class Kenshi < ActiveRecord::Base
   accepts_nested_attributes_for :participations, allow_destroy: true
 
   def self.from(user)
-    enrollment = self.new(
+    self.new(
       first_name: user.first_name,
       last_name: user.last_name,
       female: user.female,
@@ -34,6 +34,10 @@ class Kenshi < ActiveRecord::Base
       email: user.email,
       club: user.club
     )
+  end
+
+  def self.for_cup(cup)
+    where cup: cup
   end
 
   def club_name=(club_name)

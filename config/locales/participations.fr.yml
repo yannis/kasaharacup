@@ -3,5 +3,5 @@ fr:
     destroy:
       title: Détruire
       confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
-      notice: "Kenshi détruit avec succès"
+      notice: "Participation détruite avec succès"
       alert: "Erreur lors de la destruction du kenshi"

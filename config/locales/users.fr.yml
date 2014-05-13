@@ -1,23 +1,22 @@
 fr:
   users:
     show:
-      title: Vos données
-      register_someone_else: "Inscrivez quelqu'un d'autre à la compétition"
-      your_registrations: Vos inscriptions
+      show_self: "Vos données"
+      show: "Compte de %{full_name}"
     index:
       title: Les utilisateurs
     destroy:
       title: Détruire ce compte
-      confirm: "Etes-vou sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
+      confirm: "Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
       session:
         sign_in: Accèdez
     edit:
-      title: 
+      title:
         edit_self: 'Modifiez votre compte'
         edit: 'Modifiez ce compte'
         edit_someone: "Modifiez le compte de %{full_name}"
     form:
-      button: 
+      button:
         create: Créez le compte
         update: Modifiez le compte
   activerecord:
@@ -34,4 +33,5 @@ fr:
         dob: 'Date de naissance'
         gender: 'Sexe'
         female: Femme
-        male: Homme        
+        male: Homme
+        club_name: Club

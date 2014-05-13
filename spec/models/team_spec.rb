@@ -2,7 +2,9 @@ require 'spec_helper'
 
 describe Team do
   it { should have_many :participations }
+  it { should have_many :kenshis }
   it { should validate_presence_of(:name) }
+  it { should validate_uniqueness_of(:name).scoped_to(:team_category_id) }
 
   describe "a empty team" do
     let!(:team){ create :team, participations: [] }

@@ -60,7 +60,7 @@ group :development do
   gem "rspec-rails"
   gem "rails_best_practices"
   gem "brakeman", :require => false
-  gem "debugger"
+  # gem "debugger"
   gem "bullet"
 end
 
@@ -81,5 +81,6 @@ group :test do
 end
 
 group :production do
+  gem "rails_12factor"
   gem "unicorn"
 end

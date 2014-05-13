@@ -30,12 +30,9 @@
   .col-xs-12.col-md-6
     %h2
       = t(".your_registrations")
-      %span.add_kenshi=raw "(#{link_to t(".register_someone_else"), new_user_kenshi_path(current_user, locale: I18n.locale)})" if @user.kenshis.present?
+      = link_to "<span class='glyphicon glyphicon-plus'></span> #{t(".register_someone_else")}".html_safe, new_user_kenshi_path(current_user, locale: I18n.locale), class: "btn btn-info"
     - if @user.kenshis.present?
-      %table.table
-        = render 'kenshis/table_head'
-        %tbody
-          = render @user.kenshis
+      = render @user.kenshis
     - else
       %p
         Aucune inscription pour l'instant. Voulez-vous

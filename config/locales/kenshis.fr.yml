@@ -4,12 +4,16 @@ fr:
     #   kenshi: inscription
     attributes:
       kenshi:
+        mr: M.
+        ms: Mme
         first_name: "Prénom"
         last_name: 'Nom'
+        name: Nom
         dob: 'Date de naissance'
         gender: 'Sexe'
         female: Femme
         male: Homme
+        categories: Catégories
     errors:
       models:
         kenshi:
@@ -71,6 +75,7 @@ fr:
       title: Vous avez déjà
       registration: inscription
     deadline: "Attention: le dernier délai pour vous inscrire est le %{deadline}!"
+    registered_by: Inscrit par
   last_kenshis:
     title: Dernières inscriptions
     all: Toute les inscriptions

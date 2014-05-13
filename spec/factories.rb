@@ -2,8 +2,12 @@ FactoryGirl.define do
 
   sequence(:integer) { |n| n }
   factory :cup do
-    sequence(:start_on) {rand(Date.civil(2000, 1, 1)..Date.civil(Date.current.year, 12, 31))}
-    deadline {|c| c.start_on-2.weeks}
+    start_on {rand(Date.civil(2000, 1, 1)..Date.civil(Date.current.year, 12, 31))}
+    deadline {|c|
+      return nil if c.start_on.blank?
+      start = c.start_on.is_a?(Date) ? c.start_on : Date.parse(start)
+      start-14.days
+    }
   end
 
   factory :club do

@@ -2,45 +2,37 @@
   = devise_error_messages!
   .form-group
     = f.label :first_name, class: "col-sm-2"
-    .col-sm-10
+    .col-sm-4
       = f.text_field :first_name, autofocus: true, class: "form-control"
   .form-group
     = f.label :last_name, class: "col-sm-2"
-    .col-sm-10
+    .col-sm-4
       = f.text_field :last_name, autofocus: true, class: "form-control"
   .form-group
-    = label_tag :club_name, nil, class: "col-sm-2"
-    .col-sm-10
-      = hidden_field_tag "#{f.object_name}[club_name]", f.object.club.try(:name), class: "select2 form-control", data: {options: Club.all.map{|c| {id: c.name, text: c.name}}}
-  .form-group
     = f.label :email, class: "col-sm-2"
-    .col-sm-10
+    .col-sm-4
       = f.email_field :email, autofocus: true, class: "form-control"
   .form-group
-    = f.label :password, class: "col-sm-2"
+    = f.label :dob, t('activerecord.attributes.user.dob'), class: "col-sm-2"
     .col-sm-10
+      = f.text_field :dob, {type: 'my_date', placeholder: t('layout.form.date_placeholder')}
+  .form-group
+    = label_tag :club_name, User.human_attribute_name(:club_name), class: "col-sm-2"
+    .col-sm-4
+      = hidden_field_tag "#{f.object_name}[club_name]", f.object.club.try(:name), class: "select2 form-control", data: {options: Club.all.map{|c| {id: c.name, text: c.name}}}
+  .form-group
+    = f.label :password, class: "col-sm-2"
+    .col-sm-4
       = f.password_field :password, autocomplete: "off", class: "form-control"
   .form-group
     = f.label :password_confirmation, class: "col-sm-2"
-    .col-sm-10
+    .col-sm-4
       = f.password_field :password_confirmation, autocomplete: "off", class: "form-control"
-  .col-sm-2
+  .col-sm-2.col-sm-offset-2
     - if resource.persisted?
       = f.submit "Update", class: "btn btn-success"
     - else
-      = f.submit "Sign up", class: "btn btn-success"
+      = f.submit t("devise.registrations.title"), class: "btn btn-success"
   - unless resource.persisted?
-    .col-sm-10
-      - if devise_mapping.recoverable?
-        %p
-          = link_to "Forgot your password?", new_password_path(resource_name)
-      - if devise_mapping.confirmable?
-        %p
-          = link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name)
-      - if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email)
-        %p
-          = link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name)
-      - if devise_mapping.omniauthable?
-        %p
-          - resource_class.omniauth_providers.each do |provider|
-            = link_to "Sign in with #{provider.to_s.titleize}", omniauth_authorize_path(resource_name, provider)
+    .col-sm-4.col-sm-offset-2
+      = render "devise/shared/links", signin: true, signup: false

@@ -1,0 +1,21 @@
+- @title = t("devise.passwords.change")
+.row
+  .col-xs-12.col-md-12
+    %h2= @title
+    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put , class: "form-horizontal"}) do |f|
+      = devise_error_messages!
+      = f.hidden_field :reset_password_token
+      .form-group
+        = f.label :password, "New password", class: "col-sm-2"
+        .col-sm-4
+          = f.password_field :password, autofocus: true, autocomplete: "off", class: "form-control"
+
+      .form-group
+        = f.label :password_confirmation, "Confirm new password", class: "col-sm-2"
+        .col-sm-4
+          = f.password_field :password_confirmation, autocomplete: "off", class: "form-control"
+      .col-sm-2
+        = f.submit "Change my password", class: "btn btn-success"
+
+    .col-xs-12.col-md-12
+      = render "devise/shared/links", signin: true, signup: true

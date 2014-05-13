@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe CupsController do
 
-  let!(:cup1){create :cup, start_on: "#{Date.current.year}-09-28", events: [create(:event)] }
-  let(:cup2){create :cup, start_on: "#{Date.current.year-1}-09-28"}
-  let(:cup3){create :cup, start_on: "#{Date.current.year-2}-09-28"}
+  let!(:cup1){create :cup, start_on: Date.current+2.months, events: [create(:event)] }
+  let(:cup2){create :cup, start_on: Date.current-1.year}
+  let(:cup3){create :cup, start_on: Date.cu}
 
 
   context "When not logged in" do

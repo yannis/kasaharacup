@@ -4,12 +4,16 @@ en:
     #   kenshi: registration
     attributes:
       kenshi:
+        mr: Mr
+        ms: Ms
         first_name: First name
         last_name: Last name
+        name: Name
         dob: 'Date of birth'
         gender: 'Sexe'
         female: Woman
         male: Man
+        categories: Categories
     errors:
       models:
         kenshi:
@@ -74,6 +78,7 @@ en:
       title: You already have
       registration: registration
     deadline: "Warning: The registration deadline is %{deadline}!"
+    registered_by: Registered by
   last_kenshis:
     title: Latest registrations
     all: All registrations

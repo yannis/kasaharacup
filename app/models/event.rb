@@ -1,3 +1,4 @@
+require "translate"
 class Event < ActiveRecord::Base
   belongs_to :cup
 
@@ -5,4 +6,6 @@ class Event < ActiveRecord::Base
   validates_presence_of :name_fr
   validates_presence_of :name_en
   validates_presence_of :start_on
+
+  translate :name
 end

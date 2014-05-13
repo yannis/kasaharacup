@@ -55,4 +55,10 @@ class Participation < ActiveRecord::Base
     end
   end
 
+  def full_name
+    full_name = [category.name]
+    full_name << "(#{team.name})" if team
+    full_name.join(" ")
+  end
+
 end

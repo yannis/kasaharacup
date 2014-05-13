@@ -35,10 +35,10 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  if ENV['ENABLE_REMOTE_DEBUGGER_UNDER_POW'] && Debugger
-    Debugger.settings[:autoeval] = true
-    Debugger.settings[:autolist] = 1
-    Debugger.settings[:reload_source_on_change] = true
-    Debugger.start_remote
-  end
+  # if ENV['ENABLE_REMOTE_DEBUGGER_UNDER_POW'] && Debugger
+  #   Debugger.settings[:autoeval] = true
+  #   Debugger.settings[:autolist] = 1
+  #   Debugger.settings[:reload_source_on_change] = true
+  #   Debugger.start_remote
+  # end
 end

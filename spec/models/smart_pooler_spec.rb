@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "A smart pooler" do
-  let(:cup) {create :cup, start_on: "2016-09-28"}
+  let(:cup) {create :cup, start_on: Date.parse("2016-09-28")}
   let(:individual_category) {create :individual_category, name: 'open', pool_size: 3, out_of_pool: 2, cup: cup}
 
   24.times do |i|

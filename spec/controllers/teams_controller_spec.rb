@@ -1,8 +1,6 @@
 # encoding: utf-8
 require 'spec_helper'
 
-
-
 describe TeamsController do
 
   let!(:cup){create :cup, start_on: Date.current+2.days}

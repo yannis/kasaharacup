@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "2 fighters" do
-  let(:cup){create :cup, start_on: "2016-09-28"}
+  let(:cup){create :cup, start_on: Date.parse("2016-09-28")}
   let(:kenshi1){create :kenshi, cup: cup}
   let(:kenshi2){create :kenshi, cup: cup}
   it{expect(kenshi1).to act_as_fighter}

@@ -22,7 +22,11 @@ Rails.application.routes.draw do
       resources :teams, only: [:index, :show]
 
       resources :users, only: [:index, :show, :edit, :update, :destroy] do
-        resources :kenshis
+        resources :kenshis do
+          member do
+            get :duplicate, to: 'kenshis#new'
+          end
+        end
       end
 
       get 'auth/:provider/callback', to: 'sessions#create'

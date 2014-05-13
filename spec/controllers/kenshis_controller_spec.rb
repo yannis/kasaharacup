@@ -36,14 +36,6 @@ describe KenshisController do
         it {flash.should be_empty}
       end
 
-      # describe "on GET to :index with format csv" do
-      #   before :each do
-      #     get :index, format: :csv
-      #   end
-
-      #   it { response.header['Content-Type'].should match 'text/csv' }
-      # end
-
       describe "on GET to :index with param :user_id" do
         before :each do
           get :index, user_id: user.to_param
@@ -70,8 +62,6 @@ describe KenshisController do
             eval(m)
           end
           should_be_asked_to_sign_in
-          # it {response.should redirect_to(new_user_session_path)}
-          # it {flash[:alert].should eq I18n.t("devise.failure.unauthenticated")}
         end
       end
     end

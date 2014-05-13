@@ -5,8 +5,11 @@ class Team < ActiveRecord::Base
   # attr_accessible :name
   acts_as_fighter
   belongs_to :team_category, inverse_of: :teams
-  has_many :participations, dependent: :nullify
+  has_many :participations, dependent: :destroy
+  has_many :kenshis, through: :participations
+
   validates_presence_of :name
+  validates_uniqueness_of :name, scope: :team_category_id
   validate :number_of_participations
 
   def self.empty

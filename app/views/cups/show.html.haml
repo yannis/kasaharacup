@@ -1,113 +1,121 @@
-.row#banner.page-header
-  .col-xs-12.col-md-12
-    %h1
-      = t 'layout.header.title'
-      %small= t 'layout.header.title_em'
-= render "current_user_resume"
-.row#competition
-  .col-xs-12.col-md-8
-    .row
-      .col-xs-12.col-md-12
-        %h2= t '.tournament.title'
+.col-xs-12.col-md-8
+  .row#banner.page-header
+    .col-xs-12.col-md-12
+      %h1
+        = t 'layout.header.title'
+        %small= t 'layout.header.title_em'
+
+  .row#program
+    .col-xs-12.col-md-12
+      %h2= t '.program.title'
+    - @grouped_events.each do |date, events|
       .col-xs-12.col-md-6
-        %p=raw t '.tournament.a'
-      .col-xs-12.col-md-6
-        %p=raw t '.tournament.b'
-
-  .col-xs-12.col-md-4
-    %figure
-      = image_tag 'kasahara_toshiaki.jpg'
-      %figcaption Kasahara Toshiaki sensei
-
-.row#categories_and_fees
-  #categories.col-xs-12.col-md-6
-    %h2= t '.categories.title'
-    %table.box-table.shortheader
-      %tbody
-        - @cup.individual_categories.each do |c|
-          %tr.odd
-            %th= c.name
-            %td= c.description
-        - @cup.team_categories.each do |c|
-          %tr.odd
-            %th= c.name
-            %td= c.description
-  #fees.col-xs-12.col-md-6
-    %h2= t '.fees.title'
-    %table.box-table
-      %tbody
-        %tr.odd
-          %th=raw t '.fees.adults.title'
-          %td=raw t '.fees.adults.fee', adult_fees_chf: Kenshi::FEES[:adult][:chf], adult_fees_eur: Kenshi::FEES[:adult][:eur]
-        %tr.even
-          %th=raw t '.fees.juniors.title'
-          %td=raw t '.fees.juniors.fee', junior_fees_chf: Kenshi::FEES[:junior][:chf], junior_fees_eur: Kenshi::FEES[:junior][:eur]
-        %tr.odd
-          %th=raw t '.fees.night.title'
-          %td=raw t '.fees.night.fee', dormitory_fees_chf: Kenshi::FEES[:dormitory][:chf], dormitory_fees_eur: Kenshi::FEES[:dormitory][:eur]
-        %tr.even
-          %th=raw t '.fees.dinner.title'
-          %td=raw t '.fees.dinner.fee', dinner_fees_chf: Kenshi::FEES[:dinner][:chf], dinner_fees_eur: Kenshi::FEES[:dinner][:eur]
-
-.row#program
-  .col-xs-12.col-md-12
-    %h2= t '.program.title'
-  - @grouped_events.each do |date, events|
-    .col-xs-12.col-md-6
-      %table.table
-        %thead
-          %tr
-            %td{colspan: 2}
-              %h3
-                = date.to_s(:day_month_year)
-        %tbody
-          - for event in events
+        %table.table
+          %thead
             %tr
-              %th
-                = event.start_on.to_s(:time_only)
-              %td
-                = event.name_en
-.row#venue_and_contact
-  .col-xs-12.col-md-6#venue
-    %h2= t '.venue.title'
-    %p=raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
-    %h3= t '.venue.address'
-    %p
-      Centre sportif du Bout-du-Monde, Hall A
-      %br
-      Route de Vessy 12
-      %br
-      1206 Genève
-      %br
-      %em
-        GPS: 46.180588,6.155893
-    = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
+              %td{colspan: 2}
+                %h3
+                  = l date, format: :short
+          %tbody
+            - for event in events
+              %tr
+                %th
+                  = event.start_on.to_s(:time_only)
+                %td
+                  = event.name
+
+  .row#categories_and_fees
+    #categories.col-xs-12.col-md-6
+      %h2= t '.categories.title'
+      %table.table
+        %tbody
+          - @cup.individual_categories.each do |c|
+            %tr.odd
+              %th= c.name
+              %td= c.description
+          - @cup.team_categories.each do |c|
+            %tr.odd
+              %th= c.name
+              %td= c.description
+    #fees.col-xs-12.col-md-6
+      %h2= t '.fees.title'
+      %table.table
+        %tbody
+          %tr.odd
+            %th=raw t '.fees.adults.title'
+            %td=raw t '.fees.adults.fee', adult_fees_chf: Kenshi::FEES[:adult][:chf], adult_fees_eur: Kenshi::FEES[:adult][:eur]
+          %tr.even
+            %th=raw t '.fees.juniors.title'
+            %td=raw t '.fees.juniors.fee', junior_fees_chf: Kenshi::FEES[:junior][:chf], junior_fees_eur: Kenshi::FEES[:junior][:eur]
+          %tr.odd
+            %th=raw t '.fees.night.title'
+            %td=raw t '.fees.night.fee', dormitory_fees_chf: Kenshi::FEES[:dormitory][:chf], dormitory_fees_eur: Kenshi::FEES[:dormitory][:eur]
+          %tr.even
+            %th=raw t '.fees.dinner.title'
+            %td=raw t '.fees.dinner.fee', dinner_fees_chf: Kenshi::FEES[:dinner][:chf], dinner_fees_eur: Kenshi::FEES[:dinner][:eur]
+
+  .row.venue
+    .col-xs-12.col-md-12.venue-title
+      %h2= t '.venue.title'
+    .col-xs-12.col-md-6.venue-details
+      %p=raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
+      %h3= t '.venue.address'
+      %p
+        Centre sportif du Bout-du-Monde, Hall A
+        %br
+        Route de Vessy 12
+        %br
+        1206 Genève
+        %br
+        %em
+          GPS: 46.180588,6.155893
+    .col-xs-12.col-md-6.venue-map
+      = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
 
 
-  .col-xs-12.col-md-6#contact
-    %h2= t '.social.title'
-    %h3 Newsletter
-    = form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post" do
-      = hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
-      = hidden_field_tag :id, "4b7d62b6b3"
-      = label_tag 'EMAIL', t('.newsletter.register')
-      = email_field_tag 'EMAIL', nil, required: true, placeholder: t('.newsletter.email')
-      = button_tag t('.newsletter.button')
-    %ul
-      %li
-        = link_to "<i class='icon-twitter'></i>twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon'
-        - if I18n.locale == :fr
-          = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Cette année, je vais à la coupe Kasahara!", via: "kendo_in_geneva", lang: 'fr', related: "kendo_in_geneva", hashtags: "kasa2013"}
-        - else
-          = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Checkout the kasaharacup.com webpage!", via: "kendo_in_geneva", related: "kendo_in_geneva", hashtags: "kasa2013"}
-        :javascript
-          !function(d,s,id){
-            var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
-          }(document, 'script', 'twitter-wjs');
-      %li
-        = link_to "<i class='icon-facebook-sign'></i>facebook".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon'
-        - if I18n.locale == :fr
-          .fb-like{data: {href: "http://kasaharacup.com/fr", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-        - else
-          .fb-like{data: {href: "http://kasaharacup.com/en", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-      %li= link_to "<i class='icon-flickr'></i>flickr".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon'
+
+.col-xs-12.col-md-4
+  = render "current_user_resume"
+  .panel.panel-default.competition
+    .panel-heading
+      %h2= t '.tournament.title'
+    .panel-body
+      %p=raw t '.tournament.a'
+      %figure.img-thumbnail
+        = image_tag 'kasahara_toshiaki.jpg'
+        %figcaption Kasahara Toshiaki sensei
+      %p=raw t '.tournament.b'
+
+  = form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "form" do
+    = hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
+    = hidden_field_tag :id, "4b7d62b6b3"
+    .panel.panel-default.contact
+      .panel-heading
+        %h3
+          = label_tag 'EMAIL', "Newsletter"
+      .panel-body.form-inline
+        .form-group
+          = email_field_tag 'EMAIL', nil, required: true, placeholder: t('.newsletter.email'), class: "form-control"
+          = button_tag t('.newsletter.button'), class: "btn btn-info"
+        %p.help-block= t('.newsletter.register')
+
+  %h3= t '.social.title'
+
+  %p
+    = link_to "<i class='fa fa-twitter'></i> | twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon', class: "btn btn-twitter"
+    - if I18n.locale == :fr
+      = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Cette année, je vais à la coupe Kasahara!", via: "kendo_in_geneva", lang: 'fr', related: "kendo_in_geneva", hashtags: "kasa2013"}
+    - else
+      = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Checkout the kasaharacup.com webpage!", via: "kendo_in_geneva", related: "kendo_in_geneva", hashtags: "kasa2013"}
+    :javascript
+      !function(d,s,id){
+        var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
+      }(document, 'script', 'twitter-wjs');
+  %p
+    = link_to "<i class='fa fa-facebook'></i> | facebook".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon', class: "btn btn-facebook"
+    - if I18n.locale == :fr
+      .fb-like{data: {href: "http://kasaharacup.com/fr", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
+    - else
+      .fb-like{data: {href: "http://kasaharacup.com/en", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
+  %p
+    = link_to "<i class='fa fa-flickr'></i> | flickr".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon', class: "btn btn-flickr"

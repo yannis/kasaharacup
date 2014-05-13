@@ -24,7 +24,7 @@ end
 
 
 describe "A individual_category “open”" do
-  let!(:individual_category) {create :individual_category, name: 'open', pool_size: 3, out_of_pool: 2, cup: create(:cup, start_on: "2016-09-28")}
+  let!(:individual_category) {create :individual_category, name: 'open', pool_size: 3, out_of_pool: 2, cup: create(:cup, start_on: Date.parse("2016-09-28"))}
 
   it {expect(individual_category).to be_valid_verbose}
 

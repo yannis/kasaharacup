@@ -1,0 +1,14 @@
+fr:
+  navigation:
+    home:
+      text: Home
+      title: "Où, quand <span class='ampersand'>&</span> comment"
+    teams:
+      text: Equipes
+      title: Equipes déjà inscrites
+    kenshis:
+      text: "Inscrits (%{kenshis})"
+      title: Tous les kenshis inscrits
+    register:
+      text: Inscriptions
+      title: Inscrivez-vous à la compétition

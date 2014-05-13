@@ -58,9 +58,15 @@ class KenshisController < ApplicationController
         @title = t('kenshis.new.yourself')
       end
     elsif params[:id]
-      @kenshi = Kenshi.find(params[:id]).dup
-      @title = t("kenshis.new.duplicate", full_name: @kenshi.full_name)
+      origin_kenshi = Kenshi.find(params[:id])
+      @kenshi = origin_kenshi.dup
+      @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
+      @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)
+      origin_kenshi.participations.each do |participation|
+        @kenshi.participations << Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
+      end
     else
+      @kenshi.club = @user.club if @user.present?
       @title = t('kenshis.new.title')
     end
     # @cup.team_categories.each do |cat|

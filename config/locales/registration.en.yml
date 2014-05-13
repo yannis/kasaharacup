@@ -44,7 +44,7 @@ en:
       duplicate: "Duplicate the registration of %{full_name}"
       # yourself: yourself?
     form:
-      explanation: "First create an account that will allow you to register you and your team mates to the competition."
+      explanation: "To register you and your team mates to the competition, you must first sign in or create an account."
       button:
         create: "Register"
         update: "Update registration"

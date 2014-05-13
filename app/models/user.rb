@@ -45,6 +45,10 @@ class User < ActiveRecord::Base
     kenshis.count > 0
   end
 
+  def has_kenshis_for_cup?(cup)
+    kenshis.where(cup: cup).count > 0
+  end
+
   def gender
     female? ? '♀' : '♂'
   end

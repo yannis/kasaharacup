@@ -49,9 +49,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     def my_sanitizer
       if current_user_admin?
-        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin)
+        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin, :password, :password_confirmation)
       else
-        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name)
+        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :password, :password_confirmation)
       end
     end
 

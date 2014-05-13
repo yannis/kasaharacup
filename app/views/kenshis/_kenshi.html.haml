@@ -1,28 +1,34 @@
-%tr
-  %td= kenshi.full_name
-  - if current_user_admin_or_owner?(kenshi)
-    %td= kenshi.email
-    %td= kenshi.dob
-  - elsif user_signed_in?
-    %td nd
-    %td nd
-  %td= kenshi.female ? 'female' : 'male'
-  %td= kenshi.norm_club
-  %td= kenshi.grade
-  - if current_user_admin_or_owner?(kenshi)
-    %td= kenshi.user.full_name
-    %td=raw kenshi_admin_links(kenshi)
-  - elsif user_signed_in?
-    %td nd
-    %td nd
-    %td nd
-    %td nd
-    %td nd
-- kenshi.participations.each do |participation|
+%h3= kenshi.full_name
+%table.table
   %tr
-    %th{colspan: 3}
-      = participation.category.name
-    %td{colspan: 3}
-      = participation.team.try(:name)
-    %td{colspan: 3}
-      = participation_admin_links participation
+  - if current_user_admin_or_owner?(kenshi)
+    %tr
+      %th= Kenshi.human_attribute_name :email
+      %td{colspan: 2}= kenshi.email
+    %tr
+      %th= Kenshi.human_attribute_name :dob
+      %td{colspan: 2}= kenshi.dob
+  %tr
+    %th= Kenshi.human_attribute_name :sex
+    %td= kenshi.female ? 'female' : 'male'
+  %tr
+    %th= Kenshi.human_attribute_name :club
+    %td{colspan: 2}= kenshi.club.name
+  %tr
+    %th= Kenshi.human_attribute_name :grade
+    %td{colspan: 2}= kenshi.grade
+  - if current_user_admin_or_owner?(kenshi)
+    %tr
+      %th= Kenshi.human_attribute_name :user
+      %td{colspan: 2}= kenshi.user.full_name
+  - kenshi.participations.each do |participation|
+    %tr
+      %th
+        = participation.category.name
+      %td
+        = participation.team.try(:name)
+      %td
+        = participation_admin_links participation
+  - if current_user_admin_or_owner?(kenshi)
+    %tr
+      %td{colspan: 3}=raw kenshi_admin_links(kenshi)
