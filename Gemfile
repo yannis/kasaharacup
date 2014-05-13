@@ -16,6 +16,7 @@ gem 'omniauth-github'
 gem 'omniauth-google'
 gem 'uglifier', '>= 1.3.0'
 gem 'rails3-jquery-autocomplete', '~> 1.0.14'
+gem "figaro", github: "laserlemon/figaro"
 
 gem 'activeadmin', github: 'gregbell/active_admin'
 gem 'polyamorous', github: 'activerecord-hackery/polyamorous'

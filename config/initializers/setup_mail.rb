@@ -5,6 +5,6 @@ ActionMailer::Base.smtp_settings = {
   domain: "heroku.com",
   authentication: "plain",
   enable_starttls_auto: true,
-  user_name: Rails.application.secrets.gmail_username,
-  password: Rails.application.secrets.gmail_password
+  user_name: Figaro.env.gmail_username,
+  password: Figaro.env.gmail_password
 }

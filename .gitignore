@@ -24,3 +24,6 @@ config/secrets.yml
 config/database.yml
 db/seeds.rb
 db/seed_files/*
+
+# Ignore application configuration
+/config/application.yml
