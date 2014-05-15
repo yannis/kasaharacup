@@ -18,12 +18,10 @@ tmp/data/*
 coverage
 *.sublime-project
 *.sublime-workspace
-rails
 
 config/secrets.yml
 config/database.yml
+/config/application.yml
 db/seeds.rb
 db/seed_files/*
 
-# Ignore application configuration
-/config/application.yml
