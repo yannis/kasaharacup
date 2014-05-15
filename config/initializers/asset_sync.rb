@@ -16,7 +16,7 @@ if Rails.env.production?
     #
     # Use the Rails generated 'manifest.yml' file to produce the list of files to
     # upload instead of searching the assets directory.
-    # config.manifest = true
+    config.manifest = true
     #
     # Fail silently.  Useful for environments such as Heroku
     config.fail_silently = true
