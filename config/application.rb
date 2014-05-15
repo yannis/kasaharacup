@@ -30,7 +30,7 @@ module Kasaharacup
 
     config.i18n.default_locale = :fr
 
-    config.action_mailer.default_url_options = { host: Figaro.env.mailer_host }
+    config.action_mailer.default_url_options = { host: ENV['MAILER_HOST'] }
 
     config.assets.paths << "#{Rails.root}/vendor/assets/javascripts"
     config.assets.paths << "#{Rails.root}/vendor/assets/stylesheets"

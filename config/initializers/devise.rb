@@ -4,13 +4,13 @@ Devise.setup do |config|
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
-  # config.secret_key = 'f1014752f9afa06b041f4aafe463c02e2af6e75b62ee88d1deead01a0b4e43eb4d341b77d17f0f42824022366d9841860e3ef43a520ed2a8242529676534a8c1'
+  config.secret_key = ENV['SECRET_KEY_BASE']
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = Figaro.env.gmail_username
+  config.mailer_sender = ENV['GMAIL_USERNAME']
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
@@ -230,8 +230,8 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  config.omniauth :facebook, Figaro.env.facebook_app_id, Figaro.env.facebook_secret, scope: 'email'
-  # config.omniauth :twitter, Figaro.env.twitter_api_key, Figaro.env.twitter_api_secret
+  config.omniauth :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'], scope: 'email'
+  # config.omniauth :twitter, Env['twitter_api_key'], Env['twitter_api_secret']
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

@@ -1,12 +1,12 @@
 if Rails.env.production?
   AssetSync.configure do |config|
-    config.fog_provider = ENV['fog_provider']
-    config.aws_access_key_id = ENV['aws_access_key_id']
-    config.aws_secret_access_key = ENV['aws_secret_access_key']
-    config.fog_directory = ENV['fog_directory']
+    config.fog_provider = ENV['FOG_PROVIDER']
+    config.aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
+    config.aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+    config.fog_directory = ENV['FOG_DIRECTORY']
 
     # Increase upload performance by configuring your region
-    config.fog_region = ENV['fog_region']
+    config.fog_region = ENV['FOG_REGION']
     #
     # Don't delete files from the store
     config.existing_remote_files = "ignore"
