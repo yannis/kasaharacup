@@ -21,7 +21,7 @@ Rails.application.routes.draw do
 
       resources :teams, only: [:index, :show]
 
-      resources :users, only: [:index, :show, :edit, :update, :destroy] do
+      resources :users, only: [:show] do
         resources :kenshis do
           member do
             get :duplicate, to: 'kenshis#new'

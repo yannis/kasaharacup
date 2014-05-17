@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe CupsController do
 
-  let!(:cup1){create :cup, start_on: Date.current+2.months, events: [create(:event)] }
-  let(:cup2){create :cup, start_on: Date.current-1.year}
-  let(:cup3){create :cup, start_on: Date.cu}
+  let!(:cup1){create :cup, start_on: Date.current, events: [create(:event)] }
+  let(:cup2){create :cup, start_on: Date.current-2.years}
+  let(:cup3){create :cup, start_on: Date.current+1.year}
 
 
   context "When not logged in" do
@@ -15,9 +15,7 @@ describe CupsController do
       it {assigns(:cup).should_not be_nil}
       it {response.should render_template(:show)}
       it {flash.should be_empty}
-      it "assigns cup to cup1" do
-        assigns(:cup).should eql cup1
-      end
+      it {assigns(:cup).should eql cup1}
     end
   end
 

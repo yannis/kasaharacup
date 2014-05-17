@@ -14,8 +14,10 @@
       = f.email_field :email, autofocus: true, class: "form-control"
   .form-group
     = f.label :dob, t('activerecord.attributes.user.dob'), class: "col-sm-2"
-    .col-sm-10
-      = f.text_field :dob, {type: 'my_date', placeholder: t('layout.form.date_placeholder')}
+    .col-sm-4.input-group.date.datepicker{data: {date: {format: "DD-MM-YYYY"}}}
+      = f.text_field :dob, {type: 'my_date', placeholder: t('layout.form.date_placeholder'), class: "form-control"}
+      %span.input-group-addon
+        %span.glyphicon.glyphicon-calendar
   .form-group
     = label_tag :club_name, User.human_attribute_name(:club_name), class: "col-sm-2"
     .col-sm-4

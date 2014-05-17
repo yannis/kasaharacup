@@ -30,7 +30,7 @@
   .form-group
     = f.label :grade, class: "col-sm-2"
     .col-sm-10
-      = f.select :grade, options_for_select(Kenshi::GRADES, f.object.grade), class: "form-control"
+      = f.select :grade, options_for_select(Kenshi::GRADES, f.object.grade), {}, class: "form-control"
   %fieldset
     %legend Categories
     - @cup.team_categories.all.each do |c|
@@ -73,4 +73,4 @@
 
   .actions
     = submit_or_cancel_form(f, f.object.new_record? ? t(".button.create") : t(".button.update"))
-    %p.info= t '.button_info', deadline: l(@cup.deadline, format: :long)
+    %p.help-block= t '.button_info', deadline: l(@cup.deadline, format: :long)

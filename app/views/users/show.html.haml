@@ -25,8 +25,9 @@
           / # %td= mail_to(@user.email, 'Email', encode: 'hex', class: 'email')
     - else
     .admin_links
-      = link_to("edit", edit_user_registration_path(@user), class: "btn btn-info") if can?(:update, @user)
-      = link_to("delete account", user_path(@user, method: :delete), class: "btn btn-danger") if can?(:destroy, @user)
+      = link_to("<span class='glyphicon glyphicon-edit'></span> edit".html_safe, edit_user_registration_path(@user), class: "btn btn-info") if can?(:update, @user)
+      = link_to("<span class='glyphicon glyphicon-trash'></span> delete account".html_safe , cancel_user_registration_path(@user), class: "btn btn-danger") if can?(:destroy, @user)
+      / = link_to("<span class='glyphicon glyphicon-trash'></span> Delete account".html_safe, user_registration_path, data: {confirm: "Are you sure you want to destroy your account?"}, method: :delete, class: "btn btn-danger") if can?(:destroy, @user)
   .col-xs-12.col-md-6
     %h2
       = t(".your_registrations")

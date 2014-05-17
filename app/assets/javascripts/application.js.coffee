@@ -6,6 +6,9 @@
 #= require autocomplete-rails
 #= require select2
 #= require select2_locale_fr
+#= require moment
+#= require bootstrap-datetimepicker
+#= require moment/fr
 #= require navigation
 #= require_tree ./utilities
 #= require_tree .

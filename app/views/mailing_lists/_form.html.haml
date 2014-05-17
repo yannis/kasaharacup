@@ -1,0 +1,11 @@
+- if session[:mailing_list]
+  %p You're already subscribed to the mailing list.
+  = link_to "Unsubscribe", user_mailing_list_path(current_user, :locale => I18n.locale), :confirm => "Are you sure you want to unsubscribe from our mailing list?", :method => :delete, :title => "Unsubscribe from ou mailing list"
+- else
+  = form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post" do
+    = hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
+    = hidden_field_tag :id, "4b7d62b6b3"
+    .field
+      = label_tag 'EMAIL', t('home.index.newsletter.email')
+      = email_field_tag 'EMAIL', nil, :required => true
+    = button_tag t('home.index.newsletter.button')
