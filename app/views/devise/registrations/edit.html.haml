@@ -3,6 +3,3 @@
   .col-xs-12.col-md-12
     %h2= @title
     = render 'form'
-  .col-xs-12.col-md-4.col-md-offset-2
-    %p
-      = button_to t("devise.registrations.cancel_title"), registration_path(resource_name), data: { confirm: t("devise.registrations.cancel_verif") }, method: :delete, class: "btn btn-danger"

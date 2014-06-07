@@ -1,0 +1,12 @@
+= form_for resource, as: resource_name, url: session_path(resource_name), role: 'form' do |f|
+  .form-group
+    = f.email_field :email, autofocus: true, class: "form-control", placeholder: t("devise.sessions.email")
+  .form-group
+    = f.password_field :password, autocomplete: "off", class: "form-control", placeholder: t("devise.sessions.password")
+  - if devise_mapping.rememberable?
+    .checkbox
+      %label
+        = f.check_box :remember_me
+        = t("devise.sessions.remember")
+  = f.submit t("devise.sessions.title"), class: "btn btn-success"
+= render "devise/shared/links", signin: false, signup: true

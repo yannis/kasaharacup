@@ -8,9 +8,9 @@ ActiveAdmin.register Kenshi do
     #   link_to kenshi.norm_first_name, admin_kenshi_path(kenshi)
     # end
     column :email
-    # column :team do |kenshi|
-    #   link_to( kenshi.team, kenshi.team) if kenshi.team
-    # end
+    column :categories do |kenshi|
+      (kenshi.individual_categories.map{|c| link_to(c.name, [:admin, c])}+kenshi.teams.map{|t| "#{link_to(t.name, [:admin, t])} (#{link_to(t.team_category.name, [:admin, t.team_category])})"}).join(', ').html_safe
+    end
     # column :norm_club
     # column :grade
     # column :ronin
@@ -27,7 +27,7 @@ ActiveAdmin.register Kenshi do
     # column 'PDF' do |kenshi|
     #   link_to "PDF", pdf_admin_kenshi_path(kenshi)
     # end
-    default_actions
+    actions
   end
 
   # action_item only: :show do

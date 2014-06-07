@@ -6,9 +6,15 @@ class Participation < ActiveRecord::Base
   belongs_to :team
 
   validates_presence_of :category_id
+  validates :kenshi_id, presence: true, uniqueness: {scope: :category_id}
   # validates_presence_of :kenshi_id
   validates_presence_of :pool_position, if: lambda{|p| p.pool_number.present?}
   validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
+  validates_numericality_of :pool_number, only_integer: true, greater_than: 0, allow_nil: true
+
+  delegate :full_name, to: 'kenshi', :allow_nil => true
+  delegate :grade, to: 'kenshi', :allow_nil => true
+  delegate :club, to: 'kenshi', :allow_nil => true
 
   # def self.set_for_user(user, attributes)
   #   id = attributes.fetch :id, nil
@@ -55,10 +61,10 @@ class Participation < ActiveRecord::Base
     end
   end
 
-  def full_name
-    full_name = [category.name]
-    full_name << "(#{team.name})" if team
-    full_name.join(" ")
-  end
+  # def full_name
+  #   full_name = [category.name]
+  #   full_name << "(#{team.name})" if team
+  #   full_name.join(" ")
+  # end
 
 end

@@ -1,5 +1,5 @@
 $ ->
-  $(".select2").select2
+  $("input[data-behaviour='select2']").select2
     query: (query)->
       data = {results: @element.data('options')}
       query.callback(data) if query

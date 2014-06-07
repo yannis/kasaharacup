@@ -60,6 +60,14 @@ class Team < ActiveRecord::Base
     return name_and_status.join(' ')
   end
 
+  def name_and_category
+    "#{name} (#{team_category.name})"
+  end
+
+  def category_and_name
+    "#{team_category.name} (#{name})"
+  end
+
   def poster_name
     name.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').upcase.to_s
   end

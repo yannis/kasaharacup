@@ -1,8 +1,8 @@
-- @title ||= t(".index"); title @title
+- @title ||= t(".title"); title @title
 .row.teams
   .col-xs-12.col-md-12
     %h2= @title
-    %table.table.teams-table
+    %table.table.teams-table.table-condensed
       = render "table_head"
       - @teams.each do |team|
         = render partial: "team_row", locals: {team: team}

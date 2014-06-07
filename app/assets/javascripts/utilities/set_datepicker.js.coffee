@@ -1,3 +1,0 @@
-$ ->
-  $(".datepicker").datetimepicker
-    pickTime: false

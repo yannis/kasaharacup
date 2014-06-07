@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       end
 
       resources :participations, only: [:destroy]
+      resources :purchases, only: [:destroy]
 
       resources :teams, only: [:index, :show]
 
@@ -42,6 +43,8 @@ Rails.application.routes.draw do
     get '/', to: redirect("#{Date.current.year}/#{I18n.locale}")
   end
 
+  ActiveAdmin.routes(self)
+
   # match "/users/auth/:provider", constraints: { provider: /google|facebook/ }, to: "devise/omniauth_callbacks#passthru", as: :omniauth_authorize, via: [:get, :post]
   # match "/users/auth/:action/callback", constraints: { action: /google|facebook/ }, to: "devise/omniauth_callbacks", as: :omniauth_callback, via: [:get, :post]
 
@@ -50,5 +53,4 @@ Rails.application.routes.draw do
   # root to: "cups#show", year: Date.current.year, locale: I18n.locale
   # root to: "cups#show", year: Date.current.year, locale: I18n.locale
 
-  ActiveAdmin.routes(self)
 end

@@ -30,29 +30,27 @@
       %table.table
         %tbody
           - @cup.individual_categories.each do |c|
-            %tr.odd
+            %tr
               %th= c.name
               %td= c.description
           - @cup.team_categories.each do |c|
-            %tr.odd
+            %tr
               %th= c.name
               %td= c.description
     #fees.col-xs-12.col-md-6
       %h2= t '.fees.title'
       %table.table
         %tbody
-          %tr.odd
+          %tr
             %th=raw t '.fees.adults.title'
-            %td=raw t '.fees.adults.fee', adult_fees_chf: Kenshi::FEES[:adult][:chf], adult_fees_eur: Kenshi::FEES[:adult][:eur]
-          %tr.even
+            %td=raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur
+          %tr
             %th=raw t '.fees.juniors.title'
-            %td=raw t '.fees.juniors.fee', junior_fees_chf: Kenshi::FEES[:junior][:chf], junior_fees_eur: Kenshi::FEES[:junior][:eur]
-          %tr.odd
-            %th=raw t '.fees.night.title'
-            %td=raw t '.fees.night.fee', dormitory_fees_chf: Kenshi::FEES[:dormitory][:chf], dormitory_fees_eur: Kenshi::FEES[:dormitory][:eur]
-          %tr.even
-            %th=raw t '.fees.dinner.title'
-            %td=raw t '.fees.dinner.fee', dinner_fees_chf: Kenshi::FEES[:dinner][:chf], dinner_fees_eur: Kenshi::FEES[:dinner][:eur]
+            %td=raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
+          - @cup.products.each do |product|
+            %tr
+              %th= product.name
+              %td= "#{product.fee_chf} CHF / #{product.fee_eu} €"
 
   .row.venue
     .col-xs-12.col-md-12.venue-title

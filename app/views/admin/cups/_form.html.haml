@@ -1,0 +1,7 @@
+= simple_form_for [:admin, @cup], class: "formtastic" do |f|
+  = field_set_tag "Details" do
+    = f.input :year
+    = f.input :start_on
+    = f.input :end_on
+    = f.input :deadline
+  = f.button :submit

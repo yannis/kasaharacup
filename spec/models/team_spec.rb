@@ -7,10 +7,13 @@ describe Team do
   it { should validate_uniqueness_of(:name).scoped_to(:team_category_id) }
 
   describe "a empty team" do
-    let!(:team){ create :team, participations: [] }
+    let(:team_category){create :team_category, name: "team_cat"}
+    let!(:team){ create :team, name: "SDK", team_category: team_category, participations: [] }
     it {expect(team.participations.count).to eq 0}
     it {expect(team).to be_valid_verbose}
-
+    it {expect(team.name_and_status).to eql "SDK"}
+    it {expect(team.name_and_category).to eql "SDK (team_cat)"}
+    it {expect(team.category_and_name).to eql "team_cat (SDK)"}
     it {expect(Team.empty.to_a).to include(team)}
     it {expect(Team.empty.to_a).to eq [team]}
 

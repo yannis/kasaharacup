@@ -1,0 +1,7 @@
+en:
+  purchases:
+    destroy:
+      title: Destroy
+      confirm: Are you sure you want to destroy this extra? This is irreversible…
+      notice: "Extra successfully removed"
+      alert: "Unable to remove extra"

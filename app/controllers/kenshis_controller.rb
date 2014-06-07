@@ -69,6 +69,7 @@ class KenshisController < ApplicationController
       @kenshi.club = @user.club if @user.present?
       @title = t('kenshis.new.title')
     end
+    @kenshi.female = false if @kenshi.female.nil?
     # @cup.team_categories.each do |cat|
     #   @kenshi.participations.build category: cat
     # end
@@ -180,6 +181,6 @@ class KenshisController < ApplicationController
     end
 
     def my_sanitizer
-      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :club_name, individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy])
+      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :club_name, individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy], product_ids: [])
     end
 end

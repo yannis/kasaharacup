@@ -5,9 +5,13 @@ FactoryGirl.define do
     start_on {rand(Date.civil(2000, 1, 1)..Date.civil(Date.current.year, 12, 31))}
     deadline {|c|
       return nil if c.start_on.blank?
-      start = c.start_on.is_a?(Date) ? c.start_on : Date.parse(start)
+      start = Date.parse(c.start_on.to_s)
       start-14.days
     }
+    adult_fees_chf {30}
+    adult_fees_eur {25}
+    junior_fees_chf {16}
+    junior_fees_eur {14}
   end
 
   factory :club do
@@ -46,6 +50,7 @@ FactoryGirl.define do
     association :cup
     association :user
     association :club
+    female {false}
     first_name { Faker::Name.first_name}
     last_name { Faker::Name.last_name}
     dob {20.years.ago}
@@ -55,6 +60,19 @@ FactoryGirl.define do
   factory :participation do
     association :category, factory: :individual_category
     association :kenshi
+  end
+
+  factory :purchase do
+    association :product
+    association :kenshi
+  end
+
+  factory :product do
+    association :cup
+    name_en {Faker::Name.last_name}
+    name_fr {Faker::Name.last_name}
+    fee_chf {10}
+    fee_eu {8}
   end
 
   factory :team do

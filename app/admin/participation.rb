@@ -1,8 +1,7 @@
 ActiveAdmin.register Participation do
   index do
-    column :kenshi
-    column :individual_category
-    # column :individual_category
+    column :enrollment
+    column :category
     column :pool
   end
 end

@@ -8,8 +8,11 @@ Time::DATE_FORMATS.merge!(
   :db_zoned => '%m/%d/%Y %H:%M',
   :timezoned => '%Y-%m-%dT%H:%M:00Z'
 )
-Date::DATE_FORMATS.merge!( 
+Date::DATE_FORMATS.merge!(
   :month => '%B',
   :day_month_year => "%e %B %Y",
+  :d_m_y => "%d-%m-%Y",
   :time_only => '%H:%M'
 )
+
+Date::DATE_FORMATS[:default]="%d-%m-%Y"

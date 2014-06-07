@@ -16,6 +16,9 @@ class Ability
       can [:destroy], Participation do |participation|
         participation.kenshi.user_id == user.id
       end
+      can [:destroy], Purchase do |purchase|
+        purchase.kenshi.user_id == user.id
+      end
       can [:read, :update, :destroy], User, id: user.id
       if user.admin?
         can :manage, :all

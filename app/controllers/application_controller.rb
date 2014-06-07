@@ -71,12 +71,14 @@ class ApplicationController < ActionController::Base
     end
 
     def set_cup
-      year = params[:year] ? params[:year] : Date.current.year
-      @cup = Cup.where("EXTRACT(YEAR FROM start_on) = ?", year).first
+      unless @cup.present?
+        year = params[:year] ? params[:year] : Date.current.year
+        @cup = Cup.where("EXTRACT(YEAR FROM start_on) = ?", year).first
+      end
     end
 
     def check_deadline
-      set_cup if @cup.blank?
+      set_cup
       if Time.current > @cup.deadline
         redirect_back_or_default root_path, alert:  t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch')
         return

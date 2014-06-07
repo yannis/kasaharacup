@@ -8,6 +8,7 @@
 #= require select2_locale_fr
 #= require moment
 #= require bootstrap-datetimepicker
+#= require bootstrap-datetimepicker.fr
 #= require moment/fr
 #= require navigation
 #= require_tree ./utilities

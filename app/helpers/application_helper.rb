@@ -10,26 +10,33 @@ module ApplicationHelper
   end
 
   def submit_or_cancel_form(f, text=nil)
-    link = [f.button(text, class: 'btn btn-success')]
+    link = [f.submit(text, class: 'btn btn-success')]
     link << t("form.or")
     link << link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: 'ESC', title: "Cancel #{f.object_name} form", class: "cancel #{request.format == 'application/javascript' ? 'close_div' : ''}")
     link.join(' ').html_safe
   end
 
-  def destroy_link(object, title: "Destroy", remote: false, confirm: nil, classes: "")
-    confirm ||= "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?"
+  def destroy_link(object,
+    text: "<span class='glyphicon glyphicon-trash'></span> Destroy",
+    title: "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "'+object.name+'"' if object.respond_to?(:name)}",
+    remote: false,
+    confirm: "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?",
+    classes: "")
     classes += " btn btn-danger"
-    link_to("<span class='glyphicon glyphicon-trash'></span> #{title}".html_safe, polymorphic_path(object),
-        "data-confirm" => confirm,
+    link_to(text.html_safe,
+        polymorphic_path(object),
+        data: {
+          confirm: confirm
+        },
         method: :delete,
         remote: remote,
-        title: "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "'+object.name+'"' if object.respond_to?(:name)}",
+        title: title,
         class: classes
-      ).html_safe
+    ).html_safe
   end
 
   def edit_link(object, title: "Edit", classes: "")
-    classes += 'btn btn-info'
+    classes += ' btn btn-info'
     link_to( "<span class='glyphicon glyphicon-edit'></span> #{title}".html_safe, polymorphic_path([:edit, object]), title: "Edit #{object.class.to_s.humanize}#{object.respond_to?(:name) ? " #{object.name}" : ''}", class: classes)
   end
 end

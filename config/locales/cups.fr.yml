@@ -9,14 +9,14 @@ fr:
         b: "Le tournoi organisé depuis plus de 15 ans à Genève par le section kendo du <a href='http://sdkbudo.ch'>Shung Do Kwan Budo</a> réunit plus de 150 participants de toute l'Europe. En 2012, la 26 édition a rassemblé des kenshis français, italiens, japonais, autrichiens, anglais, allemands et bien entendu suisses. En 2013, la 27ème Coupe Kasahara aura lieu les 28 et 29 septembre, au stade du Bout-du-Monde, proche du centre ville."
       categories:
         title: Les catégories
-        team: 5 combattants de plus de 16 ans
-        open: plus de 16 ans
-        ladies: plus de 16 ans
-        juniors: 12 à 16 ans
+        # team: 5 combattants de plus de 16 ans
+        # open: plus de 16 ans
+        # ladies: plus de 16 ans
+        # juniors: 12 à 16 ans
       program:
         title: Programme
       fees:
-        title: Tarifs
+        title: Combien ça coûte?
         adults:
           title: Adultes (plus de 16 ans)<br><em>+ lunch du dimanche</em>
           fee: "%{adult_fees_chf} CHF ou %{adult_fees_eur} €"
@@ -47,7 +47,7 @@ fr:
         downloads: Téléchargements
 
       venue:
-        title: Les endroits
+        title: Où est-ce que ça se passe?
         a: "Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}."
         address: Coordonnées
         map_link: Agrandir le plan

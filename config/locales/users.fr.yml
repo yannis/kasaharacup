@@ -1,10 +1,14 @@
 fr:
   users:
-    show:
-      show_self: "Vos données"
-      show: "Compte de %{full_name}"
     index:
       title: Les utilisateurs
+    show:
+      title:
+        show_self: "Vos données"
+        show: "Compte de %{full_name}"
+      register_someone_else: Inscrivez quelqu'un d'autre à la compétition
+      register_yourself: Inscrivez-vous à la compétition
+      your_registrations: Vos inscriptions
     destroy:
       title: Détruire ce compte
       confirm: "Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
@@ -19,6 +23,10 @@ fr:
       button:
         create: Créez le compte
         update: Modifiez le compte
+    resume:
+      kenshis_number: "Vous avez déjà %{number} inscriptions"
+      register_someone_else: "Inscrivez quelqu'un d'autre"
+      details: "Détails"
   activerecord:
     models:
       user: utilisateur
@@ -35,3 +43,4 @@ fr:
         female: Femme
         male: Homme
         club_name: Club
+        fees: "Frais"

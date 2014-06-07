@@ -1,4 +1,5 @@
-- @title = "Edit registration"
+- @title = t(".title", full_name: @kenshi.full_name)
 .row
   .col-xs-12.col-md-12
+    %h1= @title
     = render "form"

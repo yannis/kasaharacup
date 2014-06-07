@@ -1,10 +1,14 @@
 ActiveAdmin.register User do
   index do
+    column :first_name
+    column :last_name
     column :email
+    column :club
+    column :dob
     column :current_sign_in_at
     column :last_sign_in_at
     column :sign_in_count
-    default_actions
+    actions
   end
 
   filter :email

@@ -19,6 +19,8 @@ gem 'rails3-jquery-autocomplete', '~> 1.0.14'
 gem "figaro", github: "laserlemon/figaro"
 gem "asset_sync"
 gem 'gibbon'
+gem 'simple_form', "3.1.0.rc1"
+gem 'country_select'
 
 gem 'activeadmin', github: 'gregbell/active_admin'
 gem 'polyamorous', github: 'activerecord-hackery/polyamorous'
@@ -44,7 +46,6 @@ gem 'airbrake'
 gem "newrelic_rpm"
 
 group :development do
-  gem "spring"
   gem 'spring-commands-rspec'
   gem "capistrano"
   gem 'capistrano-rails', '~> 1.1'
@@ -65,6 +66,7 @@ group :development do
   gem "brakeman", :require => false
   # gem "debugger"
   gem "bullet"
+  gem "spring"
 end
 
 group :test do

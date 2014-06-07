@@ -4,7 +4,7 @@ require 'spec_helper'
 describe KenshisController do
 
   def valid_params
-    {last_name: "a_last_name", first_name: "a_first_name", grade: '1Dan', club: "a_club", cup: cup, dob: 20.years.ago}
+    {last_name: "a_last_name", female: false, first_name: "a_first_name", grade: '1Dan', club: "a_club", cup: cup, dob: 20.years.ago}
   end
 
   before {

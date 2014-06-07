@@ -11,8 +11,8 @@ en:
         name: Name
         dob: 'Date of birth'
         gender: 'Sexe'
-        female: Woman
-        male: Man
+        # female: Woman
+        # male: Man
         categories: Categories
     errors:
       models:
@@ -60,6 +60,8 @@ en:
       oldfashion: or do it the oldfashioned way
       chose_team: Chose an existing team
       create_team: or create a new one
+      categories: "Categories"
+      individual_categories: "Individual categories"
       saturday_night: Saturday night dinner
       dormitory: Dormitory
       ronin_info: "Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team."

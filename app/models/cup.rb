@@ -3,9 +3,14 @@ class Cup < ActiveRecord::Base
   has_many :individual_categories, inverse_of: :cup, dependent: :destroy
   has_many :team_categories, inverse_of: :cup, dependent: :destroy
   has_many :events, inverse_of: :cup, dependent: :destroy
+  has_many :products, inverse_of: :cup, dependent: :destroy
 
   validates_presence_of :start_on
   validates_presence_of :deadline
+  validates_presence_of :adult_fees_chf
+  validates_presence_of :adult_fees_eur
+  validates_presence_of :junior_fees_chf
+  validates_presence_of :junior_fees_eur
   validates_uniqueness_of :start_on
 
   before_validation :set_deadline
@@ -14,8 +19,20 @@ class Cup < ActiveRecord::Base
     year
   end
 
+  def to_s
+    year.to_s
+  end
+
   def year
     start_on.year
+  end
+
+  def junior_fees(currency)
+    currency.to_sym == :chf ? self.junior_fees_chf : self.junior_fees_eur
+  end
+
+  def adult_fees(currency)
+    currency.to_sym == :chf ? self.adult_fees_chf : self.adult_fees_eur
   end
 
   private
