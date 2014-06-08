@@ -1,5 +1,5 @@
 Cup.destroy_all
-cup = Cup.find_or_create_by start_on: "2014-09-27"
+cup = Cup.find_or_create_by start_on: "2014-09-27", adult_fees_chf: 30, adult_fees_eur: 25, junior_fees_chf: 16, junior_fees_eur: 14
 
 Club.destroy_all
 clubs_data = [
@@ -99,8 +99,8 @@ products_data = [
   {
     name_en: "Night at the dormitory",
     name_fr: "Nuit au dortoir",
-    fee_chf: 25,
-    fee_eu: 20
+    fee_chf: 16,
+    fee_eu: 14
   }
 ]
 products_data.each do |e|
