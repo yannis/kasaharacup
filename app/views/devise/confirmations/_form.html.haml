@@ -1,4 +1,4 @@
-= form_for resource, as: resource_name, url: confirmation_path(resource_name), role: "form", html: {class: "form-horizontal", method: :post} do |f|s
+= form_for resource, as: resource_name, url: confirmation_path(resource_name), role: "form", html: {class: "form-horizontal", method: :post} do |f|
   = devise_error_messages!
   .form-group.col-sm-12
     = f.text_field :email, autofocus: true, class: "form-control", placeholder: "Email"
