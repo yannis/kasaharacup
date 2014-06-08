@@ -1,0 +1,13 @@
+/ %nav#navigation.group
+/   %ul
+/     %li
+/       = link_to t('nav.all_infos').html_safe, {controller: 'home', action: 'index'}
+/     %li
+/       = link_to t('nav.enrollments').html_safe, enrollments_path
+/     %li
+/       = link_to t('nav.teams').html_safe, teams_path
+/     %li#lang
+/       - if session[:locale] == 'en'
+/         = link_to_unless session[:locale] == 'fr', 'français' , {:locale => 'fr'}, :id => 'lang'
+/       - else
+/         = link_to_unless session[:locale] == 'en', 'english', {:locale => 'en'}, :id => 'lang'

@@ -1,0 +1,22 @@
+%footer#footer
+  %p
+    = t 'layout.footer.cright'
+    = link_to "Shung Do Kwan Budo", 'http://www.sdkbudo.ch/'
+    – Copyright &copy;
+    = Date.today.year
+  %p
+    = link_to t("layout.footer.media"), "/#{I18n.locale}/media"
+  %p
+    = mail_to 'info@kendo-geneve.ch', 'email', encode: 'hex'
+    / %li= "session['mailing_list']: #{session['mailing_list']}"
+    –
+    = link_to "Newsletter", new_mailing_list_path
+    –
+    = link_to "<i class='icon-twitter'></i>".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon'
+    –
+    = link_to "<i class='icon-facebook-sign'></i>".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon'
+    –
+    = link_to "<i class='icon-flickr'></i>".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon'
+    - if user_signed_in? && current_user.admin?
+      –
+      = link_to "admin", "/admin"
