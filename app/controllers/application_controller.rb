@@ -72,8 +72,11 @@ class ApplicationController < ActionController::Base
 
     def set_cup
       unless @cup.present?
-        year = params[:year] ? params[:year] : Date.current.year
-        @cup = Cup.where("EXTRACT(YEAR FROM start_on) = ?", year).first
+          year = params[:year] ? params[:year] : Date.current.year
+          @cup = Cup.where("EXTRACT(YEAR FROM start_on) = ?", year).first
+          unless @cup.present?
+            raise "Cup is missing!!!"
+          end
       end
     end
 

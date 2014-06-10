@@ -13,7 +13,7 @@ describe KenshisController do
 
   describe "with 3 kenshis in the database," do
 
-    let!(:cup) {create :cup, start_on: Date.current+3.weeks}
+    let!(:cup) {create :cup, start_on: "#{Date.current.year}-11-30"}
     let(:user) {create :user}
     let(:user2) {create :user, admin: true}
     let(:kenshi1) {create :kenshi, last_name: 'kenshi1', user_id: user.to_param, cup: cup}
@@ -68,7 +68,7 @@ describe KenshisController do
 
     describe "when logged in" do
       let(:basic_user){ create :user }
-      let(:basic_user_kenshi){create :kenshi, user_id: basic_user.id}
+      let(:basic_user_kenshi){create :kenshi, user_id: basic_user.id, cup: cup}
       before{ sign_in basic_user }
 
       describe "on GET to :index without param," do
