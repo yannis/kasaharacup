@@ -1,6 +1,6 @@
 ActiveAdmin.register Event do
 
-  # permit_params :year, :start_on, :end_on, :deadline, :adult_fees_chf, :adult_fees_eur, :junior_fees_chf, :junior_fees_eur
+  permit_params :cup, :name_en, :name_fr, :start_on, :duration
 
   # index do
   #   column :year
@@ -14,7 +14,7 @@ ActiveAdmin.register Event do
   #   actions
   # end
 
-  # filter :year
+  filter :name_fr
 
   form do |f|
     f.inputs "Details" do
