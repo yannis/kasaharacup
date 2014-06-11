@@ -1,6 +1,6 @@
 ActiveAdmin.register IndividualCategory do
 
-  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr
+  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr, :cup_id
 
   index do
     column :name do |category|
