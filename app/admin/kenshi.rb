@@ -1,5 +1,7 @@
 ActiveAdmin.register Kenshi do
 
+  permit_params :user, :cup, :last_name, :first_name, :female, :email, :dob, :email, :grade
+
   index do
     column :last_name #do |kenshi|
     #   link_to kenshi.norm_last_name, admin_kenshi_path(kenshi)

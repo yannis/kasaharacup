@@ -1,4 +1,7 @@
 ActiveAdmin.register Team do
+
+  permit_params :name, :cup, :team_category
+
   index do
     column :name
     column :cup do |team|

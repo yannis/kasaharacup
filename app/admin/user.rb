@@ -1,4 +1,7 @@
 ActiveAdmin.register User do
+
+  permit_params :first_name, :last_name, :email, :club, :dob
+
   index do
     column :first_name
     column :last_name
