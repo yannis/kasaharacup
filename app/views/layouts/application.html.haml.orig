@@ -1,0 +1,47 @@
+!!! 5
+%html
+  %head
+    = airbrake_javascript_notifier
+    %meta{charset: "UTF-8"}
+    %title= yield :title
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1.0"}
+    %meta{"http-equiv"=>"Content-Type", :content=>"text/html; charset=utf-8"}/
+    %meta{name: "author", content: "Yannis Jaquet"}/
+    %meta{name: "robots", content: "all"}
+    %meta{name: 'description', content: "Kasa cup"}
+    = csrf_meta_tag
+    = stylesheet_link_tag 'application', media: nil, rel: "stylesheet"
+    /[if IE]
+      = javascript_include_tag 'js/html5shiv.js'
+    = favicon_link_tag
+  %body
+    #wrap
+      .container-fluid
+        = render "layouts/navigation"
+        = render "layouts/flash"
+        = yield
+      #push-footer
+    = render "layouts/footer"
+    :javascript
+      (function(d) {
+        var config = {
+          kitId: '#{ ENV['TYPEKIT_API_KEY'] }',
+          scriptTimeout: 3000
+        },
+        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+      })(document)
+    :javascript
+      (function(doc) {
+        window.App = {
+          locale: '#{I18n.locale}'
+        }
+      })(document)
+    = javascript_include_tag 'application'
+<<<<<<< HEAD
+    :javascript
+      var _gaq=[['_setAccount','#{ ENV['GOOGLE_ACCOUNT_ID'] }'],['_trackPageview']];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g,s)}(document,'script'));
+=======
+>>>>>>> 6dfa6219557148f8d55ce2861b2b10cbfbdd0cd8
