@@ -71,7 +71,7 @@ class User < ActiveRecord::Base
   end
 
   def register_to_mailing_list
-    MAILINGLIST.lists.subscribe({id: ENV["MAILCHIMP_LIST_ID"], email: {email: self.email}, merge_vars: {:FNAME => self.first_name, :LNAME => self.last_name}, double_optin: false}) unless ["test", "development"].include?(Rails.env)
+    MAILINGLIST.lists.subscribe({id: ENV["MAILCHIMP_LIST_ID"], email: {email: self.email}, merge_vars: {:FNAME => self.first_name, :LNAME => self.last_name}, double_optin: false}) unless ["test"].include?(Rails.env)
   end
 
   # def self.find_for_twitter_oauth(auth, signed_in_resource=nil)

@@ -55,13 +55,13 @@ group :development do
   gem 'guard-spring'
   gem 'guard-rspec', require: false
   gem 'guard-bundler'
-  gem 'rb-inotify', require: false
-  gem 'rb-fsevent', require: false
-  gem 'rb-fchange', require: false
+  # gem 'rb-inotify', require: false
+  # gem 'rb-fsevent', require: false
+  # gem 'rb-fchange', require: false
   gem 'quiet_assets'
   # gem "better_errors"
   gem "binding_of_caller"
-  gem "rspec-rails"
+  gem "rspec-rails", "2.14.2"
   gem "rails_best_practices"
   gem "brakeman", :require => false
   # gem "debugger"
