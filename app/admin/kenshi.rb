@@ -1,6 +1,6 @@
 ActiveAdmin.register Kenshi do
 
-  permit_params :user, :cup, :last_name, :first_name, :female, :email, :dob, :email, :grade
+  permit_params :user, :cup, :last_name, :first_name, :female, :email, :dob, :email, :grade, :club_id
 
   index do
     column :last_name #do |kenshi|

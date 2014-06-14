@@ -32,11 +32,22 @@ describe Kenshi do
   it {should act_as_fighter}
 
   describe "A kenshi" do
-    let(:kenshi){create :kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, dob: 20.years.ago}
+    let(:cup){create :cup, start_on: "#{Date.current.year}-12-29"}
+    let(:club){create :club, name: "Shung Do Kwan"}
+    let(:kenshi){create :kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, club: club, dob: 20.years.ago, cup: cup}
     it {expect(kenshi).to be_valid_verbose}
     it {expect(kenshi.full_name).to eq "Yannis Jaquet"}
-
     it { expect(kenshi).to be_adult }
+    it { expect(kenshi.age_at_cup).to eq 20 }
+    it { expect(kenshi.club_name).to eq "Shung Do Kwan" }
+
+    context "updated as junior" do
+      before {
+        kenshi.update_attributes dob: 12.years.ago
+      }
+      it { expect(kenshi).to be_junior }
+      it { expect(kenshi.age_at_cup).to eq 12 }
+    end
   end
 
   describe "Updating a kenshi with participations data" do
@@ -50,6 +61,7 @@ describe Kenshi do
       }
       it {expect(kenshi.participations.count).to eql 2}
       it {expect(kenshi.participations.map{|p| p.category.name}).to match_array [individual_category.name, team_category.name]}
+      it {expect(kenshi.takes_part_to?(individual_category)).to be_true}
       it {expect(kenshi.competition_fee(:chf)).to eql 30}
       it {expect(kenshi.competition_fee(:eur)).to eql 25}
       it { expect(kenshi).to be_adult}
@@ -68,6 +80,7 @@ describe Kenshi do
         it {expect(kenshi.products_fee(:eur)).to eql 8}
         it {expect(kenshi.fees(:chf)).to eql 40}
         it {expect(kenshi.fees(:eur)).to eql 33}
+        it {expect(kenshi.purchased?(product)).to be_true}
       end
 
       context "and deleting the team participation" do
