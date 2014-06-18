@@ -51,3 +51,11 @@ fr:
         a: "Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}."
         address: Coordonnées
         map_link: Agrandir le plan
+
+      accomodation:
+        title: Logement
+        dormitory: "Comme chaque année, vous pourrez dormir au dortoir des Charmettes (réservation lors de l'inscription)."
+        hotels: "Si vous préfèrez quelque chose de plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir."
+      contact:
+        title: Contact
+        text: "Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre."

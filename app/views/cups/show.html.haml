@@ -31,11 +31,11 @@
         %tbody
           - @cup.individual_categories.each do |c|
             %tr
-              %th= c.name
+              %th= c.name.capitalize
               %td= c.description
           - @cup.team_categories.each do |c|
             %tr
-              %th= c.name
+              %th= c.name.capitalize
               %td= c.description
     #fees.col-xs-12.col-md-6
       %h2= t '.fees.title'
@@ -69,6 +69,14 @@
           GPS: 46.180588,6.155893
     .col-xs-12.col-md-6.venue-map
       = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
+  .row.accomodation_contact
+    .col-xs-12.col-md-6.venue
+      %h2= t '.accomodation.title'
+      %p= t '.accomodation.dormitory'
+      %p=raw t '.accomodation.hotels'
+    .col-xs-12.col-md-6.contact
+      %h2= t '.contact.title'
+      %p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
 
 
 
