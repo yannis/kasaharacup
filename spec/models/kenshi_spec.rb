@@ -40,6 +40,7 @@ describe Kenshi do
     it { expect(kenshi).to be_adult }
     it { expect(kenshi.age_at_cup).to eq 20 }
     it { expect(kenshi.club_name).to eq "Shung Do Kwan" }
+    it { expect(kenshi.poster_name).to eq "JAQUET" }
 
     context "updated as junior" do
       before {

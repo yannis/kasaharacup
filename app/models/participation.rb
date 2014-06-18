@@ -12,9 +12,13 @@ class Participation < ActiveRecord::Base
   validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
   validates_numericality_of :pool_number, only_integer: true, greater_than: 0, allow_nil: true
 
-  delegate :full_name, to: 'kenshi', :allow_nil => true
-  delegate :grade, to: 'kenshi', :allow_nil => true
-  delegate :club, to: 'kenshi', :allow_nil => true
+  delegate :full_name, to: 'kenshi', allow_nil: true
+  delegate :grade, to: 'kenshi', allow_nil: true
+  delegate :club, to: 'kenshi', allow_nil: true
+
+  def self.no_pool
+    self.where(pool_number: nil)
+  end
 
   # def self.set_for_user(user, attributes)
   #   id = attributes.fetch :id, nil

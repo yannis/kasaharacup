@@ -117,4 +117,11 @@ class Kenshi < ActiveRecord::Base
     currency = currency.to_sym
     self.competition_fee(currency)+self.products_fee(currency)
   end
+
+
+  def poster_name
+    poster_name = [last_name]
+    poster_name << first_name.split(/[\s|-]/).map{|s| s.first+'.'}.join if Kenshi.where(last_name: last_name).count > 1
+    poster_name.join(' ').mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').upcase.to_s
+  end
 end

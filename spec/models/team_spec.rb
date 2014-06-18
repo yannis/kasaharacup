@@ -13,7 +13,8 @@ describe Team do
     it {expect(team).to be_valid_verbose}
     it {expect(team.name_and_status).to eql "SDK"}
     it {expect(team.name_and_category).to eql "SDK (team_cat)"}
-    it {expect(team.category_and_name).to eql "team_cat (SDK)"}
+    it {expect(team.name_and_category).to eql "SDK (team_cat)"}
+    it {expect(team.poster_name).to eql "SDK"}
     it {expect(Team.empty.to_a).to include(team)}
     it {expect(Team.empty.to_a).to eq [team]}
 

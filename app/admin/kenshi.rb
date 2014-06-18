@@ -29,30 +29,32 @@ ActiveAdmin.register Kenshi do
     # column 'PDF' do |kenshi|
     #   link_to "PDF", pdf_admin_kenshi_path(kenshi)
     # end
-    actions
+    actions do |kenshi|
+      link_to "PDF", pdf_admin_kenshi_path(kenshi)
+    end
   end
 
-  # action_item only: :show do
-  #   link_to "PDF", pdf_admin_kenshi_path(kenshi)
-  # end
+  action_item only: :show do
+    link_to "PDF", pdf_admin_kenshi_path(kenshi)
+  end
 
   # action_item only: :show do
   #   link_to "Receipt", receipt_admin_kenshi_path(kenshi)
   # end
 
-  # action_item only: :index do
-  #   link_to("PDF", pdfs_admin_kenshis_path)
-  # end
+  action_item only: :index do
+    link_to("PDF", pdfs_admin_kenshis_path)
+  end
 
-  # member_action :pdf do
-  #   @kenshi = Kenshi.find params[:id]
-  #   pdf = KenshiPdf.new(@kenshi)
-  #   send_data pdf.render, filename: @kenshi.full_name.parameterize('_'),
-  #                         type: "application/pdf",
-  #                         disposition: "inline",
-  #                         page_size: 'A4'
+  member_action :pdf do
+    @kenshi = Kenshi.find params[:id]
+    pdf = KenshiPdf.new(@kenshi)
+    send_data pdf.render, filename: @kenshi.full_name.parameterize('_'),
+                          type: "application/pdf",
+                          disposition: "inline",
+                          page_size: 'A4'
 
-  # end
+  end
 
   # member_action :receipt do
   #   @kenshi = Kenshi.find params[:id]
@@ -64,12 +66,12 @@ ActiveAdmin.register Kenshi do
 
   # end
 
-  # collection_action :pdfs do
-  #   @kenshis = Kenshi.order(:last_name)
-  #   pdf = KenshisPdf.new(@kenshis)
-  #   send_data pdf.render, filename: "kenshis",
-  #                         type: "application/pdf",
-  #                         disposition: "inline",
-  #                         page_size: 'A4'
-  # end
+  collection_action :pdfs do
+    @kenshis = Kenshi.order(:last_name)
+    pdf = KenshisPdf.new(@kenshis)
+    send_data pdf.render, filename: "kenshis",
+                          type: "application/pdf",
+                          disposition: "inline",
+                          page_size: 'A4'
+  end
 end
