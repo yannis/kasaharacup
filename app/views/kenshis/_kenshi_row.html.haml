@@ -10,7 +10,7 @@
   %td= kenshi.norm_club
   %td= kenshi.grade
   %td
-    = kenshi.participations.map{|p| p.category.name }.join("; ")
+    = kenshi.participations.map{|p| p.category ? p.category.name : kenshi.full_name }.compact.join("; ")
   - if current_user_admin_or_owner?(kenshi)
     %td= kenshi.user.full_name
     %td=raw kenshi_admin_links(kenshi)

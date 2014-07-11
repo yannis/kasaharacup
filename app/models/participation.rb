@@ -8,6 +8,7 @@ class Participation < ActiveRecord::Base
   # validates_presence_of :category_id
   # validates :kenshi_id, presence: true, uniqueness: {scope: :category_id}
   # validates_presence_of :kenshi_id
+  validates :category, presence: true
   validates_presence_of :pool_position, if: lambda{|p| p.pool_number.present?}
   validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
   validates_numericality_of :pool_number, only_integer: true, greater_than: 0, allow_nil: true
