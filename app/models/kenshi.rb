@@ -29,6 +29,7 @@ class Kenshi < ActiveRecord::Base
   validates_inclusion_of :female, in: [true, false]
 
   accepts_nested_attributes_for :participations, allow_destroy: true
+  accepts_nested_attributes_for :purchases, allow_destroy: true
 
   def self.from(user)
     self.new(
@@ -71,7 +72,6 @@ class Kenshi < ActiveRecord::Base
   end
 
   def individual_category_ids=(ids)
-    Rails.logger.debug "INDIVIDUAL_CATEGORY_IDS: #{ids}"
     ids.each do |id|
       self.participations.new category: IndividualCategory.find(id)
     end

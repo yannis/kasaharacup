@@ -1,46 +1,51 @@
 ActiveAdmin.register Kenshi do
 
-  permit_params :user, :cup, :last_name, :first_name, :female, :email, :dob, :email, :grade, :club_id
+  permit_params :id, :user, :cup_id, :last_name, :first_name, :female, :email, :dob, :email, :grade, :club_id, :user_id, purchases_attributes: [:_destroy, :product_id, :id], participations_attributes: [:id, :category_individual, :category_team, :_destroy]
 
   index do
-    column :last_name #do |kenshi|
-    #   link_to kenshi.norm_last_name, admin_kenshi_path(kenshi)
-    # end
-    column :first_name #do |kenshi|
-    #   link_to kenshi.norm_first_name, admin_kenshi_path(kenshi)
-    # end
+    column :last_name
+    column :first_name
     column :email
     column :categories do |kenshi|
       (kenshi.individual_categories.map{|c| link_to(c.name, [:admin, c])}+kenshi.teams.map{|t| "#{link_to(t.name, [:admin, t])} (#{link_to(t.team_category.name, [:admin, t.team_category])})"}).join(', ').html_safe
     end
-    # column :norm_club
-    # column :grade
-    # column :ronin
-    # column :open
-    # column :ladies
-    # column :juniors
-    # column :female
-    # column :absent
-    # # column :created_at
     column :user do |kenshi|
       "#{kenshi.user.full_name} (#{kenshi.user.email})"
     end
-    # column :updated_at
-    # column 'PDF' do |kenshi|
-    #   link_to "PDF", pdf_admin_kenshi_path(kenshi)
-    # end
     actions do |kenshi|
       link_to "PDF", pdf_admin_kenshi_path(kenshi)
     end
   end
 
+   form do |f|
+    f.inputs "Kenshi details" do
+      f.input :user
+      f.input :club
+      f.input :first_name
+      f.input :last_name
+      f.input :email
+      f.input :dob, as: :datepicker
+    end
+    f.inputs "Participations" do
+      f.has_many :participations do |j|
+        j.input :category_individual, collection: IndividualCategory.all
+        j.input :category_team, collection: TeamCategory.all
+        j.input :_destroy, as: :boolean
+      end
+    end
+    f.inputs "Purchases" do
+      f.has_many :purchases do |j|
+        j.input :product
+        j.input :_destroy, as: :boolean
+      end
+    end
+
+    f.actions
+  end
+
   action_item only: :show do
     link_to "PDF", pdf_admin_kenshi_path(kenshi)
   end
-
-  # action_item only: :show do
-  #   link_to "Receipt", receipt_admin_kenshi_path(kenshi)
-  # end
 
   action_item only: :index do
     link_to("PDF", pdfs_admin_kenshis_path)

@@ -1,6 +1,7 @@
 require 'acts_as_fighter'
 class Participation < ActiveRecord::Base
   acts_as_fighter
+  attr_accessor :category_individual, :category_team
   belongs_to :category, inverse_of: :participations, polymorphic: true, autosave: true
   belongs_to :kenshi, inverse_of: :participations
   belongs_to :team
@@ -8,6 +9,8 @@ class Participation < ActiveRecord::Base
   # validates_presence_of :category_id
   # validates :kenshi_id, presence: true, uniqueness: {scope: :category_id}
   # validates_presence_of :kenshi_id
+  before_validation :assign_category
+
   validates :category, presence: true
   validates_presence_of :pool_position, if: lambda{|p| p.pool_number.present?}
   validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
@@ -19,6 +22,14 @@ class Participation < ActiveRecord::Base
 
   def self.no_pool
     self.where(pool_number: nil)
+  end
+
+  def category_individual
+    self.category.id if self.category.is_a?(IndividualCategory)
+  end
+
+  def category_team
+    self.category.id if self.category.is_a?(TeamCategory)
   end
 
   # def self.set_for_user(user, attributes)
@@ -72,4 +83,17 @@ class Participation < ActiveRecord::Base
   #   full_name.join(" ")
   # end
 
+  protected
+
+  def assign_category
+    if @category_individual.present? && @category_team.present?
+      errors.add(:category, "can't have both an individual and a team category")
+    end
+    if @category_individual.present?
+      self.category = IndividualCategory.find(@category_individual)
+    end
+    if @category_team.present?
+      self.category = TeamCategory.find(@category_team)
+    end
+  end
 end

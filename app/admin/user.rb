@@ -17,8 +17,12 @@ ActiveAdmin.register User do
   filter :email
 
   form do |f|
-    f.inputs "Admin Details" do
+    f.inputs "User details" do
+      f.input :first_name
+      f.input :last_name
       f.input :email
+      f.input :club
+      f.input :dob, as: :datepicker
       f.input :password
       f.input :password_confirmation
     end
