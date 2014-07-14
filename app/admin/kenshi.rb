@@ -18,13 +18,17 @@ ActiveAdmin.register Kenshi do
   end
 
    form do |f|
+    f.object.errors
     f.inputs "Kenshi details" do
+      f.input :cup
       f.input :user
       f.input :club
+      f.input :female
       f.input :first_name
       f.input :last_name
       f.input :email
       f.input :dob, as: :datepicker
+      f.input :grade, collection: Kenshi::GRADES
     end
     f.inputs "Participations" do
       f.has_many :participations do |j|

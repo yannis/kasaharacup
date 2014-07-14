@@ -31,6 +31,8 @@ class Kenshi < ActiveRecord::Base
   accepts_nested_attributes_for :participations, allow_destroy: true
   accepts_nested_attributes_for :purchases, allow_destroy: true
 
+  after_validation :logs
+
   def self.from(user)
     self.new(
       first_name: user.first_name,
@@ -123,5 +125,9 @@ class Kenshi < ActiveRecord::Base
     poster_name = [last_name]
     poster_name << first_name.split(/[\s|-]/).map{|s| s.first+'.'}.join if Kenshi.where(last_name: last_name).count > 1
     poster_name.join(' ').mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').upcase.to_s
+  end
+
+  def logs
+    Rails.logger.debug "errors: #{self.errors.inspect}"
   end
 end
