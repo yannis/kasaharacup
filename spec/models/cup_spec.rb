@@ -4,6 +4,7 @@ describe Cup do
   it {should have_many(:individual_categories).dependent(:destroy)}
   it {should have_many(:team_categories).dependent(:destroy)}
   it {should have_many(:events).dependent :destroy}
+  it {should have_many(:headlines).dependent :destroy}
   it {should have_many(:kenshis).dependent :destroy}
   it {should have_many(:products).dependent :destroy}
   it {should respond_to(:start_on)}

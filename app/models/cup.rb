@@ -3,6 +3,7 @@ class Cup < ActiveRecord::Base
   has_many :individual_categories, inverse_of: :cup, dependent: :destroy
   has_many :team_categories, inverse_of: :cup, dependent: :destroy
   has_many :events, inverse_of: :cup, dependent: :destroy
+  has_many :headlines, inverse_of: :cup, dependent: :destroy
   has_many :products, inverse_of: :cup, dependent: :destroy
 
   validates_presence_of :start_on

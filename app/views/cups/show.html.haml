@@ -8,6 +8,7 @@
   .row#program
     .col-xs-12.col-md-12
       %h2= t '.program.title'
+
     - @grouped_events.each do |date, events|
       .col-xs-12.col-md-6
         %table.table
@@ -37,6 +38,7 @@
             %tr
               %th= c.name.capitalize
               %td= c.description
+
     #fees.col-xs-12.col-md-6
       %h2= t '.fees.title'
       %table.table
@@ -78,10 +80,16 @@
       %h2= t '.contact.title'
       %p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
 
-
-
 .col-xs-12.col-md-4
   = render "current_user_resume"
+
+  - if @headlines.present?
+    .panel.panel-default.headlines
+      .panel-heading
+        %h2= t 'headlines.title'
+      .panel-body
+        = render @headlines
+
   .panel.panel-default.competition
     .panel-heading
       %h2= t '.tournament.title'
