@@ -39,5 +39,9 @@ module Kasaharacup
     config.assets.paths << "#{Rails.root}/vendor/assets/stylesheets"
     config.assets.paths << Rails.root.join('vendor', 'assets')
 
+    config.action_dispatch.default_headers = {
+      'Access-Control-Allow-Origin' => '*'
+    }
+
   end
 end
