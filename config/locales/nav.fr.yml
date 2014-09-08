@@ -9,6 +9,9 @@ fr:
     kenshis:
       text: "Inscrits (%{kenshis})"
       title: Tous les kenshis inscrits
+    headlines:
+      text: "News"
+      title: Les dernières nouvelles
     register:
       text: Inscriptions
       title: Inscrivez-vous à la compétition

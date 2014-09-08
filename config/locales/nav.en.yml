@@ -9,6 +9,9 @@ en:
     kenshis:
       text: "Kenshis (%{kenshis})"
       title: Already registered kenshis
+    headlines:
+      text: "Headlines"
+      title: Latest news
     register:
       text: Register
       title: Register to the competition

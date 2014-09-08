@@ -1,3 +1,6 @@
 fr:
   headlines: #views
-    title: Dernières nouvelles
+    title: Dernière nouvelle
+    link: Toutes les nouvelles
+    index:
+      title: Les nouvelles

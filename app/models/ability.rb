@@ -6,6 +6,7 @@ class Ability
     user ||= User.new
     can :read, Kenshi
     can :read, Team
+    can :read, Headline
     # can :create, 'mailing_list'
     can :manage, 'mailing_list'
     if user.persisted?

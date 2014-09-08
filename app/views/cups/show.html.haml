@@ -90,12 +90,18 @@
 .col-xs-12.col-md-4
   = render "current_user_resume"
 
-  - if @headlines.present?
+  - if @headline.present?
     .panel.panel-default.headlines
       .panel-heading
         %h2= t 'headlines.title'
       .panel-body
-        = render @headlines
+        %h4
+          = @headline.title
+          %small
+            = @headline.created_at.to_s :day_month_year
+        =raw @headline.content
+      .panel-footer
+        = link_to t('headlines.link'), headlines_path
 
   .panel.panel-default.competition
     .panel-heading

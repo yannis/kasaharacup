@@ -16,6 +16,8 @@
           = link_to t("navigation.kenshis.text", kenshis: @cup.kenshis.count), kenshis_path, title: t("navigation.kenshis.title").html_safe,  data: {toggle: "tooltip", placement: "bottom"}, class: "bs-tooltip"
         %li
           = link_to t("navigation.teams.text"), teams_path, title: t("navigation.teams.title").html_safe,  data: {toggle: "tooltip", placement: "bottom"}, class: "bs-tooltip"
+        %li
+          = link_to t("navigation.headlines.text"), headlines_path, title: t("navigation.headlines.title").html_safe,  data: {toggle: "tooltip", placement: "bottom"}, class: "bs-tooltip"
       .navbar-form.navbar-left
         - if user_signed_in?
           = link_to "<span class='glyphicon glyphicon-plus'></span> #{t("navigation.register.text")}".html_safe, user_path(current_user), title: t("navigation.register.title").html_safe,  data: {toggle: "tooltip", placement: "bottom"}, class: "bs-tooltip btn btn-info navbar-btn"
