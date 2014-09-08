@@ -1,9 +1,16 @@
 .col-xs-12.col-md-8
-  .row#banner.page-header
+  .row
     .col-xs-12.col-md-12
-      %h1
-        = t 'layout.header.title'
-        %small= t 'layout.header.title_em'
+      .row
+        .col-xs-12.col-md-4
+          - if I18n.locale.to_s == "en"
+            = image_tag("150_E-J_S_CMYK.jpg", alt: "150 year of diplomatic relations between Switzerland and Japan")
+          - else
+            = image_tag("150_F-J_S_CYMK.jpg", alt: "150 ans de relations diplomatiques entre la Suisse et le Japon")
+        .col-xs-12.col-md-8#banner.page-header
+          %h1
+            = t 'layout.header.title'
+            %small= t 'layout.header.title_em'
 
   .row#program
     .col-xs-12.col-md-12
