@@ -11,6 +11,9 @@
           %h1
             = t 'layout.header.title'
             %small= t 'layout.header.title_em'
+  .row#deadline
+    .col-xs-12.col-md-12.alert.alert-warning
+      =raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))
 
   .row#program
     .col-xs-12.col-md-12

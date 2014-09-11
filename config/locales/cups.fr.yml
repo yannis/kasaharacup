@@ -13,6 +13,7 @@ fr:
         # open: plus de 16 ans
         # ladies: plus de 16 ans
         # juniors: 12 à 16 ans
+      deadline: "<strong>Attention:</strong> Le délai pour les inscriptions est fixé au %{deadline}"
       program:
         title: Programme
       fees:
