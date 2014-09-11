@@ -13,4 +13,8 @@ class Headline < ActiveRecord::Base
   def self.shown
     where(shown: true)
   end
+
+  def to_param
+    "#{id}-#{title.parameterize}"
+  end
 end

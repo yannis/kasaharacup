@@ -8,6 +8,9 @@
           %h4
             = headline.title
             %br
-            %small= headline.created_at.to_s :day_month_year
+            %small
+              = headline.created_at.to_s :day_month_year
+              |
+              = link_to "Permalink", headline
         .col-xs-12.col-md-8
           =raw headline.content

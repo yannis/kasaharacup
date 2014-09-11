@@ -80,7 +80,7 @@ class Kenshi < ActiveRecord::Base
   end
 
   def full_name
-    "#{first_name} #{last_name}"
+    "#{norm_first_name} #{norm_last_name}"
   end
 
   def norm_first_name

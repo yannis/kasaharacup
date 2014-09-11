@@ -27,6 +27,16 @@ describe HeadlinesController do
         it {flash.should be_empty}
       end
 
+      describe "when GET to :show for headline1.id," do
+        before :each do
+          get :show, id: headline1.to_param
+        end
+
+        it {response.should be_success}
+        it {assigns(:headline).should == headline1}
+        it {response.should render_template(:show)}
+        it {flash.should be_empty}
+      end
     end
 
     describe "when logged in as basic" do
@@ -42,6 +52,17 @@ describe HeadlinesController do
         it {assigns(:headlines).should_not be_nil}
         it {response.should render_template(:index)}
         it {assigns(:headlines).should =~ [headline1, headline2, headline3]}
+        it {flash.should be_empty}
+      end
+
+      describe "when GET to :show for headline1.id," do
+        before :each do
+          get :show, id: headline1.to_param
+        end
+
+        it {response.should be_success}
+        it {assigns(:headline).should == headline1}
+        it {response.should render_template(:show)}
         it {flash.should be_empty}
       end
     end

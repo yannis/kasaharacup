@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     scope "(:locale)", locale: /fr|en/ do |locale|
 
       resources :cups, only: :show
-      resources :headlines, only: :index
+      resources :headlines, only: [:index, :show]
       resources :kenshis do
         # collection do
         #   match 'category/:category/', :to => :index

@@ -19,8 +19,9 @@ end
 
 describe "An headline shown and a not shown" do
   let(:cup){create :cup}
-  let!(:headline_shown){create :headline, cup: cup, shown: true}
+  let!(:headline_shown){create :headline, title_fr: "un titre", title_en: "a title", cup: cup, shown: true}
   let!(:headline_not_shown){create :headline, cup: cup, shown: false}
 
   it{expect(Headline.shown.to_a).to eql [headline_shown]}
+  it{expect(headline_shown.to_param).to eql "#{headline_shown.id}-a-title"}
 end

@@ -1,0 +1,7 @@
+- @title ||= @headline.title; title @title
+.row.headlines
+  .col-xs-12.col-md-12
+    %h2
+      = @title
+      %small= @headline.created_at.to_s :day_month_year
+    =raw @headline.content
