@@ -14,10 +14,33 @@ end
 
 describe "A participation" do
   context "without team_id an individual_category_id" do
-    # it {expect{create :participation, category: nil}.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Category can't be blank")}
     context "when an individual_category_id is set" do
       let(:participation) {build :participation, category: mock_model(IndividualCategory)}
       it {expect(participation).to be_valid_verbose }
+    end
+  end
+
+  context "for a kenshi" do
+    let(:cup) { create :cup, start_on: 2.months.since }
+    let(:individual_category) { create :individual_category, min_age: 8, max_age: 10, cup: cup }
+
+    context "too young for the category", focus: true do
+      let(:kenshi) { create :kenshi, dob: 6.years.ago.to_date, cup: cup }
+      let(:participation) { build :participation, kenshi: kenshi, category: individual_category }
+      it {
+        participation.valid?
+        expect(participation.errors[:category_id]).to eql ["Too young!"]
+      }
+    end
+
+    context "too old for the category", focus: true do
+      let(:kenshi) { create :kenshi, dob: 14.years.ago.to_date, cup: cup }
+      let(:participation) { build :participation, kenshi: kenshi, category: individual_category }
+
+      it {
+        participation.valid?
+        expect(participation.errors[:category_id]).to eql ["Too old!"]
+      }
     end
   end
 end

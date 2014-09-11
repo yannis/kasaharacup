@@ -9,6 +9,8 @@ ActiveAdmin.register IndividualCategory do
     column :description
     column :pool_size
     column :out_of_pool
+    column :min_age
+    column :max_age
     column :kenshi_count do |c|
       c.participations.count
     end

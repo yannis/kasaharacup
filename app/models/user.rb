@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   validates :first_name, presence: true
 
   before_validation :format
-  after_save :register_to_mailing_list
+  # after_save :register_to_mailing_list
 
   def self.find_for_facebook_oauth(auth, signed_in_resource=nil)
     user = User.where(provider: auth.provider, uid: auth.uid).first

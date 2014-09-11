@@ -16,6 +16,20 @@ class Participation < ActiveRecord::Base
   validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
   validates_numericality_of :pool_number, only_integer: true, greater_than: 0, allow_nil: true
 
+  validates_each :category_id do |record, attr, value|
+    kenshi = record.kenshi
+    category = record.category
+
+    age = kenshi.age_at_cup
+
+    if category.min_age && age < category.min_age
+      record.errors.add attr, 'Too young!'
+    end
+    if category.max_age && age > category.max_age
+      record.errors.add attr, 'Too old!'
+    end
+  end
+
   delegate :full_name, to: 'kenshi', allow_nil: true
   delegate :grade, to: 'kenshi', allow_nil: true
   delegate :club, to: 'kenshi', allow_nil: true
