@@ -24,22 +24,22 @@ describe "A participation" do
     let(:cup) { create :cup, start_on: 2.months.since }
     let(:individual_category) { create :individual_category, min_age: 8, max_age: 10, cup: cup }
 
-    context "too young for the category", focus: true do
+    context "too young for the category" do
       let(:kenshi) { create :kenshi, dob: 6.years.ago.to_date, cup: cup }
       let(:participation) { build :participation, kenshi: kenshi, category: individual_category }
       it {
         participation.valid?
-        expect(participation.errors[:category_id]).to eql ["Too young!"]
+        expect(participation.errors[:category]).to eql ["Sorry, you're too young to participate to the #{individual_category.name} category!"]
       }
     end
 
-    context "too old for the category", focus: true do
+    context "too old for the category" do
       let(:kenshi) { create :kenshi, dob: 14.years.ago.to_date, cup: cup }
       let(:participation) { build :participation, kenshi: kenshi, category: individual_category }
 
       it {
         participation.valid?
-        expect(participation.errors[:category_id]).to eql ["Too old!"]
+        expect(participation.errors[:category]).to eql ["Sorry, you're too old to participate to the #{individual_category.name} category!"]
       }
     end
   end

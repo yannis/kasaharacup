@@ -57,9 +57,16 @@ describe Kenshi do
     let(:team_category) {create :team_category, cup: kenshi.cup}
 
     context "creating a team and an individual participations" do
-      before {
+      before(:each) {
         kenshi.update_attributes individual_category_ids: [individual_category.id], participations_attributes: {"0" => {category_type: "TeamCategory", category_id: team_category.id, team_name: "sdk1"}}
       }
+
+      it {
+        kenshi.participations.each do |participation|
+          expect(participation).to be_valid_verbose
+        end
+      }
+
       it {expect(kenshi.participations.count).to eql 2}
       it {expect(kenshi.participations.map{|p| p.category.name}).to match_array [individual_category.name, team_category.name]}
       it {expect(kenshi.takes_part_to?(individual_category)).to be_true}
@@ -74,8 +81,11 @@ describe Kenshi do
         let(:product){create :product, cup: kenshi.cup}
         before {
           kenshi.update_attributes product_ids: [product.id]
-          kenshi.reload
+          # kenshi.reload
         }
+
+        it {expect(kenshi).to be_valid_verbose}
+
         it {expect(kenshi.products.count).to eq 1}
         it {expect(kenshi.products_fee(:chf)).to eql 10}
         it {expect(kenshi.products_fee(:eur)).to eql 8}

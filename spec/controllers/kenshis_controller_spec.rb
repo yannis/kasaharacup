@@ -113,12 +113,12 @@ describe KenshisController do
         before :each do
           get :new
         end
-        it{response.should redirect_to new_user_kenshi_path(basic_user)}
+        it {response.should redirect_to new_user_kenshi_path(basic_user)}
       end
 
       describe "when POST to :create with valid data," do
         before :each do
-          post :create, kenshi: valid_params
+          post :create, kenshi: valid_params, user_id: basic_user.to_param
         end
 
         it {assigns(:kenshi).should be_an_instance_of Kenshi}
@@ -130,10 +130,12 @@ describe KenshisController do
 
       describe "when POST to :create with invalid data," do
         before :each do
-          post :create, kenshi: {last_name: ""}
+          post :create, kenshi: {last_name: ""}, user_id: basic_user.to_param
         end
 
         it {assigns(:kenshi).should_not be_nil}
+        it {assigns(:kenshi).should be_an_instance_of Kenshi}
+        it {assigns(:kenshi).should_not be_valid_verbose}
         it {response.should render_template(:new)}
         it {flash.now[:alert].should =~ /Kenshi not registered/}
       end

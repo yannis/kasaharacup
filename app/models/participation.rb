@@ -2,18 +2,17 @@ require 'acts_as_fighter'
 class Participation < ActiveRecord::Base
   acts_as_fighter
   attr_accessor :category_individual, :category_team
-  belongs_to :category, inverse_of: :participations, polymorphic: true, autosave: true
+  belongs_to :category, polymorphic: true, autosave: true
   belongs_to :kenshi, inverse_of: :participations
   belongs_to :team
 
-  validates_presence_of :category_id
-  validates :kenshi_id, presence: true, uniqueness: {scope: :category_id}
-  # validates_presence_of :kenshi_id
   before_validation :assign_category
 
+  validates :kenshi, presence: true
   validates :category, presence: true
+
   validates_presence_of :pool_position, if: lambda{|p| p.pool_number.present?}
-  validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
+  validates_uniqueness_of :kenshi_id, scope: [:category_type, :category_id], if: lambda{|p| p.ronin.blank?}, allow_nil: true
   validates_numericality_of :pool_number, only_integer: true, greater_than: 0, allow_nil: true
 
   validates_each :category do |record, attr, value|
