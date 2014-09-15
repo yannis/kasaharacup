@@ -1,2 +1,6 @@
 en:
-  hello: "Hello world"
+  errors:
+    template: &errors_template
+      header:
+        one:   "1 error prohibited this %{model} from being saved"
+        other:   "%{count} errors prohibited this %{model} from being saved"

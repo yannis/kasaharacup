@@ -8,7 +8,7 @@ class Kenshi < ActiveRecord::Base
   belongs_to :cup, inverse_of: :kenshis
   belongs_to :user, inverse_of: :kenshis
   belongs_to :club, inverse_of: :kenshis
-  has_many :participations, dependent: :destroy, autosave: true
+  has_many :participations, inverse_of: :kenshi, dependent: :destroy, autosave: true
   # has_many :categories, through: :participations, source: :category
 
   has_many :individual_categories, through: :participations, source: :category, source_type: "IndividualCategory"
@@ -16,6 +16,8 @@ class Kenshi < ActiveRecord::Base
   has_many :teams, through: :participations
   has_many :purchases, dependent: :destroy, autosave: true
   has_many :products, through: :purchases
+
+  validates_associated :participations
 
   validates_presence_of :cup_id
   validates_presence_of :user_id
@@ -53,6 +55,7 @@ class Kenshi < ActiveRecord::Base
   end
 
   def age_at_cup
+    return 0 if dob.blank?
     cup_start = cup.start_on
     cup_start.year - dob.year - ((cup_start.month > dob.month || (cup_start.month == dob.month && cup_start.day >= dob.day)) ? 0 : 1)
   end

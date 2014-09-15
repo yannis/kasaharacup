@@ -1,4 +1,14 @@
 fr:
+  activerecord:
+    errors:
+      models:
+        participation:
+          attributes:
+            category:
+              too_young: "Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!"
+              too_old: "Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!"
+
+
   participations:
     destroy:
       title: Détruire

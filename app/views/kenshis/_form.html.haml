@@ -1,5 +1,5 @@
 = simple_form_for [@user, @kenshi], url: polymorphic_path([@user, @kenshi]), html: { class: 'form-horizontal' }, wrapper: :horizontal_form, wrapper_mappings: {check_boxes: :horizontal_radio_and_checkboxes, radio_buttons: :horizontal_radio_and_checkboxes, file: :horizontal_file_input, boolean: :horizontal_boolean} do |f|
-  = f.error_notification
+  = render 'layouts/error_messages', target: f.object
   = f.input :female, label: "Genre", as: :radio_buttons, collection: [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]]
   = f.input :first_name
   = f.input :last_name, label: t('activerecord.attributes.kenshi.last_name')
@@ -29,22 +29,32 @@
               = hidden_field_tag "#{g.object_name}[team_name]", p.team.try(:name), class: "col-sm-12", data: {behaviour: 'select2', options: c.teams.all.map{|c| {id: c.name, text: c.name}}}
               %br/
               %p.help-block= t '.team_info'
+              - if p.errors.present?
+                %p.errors= p.errors.full_messages.to_sentence
     - if @cup.individual_categories.present?
       %h4= t("kenshis.form.individual_categories")
     - @cup.individual_categories.all.each do |c|
-      .form-group
-        .col-sm-10.col-sm-offset-2
-          - if @kenshi.takes_part_to?(c)
-            - p = @kenshi.participations.detect{|p| p.category == c}
-            = f.fields_for :participations, p do |g|
-              = g.label :_destroy, c.name
-              = g.hidden_field :id
-              = hidden_field_tag "#{g.object_name}[_destroy]", 1
-              = check_box_tag "#{g.object_name}[_destroy]", 0, true
-          - else
+      - if @kenshi.takes_part_to?(c)
+        - p = @kenshi.participations.detect{|p| p.category == c}
+        = f.fields_for :participations, p do |g|
+          %div{class: "form-group #{p.errors.present? ? "has-error" : ""}"}
+            .col-sm-10.col-sm-offset-2
+              - if p.persisted?
+                = g.label :_destroy, c.name
+                = g.hidden_field :id
+                = hidden_field_tag "#{g.object_name}[_destroy]", 1
+                = check_box_tag "#{g.object_name}[_destroy]", 0, true
+              - else
+                = label_tag "kenshi_individual_categories_#{c.id}", c.name
+                = check_box_tag "kenshi[individual_category_ids][]", c.id, @kenshi.takes_part_to?(c), id: "kenshi_individual_categories_#{c.id}"
+              - if p.errors.present?
+                %p.help-block= p.errors.full_messages_for(:category).to_sentence
+
+      - else
+        .form-group
+          .col-sm-10.col-sm-offset-2
             = label_tag "kenshi_individual_categories_#{c.id}", c.name
             = check_box_tag "kenshi[individual_category_ids][]", c.id, false, id: "kenshi_individual_categories_#{c.id}"
-
   = field_set_tag "Extra" do
     - @cup.products.all.each do |p|
       .form-group

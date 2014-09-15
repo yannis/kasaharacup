@@ -19,6 +19,7 @@ ActiveAdmin.register Kenshi do
 
    form do |f|
     f.object.errors
+    f.semantic_errors *f.object.errors.keys
     f.inputs "Kenshi details" do
       f.input :cup
       f.input :user

@@ -6,8 +6,8 @@ class Participation < ActiveRecord::Base
   belongs_to :kenshi, inverse_of: :participations
   belongs_to :team
 
-  # validates_presence_of :category_id
-  # validates :kenshi_id, presence: true, uniqueness: {scope: :category_id}
+  validates_presence_of :category_id
+  validates :kenshi_id, presence: true, uniqueness: {scope: :category_id}
   # validates_presence_of :kenshi_id
   before_validation :assign_category
 
@@ -16,17 +16,18 @@ class Participation < ActiveRecord::Base
   validates_uniqueness_of :category_id, scope: :kenshi_id, if: lambda{|p| p.ronin.blank?}
   validates_numericality_of :pool_number, only_integer: true, greater_than: 0, allow_nil: true
 
-  validates_each :category_id do |record, attr, value|
+  validates_each :category do |record, attr, value|
     kenshi = record.kenshi
     category = record.category
 
+    # if kenshi && category
     age = kenshi.age_at_cup
 
     if category.min_age && age < category.min_age
-      record.errors.add attr, 'Too young!'
+      record.errors.add(attr, :too_young, name: category.name)
     end
     if category.max_age && age > category.max_age
-      record.errors.add attr, 'Too old!'
+      record.errors.add(attr, :too_old, name: category.name)
     end
   end
 

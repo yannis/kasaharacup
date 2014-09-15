@@ -103,7 +103,43 @@ class KenshisController < ApplicationController
         }
       end
     else
-      # @kenshi.team_name = @team_name
+
+      if @user.blank? || (@user != current_user && !current_user.admin?)
+        redirect_to new_user_kenshi_path(current_user, locale: I18n.locale)
+        return
+      end
+      if @user == current_user && params[:self] == 'true'
+        existing_kenshis = current_user.kenshis.where(first_name: current_user.
+          first_name, last_name: current_user.last_name)
+        if existing_kenshis.present?
+          redirect_to kenshi_path(existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
+          return
+        else
+          @kenshi = Kenshi.from(current_user)
+          @title = t('kenshis.new.yourself')
+        end
+      elsif params[:id]
+        origin_kenshi = Kenshi.find(params[:id])
+        @kenshi = origin_kenshi.dup
+        @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
+        @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)
+        origin_kenshi.participations.each do |participation|
+          @kenshi.participations << Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
+        end
+      else
+        @kenshi.club = @user.club if @user.present?
+        @title = t('kenshis.new.title')
+      end
+      @kenshi.female = false if @kenshi.female.nil?
+      # @cup.team_categories.each do |cat|
+      #   @kenshi.participations.build category: cat
+      # end
+      # @cup.individual_categories.each do |cat|
+      #   @kenshi.participations.build category: cat
+      # end
+      # @participations_to_teams = @kenshi.participations.select{|p| p.category.is_a? TeamCategory}
+      # @participations_to_ind = @kenshi.participations.select{|p| p.category.is_a? IndividualCategory}
+
       respond_with @kenshi do |format|
         flash.now[:alert] = 'Kenshi not registered'
         format.html { render :new }
@@ -128,8 +164,9 @@ class KenshisController < ApplicationController
       end
     else
       @title = t('kenshis.edit.title', full_name: @kenshi.full_name)
+      @kenshi.valid?
       respond_with @kenshi do |format|
-        flash.now[:alert] = 'Kenshi not updated'
+        flash.now[:alert] = "Kenshi not updated: #{@kenshi.errors.full_messages.to_sentence}"
         format.html { render :edit }
         format.js{
           @origin = params[:origin]

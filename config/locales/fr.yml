@@ -212,6 +212,9 @@ fr:
       long: "%A %d %B %Y %H:%M"
       short: "%d %b %H:%M"
     pm: 'pm'
+  form:
+    or: ou
+    cancel: "annulation"
   # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
   activemodel:
     errors:
