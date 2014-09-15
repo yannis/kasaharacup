@@ -1,0 +1,11 @@
+en:
+<<<<<<< HEAD
+  errors:
+    template: &errors_template
+      header:
+        one:   "1 error prohibited this %{model} from being saved"
+        other:   "%{count} errors prohibited this %{model} from being saved"
+=======
+  hello: "Hello world"
+
+>>>>>>> master

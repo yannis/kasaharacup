@@ -13,6 +13,7 @@ fr:
         # open: plus de 16 ans
         # ladies: plus de 16 ans
         # juniors: 12 à 16 ans
+      deadline: "<strong>Attention:</strong> Le délai pour les inscriptions est fixé au %{deadline}"
       program:
         title: Programme
       fees:
@@ -21,7 +22,7 @@ fr:
           title: Adultes (plus de 16 ans)<br><em>+ lunch du dimanche</em>
           fee: "%{adult_fees_chf} CHF ou %{adult_fees_eur} €"
         juniors:
-          title: Juniors (12 à 16 ans)<br><em>+ lunch du dimanche</em>
+          title: Juniors (8 à 16 ans)<br><em>+ lunch du dimanche</em>
           fee: "%{junior_fees_chf} CHF ou %{junior_fees_eur} €"
         night:
           title: Nuit au dortoir<br><em>+ petit-déjeuner (avec votre sac de couchage)</em>
