@@ -25,3 +25,4 @@ config/database.yml
 db/seeds.rb
 db/seed_files/*
 
+.env
