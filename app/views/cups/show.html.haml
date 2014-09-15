@@ -43,11 +43,27 @@
           - @cup.individual_categories.each do |c|
             %tr
               %th= c.name.capitalize
-              %td= c.description
+              %td
+                - if c.min_age
+                  = c.max_age ? t("categories.from") : t("categories.dès")
+                  = c.min_age
+                - if c.max_age
+                  = t("categories.to")
+                  = c.max_age
+                = t("categories.yo")
+
           - @cup.team_categories.each do |c|
             %tr
               %th= c.name.capitalize
-              %td= c.description
+              %td
+                = "#{c.description},"
+                - if c.min_age
+                  = c.max_age ? t("categories.from") : t("categories.dès")
+                  = c.min_age
+                - if c.max_age
+                  = t("categories.to")
+                  = c.max_age
+                = t("categories.yo")
 
     #fees.col-xs-12.col-md-6
       %h2= t '.fees.title'
