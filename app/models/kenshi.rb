@@ -76,6 +76,10 @@ class Kenshi < ActiveRecord::Base
     self.participations.map(&:category).include? category
   end
 
+  def consume?(product)
+    self.purchases.map(&:product).include? product
+  end
+
   def individual_category_ids=(ids)
     ids.each do |id|
       self.participations.new category: IndividualCategory.find(id)

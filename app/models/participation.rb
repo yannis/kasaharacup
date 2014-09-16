@@ -38,6 +38,10 @@ class Participation < ActiveRecord::Base
     self.where(pool_number: nil)
   end
 
+  def self.to(category)
+    self.where(category: category)
+  end
+
   def category_individual
     self.category.id if self.category.is_a?(IndividualCategory)
   end

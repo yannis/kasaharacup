@@ -3,6 +3,7 @@ ActiveAdmin.register Kenshi do
   permit_params :id, :user, :cup_id, :last_name, :first_name, :female, :email, :dob, :email, :grade, :club_id, :user_id, purchases_attributes: [:_destroy, :product_id, :id], participations_attributes: [:id, :category_individual, :category_team, :_destroy]
 
   index do
+    column :cup
     column :last_name
     column :first_name
     column :email
