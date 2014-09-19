@@ -20,6 +20,16 @@ describe "A participation" do
     end
   end
 
+  context "with ronin and team_category_id" do
+    let(:cup) {create :cup}
+    let(:kenshi) {create :kenshi, cup: cup}
+    let(:team_category) {create :team_category, cup: cup}
+    let!(:participation) {create :participation, category: team_category, ronin: true, kenshi: kenshi}
+
+    it {expect(participation).to be_valid_verbose }
+    it {expect(Participation.ronins.to_a).to eql [participation] }
+  end
+
   context "for a kenshi" do
     let(:cup) { create :cup, start_on: 2.months.since }
     let(:individual_category) { create :individual_category, min_age: 8, max_age: 10, cup: cup }

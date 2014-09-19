@@ -42,6 +42,10 @@ class Participation < ActiveRecord::Base
     self.where(category: category)
   end
 
+  def self.ronins
+    self.where(ronin: true)
+  end
+
   def category_individual
     self.category.id if self.category.is_a?(IndividualCategory)
   end

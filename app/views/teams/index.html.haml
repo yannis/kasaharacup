@@ -6,3 +6,7 @@
       = render "table_head"
       - @teams.each do |team|
         = render partial: "team_row", locals: {team: team}
+      - if @ronins.present?
+        %tr
+          %td Ronins
+          %td{colspan: 2}=raw @ronins.map{|kenshi| link_to kenshi.full_name, kenshi_path(kenshi) }.join(', ')

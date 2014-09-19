@@ -3,6 +3,7 @@ class TeamsController < ApplicationController
   respond_to :html
 
   def index
+    @ronins = Participation.ronins
     respond_with @teams
   end
 
