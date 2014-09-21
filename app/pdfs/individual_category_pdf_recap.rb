@@ -40,7 +40,7 @@ class IndividualCategoryPdfRecap < Prawn::Document
         bounding_box [bounds.left+80, top+20], width: 450 do
           data = []
           pool.participations.map(&:kenshi).each_with_index do |kenshi, i|
-            data << [i+1, "#{kenshi.poster_name} (#{kenshi.club_name})"]
+            data << [i+1, "#{kenshi.poster_name} (#{kenshi.club})"]
           end
           table(data, cell_style: { inline_format: true, size: 12 }, width: 450) do
             column(0).width = 30

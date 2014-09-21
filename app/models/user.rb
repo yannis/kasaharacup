@@ -30,12 +30,12 @@ class User < ActiveRecord::Base
     return user
   end
 
-  def club_name
-    club.try(:name)
-  end
-
   def club_name=(club_name)
     self.club = Club.find_or_initialize_by name: club_name
+  end
+
+  def club_name
+    club.try(:name)
   end
 
   def full_name

@@ -4,8 +4,6 @@ describe HeadlinesController do
 
   let!(:cup){create :cup, start_on: Date.current+20.days}
 
-  VALID_PARAMS = {:title => "a headline title"}
-
   describe "with 3 headlines in the database," do
     let(:user) {create :user}
     let(:user2) {create :user, :admin => true}

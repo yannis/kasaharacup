@@ -21,7 +21,7 @@ class Kenshi < ActiveRecord::Base
 
   validates_presence_of :cup_id
   validates_presence_of :user_id
-  # validates_presence_of :club_id
+  validates_presence_of :club
   validates_presence_of :first_name
   validates_presence_of :last_name
   validates_presence_of :grade
@@ -51,7 +51,15 @@ class Kenshi < ActiveRecord::Base
   end
 
   def club_name=(club_name)
-    self.club = Club.find_or_initialize_by name: club_name
+    if club_name.blank?
+      self.club = nil
+    else
+      self.club = Club.find_or_initialize_by name: club_name
+    end
+  end
+
+  def club_name
+    club.try(:name)
   end
 
   def age_at_cup
@@ -66,10 +74,6 @@ class Kenshi < ActiveRecord::Base
 
   def adult?
     !junior?
-  end
-
-  def club_name
-    club.try(:name)
   end
 
   def takes_part_to?(category)

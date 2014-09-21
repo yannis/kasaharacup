@@ -5,8 +5,6 @@ describe TeamsController do
 
   let!(:cup){create :cup, start_on: Date.current+2.days}
 
-  VALID_PARAMS = {:name => "a team name"}
-
   describe "with 3 teams in the database," do
     let(:user) {create :user}
     let(:user2) {create :user, :admin => true}

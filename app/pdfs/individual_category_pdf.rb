@@ -26,7 +26,7 @@ class IndividualCategoryPdf < Prawn::Document
         bounding_box [bounds.left, bounds.top-500], width: 500 do
           font_size 24
           for kenshi in pool.participations.map(&:kenshi)
-            text "#{kenshi.full_name} (#{kenshi.club_name})", align: :center
+            text "#{kenshi.full_name} (#{kenshi.club.name})", align: :center
           end
         end
       end
@@ -41,7 +41,7 @@ class IndividualCategoryPdf < Prawn::Document
           end
           bounding_box [bounds.left+10, bounds.top-500], width: 700 do
             font_size 36
-            text kenshi.club_name, align: :right
+            text kenshi.club.name, align: :right
           end
         end
       end

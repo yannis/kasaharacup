@@ -4,15 +4,15 @@
   = f.input :first_name
   = f.input :last_name, label: t('activerecord.attributes.kenshi.last_name')
   = f.input :dob, label: t('activerecord.attributes.kenshi.dob'), placeholder: t('layout.form.date_placeholder'), as: :date_picker
-  = f.input :club_name, label: 'Club', as: :select2, input_html: {data: {options: Club.all.map{|c| {id: c.name, text: c.name}}}}
+  = f.input :club_name, label: 'Club', as: :select2, input_html: {data: {options: Club.all.map{|c| {id: c.name, text: c.name}}}}, required: true
   = f.input :grade, as: :select, collection: Kenshi::GRADES, prompt: "Please select"
   = field_set_tag t("kenshis.form.categories") do
     - @cup.team_categories.all.each do |c|
       - participation = f.object.participations.detect{|p| p.category == c}
       - if participation.blank?
-        - p = Participation.new(category: c); pid = p.object_id
+        - p = Participation.new(category: c);
       - else
-        - p = participation; pid = p.id
+        - p = participation;
       = f.fields_for :participations, p do |g|
         .form-group
           %h4= g.label :team_name, c.name.capitalize, class: "col-sm-2"

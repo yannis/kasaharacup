@@ -22,7 +22,7 @@ describe Kenshi do
   it {should validate_presence_of :first_name}
   it {should validate_presence_of :last_name}
   it {should validate_presence_of :dob}
-  # it {should validate_presence_of :club_id}
+  it {should validate_presence_of :club}
   it {should validate_presence_of :grade}
   it {should validate_uniqueness_of(:last_name).scoped_to(:first_name)}
 
@@ -39,7 +39,7 @@ describe Kenshi do
     it {expect(kenshi.full_name).to eq "Yannis Jaquet"}
     it { expect(kenshi).to be_adult }
     it { expect(kenshi.age_at_cup).to eq 20 }
-    it { expect(kenshi.club_name).to eq "Shung Do Kwan" }
+    it { expect(kenshi.club.name).to eq "Shung Do Kwan" }
     it { expect(kenshi.poster_name).to eq "JAQUET" }
 
     context "updated as junior" do

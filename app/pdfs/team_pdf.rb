@@ -17,7 +17,7 @@ class TeamPdf < Prawn::Document
     bounding_box [bounds.left, bounds.top-500], :width => 500 do
       font_size 24
       for kenshi in team.kenshis
-        text "#{kenshi.full_name} (#{kenshi.club_name})", align: :left
+        text "#{kenshi.full_name} (#{kenshi.club})", align: :left
       end
     end
 

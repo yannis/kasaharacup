@@ -21,7 +21,7 @@
           %td= @user.email
         %tr
           %th= User.human_attribute_name :club
-          %td= @user.club_name if @user.club
+          %td= @user.club if @user.club
           / # %td= mail_to(@user.email, 'Email', encode: 'hex', class: 'email')
         %tr
           %th
