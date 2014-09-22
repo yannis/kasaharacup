@@ -123,7 +123,7 @@ ActiveAdmin.register Cup do
       end
     end
 
-    send_data csv, type: 'text/csv; charset=utf-8; header=present', disposition: "attachment; filename=kenshis_list_#{@cup.year}.csv"
+    send_data csv, type: 'text/csv', disposition: "attachment; filename=kenshis_list_#{@cup.year}.csv"
 
   end
 

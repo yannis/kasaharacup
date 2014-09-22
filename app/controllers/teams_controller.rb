@@ -4,6 +4,7 @@ class TeamsController < ApplicationController
 
   def index
     @ronins = Participation.ronins
+    @teams = @teams.order(:name)
     respond_with @teams
   end
 
