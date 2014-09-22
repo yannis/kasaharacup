@@ -102,7 +102,7 @@ ActiveAdmin.register Cup do
   member_action :download_kenshi_list, method: :get do
     @cup = Cup.all.detect{|c| c.year.to_i == params[:id].to_i}
     kenshis = @cup.kenshis
-    csv = CSV.generate( encoding: 'Windows-1251' ) do |csv|
+    csv = CSV.generate do |csv|
       header = ["Last name", "First name", "Club", "Dob", "Grade"]
       [@cup.team_categories, @cup.individual_categories, @cup.products].flatten.each do |tc|
         header << tc.name
@@ -123,7 +123,7 @@ ActiveAdmin.register Cup do
       end
     end
 
-    send_data csv, type: 'text/csv', disposition: "attachment; filename=kenshis_list_#{@cup.year}.csv"
+    send_data csv, type: 'text/csv; charset=utf-8; header=present', disposition: "attachment; filename=cup_#{@cup.year}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
 
   end
 
