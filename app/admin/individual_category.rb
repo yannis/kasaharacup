@@ -45,8 +45,12 @@ ActiveAdmin.register IndividualCategory do
               end
               column :grade
               column :club
+              column :age do |participation|
+                participation.kenshi.age_at_cup
+              end
               column :admin_links do  |participation|
-                link_to "Move to another pool", edit_admin_participation_path(participation)
+                # link_to "Move to another pool", edit_admin_participation_path(participation)
+                [link_to("View", admin_participation_path(participation)), link_to("Edit", edit_admin_participation_path(participation)), link_to("Destroy", admin_participation_path(participation, method: :delete))].join(" ").html_safe
               end
             end
           rescue
@@ -72,8 +76,12 @@ ActiveAdmin.register IndividualCategory do
           end
           column :grade
           column :club
+          column :age do |participation|
+            participation.kenshi.age_at_cup
+          end
           column :admin_links do |participation|
-            link_to "Move to another pool", edit_admin_participation_path(participation)
+            # link_to "Move to another pool", edit_admin_participation_path(participation)
+            [link_to("View", admin_participation_path(participation)), link_to("Edit", edit_admin_participation_path(participation)), link_to("Destroy", admin_participation_path(participation), method: :delete, confirm: "Are you extra sure?")].join(" ").html_safe
           end
         end
       end
@@ -125,9 +133,6 @@ ActiveAdmin.register IndividualCategory do
                           disposition: "inline",
                           page_size: 'A4'
   end
-  action_item only: :show do
-    link_to("Match sheet", pool_sheets_admin_individual_category_path(individual_category))
-  end
 
   member_action :sheet do
     @category = IndividualCategory.find params[:id]
@@ -137,7 +142,28 @@ ActiveAdmin.register IndividualCategory do
                           disposition: "inline",
                           page_size: 'A4'
   end
+
   action_item only: :show do
-    link_to "Pool match sheets", sheet_admin_individual_category_path(individual_category)
+    [link_to("Pool match sheet", pool_sheets_admin_individual_category_path(individual_category)),
+        link_to("Match sheets", sheet_admin_individual_category_path(individual_category))].join(" ").html_safe
+  end
+
+  member_action :download_kenshi_list, method: :get do
+    @individual_category = IndividualCategory.find params[:id]
+    kenshis = @individual_category.kenshis
+    csv = CSV.generate do |csv|
+      header = ["Last name", "First name", "Club", "Dob", "Grade"]
+      csv << header.flatten
+      kenshis.each do |kenshi|
+        kcsv = [ kenshi.norm_last_name, kenshi.norm_first_name, kenshi.club.name, kenshi.dob, kenshi.grade ]
+        csv << kcsv.flatten
+      end
+    end
+
+    send_data csv, type: 'text/csv; charset=utf-8; header=present', disposition: "attachment; filename=individual_category_#{@individual_category.name.parameterize}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
+  end
+
+  action_item only: :show do
+    link_to('Kenshis list', params.merge(action: :download_kenshi_list))
   end
 end

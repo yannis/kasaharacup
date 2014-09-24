@@ -67,8 +67,10 @@
               = hidden_field_tag "#{g.object_name}[_destroy]", 1
               = check_box_tag "#{g.object_name}[_destroy]", 0, true
           - else
-            = label_tag "kenshi_product_#{p.id}", p.name
-            = check_box_tag "kenshi[product_ids][]", p.id, false, id: "kenshi_product_#{p.id}"
+            - purchase = @kenshi.purchases.new(product: p)
+            = f.fields_for :purchases, purchase do |g|
+              = g.label :product_id, p.name
+              = check_box_tag "#{g.object_name}[product_id]", p.id
 
   .actions
     = submit_or_cancel_form(f, f.object.new_record? ? t(".button.create") : t(".button.update"))

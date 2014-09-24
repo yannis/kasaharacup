@@ -66,7 +66,7 @@ en:
       dormitory: Dormitory
       ronin_info: "Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team."
       team_info: "Chose your team here or create a new one by entering its name here."
-      button_info: "You'll be able to modify thi registration until %{deadline}."
+      button_info: "You'll be able to modify this registration until %{deadline}."
     create:
       flash:
         notice: Kenshi successfully registered

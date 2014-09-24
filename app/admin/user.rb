@@ -14,7 +14,40 @@ ActiveAdmin.register User do
     actions
   end
 
+  filter :first_name
+  filter :last_name
   filter :email
+
+  show do |user|
+    attributes_table do
+      row :last_name
+      row :first_name
+      row :email
+      row :club
+      row :dob
+    end
+
+    if user.kenshis.present?
+      panel "Kenshis" do
+        table_for user.kenshis.order(:last_name, :first_name) do |kenshi|
+          column :full_name do |k|
+            link_to k.full_name, [:admin, k]
+          end
+          column :email
+          column :club
+          # column :categories do
+          #   (kenshi.individual_categories.map{|c| link_to(c.name, [:admin, c])}+kenshi.teams.map{|t| "#{link_to(t.name, [:admin, t])} (#{link_to(t.team_category.name, [:admin, t.team_category])})"}).join(', ').html_safe
+          # end
+          # column :users do |kenshi|
+          #   kenshi.users.map{|c| link_to(c.name, [:admin, c])}.join(', ').html_safe
+          # end
+          column :user do |kenshi|
+            "#{kenshi.user.full_name} (#{kenshi.user.email})"
+          end
+        end
+      end
+    end
+  end
 
   form do |f|
     f.inputs "User details" do

@@ -218,6 +218,6 @@ class KenshisController < ApplicationController
     end
 
     def my_sanitizer
-      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade, :club_name, individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy], product_ids: [])
+      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade, :club_name, purchases_attributes: [:id, :product_id, :_destroy], individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy], product_ids: [])
     end
 end
