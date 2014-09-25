@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @title = (@user == current_user ? t("users.show.title.show_self") : t("users.show.title.show"))
+    @title = (@user == current_user ? t("users.show.title.show_self") : t("users.show.title.show", full_name: @user.full_name))
     respond_with @user
   end
 
@@ -70,7 +70,7 @@ class UsersController < ApplicationController
         if current_user.admin?
           params.require(:user).permit!
         else
-          params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :new_club_name)
+          params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :grade, :club_name)
         end
       end
     end

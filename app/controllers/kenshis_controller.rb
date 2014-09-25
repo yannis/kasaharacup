@@ -39,6 +39,7 @@ class KenshisController < ApplicationController
   end
 
   def show
+    @title = "Kenshi “#{@kenshi.full_name}”"
     respond_with @kenshi
   end
 
