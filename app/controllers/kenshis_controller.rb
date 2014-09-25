@@ -206,11 +206,7 @@ class KenshisController < ApplicationController
 
   private
     def set_user
-      # begin
-        @user = User.find params[:user_id] if params[:user_id]
-      # rescue ActiveRecord::RecordNotFound
-      #   'do nothing'
-      # end
+      @user = User.find params[:user_id] if params[:user_id]
     end
 
     def set_variables

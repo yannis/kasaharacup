@@ -7,6 +7,7 @@ ActiveAdmin.register Kenshi do
     column :last_name
     column :first_name
     column :email
+    column :grade
     column :categories do |kenshi|
       (kenshi.individual_categories.map{|c| link_to(c.name, [:admin, c])}+kenshi.teams.map{|t| "#{link_to(t.name, [:admin, t])} (#{link_to(t.team_category.name, [:admin, t.team_category])})"}).join(', ').html_safe
     end
