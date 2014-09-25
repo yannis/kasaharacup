@@ -3,4 +3,4 @@
     - addclass = "danger alert-danger" if key.to_s == "alert"
     - addclass = "success alert-success" if key.to_s == "notice"
     %div{title: key.to_s.humanize, class: ["#{key} alert alert-#{key}", addclass].compact.join(" ") }
-      = value
+      =raw value

@@ -13,7 +13,10 @@
             %small= t 'layout.header.title_em'
   .row#deadline
     .col-xs-12.col-md-12.alert.alert-warning
-      =raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))
+      - if Time.current > @cup.deadline
+        =raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
+      - else
+        =raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))
 
   .row#program
     .col-xs-12.col-md-12

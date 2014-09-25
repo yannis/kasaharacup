@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
 
     def check_deadline
       set_cup
-      if Time.current > @cup.deadline
+      if !current_user.admin? && Time.current > @cup.deadline
         redirect_back_or_default root_path, alert:  t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch')
         return
       end
