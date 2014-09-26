@@ -3,7 +3,7 @@ class TeamsController < ApplicationController
   respond_to :html
 
   def index
-    @ronins = Participation.ronins
+    @ronins = Participation.ronins.map(&:kenshi)
     @teams = @teams.order(:name)
     respond_with @teams
   end
