@@ -4,7 +4,7 @@ class Pool
 
   def initialize(data={})
     @number = data.fetch(:number, nil)
-    @participations = [data.fetch(:participations, nil)].flatten.uniq.compact
+    @participations = [data.fetch(:participations, nil)].flatten.uniq.compact.sort_by(&:pool_position)
   end
 
   def contains_high_rank?
@@ -17,7 +17,7 @@ class Pool
 
   def to_csv
     data = [number]
-    for participation in participations
+    participations.each do |participations|
       data << "#{participation.kenshi.full_name} (#{participation.kenshi.club})"
     end
     return data

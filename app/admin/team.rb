@@ -17,6 +17,15 @@ ActiveAdmin.register Team do
     column :valid do |team|
       team.isvalid?
     end
+    column :total_grade do |team|
+      team.kenshis.map{|k| k.grade.to_i}.sum
+    end
+    column :total_age do |team|
+      team.kenshis.map{|k| k.age_at_cup.to_i}.sum
+    end
+    column :fitness do |team|
+      team.kenshis.map{|k| k.age_at_cup.to_i}.sum/team.kenshis.map{|k| k.grade.to_i}.sum
+    end
     actions do |team|
       [
         link_to( "PDF", pdf_admin_team_path(team))

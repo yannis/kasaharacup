@@ -38,7 +38,7 @@ ActiveAdmin.register IndividualCategory do
           h2 do
             "Pool #{pool.number}"
           end
-          begin
+          # begin
             table_for pool.participations do |participation|
               column :full_name do |participation|
                 link_to participation.full_name, admin_kenshi_path(participation.kenshi) if participation.kenshi
@@ -53,9 +53,9 @@ ActiveAdmin.register IndividualCategory do
                 [link_to("View", admin_participation_path(participation)), link_to("Edit", edit_admin_participation_path(participation)), link_to("Destroy", admin_participation_path(participation, method: :delete))].join(" ").html_safe
               end
             end
-          rescue
-            "Pool invalid"
-          end
+          # rescue
+          #   "Pool invalid"
+          # end
         end
       end
 
