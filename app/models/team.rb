@@ -54,6 +54,14 @@ class Team < ActiveRecord::Base
     participations.count >= 5
   end
 
+  def incomplete?
+    !complete?
+  end
+
+  def isvalid?
+    participations.count > 2
+  end
+
   def name_and_status
     name_and_status = [name]
     name_and_status << "(complete)" if complete?

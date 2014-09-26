@@ -11,12 +11,21 @@ ActiveAdmin.register Team do
     column :members do |team|
       team.kenshis.map{|k| link_to( k.full_name, [:admin, k])}.join(', ').html_safe
     end
+    column :complete do |team|
+      team.complete?
+    end
+    column :valid do |team|
+      team.isvalid?
+    end
     actions do |team|
       [
         link_to( "PDF", pdf_admin_team_path(team))
       ].join(" ").html_safe
     end
   end
+
+  filter :name
+  filter :team_category
 
   show do |team|
     attributes_table do

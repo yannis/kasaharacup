@@ -4,8 +4,8 @@
     %h2= @title
     %table.table.teams-table.table-condensed
       = render "table_head"
-      - @teams.each do |team|
-        = render partial: "team_row", locals: {team: team}
+      - @teams.each_with_index do |team, i|
+        = render partial: "team_row", locals: {team: team, index: i+1}
       - if @ronins.present?
         %tr
           %td Ronins
