@@ -1,0 +1,71 @@
+fr:
+  cups:
+    show:
+      tournament:
+        title: La compétition
+        a: |
+          La coupe Kasahara est un tournoi international de kendo organisé chaque année depuis 1984 en l'honneur de <strong>Kasahara Toshiaki sensei</strong>, le premier Secrétaire de la ZNKR (Zen Nippon Kendo Renmei) et de l'IKF (International Kendo Federation). Kasahara sensei a joué un rôle crucial dans le dévelopement du kendo en Suisse.
+          <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4ème Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
+        b: "Le tournoi organisé depuis plus de 15 ans à Genève par le section kendo du <a href='http://sdkbudo.ch'>Shung Do Kwan Budo</a> réunit plus de 150 participants de toute l'Europe. En 2013, la 27ème édition a rassemblé des kenshis français, italiens, japonais, autrichiens, anglais, allemands et bien entendu suisses. En 2014, la 28ème Coupe Kasahara aura lieu les 27 et 28 septembre, au stade du Bout-du-Monde, proche du centre ville."
+      categories:
+        title: Les catégories
+        # team: 5 combattants de plus de 16 ans
+        # open: plus de 16 ans
+        # ladies: plus de 16 ans
+        # juniors: 12 à 16 ans
+      deadline: "<strong>Attention:</strong> Le délai pour les inscriptions est fixé au %{deadline}"
+      deadline_passed: "<strong>Attention:</strong> Les inscriptions sont fermée depuis le %{deadline}"
+      program:
+        title: Programme
+      fees:
+        title: Combien ça coûte?
+        adults:
+          title: Adultes (plus de 16 ans)<br><em>+ lunch du dimanche</em>
+          fee: "%{adult_fees_chf} CHF ou %{adult_fees_eur} €"
+        juniors:
+          title: Juniors (8 à 16 ans)<br><em>+ lunch du dimanche</em>
+          fee: "%{junior_fees_chf} CHF ou %{junior_fees_eur} €"
+        night:
+          title: Nuit au dortoir<br><em>+ petit-déjeuner (avec votre sac de couchage)</em>
+          fee: "%{dormitory_fees_chf} CHF ou %{dormitory_fees_eur} €"
+        dinner:
+          title: Repas du samedi soir<br><em>+ une boisson comprise</em>
+          fee: "%{dinner_fees_chf} CHF ou %{dinner_fees_eur} €"
+      newsletter:
+        register: "Inscrivez-vous pour recevoir toutes les informations concernant la compétition"
+        email: Adresse email
+        button: Abonnez-vous
+      enrollments:
+        all: "Voir les %{number} inscriptions"
+      social:
+        title: Retrouvez-nous sur
+      love:
+        title: Partagez votre passion (pour nous ;-)
+      results:
+        title: Résultats
+        team: Résultats de la catégorie Team
+        open: Résultats de la catégorie Open
+        ladies: Résultats de la catégorie Ladies
+        juniors: Résultats de la catégorie Juniors
+        downloads: Téléchargements
+
+      venue:
+        title: Où est-ce que ça se passe?
+        a: "Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}."
+        address: Coordonnées
+        map_link: Agrandir le plan
+
+      accomodation:
+        title: Logement
+        dormitory: "Comme chaque année, vous pourrez dormir au dortoir des Charmettes (réservation lors de l'inscription)."
+        hotels: "Si vous préfèrez quelque chose de plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir."
+      contact:
+        title: Contact
+        text: "Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre."
+
+      over: "Le tournoi est terminé! Merci à tous les participants et à l'année prochaine! (29-30 septembre 2015)"
+<<<<<<< HEAD
+      other_links: "Autres liens"
+=======
+    other_links: "Autres liens"
+>>>>>>> ba6c1b97411a911ec1506092528f73531866bb3f
