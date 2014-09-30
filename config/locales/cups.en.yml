@@ -45,6 +45,7 @@ en:
       love:
         title: Share your love
       results:
+        title: Results
         team: Team results
         open: Open results
         ladies: Ladies results
@@ -65,3 +66,5 @@ en:
       contact:
         title: Contact
         text: "Contact us at %{mail} if you have any questions. We're looking forward to answer to you…"
+      over: "The tournament is over! Thanks to all for participating and see you next year! (September 29-30, 2015)"
+    other_links: "Other links"
