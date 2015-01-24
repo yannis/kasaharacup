@@ -1,8 +1,8 @@
 fr:
   layout:
     header:
-      title: Coupe Kasahara 2014
-      title_em: "27-28 septembre, Genève, Suisse"
+      title: "Coupe Kasahara %{year}"
+      title_em: "%{date}, Genève, Suisse"
     footer:
     footer:
       cright: www.kasaharacup.com a été créé par la section kendo du

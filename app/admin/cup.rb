@@ -6,6 +6,7 @@ ActiveAdmin.register Cup do
     column :year
     column :start_on
     column :end_on
+    column :published_on
     column :deadline
     column :adult_fees_chf
     column :adult_fees_eur
@@ -18,6 +19,7 @@ ActiveAdmin.register Cup do
     attributes_table do
       row :start_on
       row :end_on
+      row :published_on
       row :deadline
       row :adult_fees_chf
       row :adult_fees_eur
@@ -88,9 +90,10 @@ ActiveAdmin.register Cup do
 
   form do |f|
     f.inputs "Details" do
-      f.input :start_on, as: :string, input_html: {class: "hasDatetimePicker"}
-      f.input :end_on, as: :string, input_html: {class: "hasDatetimePicker"}
-      f.input :deadline, as: :string, input_html: {class: "hasDatetimePicker"}
+      f.input :start_on, as: :string#, input_html: {class: "hasDatetimePicker"}
+      f.input :end_on, as: :string#, input_html: {class: "hasDatetimePicker"}
+      f.input :published_on, as: :string#, input_html: {class: "hasDatetimePicker"}
+      f.input :deadline, as: :string#, input_html: {class: "hasDatetimePicker"}
       f.input :adult_fees_chf
       f.input :adult_fees_eur
       f.input :junior_fees_chf

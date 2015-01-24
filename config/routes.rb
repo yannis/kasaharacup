@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       omniauth_callbacks: "users/omniauth_callbacks"
     }
 
-  scope "(:year)", year: /2014/ do |year|
+  scope "(:year)", year: /2014|2015/ do |year|
     scope "(:locale)", locale: /fr|en/ do |locale|
 
       resources :cups, only: :show

@@ -7,6 +7,7 @@ en:
           The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
           <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
         b: "The tournament is organized in Geneva since 1995 by the kendo branch of the <a href='http://sdkbudo.ch'>Shung Do Kwan Budo</a>. In 2013, it gathered more than 150 kenshis from from France, Italy, Japan, Austria, Germany and, of course, Switzerland. In 2014, the 28th Kasahara cup will be held on September 27-28, at «Le stade du Bout-du-Monde», close to Geneva's city center."
+      published: "Full program and registration form will be availaible on %{date}."
       categories:
         title: Categories
         team: 5 fighters over 16 years old

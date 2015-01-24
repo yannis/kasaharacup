@@ -3,6 +3,7 @@ FactoryGirl.define do
   sequence(:integer) { |n| n }
   factory :cup do
     start_on {rand(Date.civil(2000, 1, 1)..Date.civil(Date.current.year, 12, 31))}
+    published_on {|c| Date.parse(c.start_on.to_s)-4.months}
     deadline {|c|
       return nil if c.start_on.blank?
       start = Date.parse(c.start_on.to_s)
