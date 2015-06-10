@@ -1,13 +1,13 @@
 %thead
   %tr
     %th Title
-    %th= Kenshi.human_attribute_name :name
+    %th= Kendocup::Kenshi.human_attribute_name :name
     - if user_signed_in?
-      %th= Kenshi.human_attribute_name :email
-      %th= Kenshi.human_attribute_name :dob
-    %th= Kenshi.human_attribute_name :club
-    %th= Kenshi.human_attribute_name :grade
-    %th= Kenshi.human_attribute_name :categories
+      %th= Kendocup::Kenshi.human_attribute_name :email
+      %th= Kendocup::Kenshi.human_attribute_name :dob
+    %th= Kendocup::Kenshi.human_attribute_name :club
+    %th= Kendocup::Kenshi.human_attribute_name :grade
+    %th= Kendocup::Kenshi.human_attribute_name :categories
     - if user_signed_in?
       %th= t('kenshi.registered_by')
       %th

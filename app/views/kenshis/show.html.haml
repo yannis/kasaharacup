@@ -9,19 +9,19 @@
       %tr
       - if current_user_admin_or_owner?(@kenshi)
         %tr
-          %th{colspan: 2}= Kenshi.human_attribute_name :email
+          %th{colspan: 2}= Kendocup::Kenshi.human_attribute_name :email
           %td{colspan: 2}= @kenshi.email.presence || "–"
         %tr
-          %th{colspan: 2}= Kenshi.human_attribute_name :dob
+          %th{colspan: 2}= Kendocup::Kenshi.human_attribute_name :dob
           %td{colspan: 2}= @kenshi.dob
       %tr
-        %th{colspan: 2}= Kenshi.human_attribute_name :sex
+        %th{colspan: 2}= Kendocup::Kenshi.human_attribute_name :sex
         %td{colspan: 2}= @kenshi.female ? 'female' : 'male'
       %tr
-        %th{colspan: 2}= Kenshi.human_attribute_name :club
+        %th{colspan: 2}= Kendocup::Kenshi.human_attribute_name :club
         %td{colspan: 2}= @kenshi.club
       %tr
-        %th{colspan: 2}= Kenshi.human_attribute_name :grade
+        %th{colspan: 2}= Kendocup::Kenshi.human_attribute_name :grade
         %td{colspan: 2}= @kenshi.grade
       - if current_user_admin_or_owner?(@kenshi)
         %tr

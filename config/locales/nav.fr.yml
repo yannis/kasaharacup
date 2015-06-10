@@ -4,7 +4,7 @@ fr:
       text: Home
       title: "Où, quand <span class='ampersand'>&</span> comment"
     teams:
-      text: Equipes
+      text: "Equipes (%{teams})"
       title: Equipes déjà inscrites
     kenshis:
       text: "Inscrits (%{kenshis})"

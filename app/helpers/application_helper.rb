@@ -16,15 +16,22 @@ module ApplicationHelper
     link.join(' ').html_safe
   end
 
-  def destroy_link(object,
-    text: "<span class='glyphicon glyphicon-trash'></span> Destroy",
-    title: "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "'+object.name+'"' if object.respond_to?(:name)}",
-    remote: false,
-    confirm: "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?",
-    classes: "")
+  def destroy_link(object, options={})
+    arr = object
+    if object.is_a?(Array)
+      object = object.last
+    end
+    text = options.fetch(:text, "<span class='glyphicon glyphicon-trash'></span> Destroy")
+    title = options.fetch(:title, "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "'+object.name+'"' if object.respond_to?(:name)}")
+    remote = options.fetch(:remote, false)
+    confirm = options.fetch(:confirm, "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?")
+    classes = options.fetch(:classes, "")
+
     classes += " btn btn-danger"
+
+    Rails.logger.debug "arr.class: #{arr.class}"
     link_to(text.html_safe,
-        polymorphic_path(object),
+        polymorphic_path(arr),
         data: {
           confirm: confirm
         },
@@ -38,5 +45,23 @@ module ApplicationHelper
   def edit_link(object, title: "Edit", classes: "")
     classes += ' btn btn-info'
     link_to( "<span class='glyphicon glyphicon-edit'></span> #{title}".html_safe, polymorphic_path([:edit, object]), title: "Edit #{object.class.to_s.humanize}#{object.respond_to?(:name) ? " #{object.name}" : ''}", class: classes)
+  end
+
+
+  def current_user_admin_or_owner?(kenshi)
+    current_user.present? && (current_user.admin? || kenshi.user == current_user)
+  end
+
+
+  def devise_mapping
+    Devise.mappings[:user]
+  end
+
+  def resource_name
+    devise_mapping.name
+  end
+
+  def resource_class
+    devise_mapping.to
   end
 end

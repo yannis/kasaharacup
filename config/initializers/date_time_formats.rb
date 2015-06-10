@@ -13,7 +13,8 @@ Date::DATE_FORMATS.merge!(
   month: '%B',
   day_month_year: "%e %B %Y",
   d_m_y: "%d-%m-%Y",
-  time_only: '%H:%M'
+  time_only: '%H:%M',
+  day_only: '%d'
 )
 
 Date::DATE_FORMATS[:default]="%d-%m-%Y"

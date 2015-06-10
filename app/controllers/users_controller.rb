@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
 
-  load_and_authorize_resource :user,  param_method: :my_sanitizer
+  load_and_authorize_resource class: Kendocup::User,  param_method: :my_sanitizer
   respond_to :html
 
   def index
@@ -12,36 +12,36 @@ class UsersController < ApplicationController
     respond_with @user
   end
 
-  # def edit
-  #   if @user == current_user
-  #     @title = @user.registered_for_cup?(@cup) ? t("users.edit.title.edit_self") : t("users.edit.title.edit")
-  #   else
-  #     @title = t("users.edit.title.edit_someone", full_name: @user.full_name)
-  #   end
-  #   respond_with @user
-  # end
+  def edit
+    if @user == current_user
+      @title = @user.registered_for_cup?(@cup) ? t("users.edit.title.edit_self") : t("users.edit.title.edit")
+    else
+      @title = t("users.edit.title.edit_someone", full_name: @user.full_name)
+    end
+    respond_with @user
+  end
 
-  # def update
-  #   if @user.update_attributes(my_sanitizer)
-  #     respond_with @user do |format|
-  #       format.html { redirect_back_or_default user_path(@user,) , notice: 'User update '
-  #       format.js {
-  #         @origin = params[:origin
-  #         flash.now[:notice] = 'User updated'
-  #         render '/layouts/create_and_insert_in_select', layout: false
-  #       }
-  #     end
-  #   else
-  #     respond_with @user do |format|
-  #       flash.now[:alert] = 'User not updated'
-  #       format.html { render :edit }
-  #       format.js{
-  #         @origin = params[:origin]
-  #         render template: 'layouts/edit', layout: false
-  #       }
-  #     end
-  #   end
-  # end
+  def update
+    if @user.update_attributes(my_sanitizer)
+      respond_with @user do |format|
+        format.html { redirect_back_or_default user_path(@user), notice: 'User updated'}
+        format.js {
+          @origin = params[:origin]
+          flash.now[:notice] = 'User updated'
+          render '/layouts/create_and_insert_in_select', layout: false
+        }
+      end
+    else
+      respond_with @user do |format|
+        flash.now[:alert] = 'User not updated'
+        format.html { render :edit }
+        format.js{
+          @origin = params[:origin]
+          render template: 'layouts/edit', layout: false
+        }
+      end
+    end
+  end
 
   def destroy
     @user.destroy ? notice = "User destroyed" : alert = "Unable to destroy user"

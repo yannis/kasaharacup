@@ -1,58 +1,55 @@
 Rails.application.routes.draw do
+  mount Kendocup::Engine => "/"
 
+  devise_scope :user do
+    providers = Regexp.union(Devise.omniauth_providers.map(&:to_s))
+    match 'users/auth/:provider',
+      constraints: { provider: providers },
+      to: 'omniauth_callbacks#passthru',
+      as: :omniauth_authorize,
+      via: [:get, :post]
 
-  devise_for :users, controllers: {
-      registrations: "users/registrations",
-      # skip: :omniauth_callbacks
-      omniauth_callbacks: "users/omniauth_callbacks"
-    }
+    match 'users/auth/:action/callback',
+      constraints: { action: providers },
+      controller: 'omniauth_callbacks',
+      as: :omniauth_callback,
+      via: [:get, :post]
 
-  scope "(:year)", year: /2014|2015/ do |year|
-    scope "(:locale)", locale: /fr|en/ do |locale|
+    # get 'signout', to: 'devise/sessions#destroy', as: 'signout'
+    # get 'signin', to: 'devise/sessions#new', as: 'signin'
+    # get 'signup', to: 'devise/registrations#new', as: 'signup'
+  end
+  devise_for :users, class_name: 'User', module: :devise, except: [:omniauth_callbacks]
 
-      resources :cups, only: :show
+  scope ":locale", locale: /fr|en/ do |locale|
+
+    resources :cups, only: [:index, :show] do
       resources :headlines, only: [:index, :show]
       resources :kenshis do
-        # collection do
-        #   match 'category/:category/', :to => :index
-        # end
         get :autocomplete_kenshi_club, on: :collection
       end
 
       resources :participations, only: [:destroy]
       resources :purchases, only: [:destroy]
-
       resources :teams, only: [:index, :show]
-
-      resources :users, only: [:show] do
+      resources :users do
         resources :kenshis do
           member do
             get :duplicate, to: 'kenshis#new'
           end
         end
       end
-
-      get 'auth/:provider/callback', to: 'sessions#create'
-      get 'auth/failure', to: redirect('/')
-      # match 'signout', to: 'devise/sessions#destroy', as: 'signout'
-      devise_scope :user do
-        get 'signout', to: 'devise/sessions#destroy', as: 'signout'
-      end
-
-      resource :mailing_list, :only => [:new, :destroy]
-      root to: "cups#show"
     end
-    get '/', to: redirect("#{Date.current.year}/#{I18n.locale}")
+
+    # resources :users
+
+    resource :mailing_list, only: [:new, :destroy]
+    root to: "cups#show"
+    get '/', to: redirect(Date.current.year.to_s)
+
   end
 
+  get '/', to: redirect(I18n.locale.to_s)
+
   ActiveAdmin.routes(self)
-
-  # match "/users/auth/:provider", constraints: { provider: /google|facebook/ }, to: "devise/omniauth_callbacks#passthru", as: :omniauth_authorize, via: [:get, :post]
-  # match "/users/auth/:action/callback", constraints: { action: /google|facebook/ }, to: "devise/omniauth_callbacks", as: :omniauth_callback, via: [:get, :post]
-
-
-
-  # root to: "cups#show", year: Date.current.year, locale: I18n.locale
-  # root to: "cups#show", year: Date.current.year, locale: I18n.locale
-
 end

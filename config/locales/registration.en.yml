@@ -1,7 +1,7 @@
 en:
   activerecord:
     attributes:
-      registration:
+      kendocup/registration:
         first_name: First name
         last_name: Last name
         dob: 'Date of birth'
@@ -10,7 +10,7 @@ en:
         male: Man
     errors:
       models:
-        registration:
+        kendocup/registration:
           attributes:
             dob:
               blank: 'Date of birth (DOB) is required for junior registrations'

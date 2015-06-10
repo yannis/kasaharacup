@@ -1,15 +1,13 @@
-# encoding: utf-8
-require 'spec_helper'
-
-describe ParticipationsController do
+require 'rails_helper'
+RSpec.describe ParticipationsController, type: :controller do
 
   describe "with a participation in the database," do
 
-    let(:cup) {create :cup, start_on: Date.current+3.weeks}
-    let(:category) {create :individual_category, cup: cup}
-    let(:user) { create :user }
-    let(:kenshi) {create :kenshi, user: user, cup: cup}
-    let!(:participation) { create :participation, category: category, kenshi: kenshi }
+    let(:cup) {create :kendocup_cup, start_on: Date.current+3.weeks}
+    let(:category) {create :kendocup_individual_category, cup: cup}
+    let(:user) { create :kendocup_user }
+    let(:kenshi) {create :kendocup_kenshi, user: user, cup: cup}
+    let!(:participation) { create :kendocup_participation, category: category, kenshi: kenshi }
 
     it {expect(participation).to be_valid_verbose}
 
@@ -27,20 +25,20 @@ describe ParticipationsController do
       before{ sign_in user }
 
       describe "on DELETE to :destroy with a participation that does not belong to the user" do
-        let!(:participation_count) {Participation.count}
+        let!(:participation_count) {Kendocup::Participation.count}
         before {
           delete :destroy, id: participation.to_param
         }
         it {assigns(:participation).should == participation}
         it "change Participation.count by -1" do
-          (participation_count - Participation.count).should eql 1
+          (participation_count - Kendocup::Participation.count).should eql 1
         end
-        it {should set_the_flash.to('Participation détruite avec succès')}
-        it {response.should redirect_to(user_path(user))}
+        it {should set_flash.to('Participation successfully destroyed')}
+        it {expect(response).to redirect_to(user_path(user))}
       end
 
       describe "on DELETE to :destroy with a participation that does not belong to the user" do
-        let(:another_participation) { create :participation }
+        let(:another_participation) { create :kendocup_participation }
         before {
           delete :destroy, id: another_participation.to_param
         }

@@ -1,7 +1,7 @@
 en:
   activerecord:
     attributes:
-      teams:
+      kendocup/teams:
         name: Name
         kenshis: Kenshis
     # errors:

@@ -12,6 +12,8 @@ public/system/*
 public/test_system/*
 public/assets/*
 vendor/rails/*
+vendor/bundle/*
+bundle/
 tmp/cache/*
 tmp/capybara/*
 tmp/data/*

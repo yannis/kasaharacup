@@ -3,11 +3,11 @@ RSpec::Matchers.define :be_valid_verbose do
     model.valid?
   end
 
-  failure_message_for_should do |model|
+  failure_message do |model|
     "#{model.class} expected to be valid but had errors:n #{model.errors.full_messages.join(". ")}"
   end
 
-  failure_message_for_should_not do |model|
+  failure_message do |model|
     "#{model.class} expected to have errors, but it did not"
   end
 
@@ -33,7 +33,7 @@ RSpec::Matchers.define :have_errors_on do |attribute|
     end
   end
 
-  failure_message_for_should do |model|
+  failure_message do |model|
     if @message
       "Validation errors #{model.errors[attribute].inspect} should include #{@message.inspect}"
     else
@@ -41,7 +41,7 @@ RSpec::Matchers.define :have_errors_on do |attribute|
     end
   end
 
-  failure_message_for_should_not do |model|
+  failure_message do |model|
     "#{model.class} should not have an error on attribute #{attribute.inspect}"
   end
 end
@@ -53,11 +53,11 @@ RSpec::Matchers.define :act_as_fighter do
     model.respond_to?(:win_fight)
   end
 
-  failure_message_for_should do |model|
+  failure_message do |model|
     "#{model.class} expected to act_as_fighter but it did not"
   end
 
-  failure_message_for_should_not do |model|
+  failure_message do |model|
     "#{model.class} not expected to act_as_fighter, but it did"
   end
 

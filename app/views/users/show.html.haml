@@ -5,29 +5,29 @@
     - if @user == current_user
       %table.table.table-condensed
         %tr
-          %th= User.human_attribute_name :last_name
+          %th= Kendocup::User.human_attribute_name :last_name
           %td= @user.last_name
         %tr
-          %th= User.human_attribute_name :first_name
+          %th= Kendocup::User.human_attribute_name :first_name
           %td= @user.first_name
         %tr
-          %th= User.human_attribute_name :dob
+          %th= Kendocup::User.human_attribute_name :dob
           %td= @user.dob.to_s
         %tr
-          %th= User.human_attribute_name :gender
+          %th= Kendocup::User.human_attribute_name :gender
           %td= @user.gender
         %tr
-          %th= User.human_attribute_name :email
+          %th= Kendocup::User.human_attribute_name :email
           %td= @user.email
         %tr
-          %th= User.human_attribute_name :club
+          %th= Kendocup::User.human_attribute_name :club
           %td= @user.club if @user.club
           / # %td= mail_to(@user.email, 'Email', encode: 'hex', class: 'email')
         %tr
           %th
             %h4 Fees due
           %th
-            = "#{@user.fees(:chf)} CHF / #{@user.fees(:eur)} €"
+            = "#{@user.fees(:chf, @current_cup)} CHF / #{@user.fees(:eur, @current_cup)} €"
     = user_admin_links @user
 
   .col-xs-12.col-md-6
@@ -35,13 +35,11 @@
       .panel-heading
         %h2
           = t(".your_registrations")
-          = link_to "<span class='glyphicon glyphicon-plus'></span> #{t("kenshis.show.register_someone_else")}".html_safe, new_user_kenshi_path(current_user), class: "btn btn-info btn-xs"
+          = link_to "<span class='glyphicon glyphicon-plus'></span> #{t("kenshis.show.register_someone_else")}".html_safe, new_cup_user_kenshi_path(@current_cup, current_user), class: "btn btn-info btn-xs"
       .panel-body
-        - if @user.kenshis.present?
-          = render @user.kenshis
+        - if @kenshis_of_user_and_cup.present?
+          = render partial: "kenshis/kenshi", collection: @kenshis_of_user_and_cup
         - else
           %p
-            Aucune inscription pour l'instant. Voulez-vous
-            = link_to 'vous inscrire', new_user_kenshi_path(current_user, self: true, locale: I18n.locale)
-            à la compétion? ou inscrire
-            = link_to("quelqu'un d'autre", new_user_kenshi_path(current_user, locale: I18n.locale))+'?'
+            =raw t(".register", yourself: link_to(t(".yourself"), new_cup_user_kenshi_path(@current_cup, current_user, self: true, locale: I18n.locale)), someone: link_to(t(".someone"), new_cup_user_kenshi_path(@current_cup, current_user, locale: I18n.locale)))
+

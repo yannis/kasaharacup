@@ -1,10 +1,11 @@
 class TeamsController < ApplicationController
-  load_and_authorize_resource :team
+  load_and_authorize_resource :cup, find_by: :year, class: Kendocup::Cup
+  load_and_authorize_resource :team, class: Kendocup::Team
   respond_to :html
 
   def index
-    @ronins = Participation.ronins.map(&:kenshi)
-    @teams = @teams.order(:name)
+    @ronins = @cup.participations.ronins.map(&:kenshi)
+    @teams = @cup.teams.order(:name)
     respond_with @teams
   end
 

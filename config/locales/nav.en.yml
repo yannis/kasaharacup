@@ -4,7 +4,7 @@ en:
       text: Home
       title: "What, when <span class='ampersand'>&</span> where"
     teams:
-      text: Teams
+      text: "Teams (%{teams})"
       title: Already registered teams
     kenshis:
       text: "Kenshis (%{kenshis})"

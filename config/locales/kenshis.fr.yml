@@ -3,7 +3,7 @@ fr:
     # models:
     #   kenshi: inscription
     attributes:
-      kenshi:
+      kendocup/kenshi:
         mr: M.
         ms: Mme
         first_name: "Prénom"
@@ -16,7 +16,7 @@ fr:
         categories: Catégories
     errors:
       models:
-        kenshi:
+        kendocup/kenshi:
           attributes:
             dob:
               blank: 'requise pour les juniors'

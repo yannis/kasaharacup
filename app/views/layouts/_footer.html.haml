@@ -1,5 +1,6 @@
-#footer{role: 'footer'}
+#footer.footer{role: 'footer'}
   .container-fluid
-    = "Kasahara Cup #{@cup.year}"
+    Kasahara Cup
+    = @current_cup.year
     –
     = link_to "Shung Do Kwan, Genève", "http://kendo-geneve.ch", target: "_blank"

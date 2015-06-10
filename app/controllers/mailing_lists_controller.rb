@@ -1,6 +1,5 @@
-# encoding: UTF-8
 class MailingListsController < ApplicationController
-    
+
   def new
     authorize! :manage, 'mailing_list'
     respond_to do |format|
@@ -8,7 +7,7 @@ class MailingListsController < ApplicationController
       format.html
     end
   end
-  
+
   def destroy
     authorize! :manage, 'mailing_list'
     if MailingList.unsubscribe current_user

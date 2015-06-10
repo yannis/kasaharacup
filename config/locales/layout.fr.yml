@@ -1,8 +1,8 @@
 fr:
   layout:
     header:
-      title: "Coupe Kasahara %{year}"
-      title_em: "%{date}, Genève, Suisse"
+      title: Coupe Kasahara
+      title_em: "Genève, Suisse"
     footer:
     footer:
       cright: www.kasaharacup.com a été créé par la section kendo du

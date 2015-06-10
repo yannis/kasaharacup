@@ -1,109 +1,112 @@
 .col-xs-12.col-md-8
   .row
+    .jumbotron
+      %h1
+        = t 'layout.header.title'
+        = @cup.year
+        %br
+        %small
+          - if @cup.end_on
+            = "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :long)},"
+          - else
+            = "#{l(@cup.start_on, format: :long)}, "
+          = t("layout.header.title_em")
+  .row#deadline
+    .col-xs-12.col-md-12.alert.alert-warning
+      - if Time.current > @cup.deadline
+        =raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
+      - else
+        =raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))
+
+  .row#program
     .col-xs-12.col-md-12
-      .row
-        .col-xs-12.col-md-12#banner.page-header
-          %h1
-            = t 'layout.header.title', year: @cup.year
-            %small= t 'layout.header.title_em', date: @cup.dates
-  - if @cup.year == 2014
-    = render "cup_2014"
-  - else
-    = render "deadline"
-    - if !@cup.published?
-      %p.alert.alert-info
-        = t '.published', date: @cup.published_on.to_s
-    - else
-      .row#program
-        .col-xs-12.col-md-12
-          %h2= t '.program.title'
-
-        - @grouped_events.each do |date, events|
-          .col-xs-12.col-md-6
-            %table.table
-              %thead
-                %tr
-                  %td{colspan: 2}
-                    %h3
-                      = l date, format: :short
-              %tbody
-                - for event in events
-                  %tr
-                    %th
-                      = event.start_on.to_s(:time_only)
-                    %td
-                      = event.name
-
-      .row#categories_and_fees
-        #categories.col-xs-12.col-md-6
-          %h2= t '.categories.title'
-          %table.table
-            %tbody
-              - @cup.individual_categories.each do |c|
-                %tr
-                  %th= c.name.capitalize
-                  %td
-                    - if c.min_age
-                      = c.max_age ? t("categories.from") : t("categories.dès")
-                      = c.min_age
-                    - if c.max_age
-                      = t("categories.to")
-                      = c.max_age
-                    = t("categories.yo")
-
-              - @cup.team_categories.each do |c|
-                %tr
-                  %th= c.name.capitalize
-                  %td
-                    = "#{c.description},"
-                    - if c.min_age
-                      = c.max_age ? t("categories.from") : t("categories.dès")
-                      = c.min_age
-                    - if c.max_age
-                      = t("categories.to")
-                      = c.max_age
-                    = t("categories.yo")
-
-        #fees.col-xs-12.col-md-6
-          %h2= t '.fees.title'
-          %table.table
-            %tbody
+      %h2= t '.program.title'
+    - @grouped_events.each do |date, events|
+      .col-xs-12.col-md-6
+        %table.table
+          %thead
+            %tr
+              %td{colspan: 2}
+                %h3
+                  = l date, format: :short
+          %tbody
+            - for event in events
               %tr
-                %th=raw t '.fees.adults.title'
-                %td=raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur
-              %tr
-                %th=raw t '.fees.juniors.title'
-                %td=raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
-              - @cup.products.each do |product|
-                %tr
-                  %th= product.name
-                  %td= "#{product.fee_chf} CHF / #{product.fee_eu} €"
+                %th
+                  = event.start_on.to_s(:time_only)
+                %td
+                  = event.name
 
-    .row.venue
-      .col-xs-12.col-md-12.venue-title
-        %h2= t '.venue.title'
-      .col-xs-12.col-md-6.venue-details
-        %p=raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
-        %h3= t '.venue.address'
-        %p
-          Centre sportif du Bout-du-Monde, Hall A
-          %br
-          Route de Vessy 12
-          %br
-          1206 Genève
-          %br
-          %em
-            GPS: 46.180588,6.155893
-      .col-xs-12.col-md-6.venue-map
-        = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
-    .row.accomodation_contact
-      .col-xs-12.col-md-6.venue
-        %h2= t '.accomodation.title'
-        %p= t '.accomodation.dormitory'
-        %p=raw t '.accomodation.hotels'
-      .col-xs-12.col-md-6.contact
-        %h2= t '.contact.title'
-        %p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
+  .row#categories_and_fees
+    #categories.col-xs-12.col-md-6
+      %h2= t '.categories.title'
+      %table.table
+        %tbody
+          - @cup.individual_categories.each do |c|
+            %tr
+              %th= c.name.capitalize
+              %td
+                - if c.min_age
+                  = c.max_age ? t("categories.from") : t("categories.dès")
+                  = c.min_age
+                - if c.max_age
+                  = t("categories.to")
+                  = c.max_age
+                = t("categories.yo")
+
+          - @cup.team_categories.each do |c|
+            %tr
+              %th= c.name.capitalize
+              %td
+                = "#{c.description},"
+                - if c.min_age
+                  = c.max_age ? t("categories.from") : t("categories.dès")
+                  = c.min_age
+                - if c.max_age
+                  = t("categories.to")
+                  = c.max_age
+                = t("categories.yo")
+
+    #fees.col-xs-12.col-md-6
+      %h2= t '.fees.title'
+      %table.table
+        %tbody
+          %tr
+            %th=raw t '.fees.adults.title'
+            %td=raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur
+          %tr
+            %th=raw t '.fees.juniors.title'
+            %td=raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
+          - @cup.products.each do |product|
+            %tr
+              %th= product.name
+              %td= "#{product.fee_chf} CHF / #{product.fee_eu} €"
+
+  .row.venue
+    .col-xs-12.col-md-12.venue-title
+      %h2= t '.venue.title'
+    .col-xs-12.col-md-6.venue-details
+      %p=raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
+      %h3= t '.venue.address'
+      %p
+        Centre sportif du Bout-du-Monde, Hall A
+        %br
+        Route de Vessy 12
+        %br
+        1206 Genève
+        %br
+        %em
+          GPS: 46.180588,6.155893
+    .col-xs-12.col-md-6.venue-map
+      = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
+  .row.accomodation_contact
+    .col-xs-12.col-md-6.venue
+      %h2= t '.accomodation.title'
+      %p= t '.accomodation.dormitory'
+      %p=raw t '.accomodation.hotels'
+    .col-xs-12.col-md-6.contact
+      %h2= t '.contact.title'
+      %p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
 
 .col-xs-12.col-md-4
   = render "current_user_resume" unless @cup.year == 2014

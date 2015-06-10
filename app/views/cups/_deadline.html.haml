@@ -1,7 +1,0 @@
-- if @cup.published?
-  .row#deadline
-    .col-xs-12.col-md-12.alert.alert-warning
-      - if Time.current > @cup.deadline
-        =raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
-      - else
-        =raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))

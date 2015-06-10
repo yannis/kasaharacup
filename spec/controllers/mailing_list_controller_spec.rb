@@ -1,47 +1,29 @@
-require 'spec_helper'
+require 'rails_helper'
+RSpec.describe MailingListsController, type: :controller do
 
-describe MailingListsController do
-
-  let!(:cup) {create :cup, start_on: Date.today+3.weeks}
+  let!(:cup) {create :kendocup_cup, start_on: Date.today+3.weeks}
 
   context "when not signed in" do
-
     describe "GET 'new'" do
       it "returns http success" do
         get 'new'
-        response.should be_success
+        expect(response).to be_success
       end
     end
-
-    # describe "GET 'destroy'" do
-    #   before {get 'destroy', :locale => I18n.locale}
-    #   should_be_asked_to_sign_in
-    # end
   end
 
   context "when signed in" do
     before {
       @request.env["devise.mapping"] = Devise.mappings[:user]
-      @user = create :user
-      # user.confirm!
+      @user = create :kendocup_user
       sign_in @user
     }
 
     describe "GET 'new'" do
       it "returns http success" do
         get 'new'
-        response.should be_success
+        expect(response).to be_success
       end
     end
-
-    # describe "GET 'destroy'" do
-    #   it "returns http success" do
-    #     get 'destroy', :locale => I18n.locale
-    #     assigns(:current_user).should == @user
-
-    #     MailingList.stub(:unsubscribe).and_return(true)
-    #     response.should redirect_to root_path
-    #   end
-    # end
   end
 end

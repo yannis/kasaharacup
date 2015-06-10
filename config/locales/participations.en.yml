@@ -2,7 +2,7 @@ en:
   activerecord:
     errors:
       models:
-        participation:
+        kendocup/participation:
           attributes:
             category:
               too_young: "Sorry, you're too young to participate to the %{name} category!"

@@ -1,15 +1,13 @@
 #= require jquery
 #= require jquery_ujs
-#= require jquery.ui.all
+#= require jquery-ui
 #= require modernizr-2.6.2
 #= require bootstrap
 #= require autocomplete-rails
 #= require select2
-#= require select2_locale_fr
-#= require moment
+#= require moment-with-locales
 #= require bootstrap-datetimepicker
-#= require bootstrap-datetimepicker.fr
-#= require moment/fr
-#= require navigation
+# = require navigation
 #= require_tree ./utilities
 #= require_tree .
+

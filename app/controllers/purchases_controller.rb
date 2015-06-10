@@ -1,7 +1,6 @@
-# encoding: UTF-8
 class PurchasesController < ApplicationController
 
-  load_and_authorize_resource :purchase
+  load_and_authorize_resource class: Kendocup::Purchase
   before_filter :check_deadline, only: [:destroy]
   respond_to :html
 

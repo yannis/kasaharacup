@@ -1,8 +1,8 @@
-# encoding: UTF-8
 class ParticipationsController < ApplicationController
 
-  load_and_authorize_resource :participation
+  load_and_authorize_resource class: Kendocup::Participation, param_method: :my_sanitizer, through: [:user], shallow: true
   before_filter :check_deadline, only: [:destroy]
+  before_filter :configure_permitted_parameters, if: :devise_controller?
   respond_to :html
 
   def destroy

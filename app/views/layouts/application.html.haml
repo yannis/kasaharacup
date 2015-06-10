@@ -1,7 +1,6 @@
 !!! 5
 %html
   %head
-    = airbrake_javascript_notifier
     %meta{charset: "UTF-8"}
     %title= yield :title
     %meta{name: "viewport", content: "width=device-width, initial-scale=1.0"}
@@ -15,12 +14,11 @@
       = javascript_include_tag 'js/html5shiv.js'
     = favicon_link_tag
   %body
-    #wrap
-      .container-fluid
-        = render "layouts/navigation"
-        = render "layouts/flash"
-        = yield
-      #push-footer
+    .container-fluid
+      = render "layouts/navigation"
+      = render "layouts/flash"
+      = render "layouts/registrations"
+      = yield
     = render "layouts/footer"
     :javascript
       (function(d) {

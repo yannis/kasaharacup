@@ -9,6 +9,9 @@ fr:
       register_someone_else: Inscrivez quelqu'un d'autre à la compétition
       register_yourself: Inscrivez-vous à la compétition
       your_registrations: Vos inscriptions
+      register: "Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?"
+      yourself: "vous inscrire"
+      someone: "un autre kenshi"
     destroy:
       title: Détruire ce compte
       confirm: "Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
@@ -29,9 +32,9 @@ fr:
       details: "Détails"
   activerecord:
     models:
-      user: utilisateur
+      kendocup/user: utilisateur
     attributes:
-      user:
+      kendocup/user:
         email: "Email"
         first_name: "Prénom"
         last_name: 'Nom'

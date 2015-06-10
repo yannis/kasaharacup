@@ -7,7 +7,6 @@ fr:
           La coupe Kasahara est un tournoi international de kendo organisé chaque année depuis 1984 en l'honneur de <strong>Kasahara Toshiaki sensei</strong>, le premier Secrétaire de la ZNKR (Zen Nippon Kendo Renmei) et de l'IKF (International Kendo Federation). Kasahara sensei a joué un rôle crucial dans le dévelopement du kendo en Suisse.
           <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4ème Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
         b: "Le tournoi organisé depuis plus de 15 ans à Genève par le section kendo du <a href='http://sdkbudo.ch'>Shung Do Kwan Budo</a> réunit plus de 150 participants de toute l'Europe. En 2013, la 27ème édition a rassemblé des kenshis français, italiens, japonais, autrichiens, anglais, allemands et bien entendu suisses. En 2014, la 28ème Coupe Kasahara aura lieu les 27 et 28 septembre, au stade du Bout-du-Monde, proche du centre ville."
-      published: "Les programme complet et formulaire d'inscription seront disponibles le %{date}."
       categories:
         title: Les catégories
         # team: 5 combattants de plus de 16 ans
@@ -49,11 +48,13 @@ fr:
         ladies: Résultats de la catégorie Ladies
         juniors: Résultats de la catégorie Juniors
         downloads: Téléchargements
+
       venue:
         title: Où est-ce que ça se passe?
         a: "Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}."
         address: Coordonnées
         map_link: Agrandir le plan
+
       accomodation:
         title: Logement
         dormitory: "Comme chaque année, vous pourrez dormir au dortoir des Charmettes (réservation lors de l'inscription)."
