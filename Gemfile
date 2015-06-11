@@ -29,6 +29,8 @@ gem "select2-rails"
 gem "bootstrap3-datetimepicker-rails"
 gem "font-awesome-sass"
 gem 'compass-rails', github: "Compass/compass-rails"
+
+gem "asset_sync"
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 # gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
