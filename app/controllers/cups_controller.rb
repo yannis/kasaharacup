@@ -12,7 +12,7 @@ class CupsController < ApplicationController
     @cup = Kendocup::Cup.where("extract(year from cups.start_on) = ?", params[:id]).first
     if @cup.nil?
       set_current_cup
-      redirect_to @current_cup
+      redirect_to cup_path(@current_cup, locale: I18n.locale)
     else
       @current_cup = @cup
       @grouped_events = @cup.events.order(:start_on).group_by{|e| e.start_on.to_date}

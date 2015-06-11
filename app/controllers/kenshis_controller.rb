@@ -201,7 +201,7 @@ class KenshisController < ApplicationController
       alert = alert
       respond_to do |format|
         format.html {
-          redirect_to @kenshi
+          redirect_to kenshi_path(@kenshi, locale: I18n.locale)
         }
         format.js {
           render('layouts/show_flash')
