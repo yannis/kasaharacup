@@ -161,7 +161,7 @@ class KenshisController < ApplicationController
     if @kenshi.update_attributes(my_sanitizer)
       notice = t('kenshis.update.flash.notice')
       respond_with @kenshi do |format|
-        format.html { redirect_to user_path(@kenshi.user, locale: I18n.locale) , notice: notice }
+        format.html { redirect_to cup_user_path(@current_cup, @kenshi.user, locale: I18n.locale) , notice: notice }
         format.js {
           @origin = params[:origin]
           flash.now[:notice] = notice
