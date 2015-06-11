@@ -1,0 +1,21 @@
+//= depend_on_asset "map.jpg"
+a#google_map
+  color: white
+  display: block
+  height: 200px
+  margin: auto
+  padding: 5em 1em
+  width: 100%
+  +box-sizing(border-box)
+  +replace-text(asset-url("map.jpg"))
+  border: 0
+  +transition-property(all)
+  +transition-duration(0.2)
+  &:hover
+    // +replace-text(0)
+    filter: opacity(50%)
+    text-indent: 0
+    color: white
+    margin: auto
+    text:
+      align: center

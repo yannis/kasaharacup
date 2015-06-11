@@ -1,0 +1,16 @@
+//= depend_on_asset "logo/mini-logo.png"
+.navbar-brand
+  width: 50px
+  +replace-text(asset-url("logo/mini-logo.png"))
+.nav > li.nav-lang > a
+  display: inline-block
+  padding: 0
+.nav-signin
+  .dropdown-menu
+    min-width: 250px
+    padding: 1em
+.navbar-form
+  margin: 0 auto
+#registrations
+  display: none
+  background-color: $gray-lighter

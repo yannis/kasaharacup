@@ -1,6 +1,8 @@
 class HeadlinesController < ApplicationController
 
-  load_and_authorize_resource class: Kendocup::Headline
+
+  load_and_authorize_resource :cup, find_by: :year, class: Kendocup::Cup
+  load_and_authorize_resource :headline, class: Kendocup::Headline, through: [:cup]
 
   respond_to :html
 

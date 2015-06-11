@@ -4,3 +4,4 @@ en:
     link: Read more headlines
     index:
       title: Headlines
+      no_news: No headlines yet…

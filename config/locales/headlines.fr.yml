@@ -4,3 +4,4 @@ fr:
     link: Toutes les nouvelles
     index:
       title: Les nouvelles
+      no_news: Pas de nouvelles pour l'instant…
