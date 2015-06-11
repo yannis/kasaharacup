@@ -21,7 +21,6 @@ coverage
 *.sublime-project
 *.sublime-workspace
 
-config/secrets.yml
 config/database.yml
 /config/application.yml
 db/seeds.rb
