@@ -3,7 +3,8 @@ class Ability
 
   def initialize(user)
 
-    user ||= Kendocup::User.new
+    user ||= User.new
+    can :read, Kendocup::Cup
     can :read, Kendocup::Kenshi
     can :read, Kendocup::Team
     can :read, Kendocup::Headline
@@ -20,7 +21,7 @@ class Ability
       can [:destroy], Kendocup::Purchase do |purchase|
         purchase.kenshi.user_id == user.id
       end
-      can [:read, :update, :destroy], Kendocup::User, id: user.id
+      can [:read, :update, :destroy], User, id: user.id
       if user.admin?
         can :manage, :all
       end

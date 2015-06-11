@@ -1,4 +1,3 @@
-# This migration comes from kendocup (originally 20140903193602)
 class CreateKendocupHeadlines < ActiveRecord::Migration
   def change
     create_table :headlines do |t|

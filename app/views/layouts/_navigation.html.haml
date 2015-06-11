@@ -64,4 +64,4 @@
                   = f.input :remember_me, as: :boolean if devise_mapping.rememberable?
                 .form-actions
                   = f.button :submit, "Log in"
-              = render partial: "devise/shared/links", locals: {resource: Kendocup::User.new, resource_name: :user}
+              = render partial: "devise/shared/links", locals: {resource: User.new, resource_name: :user}

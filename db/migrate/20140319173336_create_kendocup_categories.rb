@@ -1,4 +1,3 @@
-# This migration comes from kendocup (originally 20140319173336)
 class CreateKendocupCategories < ActiveRecord::Migration
   def change
     create_table :individual_categories do |t|

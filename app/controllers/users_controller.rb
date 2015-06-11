@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
 
-  load_and_authorize_resource class: Kendocup::User,  param_method: :my_sanitizer
+  load_and_authorize_resource class: User,  param_method: :my_sanitizer
   respond_to :html
 
   def index
@@ -14,7 +14,7 @@ class UsersController < ApplicationController
 
   def edit
     if @user == current_user
-      @title = @user.registered_for_cup?(@cup) ? t("users.edit.title.edit_self") : t("users.edit.title.edit")
+      @title = @user.registered_for_cup?(@current_cup) ? t("users.edit.title.edit_self") : t("users.edit.title.edit")
     else
       @title = t("users.edit.title.edit_someone", full_name: @user.full_name)
     end

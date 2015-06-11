@@ -1,4 +1,3 @@
-# This migration comes from kendocup (originally 20140322140629)
 class CreateKendocupKenshis < ActiveRecord::Migration
   def change
     create_table :kenshis do |t|

@@ -1,4 +1,3 @@
-# This migration comes from kendocup (originally 20140323071451)
 class CreateKendocupEvents < ActiveRecord::Migration
   def change
     create_table :events do |t|

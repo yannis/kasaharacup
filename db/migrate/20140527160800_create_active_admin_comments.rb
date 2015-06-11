@@ -1,4 +1,3 @@
-# This migration comes from kendocup (originally 20140527160800)
 class CreateActiveAdminComments < ActiveRecord::Migration
   def self.up
     create_table :active_admin_comments do |t|

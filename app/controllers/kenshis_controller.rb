@@ -3,10 +3,10 @@ class KenshisController < ApplicationController
   # prepend_before_filter :set_user
 
   load_and_authorize_resource :cup, find_by: :year, class: Kendocup::Cup
-  load_and_authorize_resource :user, class: Kendocup::User
   load_and_authorize_resource :kenshi, class: Kendocup::Kenshi, through: [:cup, :user], param_method: :my_sanitizer
 
   before_filter :set_variables, only: [:new, :edit, :update, :create]
+  before_filter :set_user
   before_filter :check_deadline, only: [:new, :edit, :update, :create, :destroy]
   respond_to :html
 
@@ -101,7 +101,7 @@ class KenshisController < ApplicationController
     if @kenshi.save
       respond_with @kenshi do |format|
         notice = t('kenshis.create.flash.notice')
-        format.html { redirect_to user_path(@kenshi.user, locale: I18n.locale), notice: notice }
+        format.html { redirect_to cup_user_path(@cup, @kenshi.user, locale: I18n.locale), notice: notice }
         format.js {
           @origin = params[:origin]
           flash.now[:notice] = notice
@@ -211,11 +211,11 @@ class KenshisController < ApplicationController
 
   private
     def set_user
-      @user = Kendocup::User.find params[:user_id] if params[:user_id]
+      @user = User.find params[:user_id] if params[:user_id]
     end
 
     def set_variables
-      @teams = Kendocup::Team.incomplete.order(:name)+Kendocup::Team.complete.order(:name)
+      @teams = @cup.teams.incomplete.order(:name)+@current_cup.teams.complete.order(:name)
       # @team_name = params[:kenshi][:team_name] if params[:kenshi] && params[:kenshi][:team_name]
     end
 

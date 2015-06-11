@@ -13,7 +13,7 @@ RSpec.describe TeamsController, type: :controller do
 
     context "when not logged in," do
 
-      describe "on GET to :index without param,", :focus do
+      describe "on GET to :index without param," do
         before do
           get :index, cup_id: cup.to_param, locale: :en
         end

@@ -30,7 +30,7 @@ class AddDeviseFieldsToUsers < ActiveRecord::Migration
     # add_column :users, :datetime, :locked_at
 
     # omiauthable
-    add_column :users, :provider, :string
-    add_column :users, :uid, :string
+    # add_column :users, :provider, :string
+    # add_column :users, :uid, :string
   end
 end
