@@ -45,7 +45,8 @@ class ApplicationController < Kendocup::ApplicationController
       @inverse_locale = (@locale == 'en' ? 'fr' : 'en')
 
     rescue
-      I18n.locale = session[:locale] = default_locale
+      I18n.locale = session[:locale] = @locale = default_locale
+      @inverse_locale = (@locale == 'en' ? 'fr' : 'en')
     end
   end
 
