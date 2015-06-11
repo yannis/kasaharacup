@@ -3,7 +3,6 @@
     = "#{kenshi_counter+1})" if kenshi_counter
     = kenshi.full_name
     - if current_user_admin_or_owner?(kenshi)
-      boum
       =raw kenshi_admin_links(kenshi, options: {class: "pull-right"})
   %table.table.table-condensed
     %tr
