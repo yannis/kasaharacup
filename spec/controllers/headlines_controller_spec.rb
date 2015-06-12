@@ -54,9 +54,9 @@ RSpec.describe HeadlinesController, type: :controller do
       end
 
       describe "when GET to :show for headline1.id," do
-        before :each do
-          get :show, id: headline1.to_param, locale: I18n.locale
-        end
+        before {
+          get :show, cup_id: cup.to_param, id: headline1.to_param, locale: I18n.locale
+        }
 
         it {expect(response).to be_success}
         it {expect(assigns(:headline)).to eq headline1}

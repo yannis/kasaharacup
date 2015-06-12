@@ -18,40 +18,43 @@ RSpec.describe KenshisController, type: :controller do
     let(:kenshi2) {create :kendocup_kenshi, last_name: 'kenshi2', user_id: user2.to_param, cup: cup}
     let(:kenshi3) {create :kendocup_kenshi, last_name: 'kenshi3', user_id: user.to_param, cup: cup}
 
-    KENSHI_CONT_METHODS = ["get :new, locale: I18n.locale", "post :create, kenshi: {last_name: 'just created kenshi'}, locale: I18n.locale", "put :update, id: kenshi1.to_param, kenshi: {last_name: 'just updated kenshi'}, locale: I18n.locale", "delete :destroy, id: kenshi1.to_param, locale: I18n.locale"]
+    KENSHI_CONT_METHODS = ["get :new, locale: I18n.locale, cup_id: cup.to_param", "post :create, cup_id: cup.to_param, kenshi: {last_name: 'just created kenshi'}, locale: I18n.locale", "put :update, cup_id: cup.to_param, id: kenshi1.to_param, kenshi: {last_name: 'just updated kenshi'}, locale: I18n.locale", "delete :destroy, cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale"]
 
     context "when not logged in," do
 
       describe "on GET to :index without param," do
         before do
-          get :index, locale: I18n.locale
+          get :index, cup_id: cup.to_param, locale: I18n.locale
         end
 
-        it {response.should be_success}
-        it {assigns(:kenshis).should_not be_nil}
-        it {response.should render_template(:index)}
-        it {assigns(:kenshis).should =~ [kenshi1, kenshi2, kenshi3]}
-        it {flash.should be_empty}
+        it {expect(response).to be_success}
+        it {expect(assigns(:kenshis)).to_not be_nil}
+        it {expect(response).to render_template(:index)}
+        it {expect(assigns(:kenshis)).to match_array [kenshi1, kenshi2, kenshi3]}
+        it {expect(flash).to be_empty}
       end
 
       describe "on GET to :index with param :user_id" do
-        before :each do
-          get :index, user_id: user.to_param, locale: I18n.locale
-        end
+        before {get :index, cup_id: cup.to_param, user_id: user.to_param, locale: I18n.locale}
 
-        it {expect(response).to redirect_to kenshis_path}
-        it {flash.should be_empty}
+        it {expect(response).to redirect_to cup_kenshis_path(cup)}
+        it {expect(flash).to be_empty}
       end
 
       describe "when GET to :show for kenshi1.id," do
-        before :each do
-          get :show, id: kenshi1.to_param, locale: I18n.locale
-        end
+        before {get :show, cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale}
 
-        it {response.should be_success}
-        it {assigns(:kenshi).should == kenshi1}
-        it {response.should render_template(:show)}
-        it {flash.should be_empty}
+        it {expect(response).to be_success}
+        it {expect(assigns(:kenshi)).to eql kenshi1}
+        it {expect(response).to render_template(:show)}
+        it {expect(flash).to be_empty}
+      end
+
+      describe "when GET to :show for kenshi1.id with param :user_id" do
+        before {get :show, cup_id: cup.to_param, user_id: user.to_param, id: kenshi1.to_param, locale: I18n.locale}
+
+        it {expect(response).to redirect_to cup_kenshi_path(cup, kenshi1.id)}
+        it {expect(flash).to be_empty}
       end
 
       KENSHI_CONT_METHODS.each do |m|
@@ -71,132 +74,106 @@ RSpec.describe KenshisController, type: :controller do
 
       describe "on GET to :index without param," do
         before :each do
-          get :index, locale: I18n.locale
+          get :index, cup_id: cup.to_param, locale: I18n.locale
         end
 
-        it {assigns(:kenshis).should_not be_nil}
-        it {response.should render_template(:index)}
-        it {assigns(:kenshis).should =~ [kenshi1, kenshi2, kenshi3]}
-        it {flash.should be_empty}
+        it {expect(assigns(:kenshis)).to_not be_nil}
+        it {expect(response).to render_template(:index)}
+        it {expect(assigns(:kenshis)).to match_array [kenshi1, kenshi2, kenshi3]}
+        it {expect(flash).to be_empty}
       end
 
       describe "when GET to :show for kenshi1.id," do
-        before :each do
-          get :show, id: kenshi1.to_param, locale: I18n.locale
-        end
-
-        it {response.should be_success}
-        it {assigns(:kenshi).should_not be_nil}
-        it {response.should render_template(:show)}
-        it {flash.should be_empty}
-        it "assigns kenshi to kenshi1" do
-          assigns(:kenshi).should eql kenshi1
-        end
+        before { get :show, cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale}
+        it {expect(response).to be_success}
+        it {expect(assigns(:kenshi)).to_not be_nil}
+        it {expect(response).to render_template(:show)}
+        it {expect(flash).to be_empty}
+        it {expect(assigns(:kenshi)).to eql kenshi1}
       end
 
       describe "when GET to :new with user_id: basic_user.to_param," do
-        before :each do
-          get :new, user_id: basic_user.to_param, locale: I18n.locale
-        end
-        it {
-          assigns(:current_user).should == basic_user
+        before {get :new, cup_id: cup.to_param, user_id: basic_user.to_param, locale: I18n.locale}
+        it {expect(assigns(:current_user)).to eql basic_user
         }
-        it {response.should be_success}
-        it {assigns(:kenshi).should_not be_nil}
-        it {response.should render_template(:new)}
-        it {flash.should be_empty}
+        it {expect(response).to be_success}
+        it {expect(assigns(:kenshi)).to_not be_nil}
+        it {expect(response).to render_template(:new)}
+        it {expect(flash).to be_empty}
       end
 
       describe "when GET to :new without user_id param," do
-        before :each do
-          get :new, locale: I18n.locale
-        end
-        it {expect(response).to redirect_to new_user_kenshi_path(basic_user)}
+        before {get :new, cup_id: cup.to_param, locale: I18n.locale}
+        it {expect(response).to redirect_to new_cup_user_kenshi_path(cup,basic_user)}
       end
 
       describe "when POST to :create with valid data," do
-        before :each do
-          post :create, kenshi: valid_params, user_id: basic_user.to_param, locale: I18n.locale
-        end
-
-        it {assigns(:kenshi).should be_an_instance_of Kendocup::Kenshi}
-        it {assigns(:kenshi).should be_valid_verbose}
-        it {expect(response).to redirect_to(user_path(basic_user)) }
-        it {flash[:notice].should =~ /Kenshi successfully registered/}
-        it {assigns(:kenshi).user.should eql basic_user}
+        before {post :create, kenshi: valid_params, cup_id: cup.to_param, user_id: basic_user.to_param, locale: I18n.locale}
+        it {expect(assigns(:kenshi)).to be_an_instance_of Kendocup::Kenshi}
+        it {expect(assigns(:kenshi)).to be_valid_verbose}
+        it {expect(response).to redirect_to(cup_user_path(cup, basic_user)) }
+        it {expect(flash[:notice]).to match /Kenshi successfully registered/}
+        it {expect(assigns(:kenshi).user_id).to eql basic_user.id}
       end
 
       describe "when POST to :create with invalid data," do
-        before :each do
-          post :create, kenshi: {last_name: ""}, user_id: basic_user.to_param, locale: I18n.locale
-        end
-
-        it {assigns(:kenshi).should_not be_nil}
-        it {assigns(:kenshi).should be_an_instance_of Kendocup::Kenshi}
-        it {assigns(:kenshi).should_not be_valid_verbose}
-        it {response.should render_template(:new)}
-        it {flash.now[:alert].should =~ /Kenshi not registered/}
+        before {post :create, kenshi: {last_name: ""}, cup_id: cup.to_param, user_id: basic_user.to_param, locale: I18n.locale}
+        it {expect(assigns(:kenshi)).to_not be_nil}
+        it {expect(assigns(:kenshi)).to be_an_instance_of Kendocup::Kenshi}
+        it {expect(assigns(:kenshi)).to_not be_valid_verbose}
+        it {expect(response).to render_template(:new)}
+        it {expect(flash.now[:alert]).to match /Kenshi not registered/}
       end
 
       describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
-        before { get :edit, id: basic_user_kenshi.to_param }
-        it{response.should be_success}
-        it{assigns(:kenshi).should == basic_user_kenshi}
-        it {response.should render_template(:edit)}
+        before { get :edit, cup_id: cup.to_param, id: basic_user_kenshi.to_param, locale: I18n.locale }
+        it {expect(response).to be_success}
+        it {expect(assigns(:kenshi)).to eql basic_user_kenshi}
+        it {expect(response).to render_template(:edit)}
       end
 
       describe "on GET to :edit with :id = kenshi1.to_param," do
-        before :each do
-          get :edit, id: kenshi1.to_param, locale: I18n.locale
-        end
+        before {get :edit, cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale}
         should_not_be_authorized
       end
 
       describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data"  do
-        before {put :update, id: basic_user_kenshi.to_param, kenshi: {last_name: "alaNma2"}}
+        before {put :update, cup_id: cup.to_param, id: basic_user_kenshi.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale}
 
-        it {assigns(:kenshi).should eql basic_user_kenshi}
-        it {expect(response).to redirect_to(user_path(basic_user_kenshi.user))}
-        it {flash[:notice].should =~ /Registration successfully updated/}
-        it {basic_user_kenshi.reload.last_name.should eql 'alaNma2'}
+        it {expect(assigns(:kenshi)).to eql basic_user_kenshi}
+        it {expect(response).to redirect_to(cup_user_path(cup, basic_user_kenshi.user))}
+        it {expect(flash[:notice]).to match /Registration successfully updated/}
+        it {expect(basic_user_kenshi.reload.last_name).to eql 'alaNma2'}
       end
 
       describe "on PUT to :update with :id = basic_user_kenshi.to_param and invalid data," do
-        before :each do
-          put :update, id: basic_user_kenshi.to_param, kenshi: {last_name: ""}, locale: I18n.locale
-        end
+        before {put :update, id: basic_user_kenshi.to_param, cup_id: cup.to_param, kenshi: {last_name: ""}, locale: I18n.locale}
 
-        it {assigns(:kenshi).should eql basic_user_kenshi}
-        it {response.should render_template(:edit)}
-        it {flash[:alert].should =~ /Kenshi not updated/}
+        it {expect(assigns(:kenshi)).to eql basic_user_kenshi}
+        it {expect(response).to render_template(:edit)}
+        it {expect(flash[:alert]).to match /Kenshi not updated/}
       end
 
       describe "on PUT to :update with :id = kenshi1.to_param and valid data," do
-        before :each do
-          put :update, id: kenshi1.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale
-        end
+        before {put :update, id: kenshi1.to_param, cup_id: cup.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale}
         should_not_be_authorized
       end
 
       describe "on DELETE to :destroy with :id = basic_user_kenshi.to_param," do
-        before :each do
+        before {
           basic_user_kenshi.save
           @kenshi_count = Kendocup::Kenshi.count
-          delete :destroy, id: basic_user_kenshi.to_param
-        end
+          delete :destroy, cup_id: cup.to_param, id: basic_user_kenshi.to_param, locale: I18n.locale
+        }
 
-        it {assigns(:kenshi).should == basic_user_kenshi}
-        it "change Kendocup::Kenshi.count by -1" do
-          (@kenshi_count - Kendocup::Kenshi.count).should eql 1
-        end
-        it {should set_flash.to('Kenshi successfully destroyed')}
-        it {expect(response).to redirect_to(user_path(basic_user))}
+        it {expect(assigns(:kenshi)).to eql basic_user_kenshi}
+        it {expect(@kenshi_count - Kendocup::Kenshi.count).to eql 1}
+        it {expect(flash[:notice]).to match /Kenshi successfully destroyed/}
+        it {expect(response).to redirect_to(cup_user_path(cup, basic_user))}
       end
 
       describe "on DELETE to :destroy with :id = kenshi1.to_param," do
-        before :each do
-          delete :destroy, id: kenshi1.to_param, locale: I18n.locale
-        end
+        before {delete :destroy, cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale}
         should_not_be_authorized
       end
 
@@ -206,26 +183,22 @@ RSpec.describe KenshisController, type: :controller do
         }
 
         describe "when GET to :new with user_id: basic_user.to_param," do
-          before :each do
-            get :new, user_id: basic_user.to_param, locale: I18n.locale
-          end
+          before {get :new, cup_id: cup.to_param, user_id: basic_user.to_param, locale: I18n.locale}
           deadline_passed
         end
 
         describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
-          before { get :edit, id: basic_user_kenshi.to_param }
+          before { get :edit, cup_id: cup.to_param, id: basic_user_kenshi.to_param, locale: I18n.locale }
           deadline_passed
         end
 
-        describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data,"  do
-          before {put :update, id: basic_user_kenshi.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale}
+        describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data," do
+          before {put :update, cup_id: cup.to_param, id: basic_user_kenshi.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale}
           deadline_passed
         end
 
         describe "when POST to :create with valid data," do
-          before :each do
-            post :create, kenshi: valid_params, locale: I18n.locale
-          end
+          before {post :create, cup_id: cup.to_param, kenshi: valid_params, locale: I18n.locale}
           deadline_passed
         end
 
@@ -233,7 +206,7 @@ RSpec.describe KenshisController, type: :controller do
           before :each do
             basic_user_kenshi.save
             @kenshi_count = Kendocup::Kenshi.count
-            delete :destroy, id: basic_user_kenshi.to_param, locale: I18n.locale
+            delete :destroy, cup_id: cup.to_param, id: basic_user_kenshi.to_param, locale: I18n.locale
           end
           deadline_passed
         end

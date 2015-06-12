@@ -1,9 +1,9 @@
 class KenshisController < ApplicationController
 
-  # prepend_before_filter :set_user
+  prepend_before_filter :set_user
 
   load_and_authorize_resource :cup, find_by: :year, class: Kendocup::Cup
-  load_and_authorize_resource :kenshi, class: Kendocup::Kenshi, through: [:cup, :user], param_method: :my_sanitizer
+  load_and_authorize_resource :kenshi, shallow: true, class: Kendocup::Kenshi, through: [:cup, :user], param_method: :my_sanitizer
 
   before_filter :set_variables, only: [:new, :edit, :update, :create]
   before_filter :set_user
@@ -13,77 +13,80 @@ class KenshisController < ApplicationController
   # autocomplete :kenshi, :club, scopes: [:unique_by_club], full_model: true
 
   def index
-    # if @user && !user_signed_in?
-    #   redirect_to kenshis_path
-    #   return
-    # end
-    # if @user && can?(:read, @user)
-    #   @title =  t('kenshis.index.title_for_user', user_full_name: @user.full_name)
-    # else
-    #   @title =  t('kenshis.index.title')
-    # end
-    # if params[:category] and %w{team open ladies juniors}.include? params[:category]
-    #   category = params[:category]
-    #   @kenshis = @kenshis.category(category) if category
-    #   @title =  t("kenshis.index.title_#{category}")
-    # end
-    # @kenshis = @kenshis.includes(:user)
-    # respond_with @kenshis do |format|
-    #   format.html
-    #   format.csv {
-    #     filename = Time.now.to_s(:datetime).gsub(/[^0-9a-z]/, '')+'_'+@title.gsub(/[^0-9a-zA-Z]/, "_").gsub('__', "_") + ".csv"
-    #     send_data(
-    #       Kendocup::Kenshi.to_csv(@kenshis),
-    #       type: 'text/csv; charset=utf-8; header=present',
-    #       filename: filename
-    #     )
-    #   }
-    # end
-    @current_cup = @cup
-    respond_with @kenshis
+    @current_cup = @cup.presence || @current_cup
+    if @user && !user_signed_in?
+      redirect_to cup_kenshis_path(@current_cup) and return
+    end
+    if @user && can?(:read, @user)
+      @title =  t('kenshis.index.title_for_user', user_full_name: @user.full_name)
+    else
+      @title =  t('kenshis.index.title')
+    end
+    if params[:category] and %w{team open ladies juniors}.include? params[:category]
+      category = params[:category]
+      @kenshis = @kenshis.category(category) if category
+      @title =  t("kenshis.index.title_#{category}")
+    end
+    @kenshis = @kenshis.includes(:user)
+    respond_with @kenshis do |format|
+      format.html
+      format.csv {
+        filename = Time.now.to_s(:datetime).gsub(/[^0-9a-z]/, '')+'_'+@title.gsub(/[^0-9a-zA-Z]/, "_").gsub('__', "_") + ".csv"
+        send_data(
+          Kendocup::Kenshi.to_csv(@kenshis),
+          type: 'text/csv; charset=utf-8; header=present',
+          filename: filename
+        )
+      }
+    end
   end
 
   def show
+    @current_cup = @cup.presence || @current_cup
+    if @user && !user_signed_in?
+      redirect_to cup_kenshi_path(@current_cup, params[:id])
+      return
+    end
     @title = "Kenshi “#{@kenshi.full_name}”"
     respond_with @kenshi
   end
 
   def new
-    # if @user.blank? || (@user != current_user && !current_user.admin?)
-    #   redirect_to new_cup_user_kenshi_path(@cup, current_user, locale: I18n.locale)
-    #   return
+    if @user.blank? || (@user != current_user && !current_user.admin?)
+      redirect_to new_cup_user_kenshi_path(@cup, current_user, locale: I18n.locale)
+      return
+    end
+    if @user == current_user && params[:self] == 'true'
+      existing_kenshis = current_user.kenshis.where(first_name: current_user.
+        first_name, last_name: current_user.last_name)
+      if existing_kenshis.present?
+        redirect_to kenshi_path(existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
+        return
+      else
+        @kenshi = Kendocup::Kenshi.from(current_user)
+        @title = t('kenshis.new.yourself')
+      end
+    elsif params[:id]
+      origin_kenshi = Kendocup::Kenshi.find(params[:id])
+      @kenshi = origin_kenshi.dup
+      @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
+      @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)
+      origin_kenshi.participations.each do |participation|
+        @kenshi.participations << Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
+      end
+    else
+      @kenshi.club = @user.club if @user.present?
+      @title = t('kenshis.new.title')
+    end
+    @kenshi.female = false if @kenshi.female.nil?
+    # @cup.team_categories.each do |cat|
+    #   @kenshi.participations.build category: cat
     # end
-    # if @user == current_user && params[:self] == 'true'
-    #   existing_kenshis = current_user.kenshis.where(first_name: current_user.
-    #     first_name, last_name: current_user.last_name)
-    #   if existing_kenshis.present?
-    #     redirect_to kenshi_path(existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
-    #     return
-    #   else
-    #     @kenshi = Kendocup::Kenshi.from(current_user)
-    #     @title = t('kenshis.new.yourself')
-    #   end
-    # elsif params[:id]
-    #   origin_kenshi = Kendocup::Kenshi.find(params[:id])
-    #   @kenshi = origin_kenshi.dup
-    #   @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
-    #   @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)
-    #   origin_kenshi.participations.each do |participation|
-    #     @kenshi.participations << Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
-    #   end
-    # else
-    #   @kenshi.club = @user.club if @user.present?
-    #   @title = t('kenshis.new.title')
+    # @cup.individual_categories.each do |cat|
+    #   @kenshi.participations.build category: cat
     # end
-    # @kenshi.female = false if @kenshi.female.nil?
-    # # @cup.team_categories.each do |cat|
-    # #   @kenshi.participations.build category: cat
-    # # end
-    # # @cup.individual_categories.each do |cat|
-    # #   @kenshi.participations.build category: cat
-    # # end
-    # # @participations_to_teams = @kenshi.participations.select{|p| p.category.is_a? TeamCategory}
-    # # @participations_to_ind = @kenshi.participations.select{|p| p.category.is_a? IndividualCategory}
+    # @participations_to_teams = @kenshi.participations.select{|p| p.category.is_a? TeamCategory}
+    # @participations_to_ind = @kenshi.participations.select{|p| p.category.is_a? IndividualCategory}
     respond_with @kenshi
   end
 
@@ -187,7 +190,7 @@ class KenshisController < ApplicationController
     respond_with @kenshi do |format|
       format.html {
         flash[:notice] = notice
-        redirect_to user_path(@kenshi.user, locale: I18n.locale)
+        redirect_to cup_user_path(@current_cup, @kenshi.user, locale: I18n.locale)
       }
       format.js{
         flash.now[:notice] = notice if notice.present?
@@ -201,7 +204,7 @@ class KenshisController < ApplicationController
       alert = alert
       respond_to do |format|
         format.html {
-          redirect_to kenshi_path(@kenshi, locale: I18n.locale)
+          redirect_to cup_kenshi_path(@current_cup, @kenshi, locale: I18n.locale)
         }
         format.js {
           render('layouts/show_flash')

@@ -66,7 +66,7 @@ RSpec.configure do |config|
 
 
   def should_be_asked_to_sign_in
-    it {expect(response).to redirect_to("http://test.host/en?action=new&controller=devise%2Fsessions")}
+    it {expect(response).to redirect_to("http://test.host/users/sign_in?locale=en")}
     it {expect(flash.alert).to eql "You need to sign in or sign up before continuing."}
   end
 
@@ -153,6 +153,6 @@ RSpec.configure do |config|
 
   def deadline_passed
     it {expect(response).to redirect_to root_path(locale: I18n.locale)}
-    it {flash[:alert].should eq I18n.t("kenshis.deadline_passed", email: 'info@kendo-geneve.ch')}
+    it {expect(flash[:alert]).to eq I18n.t("kenshis.deadline_passed", email: 'info@kendo-geneve.ch')}
   end
 end
