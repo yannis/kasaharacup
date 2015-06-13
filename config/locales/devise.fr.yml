@@ -46,6 +46,13 @@ fr:
       signed_up_but_unconfirmed: 'Un message contenant un lien de confirmation a été envoyé à votre adresse email. Ouvrez ce lien pour activer votre compte.'
       update_needs_confirmation: "Votre compte a bien été mis à jour mais nous devons vérifier votre nouvelle adresse email. Merci de vérifier vos emails et de cliquer sur le lien de confirmation pour finaliser la validation de votre nouvelle adresse."
       updated: 'Votre compte a été modifié avec succès.'
+      edit:
+        password:
+          hint: Laissez blanc si vous ne désirez pas de modification
+        current_password:
+          "Nous avons besoin de votre mot de passe actuel afin de valider votre modification"
+        cancel_my_account: Supprimer ce compte!
+        unhappy: "Mécontent?"
     sessions:
       title: Connectez-vous
       signed_in: "Connecté."
