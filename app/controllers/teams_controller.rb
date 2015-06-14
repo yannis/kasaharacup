@@ -18,7 +18,7 @@ class TeamsController < ApplicationController
     respond_with @team do |format|
       format.html {
         flash[:notice] = notice
-        redirect_to teams_path
+        redirect_to cup_teams_path(@cup)
       }
       format.js{
         flash.now[:notice] = notice if notice.present?
@@ -32,7 +32,7 @@ class TeamsController < ApplicationController
       alert = alert
       respond_to do |format|
         format.html {
-          redirect_to @team
+          redirect_to cup_team_path(@cup, @team)
         }
         format.js {
           render('layouts/show_flash')

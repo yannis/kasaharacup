@@ -47,9 +47,8 @@ module ApplicationHelper
     link_to( "<span class='glyphicon glyphicon-edit'></span> #{title}".html_safe, polymorphic_path([:edit, *object]), title: "Edit #{object.class.to_s.humanize}#{object.respond_to?(:name) ? " #{object.name}" : ''}", class: classes)
   end
 
-
   def current_user_admin_or_owner?(kenshi)
-    current_user.present? && (current_user.admin? || kenshi.user == current_user)
+    current_user.present? && (current_user.admin? || kenshi.user.id == current_user.id)
   end
 
 

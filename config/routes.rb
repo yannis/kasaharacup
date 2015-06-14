@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
     match 'users/auth/:action/callback',
       constraints: { action: providers },
-      controller: 'omniauth_callbacks',
+      controller: 'users/omniauth_callbacks',
       as: :omniauth_callback,
       via: [:get, :post]
 

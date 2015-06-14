@@ -52,15 +52,16 @@ class KenshisController < ApplicationController
   end
 
   def new
+    @current_cup = @cup.presence || @current_cup
     if @user.blank? || (@user != current_user && !current_user.admin?)
-      redirect_to new_cup_user_kenshi_path(@cup, current_user, locale: I18n.locale)
+      redirect_to new_cup_user_kenshi_path(@current_cup, current_user, locale: I18n.locale)
       return
     end
     if @user == current_user && params[:self] == 'true'
       existing_kenshis = current_user.kenshis.where(first_name: current_user.
         first_name, last_name: current_user.last_name)
       if existing_kenshis.present?
-        redirect_to kenshi_path(existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
+        redirect_to cup_kenshi_path(@current_cup, existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
         return
       else
         @kenshi = Kendocup::Kenshi.from(current_user)
@@ -121,7 +122,7 @@ class KenshisController < ApplicationController
         existing_kenshis = current_user.kenshis.where(first_name: current_user.
           first_name, last_name: current_user.last_name)
         if existing_kenshis.present?
-          redirect_to kenshi_path(existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
+          redirect_to cup_kenshi_path(@cup, existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
           return
         else
           @kenshi = Kendocup::Kenshi.from(current_user)

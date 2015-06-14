@@ -50,7 +50,7 @@
                 = link_to t('subnav.signedin.signout'), destroy_user_session_path
         - else
           %li.dropdown.nav-signin
-            = link_to "/#{I18n.locale}/users/sign_in", data: {toggle: 'dropdown',  target: "#"}, class: "dropdown-toggle" do
+            = link_to "/users/sign_in?locale=#{I18n.locale}", data: {toggle: 'dropdown',  target: "#"}, class: "dropdown-toggle" do
               Sign in
               %b.caret
             .dropdown-menu

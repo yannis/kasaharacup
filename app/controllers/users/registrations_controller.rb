@@ -8,7 +8,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     @user = User.new(my_sanitizer)
     if @user.save
       sign_in @user
-      redirect_to new_user_kenshi_path(@user, self: true)
+      redirect_to new_cup_user_kenshi_path(@current_cup, @user, self: true)
       # set_flash_message(:notice, :success) if is_navigational_format?
       notice = t("devise.confirmations.send_instructions")
       # redirect_to root_path(locale: I18n.locale)
