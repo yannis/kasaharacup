@@ -1,6 +1,4 @@
-class RegistrationsController < Devise::RegistrationsController
-
-  layout :application
+class Users::RegistrationsController < Devise::RegistrationsController
 
   def new
     super
@@ -10,13 +8,13 @@ class RegistrationsController < Devise::RegistrationsController
     @user = User.new(my_sanitizer)
     if @user.save
       sign_in @user
-      redirect_to new_cup_user_kenshi_path(@cup, @user, self: true)
+      redirect_to new_user_kenshi_path(@user, self: true)
       # set_flash_message(:notice, :success) if is_navigational_format?
       notice = t("devise.confirmations.send_instructions")
       # redirect_to root_path(locale: I18n.locale)
       # Rails.logger.info "alert #{flash}"
     else
-      render action: :new, layout: :application
+      render action: :new
     end
   end
 
@@ -40,7 +38,7 @@ class RegistrationsController < Devise::RegistrationsController
       set_flash_message :notice, :updated
       # Sign in the user bypassing validation in case his password changed
       sign_in @user, bypass: true
-      redirect_to user_path(@user)
+      redirect_to cup_user_path(@current_cup, @user)
       # redirect_to after_update_path_for(@user)
     else
       render "edit"
@@ -50,7 +48,7 @@ class RegistrationsController < Devise::RegistrationsController
   protected
 
     def my_sanitizer
-      if current_user_admin?
+      if current_user.try("admin?")
         params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin, :password, :password_confirmation)
       else
         params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :password, :password_confirmation)

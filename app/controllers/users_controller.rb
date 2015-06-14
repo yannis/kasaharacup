@@ -24,7 +24,7 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(my_sanitizer)
       respond_with @user do |format|
-        format.html { redirect_back_or_default user_path(@user), notice: 'User updated'}
+        format.html { redirect_back_or_default cup_user_path(@current_cup, @user), notice: 'User updated'}
         format.js {
           @origin = params[:origin]
           flash.now[:notice] = 'User updated'
@@ -48,7 +48,7 @@ class UsersController < ApplicationController
     respond_with @user do |format|
       format.html{
         if current_user.admin?
-          redirect_to users_path
+          redirect_to cup_users_path(@current_cup)
         else
           redirect_to root_path
         end
@@ -58,7 +58,7 @@ class UsersController < ApplicationController
       alert = e.message
       respond_to do |format|
         format.html {
-          redirect_to @user
+          redirect_to cup_user_path(@current_cup, @user)
         }
       end
   end

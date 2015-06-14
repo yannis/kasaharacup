@@ -1,0 +1,22 @@
+= simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: { class: 'form-horizontal' }, wrapper: :horizontal_form, wrapper_mappings: {check_boxes: :horizontal_radio_and_checkboxes, radio_buttons: :horizontal_radio_and_checkboxes, file: :horizontal_file_input, boolean: :horizontal_boolean}  do |f|
+  = devise_error_messages!
+  .form-inputs
+    = f.input :first_name, autofocus: true
+    = f.input :last_name
+    = f.input :email, required: true
+    = f.input :dob, as: :date_picker
+    = f.input :club_name, label: 'Club', as: :select2, input_html: {data: {options: Kendocup::Club.all.map{|c| {id: c.name, text: c.name}}}}
+    - if resource.persisted?
+      = f.input :current_password, autocomplete: "off", class: "form-control"
+    = f.input :password, label: "#{resource.persisted? ? "New password" : "Password"}", autocomplete: "off", class: "form-control"
+    = f.input :password_confirmation, autocomplete: "off", class: "form-control"
+  .form-actions.col-sm-9.col-sm-offset-3
+    - if resource.persisted?
+      = f.submit "Update", class: "btn btn-success"
+    - else
+      = f.submit t("devise.registrations.title"), class: "btn btn-success"
+  .col-sm-9.col-sm-offset-3
+    - if resource.persisted?
+      = render "devise/shared/links", signin: true, signup: false
+    - else
+      = render "devise/shared/links", signin: true, signup: true

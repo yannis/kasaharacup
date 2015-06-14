@@ -57,7 +57,9 @@ fr:
 
       accomodation:
         title: Logement
-        dormitory: "Comme chaque année, vous pourrez dormir au dortoir des Charmettes (réservation lors de l'inscription)."
+        # dormitory: "Comme chaque année, vous pourrez dormir au dortoir des Charmettes (réservation lors de l'inscription)."
+
+        dormitory: "Malheureusement cette année nous n'avons pas accès au dortoir habituel. Comme alternative, vous pouvez passer la nuit à <a href='http://www.ville-geneve.ch/plan-ville/securite/dortoirs-protection-civile-paquis/' target='_blank'>l'abri PC des Pâquis</a> (réservation lors de l'inscription)."
         hotels: "Si vous préfèrez quelque chose de plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir."
       contact:
         title: Contact

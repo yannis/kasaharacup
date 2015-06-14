@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     # get 'signin', to: 'devise/sessions#new', as: 'signin'
     # get 'signup', to: 'devise/registrations#new', as: 'signup'
   end
-  devise_for :users, class_name: 'User', module: :devise, except: [:omniauth_callbacks]
+  devise_for :users, class_name: 'User', module: :devise, except: [:omniauth_callbacks], controllers: {registrations: "users/registrations"}
 
   scope ":locale", locale: /fr|en/ do |locale|
 

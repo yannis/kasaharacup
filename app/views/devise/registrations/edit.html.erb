@@ -10,6 +10,8 @@
         <%= f.input :last_name, required: true, autofocus: true %>
 
         <%= f.input :email, required: true %>
+        <%= f.input :dob, as: :date_picker %>
+        <%= f.input :club_name, label: 'Club', as: :select2, input_html: {data: {options: Kendocup::Club.all.map{|c| {id: c.name, text: c.name}}}} %>
 
         <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
           <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
