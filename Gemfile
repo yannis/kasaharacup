@@ -52,8 +52,6 @@ gem 'bootstrap-sass', '~> 3.3.4'
 
 gem 'simple_form'
 
-gem 'rails_12factor'
-
 gem "airbrake"
 
 group :development, :test do
@@ -65,6 +63,7 @@ group :development, :test do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  gem "quiet_assets"
 end
 
 group :developement do
@@ -73,7 +72,6 @@ group :developement do
   gem "guard-bundler"
   gem "guard-livereload"
   # gem "guard-spring"
-  gem "quiet_assets"
   gem "rspec-rails"
 end
 
@@ -90,5 +88,6 @@ end
 
 group :production do |variable|
   gem 'unicorn'
+  gem 'rails_12factor'
 end
 

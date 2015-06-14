@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Users::RegistrationsController < Devise::RegistrationsController
 
   def new
@@ -49,9 +51,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     def my_sanitizer
       if current_user.try("admin?")
-        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin, :password, :password_confirmation)
+        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin, :password, :password_confirmation, :current_password)
       else
-        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :password, :password_confirmation)
+        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :password, :password_confirmation, :current_password)
       end
     end
 
