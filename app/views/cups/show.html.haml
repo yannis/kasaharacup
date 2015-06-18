@@ -122,7 +122,7 @@
             = @headline.created_at.to_s :day_month_year
         =raw @headline.content
       .panel-footer
-        = link_to t('headlines.link'), headlines_path
+        = link_to t('headlines.link'), cup_headlines_path(@cup)
 
   / .panel.panel-default.competition
   /   .panel-heading
