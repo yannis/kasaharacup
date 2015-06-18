@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :kendocup_cup, class: 'Kendocup::Cup' do
-    start_on {rand(Date.civil(Date.current.year+1, 1, 1)..Date.civil(Date.current.year+10, 12, 31))}
+    date = Random.rand(Date.civil(Date.current.year+1, 1, 1)..Date.civil(Date.current.year+10, 12, 31))
+    start_on {date}
     deadline {|c|
       return nil if c.start_on.blank?
       start = Date.parse(c.start_on.to_s)

@@ -15,7 +15,7 @@ RSpec.describe ParticipationsController, type: :controller do
     context "when not logged in," do
       describe "on DELETE to :destroy the participation " do
         before {
-          delete :destroy, id: participation.to_param
+          delete :destroy, id: participation.to_param, cup_id: cup.to_param, locale: I18n.locale
         }
         should_be_asked_to_sign_in
       end
@@ -27,20 +27,18 @@ RSpec.describe ParticipationsController, type: :controller do
       describe "on DELETE to :destroy with a participation that does not belong to the user" do
         let!(:participation_count) {Kendocup::Participation.count}
         before {
-          delete :destroy, id: participation.to_param
+          delete :destroy, id: participation.to_param, cup_id: cup.to_param, locale: I18n.locale
         }
-        it {assigns(:participation).should == participation}
-        it "change Participation.count by -1" do
-          (participation_count - Kendocup::Participation.count).should eql 1
-        end
-        it {should set_flash.to('Participation successfully destroyed')}
-        it {expect(response).to redirect_to(user_path(user))}
+        it {expect(assigns(:participation)).to eql participation}
+        it { expect(participation_count - Kendocup::Participation.count).to eql 1}
+        it {expect(flash[:notice]).to match 'Participation successfully destroyed'}
+        it {expect(response).to redirect_to(root_path)}
       end
 
       describe "on DELETE to :destroy with a participation that does not belong to the user" do
         let(:another_participation) { create :kendocup_participation }
         before {
-          delete :destroy, id: another_participation.to_param
+          delete :destroy, id: another_participation.to_param, cup_id: cup.to_param, locale: I18n.locale
         }
         should_not_be_authorized
       end

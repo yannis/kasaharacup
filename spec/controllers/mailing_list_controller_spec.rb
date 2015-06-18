@@ -6,7 +6,7 @@ RSpec.describe MailingListsController, type: :controller do
   context "when not signed in" do
     describe "GET 'new'" do
       it "returns http success" do
-        get 'new'
+        get 'new', locale: I18n.locale
         expect(response).to be_success
       end
     end
@@ -21,7 +21,7 @@ RSpec.describe MailingListsController, type: :controller do
 
     describe "GET 'new'" do
       it "returns http success" do
-        get 'new'
+        get 'new', locale: I18n.locale
         expect(response).to be_success
       end
     end

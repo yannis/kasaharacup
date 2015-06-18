@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 ruby "2.2.0"
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
 # Use postgresql as the database for Active Record
@@ -73,6 +72,7 @@ group :developement do
   gem "guard-livereload"
   # gem "guard-spring"
   gem "rspec-rails"
+  gem "rspec-mocks"
 end
 
 group :test do

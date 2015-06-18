@@ -1,8 +1,8 @@
 require 'rails_helper'
 RSpec.describe CupsController, type:  :controller do
   let!(:cup1){create :kendocup_cup, start_on: Date.current+2.months, events: [create(:kendocup_event)] }
-  let(:cup2){create :kendocup_cup, start_on: Date.current-2.years}
-  let(:cup3){create :kendocup_cup, start_on: Date.current+1.year}
+  let!(:cup2){create :kendocup_cup, start_on: Date.current-2.years}
+  let!(:cup3){create :kendocup_cup, start_on: Date.current+1.year}
 
 
   context "When not logged in" do

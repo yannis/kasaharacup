@@ -143,7 +143,7 @@ RSpec.describe KenshisController, type: :controller do
         it {expect(assigns(:kenshi)).to eql basic_user_kenshi}
         it {expect(response).to redirect_to(cup_user_path(cup, basic_user_kenshi.user))}
         it {expect(flash[:notice]).to match /Registration successfully updated/}
-        it {expect(basic_user_kenshi.reload.last_name).to eql 'alaNma2'}
+        it {expect(basic_user_kenshi.reload.last_name).to eql 'Alanma2'}
       end
 
       describe "on PUT to :update with :id = basic_user_kenshi.to_param and invalid data," do
@@ -193,7 +193,7 @@ RSpec.describe KenshisController, type: :controller do
         end
 
         describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data," do
-          before {put :update, cup_id: cup.to_param, id: basic_user_kenshi.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale}
+          before {put :update, cup_id: cup.to_param, id: basic_user_kenshi.to_param, kenshi: {last_name: "AlaNma2"}, locale: I18n.locale}
           deadline_passed
         end
 

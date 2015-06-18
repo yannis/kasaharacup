@@ -140,16 +140,16 @@ RSpec.describe UsersController, type: :controller do
       describe "with invalid params" do
         it "assigns the user as user" do
           # Trigger the behavior that occurs when invalid params are submitted
-          User.any_instance.stub(:save).and_return(false)
+          # User.any_instance.stub(:save).and_return(false)
           put :update, id: user.to_param, user: {last_name: ''}, locale: I18n.locale, cup_id: cup.to_param
           expect(assigns(:user)).to eq(user)
         end
 
         it "re-renders the 'edit' template" do
           # Trigger the behavior that occurs when invalid params are submitted
-          User.any_instance.stub(:save).and_return(false)
+          # User.any_instance.stub(:save).and_return(false)
           put :update, id: user.to_param, user: {last_name: ''}, locale: I18n.locale, cup_id: cup.to_param
-          expect(response).to render_template "users/update"
+          expect(response).to render_template "users/edit"
         end
       end
     end
