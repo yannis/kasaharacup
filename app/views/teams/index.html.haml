@@ -9,4 +9,4 @@
       - if @ronins.present?
         %tr
           %td Ronins
-          %td{colspan: 2}=raw @ronins.map{|kenshi| link_to kenshi.full_name, kenshi }.join(', ')
+          %td{colspan: 2}=raw @ronins.map{|kenshi| link_to kenshi.full_name, cup_kenshi_path(@cup, kenshi) }.join(', ')
