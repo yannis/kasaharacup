@@ -40,10 +40,9 @@
           %div{class: "form-group #{p.errors.present? ? "has-error" : ""}"}
             .col-sm-10.col-sm-offset-2
               - if p.persisted?
-                = check_box_tag "#{g.object_name}[_destroy]", 0, true
-                = g.label :_destroy, c.name
-                = g.hidden_field :id
-                = hidden_field_tag "#{g.object_name}[_destroy]", 1
+                = label_tag "kenshi_individual_categories_#{c.id}", c.name
+                = label_tag "#{g.object_name}[_destroy]", "<span class='glyphicon glyphicon-trash'></span>".html_safe
+                = check_box_tag "#{g.object_name}[_destroy]"
               - else
                 = check_box_tag "kenshi[individual_category_ids][]", c.id, @kenshi.takes_part_to?(c), id: "kenshi_individual_categories_#{c.id}"
                 = label_tag "kenshi_individual_categories_#{c.id}", c.name
@@ -63,10 +62,13 @@
             - if @kenshi.purchased?(p)
               - purchase = @kenshi.purchases.detect{|purchase| purchase.product == p}
               = f.fields_for :purchases, purchase do |g|
-                = g.label :_destroy, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
-                = g.hidden_field :id
-                = check_box_tag "#{g.object_name}[_destroy]", 0, true
-                = hidden_field_tag "#{g.object_name}[_destroy]", 1
+                = g.label :product_id, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
+                = g.label :_destroy, "<span class='glyphicon glyphicon-trash'></span>".html_safe
+                = g.check_box :_destroy
+              / = f.fields_for :purchases, purchase do |g|
+              /   = g.label :_destroy, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
+              /   = g.hidden_field :id
+              /   = hidden_field_tag "#{g.object_name}[_destroy]", 1
             - else
               - purchase = @kenshi.purchases.new(product: p)
               = f.fields_for :purchases, purchase do |g|
