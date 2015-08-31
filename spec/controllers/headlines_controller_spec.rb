@@ -21,7 +21,7 @@ RSpec.describe HeadlinesController, type: :controller do
         it {expect(response).to be_success}
         it {expect(assigns(:headlines)).to_not be_nil}
         it {expect(response).to render_template(:index)}
-        it {expect(assigns(:headlines)).to eq [headline1, headline2, headline3]}
+        it {expect(assigns(:headlines)).to match_array [headline1, headline2, headline3]}
         it {expect(flash).to be_empty}
       end
 
