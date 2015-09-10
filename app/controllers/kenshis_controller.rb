@@ -74,7 +74,7 @@ class KenshisController < ApplicationController
       @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
       @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)
       origin_kenshi.participations.each do |participation|
-        @kenshi.participations << Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
+        @kenshi.participations << Kendocup::Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
       end
     else
       @kenshi.club = @user.club if @user.present?

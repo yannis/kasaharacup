@@ -13,9 +13,7 @@ public/test_system/*
 public/assets/*
 vendor/rails/
 vendor/bundle/
-tmp/cache/*
-tmp/capybara/*
-tmp/data/*
+tmp/*
 coverage
 *.sublime-project
 *.sublime-workspace
