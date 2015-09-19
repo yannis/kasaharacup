@@ -9,3 +9,4 @@ FactoryGirl.define do
     fee_eu {8}
   end
 end
+
