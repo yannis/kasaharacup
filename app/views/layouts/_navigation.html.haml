@@ -46,6 +46,9 @@
             %ul.dropdown-menu
               %li
                 = link_to "Settings", cup_user_path(@current_cup, current_user)
+              - if current_user.admin
+                %li
+                  = link_to "Admin", "/admin"
               %li
                 = link_to t('subnav.signedin.signout'), destroy_user_session_path
         - else
