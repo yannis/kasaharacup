@@ -61,7 +61,6 @@ class KenshisController < ApplicationController
       existing_kenshis = current_user.kenshis.where(first_name: current_user.
         first_name, last_name: current_user.last_name, cup: @current_cup)
       if existing_kenshis.present?
-        byebug
         redirect_to cup_kenshi_path(@current_cup, existing_kenshis.first, locale: I18n.locale), notice: t("kenshis.self.exist")
         return
       else
