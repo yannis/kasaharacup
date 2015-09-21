@@ -9,10 +9,23 @@ class User < Kendocup::User
     user = User.where(provider: "facebook", uid: auth.uid).first
     unless user
       birthday = auth.extra.raw_info.birthday.present? ? Date.strptime(auth.extra.raw_info.birthday, '%m/%d/%Y') : nil
-      user = User.new(first_name: auth.extra.raw_info.first_name, last_name: auth.extra.raw_info.last_name, female: (auth.extra.raw_info.gender=='female'), dob: birthday, provider: auth.provider, uid: auth.uid, email: auth.info.email, password: Devise.friendly_token[0,20])
-      user.skip_confirmation!
-      user.save
-      user
+      existing_user = User.find_by(email: auth.info.email, provider: nil, uid: nil)
+      if existing_user
+        user = existing_user
+        user.update_attributes({
+          first_name: (existing_user.first_name || auth.extra.raw_info.first_name),
+          last_name: (existing_user.last_name || auth.extra.raw_info.last_name),
+          female: (existing_user.female || (auth.extra.raw_info.gender=='female')),
+          dob: (existing_user.dob || birthday),
+          provider: auth.provider,
+          uid: auth.uid
+        })
+      else
+        user = User.new(first_name: auth.extra.raw_info.first_name, last_name: auth.extra.raw_info.last_name, female: (auth.extra.raw_info.gender=='female'), dob: birthday, provider: auth.provider, uid: auth.uid, email: auth.info.email, password: Devise.friendly_token[0,20])
+        user.skip_confirmation!
+        user.save
+        user
+      end
     end
     return user
   end
