@@ -58,7 +58,7 @@ class ApplicationController < Kendocup::ApplicationController
   def store_location
     session[:return_to] = request.fullpath
   end
-  
+
   def back
     redirect_back_or_default
   end
@@ -75,5 +75,14 @@ private
       devise_parameter_sanitizer.for(:sign_up) << :admin
     end
   end
+
+  def check_deadline
+    set_current_cup
+
+    if Time.current > @current_cup.deadline
+      redirect_to root_path, alert:  t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch') and return
+    end
+  end
+
 
 end
