@@ -79,7 +79,7 @@ private
   def check_deadline
     set_current_cup
     if !current_user.admin? && Time.current > @current_cup.deadline
-      flash[:danger] = t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch')
+      flash[:alert] = t('kenshis.deadline_passed', email: 'info@kendo-geneve.ch')
       redirect_to root_path and return
     end
   end
