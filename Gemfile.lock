@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/yannis/kendocup.git
-  revision: 107386758ca30b16ce9d3b4940ab2ec14fc18c1d
+  revision: 06d68110d11bbda57a7bf47be8b6a0ffedbea971
   specs:
     kendocup (0.0.1)
       activeadmin (= 1.0.0.pre1)
@@ -364,7 +364,7 @@ GEM
     method_source (0.8.2)
     mime-types (2.6.2)
     mini_portile (0.6.2)
-    minitest (5.8.0)
+    minitest (5.8.1)
     momentjs-rails (2.10.2)
       railties (>= 3.1)
     multi_json (1.11.2)
