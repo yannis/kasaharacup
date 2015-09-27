@@ -19,7 +19,7 @@ class CupsController < ApplicationController
       @headline = @cup.headlines.shown.order("headlines.created_at DESC").first
       respond_with @cup do |format|
         format.html {
-          if @cup.past?
+          if @cup.year.to_i == 2014
             render "show_past"
           else
             render "show"
