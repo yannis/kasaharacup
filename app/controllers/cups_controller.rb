@@ -19,8 +19,12 @@ class CupsController < ApplicationController
       @headline = @cup.headlines.shown.order("headlines.created_at DESC").first
       respond_with @cup do |format|
         format.html {
-          if @cup.year.to_i == 2014
-            render "show_past"
+          if Date.current > @cup.start_on.to_date
+            begin
+              render "show_past_#{@cup.year.to_i}"
+            rescue ActionView::MissingTemplate
+              render "show_past"
+            end
           else
             render "show"
           end
