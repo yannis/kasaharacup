@@ -83,6 +83,4 @@ private
       redirect_to root_path and return
     end
   end
-
-
 end

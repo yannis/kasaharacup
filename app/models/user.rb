@@ -35,6 +35,7 @@ class User < Kendocup::User
     cup.present? && cup.kenshis.where(first_name: self.first_name, last_name: last_name).present?
   end
 
+
 private
 
   def register_to_mailing_list

@@ -1,5 +1,4 @@
 $ ->
-  console.log "set select2 CALLED"
   $("input[data-behaviour='select2']").select2
 
     query: (query)->

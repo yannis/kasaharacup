@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       resources :purchases, only: [:destroy]
       resources :teams, only: [:index, :show]
       resources :users do
+        resources :charges
         resources :kenshis do
           member do
             get :duplicate, to: 'kenshis#new'
