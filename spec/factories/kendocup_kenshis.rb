@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :kendocup_kenshi, :class => 'Kendocup::Kenshi' do
+  factory :kendocup_kenshi, class: Kendocup::Kenshi do
     association :cup, factory: :kendocup_cup, start_on: "#{Date.current.year}-11-30"
     association :user, factory: :kendocup_user
     association :club, factory: :kendocup_club

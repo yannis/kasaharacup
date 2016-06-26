@@ -133,7 +133,7 @@ RSpec.describe UsersController, type: :controller do
 
         it "redirects to the user" do
           put :update, id: user.to_param, user: valid_attributes, locale: I18n.locale, cup_id: cup.to_param
-          expect(response).to render_template "devise/mailer/confirmation_instructions"
+          expect(response).to redirect_to [cup, user]
         end
       end
 

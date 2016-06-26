@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 ruby "2.3.0"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.5.1'
+gem 'rails', '4.2.6'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use SCSS for stylesheets
@@ -16,22 +16,21 @@ gem 'uglifier', '>= 1.3.0'
 
 gem "devise"
 gem "cancancan"
-gem 'stripe'
 
-gem 'omniauth-twitter'
+# gem 'omniauth-twitter'
 gem 'omniauth-facebook'
-gem 'omniauth-github'
-gem 'omniauth-google'
+# gem 'omniauth-github'
+# gem 'omniauth-google'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 gem "jquery-ui-rails"
-gem "select2-rails"
+gem "select2-rails", "3.5.10"
 gem "bootstrap3-datetimepicker-rails"
 gem "font-awesome-sass"
 gem 'compass-rails', github: "Compass/compass-rails"
 
-gem "asset_sync"
+# gem "asset_sync"
 gem 'gibbon'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 # gem 'turbolinks'

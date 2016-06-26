@@ -2,8 +2,9 @@ class KenshisController < ApplicationController
 
   prepend_before_filter :set_user
 
-  load_and_authorize_resource :cup, find_by: :year, class: Kendocup::Cup
-  load_and_authorize_resource :kenshi, shallow: true, class: Kendocup::Kenshi, through: [:cup, :user], param_method: :my_sanitizer
+  # load_and_authorize_resource :user
+  load_and_authorize_resource :cup, find_by: :year, class: "Kendocup::Cup"
+  load_and_authorize_resource :kenshi, find_by: :id, class: "Kendocup::Kenshi", shallow: true, through: [:cup, :user], param_method: :my_sanitizer, parent: false, except: [:new]
 
   before_filter :set_variables, only: [:new, :edit, :update, :create]
   before_filter :set_user
@@ -52,6 +53,7 @@ class KenshisController < ApplicationController
   end
 
   def new
+    authorize! :create, Kendocup::Kenshi
     @current_cup = @cup.presence || @current_cup
     if @user.blank? || (@user != current_user && !current_user.admin?)
       redirect_to new_cup_user_kenshi_path(@current_cup, current_user, locale: I18n.locale)
@@ -76,6 +78,7 @@ class KenshisController < ApplicationController
         @kenshi.participations << Kendocup::Participation.new(category: participation.category, team: participation.team, ronin: participation.ronin)
       end
     else
+      @kenshi = Kendocup::Kenshi.from(current_user)
       @kenshi.club = @user.club if @user.present?
       @title = t('kenshis.new.title')
     end

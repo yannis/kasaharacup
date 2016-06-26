@@ -62,7 +62,8 @@ en:
       accomodation:
         title: Accomodation
         # dormitory: "As every year, you can sleep for a small fee at the dormitory «des Charmettes» (you may book for it during registration)."
-        dormitory: "Unfortunately, this year we don't have access to our usual dormitory. We found an alternative and you can spend the night in the <a href='http://www.ville-geneve.ch/plan-ville/securite/dortoirs-protection-civile-paquis/' target='_blank'>“abri PC des Pâquis”</a> (booking during registration)."
+        # dormitory: "Unfortunately, this year we don't have access to our usual dormitory. We found an alternative and you can spend the night in the <a href='http://www.ville-geneve.ch/plan-ville/securite/dortoirs-protection-civile-paquis/' target='_blank'>“abri PC des Pâquis”</a> (booking during registration)."
+        dormitory: "We've found a new  and quite dormitory for you, but we're still waiting for a confirmation to our resrvetion. In the meantime you can already reserve your spot during registration. We'll contact you with all details as soon as we have news about the fees."
         hotels: "If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer."
       contact:
         title: Contact
