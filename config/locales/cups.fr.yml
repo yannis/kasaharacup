@@ -61,8 +61,10 @@ fr:
         # dormitory: "Comme chaque année, vous pourrez dormir au dortoir des Charmettes (réservation lors de l'inscription)."
 
         # dormitory: "Malheureusement cette année nous n'avons pas accès au dortoir habituel. Comme alternative, vous pouvez passer la nuit à <a href='http://www.ville-geneve.ch/plan-ville/securite/dortoirs-protection-civile-paquis/' target='_blank'>l'abri PC des Pâquis</a> (réservation lors de l'inscription)."
-        dormitory: "Nous avons trouvé un nouveau dortoir cette année, certainement plus calme que celui de l'année dernière. Nous attendons toujours une confirmation de notre réservation. En attendant, vous pouvez déjà réserver votre place lors de l'inscription. Nous vous recontacterons avec tous les détails dès que nous aurons les tarifs exacts."
-        hotels: "Si vous préfèrez quelque chose de plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir."
+        dormitory: "Cette année les dortoirs seront situés dans le complexe de la <a href='http://cite-uni.unige.ch/fr/nos-hebergements/dortoirs' target='_blank'>Cité Bleue</a> (Cité universitaire), pour la nuit du 17 au 18 septembre. Ils se trouvent à un arrêt de bus du centre du Bout-du-Monde ou dix minutes à pieds. Les draps sont fournis et les sacs de couchages sont interdits. Attention le nombre de place est limité à 50 personnes!
+          <br />
+          En réservant votre nuit au dortoir, vous recevrez également un pass pour les transports publics genevois (à conserver) pour les journées du samedi et du dimanche."
+        hotels: "Si vous préfèrez quelque chose d'encore plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir."
       contact:
         title: Contact
         text: "Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre."

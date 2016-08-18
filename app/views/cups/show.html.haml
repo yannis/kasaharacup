@@ -124,15 +124,15 @@
       .panel-footer
         = link_to t('headlines.link'), cup_headlines_path(@cup)
 
-  / .panel.panel-default.competition
-  /   .panel-heading
-  /     %h2= t '.tournament.title'
-  /   .panel-body
-  /     %p=raw t '.tournament.a'
-  /     %figure.img-thumbnail
-  /       = image_tag 'kasahara_toshiaki.jpg'
-  /       %figcaption Kasahara Toshiaki sensei
-  /     %p=raw t '.tournament.b'
+  .panel.panel-default.competition
+    .panel-heading
+      %h2= t '.tournament.title'
+    .panel-body
+      %p=raw t '.tournament.a'
+      %figure.img-thumbnail
+        = image_tag 'kasahara_toshiaki.jpg'
+        %figcaption Kasahara Toshiaki sensei
+      %p=raw t '.tournament.b'
 
   = form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "form" do
     = hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
