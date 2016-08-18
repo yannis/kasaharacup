@@ -109,8 +109,7 @@
       %p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
 
 .col-xs-12.col-md-4
-  = render "current_user_resume" unless @cup.year == 2014
-
+  = render "current_user_resume" if @cup.year == 2016
   - if @headline.present?
     .panel.panel-default.headlines
       .panel-heading
