@@ -35,7 +35,7 @@ class KenshisController < ApplicationController
         filename = Time.now.to_s(:datetime).gsub(/[^0-9a-z]/, '')+'_'+@title.gsub(/[^0-9a-zA-Z]/, "_").gsub('__', "_") + ".csv"
         send_data(
           Kendocup::Kenshi.to_csv(@kenshis),
-          type: 'text/csv; charset=utf-8; header=present',
+          as: 'text/csv; charset=utf-8; header=present',
           filename: filename
         )
       }
@@ -219,6 +219,7 @@ class KenshisController < ApplicationController
   private
     def set_user
       @user = User.find params[:user_id] if params[:user_id]
+      @products = @cup.products
     end
 
     def set_variables
