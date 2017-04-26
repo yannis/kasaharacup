@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
-ruby "2.3.1"
+ruby "2.3.3"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.6'
+gem 'rails', '4.2.8'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use SCSS for stylesheets
@@ -54,6 +54,8 @@ gem 'simple_form'
 gem "airbrake"
 
 gem 'best_in_place', github: 'bernat/best_in_place'
+
+gem 'seed_dump'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
