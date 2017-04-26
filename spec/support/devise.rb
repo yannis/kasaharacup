@@ -1,5 +1,5 @@
 RSpec.configure do |config|
-  config.include Devise::TestHelpers, type:  :controller
+  config.include Devise::Test::ControllerHelpers, type:  :controller
 
   def sign_in_admin_user(user=nil)
     @request.env["devise.mapping"] = Devise.mappings[:user]

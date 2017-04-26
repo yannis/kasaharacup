@@ -42,7 +42,7 @@ RSpec.describe TeamsController, type: :controller do
       let(:basic_user){ create :kendocup_user }
 
       before{
-        sign_in :user, basic_user
+        sign_in :user, scope: basic_user
       }
 
       describe "on GET to :index without param," do
