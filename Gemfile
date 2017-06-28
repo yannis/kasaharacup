@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 ruby "2.3.3"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.8'
+gem 'rails', '4.2.9'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use SCSS for stylesheets
@@ -93,4 +93,3 @@ group :production do |variable|
   gem 'unicorn'
   gem 'rails_12factor'
 end
-
