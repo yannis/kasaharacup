@@ -10,8 +10,7 @@ RSpec.describe PurchasesController, type: :controller do
     let!(:purchase) { create :kendocup_purchase, product: product, kenshi: kenshi }
 
     it {expect(purchase).to be_valid_verbose}
-
-
+    
     context "when not logged in," do
       describe "on DELETE to :destroy the purchase " do
         before {

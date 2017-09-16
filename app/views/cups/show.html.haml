@@ -79,7 +79,11 @@
             %td=raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
           - @cup.products.each do |product|
             %tr
-              %th= product.name
+              %th
+                = product.name
+                - if !product_available?(product)
+                  %br
+                    %mark (not available anymore)
               %td= "#{product.fee_chf} CHF / #{product.fee_eu} €"
 
   .row.venue
