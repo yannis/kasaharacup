@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby "2.3.3"
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+# Bundle edge Rails instead: gem 'rails', git: 'https://github.com/rails/rails'
 gem 'rails', '4.2.10'
 # Use postgresql as the database for Active Record
 gem 'pg', '0.20'
@@ -28,7 +28,7 @@ gem "jquery-ui-rails"
 gem "select2-rails", "3.5.10"
 gem "bootstrap3-datetimepicker-rails"
 gem "font-awesome-sass"
-gem 'compass-rails', github: "Compass/compass-rails"
+gem 'compass-rails', git: "https://github.com/Compass/compass-rails"
 
 # gem "asset_sync"
 gem 'gibbon'
@@ -45,7 +45,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-gem "kendocup", github: "yannis/kendocup"
+gem "kendocup", git: "https://github.com/yannis/kendocup"
 
 gem 'bootstrap-sass', '~> 3.3.4'
 
@@ -53,7 +53,7 @@ gem 'simple_form'
 
 gem "airbrake"
 
-gem 'best_in_place', github: 'bernat/best_in_place'
+gem 'best_in_place', git: 'https://github.com/bernat/best_in_place'
 
 gem 'seed_dump'
 

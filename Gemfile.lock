@@ -1,14 +1,14 @@
 GIT
-  remote: https://github.com/Compass/compass-rails.git
-  revision: 17414438f601d695225ba9c55f259d2ec557942c
+  remote: https://github.com/Compass/compass-rails
+  revision: be1f7516a8e781bedc6bd3cc34d5395c7c72b3f3
   specs:
-    compass-rails (3.0.2)
+    compass-rails (3.1.0)
       compass (~> 1.0.0)
       sass-rails (< 5.1)
       sprockets (< 4.0)
 
 GIT
-  remote: https://github.com/bernat/best_in_place.git
+  remote: https://github.com/bernat/best_in_place
   revision: 1b779e60ea912ab9c39d5c999b00c8ac44a8e535
   specs:
     best_in_place (3.1.1)
@@ -16,7 +16,7 @@ GIT
       railties (>= 3.2)
 
 GIT
-  remote: https://github.com/yannis/kendocup.git
+  remote: https://github.com/yannis/kendocup
   revision: 85f01bf7cf97e066691aa001592e41ef341ae3ba
   specs:
     kendocup (0.0.1)
@@ -97,7 +97,7 @@ GEM
       sass (>= 3.3.4)
     bootstrap3-datetimepicker-rails (4.17.47)
       momentjs-rails (>= 2.8.1)
-    bourbon (5.0.0)
+    bourbon (5.0.1)
       sass (~> 3.4)
       thor (~> 0.19)
     builder (3.2.3)
