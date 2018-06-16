@@ -51,8 +51,6 @@ gem 'bootstrap-sass', '~> 3.3.4'
 
 gem 'simple_form'
 
-gem "airbrake"
-
 gem 'best_in_place', git: 'https://github.com/bernat/best_in_place'
 
 gem 'seed_dump'

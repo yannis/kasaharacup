@@ -11,7 +11,6 @@ class MailingList
         return user_info['success_count'] > 0
       end
     rescue Exception => e
-      notify_airbrake(e) if Rails.env.production?
       Rails.logger.error "Mailchimp unreachable: #{e.message}"
       true
     end
