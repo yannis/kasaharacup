@@ -65,10 +65,6 @@
                 = g.label :product_id, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
                 = g.label :_destroy, "<span class='glyphicon glyphicon-trash'></span>".html_safe
                 = g.check_box :_destroy
-              / = f.fields_for :purchases, purchase do |g|
-              /   = g.label :_destroy, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
-              /   = g.hidden_field :id
-              /   = hidden_field_tag "#{g.object_name}[_destroy]", 1
             - else
               - if product_available?(p)
                 - purchase = @kenshi.purchases.new(product: p)
