@@ -23,10 +23,10 @@ en:
       fees:
         title: Registration fees
         adults:
-          title: Adults (over 16 yo)<br><em>+ Sunday lunch</em>
+          title: Adults (16 years old and more)<br><em>+ Sunday lunch</em>
           fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
         juniors:
-          title: Juniors (8 to 16 years old)<br><em>+ Sunday lunch</em>
+          title: Juniors (8 to 15 years old)<br><em>+ Sunday lunch</em>
           fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
         night:
           title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>
