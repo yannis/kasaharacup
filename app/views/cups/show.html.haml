@@ -84,7 +84,11 @@
                 - if !product_available?(product)
                   %br
                     %mark (not available anymore)
-              %td= "#{product.fee_chf} CHF / #{product.fee_eu} €"
+              %td
+                - if product.fee_chf == 0
+                  = t '.fees.variable'
+                - else
+                  = "#{product.fee_chf} CHF / #{product.fee_eu} €"
 
   .row.venue
     .col-xs-12.col-md-12.venue-title
@@ -153,7 +157,7 @@
   %h3= t '.social.title'
 
   %p
-    = link_to "<i class='fa fa-twitter'></i> | twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon', class: "btn btn-twitter"
+    = link_to "#{icon('fab', 'twitter')} | twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon', class: "btn btn-twitter"
     - if I18n.locale == :fr
       = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Cette année, je vais à la coupe Kasahara!", via: "kendo_in_geneva", lang: 'fr', related: "kendo_in_geneva", hashtags: "kasa2013"}
     - else
@@ -163,13 +167,13 @@
         var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
       }(document, 'script', 'twitter-wjs');
   %p
-    = link_to "<i class='fa fa-facebook'></i> | facebook".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon', class: "btn btn-facebook"
+    = link_to "#{icon('fab', 'facebook')} | facebook".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon', class: "btn btn-facebook"
     - if I18n.locale == :fr
       .fb-like{data: {href: "http://kasaharacup.com/fr", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
     - else
       .fb-like{data: {href: "http://kasaharacup.com/en", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
   %p
-    = link_to "<i class='fa fa-flickr'></i> | flickr".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon', class: "btn btn-flickr"
+    = link_to "#{icon('fab', 'flickr')} | flickr".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon', class: "btn btn-flickr"
   %p
     %script{src: "https://apis.google.com/js/platform.js"}
     .g-ytsubscribe{data: {channel: "KendoGeneva", layout: "default", count: "default"}}

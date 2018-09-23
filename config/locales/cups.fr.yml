@@ -31,6 +31,7 @@ fr:
         dinner:
           title: Repas du samedi soir<br><em>+ une boisson comprise</em>
           fee: "%{dinner_fees_chf} CHF ou %{dinner_fees_eur} €"
+        variable: Prix variable
       newsletter:
         register: "Inscrivez-vous pour recevoir toutes les informations concernant la compétition"
         email: Adresse email

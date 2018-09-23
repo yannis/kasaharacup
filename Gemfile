@@ -29,6 +29,7 @@ gem "select2-rails", "3.5.10"
 gem "bootstrap3-datetimepicker-rails"
 gem "font-awesome-sass"
 gem 'compass-rails', git: "https://github.com/Compass/compass-rails"
+gem "pkg-config", "~> 1.1"
 
 # gem "asset_sync"
 gem 'gibbon'

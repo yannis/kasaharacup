@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: https://github.com/yannis/kendocup
-  revision: 85f01bf7cf97e066691aa001592e41ef341ae3ba
+  revision: 50a06b758aaa7a2ee3e171504a90896d5bfe658b
   specs:
     kendocup (0.0.1)
       activeadmin (= 1.0.0)
@@ -94,7 +94,7 @@ GEM
       sass (>= 3.3.4)
     bootstrap3-datetimepicker-rails (4.17.47)
       momentjs-rails (>= 2.8.1)
-    bourbon (5.0.1)
+    bourbon (5.1.0)
       sass (~> 3.4)
       thor (~> 0.19)
     builder (3.2.3)
@@ -165,8 +165,8 @@ GEM
     ffi (1.9.23)
     figaro (1.1.1)
       thor (~> 0.14)
-    font-awesome-sass (5.0.9)
-      sass (>= 3.2)
+    font-awesome-sass (5.3.1)
+      sassc (>= 1.11)
     formatador (0.2.5)
     formtastic (3.1.5)
       actionpack (>= 3.2.13)
@@ -221,10 +221,10 @@ GEM
     http_parser.rb (0.6.0)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
-    inherited_resources (1.8.0)
-      actionpack (>= 4.2, <= 5.2)
+    inherited_resources (1.9.0)
+      actionpack (>= 4.2, < 5.3)
       has_scope (~> 0.6)
-      railties (>= 4.2, <= 5.2)
+      railties (>= 4.2, < 5.3)
       responders
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
@@ -263,7 +263,7 @@ GEM
     mail (2.7.0)
       mini_mime (>= 0.1.1)
     method_source (0.9.0)
-    mini_mime (1.0.0)
+    mini_mime (1.0.1)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     momentjs-rails (2.20.1)
@@ -272,7 +272,7 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.0.0)
     nenv (0.3.0)
-    nokogiri (1.8.2)
+    nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -294,8 +294,7 @@ GEM
     orm_adapter (0.5.0)
     pdf-core (0.7.0)
     pg (0.20.0)
-    polyamorous (1.3.3)
-      activerecord (>= 3.0)
+    pkg-config (1.3.1)
     prawn (2.2.2)
       pdf-core (~> 0.7.0)
       ttfunk (~> 1.5)
@@ -341,12 +340,11 @@ GEM
       thor (>= 0.18.1, < 2.0)
     raindrops (0.19.0)
     rake (12.3.1)
-    ransack (1.8.8)
-      actionpack (>= 3.0)
-      activerecord (>= 3.0)
-      activesupport (>= 3.0)
+    ransack (1.8.9)
+      actionpack (>= 3.0, <= 5.1.1)
+      activerecord (>= 3.0, <= 5.1.1)
+      activesupport (>= 3.0, <= 5.1.1)
       i18n
-      polyamorous (~> 1.3.2)
     rb-fsevent (0.10.3)
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
@@ -386,6 +384,9 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sassc (1.12.1)
+      ffi (~> 1.9.6)
+      sass (>= 3.3.0)
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
@@ -406,7 +407,7 @@ GEM
       activemodel (> 4)
     spring (2.0.2)
       activesupport (>= 4.2)
-    sprockets (3.7.1)
+    sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
     sprockets-rails (3.2.1)
@@ -464,6 +465,7 @@ DEPENDENCIES
   kendocup!
   omniauth-facebook
   pg (= 0.20)
+  pkg-config (~> 1.1)
   quiet_assets
   rails (= 4.2.10)
   rails_12factor
