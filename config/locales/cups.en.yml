@@ -34,6 +34,7 @@ en:
         dinner:
           title: Saturday night dinner
           fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
+        variable: Price variable
       newsletter:
         register: "Subscribe to our mailing list to get the latest new about the competition"
         email: Email address

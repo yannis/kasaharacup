@@ -59,10 +59,11 @@
       - @cup.products.all.each do |p|
         .form-group
           .col-sm-10.col-sm-offset-2
+            - price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €"
             - if @kenshi.purchased?(p)
               - purchase = @kenshi.purchases.detect{|purchase| purchase.product == p}
               = f.fields_for :purchases, purchase do |g|
-                = g.label :product_id, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
+                = g.label :product_id, "#{p.name} (#{price})"
                 = g.label :_destroy, "<span class='glyphicon glyphicon-trash'></span>".html_safe
                 = g.check_box :_destroy
             - else
@@ -70,9 +71,11 @@
                 - purchase = @kenshi.purchases.new(product: p)
                 = f.fields_for :purchases, purchase do |g|
                   = check_box_tag "#{g.object_name}[product_id]", p.id
-                  = g.label :product_id, "#{p.name} (#{p.fee_chf} CHF/#{p.fee_eu} €)"
+                  = g.label :product_id, "#{p.name} (#{price})"
               - else
                 %p= t('kenshis.form.not_avalaible', product_name: p.name)
+            - if p.description.present?
+              %p.help-block= p.description
   .actions
     = submit_or_cancel_form(f, f.object.new_record? ? t(".button.create") : t(".button.update"))
     %p.help-block= t '.button_info', deadline: l(@cup.deadline, format: :long)
