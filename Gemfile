@@ -46,6 +46,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# gem "kendocup", path: "/Users/yannis/railsapps/kendocup"
 gem "kendocup", git: "https://github.com/yannis/kendocup"
 
 gem 'bootstrap-sass', '~> 3.3.4'
