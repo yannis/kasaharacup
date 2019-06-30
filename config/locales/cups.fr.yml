@@ -20,10 +20,10 @@ fr:
       fees:
         title: Combien ça coûte?
         adults:
-          title: Adultes (16 ans et plus)<br><em>+ lunch du dimanche</em>
+          title: Adultes – né(e) en 2001 ou avant<br><em>+ lunch du dimanche</em>
           fee: "%{adult_fees_chf} CHF ou %{adult_fees_eur} €"
         juniors:
-          title: Juniors (8 à 15 ans)<br><em>+ lunch du dimanche</em>
+          title: Juniors – né(e) en 2002 ou après<br><em>+ lunch du dimanche</em>
           fee: "%{junior_fees_chf} CHF ou %{junior_fees_eur} €"
         night:
           title: Nuit au dortoir<br><em>+ petit-déjeuner (avec votre sac de couchage)</em>
