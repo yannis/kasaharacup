@@ -46,13 +46,16 @@
             %tr
               %th= c.name.capitalize
               %td
-                - if c.min_age
+                - if c.description.present?
+                  = c.description
+                - elsif c.min_age
                   = c.max_age ? t("categories.from") : t("categories.dès")
                   = c.min_age
-                - if c.max_age
+                  = t("categories.yo")
+                - elsif c.max_age
                   = t("categories.to")
                   = c.max_age
-                = t("categories.yo")
+                  = t("categories.yo")
 
           - @cup.team_categories.each do |c|
             %tr
@@ -172,8 +175,6 @@
       .fb-like{data: {href: "http://kasaharacup.com/fr", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
     - else
       .fb-like{data: {href: "http://kasaharacup.com/en", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-  %p
-    = link_to "#{icon('fab', 'flickr')} | flickr".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon', class: "btn btn-flickr"
   %p
     %script{src: "https://apis.google.com/js/platform.js"}
     .g-ytsubscribe{data: {channel: "KendoGeneva", layout: "default", count: "default"}}
