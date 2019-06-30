@@ -49,7 +49,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem "kendocup", path: "/Users/yannis/railsapps/kendocup"
 gem "kendocup", git: "https://github.com/yannis/kendocup"
 
-gem 'bootstrap-sass', '~> 3.3.4'
+gem 'bootstrap-sass', '~> 3.4.1'
 
 gem 'simple_form'
 
