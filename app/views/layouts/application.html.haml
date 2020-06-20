@@ -7,7 +7,10 @@
     %meta{"http-equiv"=>"Content-Type", :content=>"text/html; charset=utf-8"}/
     %meta{name: "author", content: "Yannis Jaquet"}/
     %meta{name: "robots", content: "all"}
-    %meta{name: 'description', content: "Kasa cup"}
+    - if I18n.locale == :fr
+      %meta{name: 'description', content: "Coupe Kasahara, Tournoi International de Kendo, Genève, Suisse"}
+    - else
+      %meta{name: 'description', content: "Kasahara Cup, International Kendo tournament, Geneva Switzerland"}
     = csrf_meta_tag
     = stylesheet_link_tag 'application', media: nil, rel: "stylesheet"
     /[if IE]
