@@ -28,7 +28,7 @@
               - Kendocup::Cup.order(start_on: :desc).each do |cup|
                 %li
                   = link_to cup.year, cup_path(cup)
-      - unless @current_cup.past?
+      - unless @current_cup.past? || @current_cup.start_on.year == 2020
         .navbar-form.navbar-left
           - if user_signed_in?
             = link_to "<span class='glyphicon glyphicon-plus'></span> #{t("navigation.register.text")}".html_safe, cup_user_path(@current_cup, current_user.id, locale: I18n.locale), title: t("navigation.register.title").html_safe,  data: {toggle: "tooltip", placement: "bottom"}, class: "bs-tooltip btn btn-info navbar-btn btn-sm"
