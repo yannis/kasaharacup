@@ -1,180 +1,34 @@
-.col-xs-12.col-md-8
+.col-xs-12
   .row
     .jumbotron
       %h1
         = t 'layout.header.title'
         = @cup.year
+        😢
         %br
         %small
           - if @cup.end_on
-            = "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :long)},"
+            = "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :day_only)} #{l(@cup.end_on, format: :month_only)},"
           - else
             = "#{l(@cup.start_on, format: :long)}, "
           = t("layout.header.title_em")
-  .row#deadline
-    .col-xs-12.col-md-12.alert.alert-warning
-      - if Time.current > @cup.deadline
-        =raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
-      - else
-        =raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))
 
   .row#program
-    .col-xs-12.col-md-12
-      %h2= t '.program.title'
-    - @grouped_events.each do |date, events|
-      .col-xs-12.col-md-6
-        %table.table
-          %thead
-            %tr
-              %td{colspan: 2}
-                %h3
-                  = l date, format: :short
-          %tbody
-            - for event in events
-              %tr
-                %th
-                  = event.start_on.to_s(:time_only)
-                %td
-                  = event.name
-
-  .row#categories_and_fees
-    #categories.col-xs-12.col-md-6
-      %h2= t '.categories.title'
-      %table.table
-        %tbody
-          - @cup.individual_categories.each do |c|
-            %tr
-              %th= c.name.capitalize
-              %td
-                - if c.description.present?
-                  = c.description
-                - elsif c.min_age
-                  = c.max_age ? t("categories.from") : t("categories.dès")
-                  = c.min_age
-                  = t("categories.yo")
-                - elsif c.max_age
-                  = t("categories.to")
-                  = c.max_age
-                  = t("categories.yo")
-
-          - @cup.team_categories.each do |c|
-            %tr
-              %th= c.name.capitalize
-              %td
-                = "#{c.description},"
-                - if c.min_age
-                  = c.max_age ? t("categories.from") : t("categories.dès")
-                  = c.min_age
-                - if c.max_age
-                  = t("categories.to")
-                  = c.max_age
-                = t("categories.yo")
-
-    #fees.col-xs-12.col-md-6
-      %h2= t '.fees.title'
-      %table.table
-        %tbody
-          %tr
-            %th=raw t '.fees.adults.title'
-            %td=raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur
-          %tr
-            %th=raw t '.fees.juniors.title'
-            %td=raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
-          - @cup.products.each do |product|
-            %tr
-              %th
-                = product.name
-                - if !product_available?(product)
-                  %br
-                    %mark (not available anymore)
-              %td
-                - if product.fee_chf == 0
-                  = t '.fees.variable'
-                - else
-                  = "#{product.fee_chf} CHF / #{product.fee_eu} €"
-
-  .row.venue
-    .col-xs-12.col-md-12.venue-title
-      %h2= t '.venue.title'
-    .col-xs-12.col-md-6.venue-details
-      %p=raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
-      %h3= t '.venue.address'
+    - if I18n.locale == :fr
+      %p Chères amies et chers amis,
       %p
-        Centre sportif du Bout-du-Monde, Hall A
-        %br
-        Route de Vessy 12
-        %br
-        1206 Genève
-        %br
-        %em
-          GPS: 46.180588,6.155893
-    .col-xs-12.col-md-6.venue-map
-      = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
-  .row.accomodation_contact
-    .col-xs-12.col-md-6.venue
-      %h2= t '.accomodation.title'
-      %p=raw t '.accomodation.dormitory'
-      %p=raw t '.accomodation.hotels'
-    .col-xs-12.col-md-6.contact
-      %h2= t '.contact.title'
-      %p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
-
-.col-xs-12.col-md-4
-  = render "current_user_resume" if @cup.year == 2016
-  - if @headline.present?
-    .panel.panel-default.headlines
-      .panel-heading
-        %h2= t 'headlines.title'
-      .panel-body
-        %h4
-          = @headline.title
-          %small
-            = @headline.created_at.to_s :day_month_year
-        =raw @headline.content
-      .panel-footer
-        = link_to t('headlines.link'), cup_headlines_path(@cup)
-
-  .panel.panel-default.competition
-    .panel-heading
-      %h2= t '.tournament.title'
-    .panel-body
-      %p=raw t '.tournament.a'
-      %figure.img-thumbnail
-        = image_tag 'kasahara_toshiaki.jpg'
-        %figcaption Kasahara Toshiaki sensei
-      %p=raw t '.tournament.b'
-
-  = form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "form" do
-    = hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
-    = hidden_field_tag :id, "4b7d62b6b3"
-    .panel.panel-default.contact
-      .panel-heading
-        %h3
-          = label_tag 'EMAIL', "Newsletter"
-      .panel-body.form-inline
-        .form-group
-          = email_field_tag 'EMAIL', nil, required: true, placeholder: t('.newsletter.email'), class: "form-control"
-          = button_tag t('.newsletter.button'), class: "btn btn-info"
-        %p.help-block= t('.newsletter.register')
-
-  %h3= t '.social.title'
-
-  %p
-    = link_to "#{icon('fab', 'twitter')} | twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon', class: "btn btn-twitter"
-    - if I18n.locale == :fr
-      = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Cette année, je vais à la coupe Kasahara!", via: "kendo_in_geneva", lang: 'fr', related: "kendo_in_geneva", hashtags: "kasa2013"}
+        Au vu des circonstances inédites rencontrées cette année, la section kendo du Shung Do Kwan Budo a malheureusemnt dû prendre la décision d'annuler sa traditionnelle Coupe Kasahara qui aurait dû se tenir les 26 et 27 septembre 2020.
+      %p
+        La raison principale, et ce n'est pas la seule, est que pour l'instant nous avons aucune garantie de pouvoir accèder à la salle dans laquelle se tient d'habitude le tournoi ce qui empêche toute visibilité quand à la bonne tenue de celui-ci.
+      %p
+        Toutefois, ce n’est que partie remise, car évidemment, nous organiserons à nouveau la Coupe Kasahara l’année prochaine et nous nous réjouissons d’avance de vous revoir nombreux au mois de septembre 2021.
+      %p
+        D’ici là, veuillez trouver ici l’assurance de notre amitié sincère et nous vous souhaitons de prendre soin de vous et de vos proches.
+      %p ❤️❤️❤️
     - else
-      = link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Checkout the kasaharacup.com webpage!", via: "kendo_in_geneva", related: "kendo_in_geneva", hashtags: "kasa2013"}
-    :javascript
-      !function(d,s,id){
-        var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
-      }(document, 'script', 'twitter-wjs');
-  %p
-    = link_to "#{icon('fab', 'facebook')} | facebook".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon', class: "btn btn-facebook"
-    - if I18n.locale == :fr
-      .fb-like{data: {href: "http://kasaharacup.com/fr", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-    - else
-      .fb-like{data: {href: "http://kasaharacup.com/en", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-  %p
-    %script{src: "https://apis.google.com/js/platform.js"}
-    .g-ytsubscribe{data: {channel: "KendoGeneva", layout: "default", count: "default"}}
+      %p Dear friends Kenshis,
+      %p In view of the unprecedented circumstances encountered this year, the Kendo section of Shung Do Kwan Budo unfortunately had to take the decision to cancel its traditional Kasahara Cup which should have been held on 26 and 27 September 2020.
+      %p The main reason, and it is not the only one, is that for the moment we have no guarantee of being able to access the hall where the tournament is usually held, which prevents any visibility as to the good holding of the tournament.
+      %p However, this is only a postponement, because of course, we will organize again the Kasahara Cup next year and we look forward to seeing many of you again in September 2021.
+      %p Until then, please find here the assurance of our sincere friendship and we wish you and your loved ones the best of care.
+      %p ❤️❤️❤️
