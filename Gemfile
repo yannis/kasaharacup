@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby "2.5.5"
+ruby "2.5.8"
 
 # Bundle edge Rails instead: gem 'rails', git: 'https://github.com/rails/rails'
 gem 'rails', '4.2.11.3'
@@ -84,7 +84,8 @@ group :test do
   gem 'email_spec'
   gem "factory_girl_rails"
   gem "selenium-webdriver"
-  gem "capybara-webkit"
+  gem "capybara"
+  gem "webdrivers"
   # gem "minitest" # temporary fix for https://github.com/thoughtbot/shoulda-matchers/issues/408
   gem 'shoulda-matchers', require: false
 end
