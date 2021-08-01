@@ -48,7 +48,6 @@ en:
       button:
         create: "Register"
         update: "Update registration"
-      facebook: Register or sign in with
       oldfashion: or do it the oldfashioned way
       chose_team: Chose an existing team
       create_team: or create a new one

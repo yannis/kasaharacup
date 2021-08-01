@@ -1,8 +1,4 @@
 %p.devise-shared-links
-  - if devise_mapping.omniauthable?
-    - resource_class.omniauth_providers.each do |provider|
-      = link_to "#{icon('fab', provider)} | #{t("devise.links.oauth")} #{provider.to_s.titleize}".html_safe, user_facebook_omniauth_authorize_path, class: "btn btn-sm btn-#{provider.to_s}"
-      %br
   - if controller_name != 'sessions'
     = link_to t("devise.links.sign_in"), new_user_session_path
     %br
