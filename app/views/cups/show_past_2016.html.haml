@@ -156,14 +156,8 @@
       !function(d,s,id){
         var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
       }(document, 'script', 'twitter-wjs');
-  %p
-    = link_to "#{icon('fab', 'facebook')} | facebook".html_safe, "https://www.facebook.com/kendogeneve", id: 'facebook_icon', class: "btn btn-facebook"
-    - if I18n.locale == :fr
-      .fb-like{data: {href: "http://kasaharacup.com/fr", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-    - else
-      .fb-like{data: {href: "http://kasaharacup.com/en", send: "true", layout: "button_count", width: "100", 'show-faces' => "false"}}
-  %p
-    = link_to "#{icon('fab', 'flickr')} | flickr".html_safe, "https://www.flickr.com/photos/8469782@N03", id: 'flickr_icon', class: "btn btn-flickr"
+
+
   %p
     %script{src: "https://apis.google.com/js/platform.js"}
     .g-ytsubscribe{data: {channel: "KendoGeneva", layout: "default", count: "default"}}

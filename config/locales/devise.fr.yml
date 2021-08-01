@@ -24,9 +24,6 @@ fr:
         subject: "Instructions pour changer le mot de passe"
       unlock_instructions:
         subject: "Instructions pour déverrouiller le compte"
-    omniauth_callbacks:
-      failure: "Nous n'avons pas pu vous authentifier via %{kind} : '%{reason}'."
-      success: 'Authentifié avec succès via %{kind}.'
     passwords:
       title: Changez de mot de passe
       no_token: "Vous ne pouvez accéder à cette page sans passer par un e-mail de réinitialisation de mot de passe. Si vous êtes passé par un e-mail de ce type, assurez-vous d'utiliser l'URL complète."

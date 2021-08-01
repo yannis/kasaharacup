@@ -17,11 +17,6 @@ gem 'uglifier', '>= 1.3.0'
 gem "devise", ">= 4.6.0"
 gem "cancancan"
 
-# gem 'omniauth-twitter'
-gem 'omniauth-facebook'
-# gem 'omniauth-github'
-# gem 'omniauth-google'
-
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 gem "jquery-ui-rails"
