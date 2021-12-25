@@ -13,12 +13,14 @@ gem "pg", "~> 1.1"
 # Server
 gem "puma", "~> 5.0"
 
-# Authentication
-gem "devise", "~> 4.8"
+# Authentication and Authorization
+gem "devise"
+gem "cancancan"
 
 # Front stuff
 gem "cssbundling-rails"
 gem "jsbundling-rails"
+gem "sass-rails"
 gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
@@ -39,8 +41,16 @@ gem "rack-cors"
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# activeadmin
+gem "activeadmin", github: "tagliala/activeadmin", branch: "feature/railties-7" # FIXME: revert to stable
+gem "arbre", github: "activeadmin/arbre" # FIXME: remove
+gem "inherited_resources", github: "activeadmin/inherited_resources" # FIXME: remove
+gem "kaminari", github: "kaminari/kaminari" # FIXME: remove
+gem "ransack", github: "activerecord-hackery/ransack" # FIXME: remove
+
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]
+  gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "faker"
   gem "rspec-rails", "~> 5.0.0"
