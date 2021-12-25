@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Inter';
+    src: url("Inter.ttf");
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #de7012;
+    color: #fff;
+  }
+
+  ::-moz-selection  {
+    background-color: #de7012;
+    color: #fff;
+  }
+
+  .display-1,
+  .display-2,
+  .display-3 {
+    color: #27231F;
+    font-weight: 800;
+    letter-spacing: -.005em;
+    line-height: 1.1;
+    text-align: center;
+  }
+
+  .display-1 {
+    --font-size-min: 40px;
+    --font-size-max: 100px;
+    --scaler: 5.75vw;
+    font-size: clamp( var(--font-size-min), var(--scaler), var(--font-size-max) );
+    line-height: .9;
+  }
+
+  .display-2 {
+    --font-size-min: 30px;
+    --font-size-max: 60px;
+    --scaler: 5.75vw;
+    font-size: clamp( var(--font-size-min), var(--scaler), var(--font-size-max) );
+  }
+
+  .display-3 {
+    --font-size-min: 22px;
+    --font-size-max: 32px;
+    --scaler: 5.75vw;
+    font-size: clamp( var(--font-size-min), var(--scaler), var(--font-size-max) );
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center px-4 py-2 bg-transparent border-transparent font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-md transition-all;
+  }
+
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand-light focus:ring-brand active:bg-brand-dark;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-50 focus:ring-brand;
+  }
+}
