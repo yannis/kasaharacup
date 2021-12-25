@@ -1,0 +1,19 @@
+---
+include:
+- "**/*.rb"
+exclude:
+- spec/**/*
+- vendor/**/*
+require: []
+domains: []
+reporters:
+- rubocop
+formatter:
+  rubocop:
+    cops: safe
+    except: []
+    only: []
+    extra_args: []
+require_paths: []
+plugins: []
+max_files: 0
