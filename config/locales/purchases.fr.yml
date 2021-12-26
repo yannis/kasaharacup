@@ -1,0 +1,7 @@
+fr:
+  purchases:
+    destroy:
+      title: Détruire
+      confirm: Etes-vous bien sûr de vouloir détruire cette extra? Le processus est irréversible…
+      notice: "Extra détruit avec succès"
+      alert: "Erreur lors de la destruction de l'extra"

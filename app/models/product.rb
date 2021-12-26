@@ -3,7 +3,7 @@
 require "translate"
 class Product < ApplicationRecord
   belongs_to :cup
-  belongs_to :event
+  belongs_to :event, optional: true
   has_many :purchases, dependent: :destroy, autosave: true
   has_many :kenshis, through: :purchases
 

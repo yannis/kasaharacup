@@ -77,18 +77,17 @@ class Team < ApplicationRecord
   end
 
   def poster_name
-    name.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n, "").upcase.to_s
+    name.mb_chars.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase.to_s
   end
 
   def fitness
     kenshis.inject(0) { |sum, k| sum + k.fitness }
   end
 
-  protected
-    def number_of_participations
-      if participations.count > 6
-        errors.add(:participations,
-          I18n.t("activerecord.errors.models.team.participations"))
-      end
+  protected def number_of_participations
+    if participations.count > 6
+      errors.add(:participations,
+        I18n.t("activerecord.errors.models.team.participations"))
     end
+  end
 end

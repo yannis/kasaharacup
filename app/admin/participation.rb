@@ -11,7 +11,8 @@ ActiveAdmin.register Participation, as: "Participation" do
 
     def edit
       participation = Participation.find(params[:id])
-      @page_title = "Edit participation of #{participation.kenshi.full_name} to category #{participation.category.name} (#{participation.category.year})"
+      @page_title = "Edit participation of #{participation.kenshi.full_name}"\
+       " to category #{participation.category.name} (#{participation.category.year})"
     end
   end
 
@@ -27,7 +28,8 @@ ActiveAdmin.register Participation, as: "Participation" do
   end
 
   show title: proc { |participation|
-                "Participation of #{participation.kenshi.full_name} to category #{participation.category.name} (#{participation.category.year})"
+                "Participation of #{participation.kenshi.full_name} to category"\
+                " #{participation.category.name} (#{participation.category.year})"
               } do
     attributes_table do
       row :kenshi

@@ -6,30 +6,29 @@ class Participation < ApplicationRecord
   attr_writer :category_individual, :category_team
   belongs_to :category, polymorphic: true, autosave: true
   belongs_to :kenshi, inverse_of: :participations
-  belongs_to :team
+  belongs_to :team, optional: true
 
   before_validation :assign_category
 
   # validates :category, presence: true
 
   validates :pool_position, presence: {if: lambda { |p| p.pool_number.present? }}
-  validates :kenshi_id, uniqueness: {scope: [:category_type, :category_id], if: lambda { |p|
-                                                                                  p.ronin.blank?
-                                                                                }, allow_nil: true}
+  validates :kenshi_id,
+    uniqueness: {scope: [:category_type, :category_id], if: ->(p) { p.ronin.blank? }, allow_nil: true}
   validates :pool_number, numericality: {only_integer: true, greater_than: 0, allow_nil: true}
 
-  validates_each :category do |record, attr, value|
-    kenshi = record.kenshi
-    category = record.category
+  validates_each :category do |participation, attr, value|
+    kenshi = participation.kenshi
+    category = participation.category
+    next unless kenshi && category
 
-    # if kenshi && category
     age = kenshi.age_at_cup
     if category.present?
       if category.min_age && age < category.min_age
-        record.errors.add(attr, :too_young, name: category.name)
+        participation.errors.add(attr, :too_young, name: category.name)
       end
       if category.max_age && age > category.max_age
-        record.errors.add(attr, :too_old, name: category.name)
+        participation.errors.add(attr, :too_old, name: category.name)
       end
     end
   end

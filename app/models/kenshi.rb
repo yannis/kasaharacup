@@ -64,7 +64,8 @@ source_type: "IndividualCategory"
     return 0 if dob.blank?
 
     cup_start = cup.start_on
-    cup_start.year - dob.year - (cup_start.month > dob.month || (cup_start.month == dob.month && cup_start.day >= dob.day) ? 0 : 1)
+    month_diff = (cup_start.month > dob.month || (cup_start.month == dob.month && cup_start.day >= dob.day) ? 0 : 1)
+    cup_start.year - dob.year - month_diff
   end
 
   def junior?
@@ -140,7 +141,7 @@ source_type: "IndividualCategory"
         s.first + "."
       }.join
     end
-    poster_name.join(" ").mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n, "").upcase.to_s
+    poster_name.join(" ").mb_chars.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase.to_s
   end
 
   def logs
@@ -151,11 +152,10 @@ source_type: "IndividualCategory"
     (grade.to_f / age_at_cup.to_f).round(4)
   end
 
-  private
-    def format
-      # use POSIX bracket expression here
-      self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
-      self.first_name = first_name.mb_chars.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
-      self.email = email.downcase if email
-    end
+  private def format
+    # use POSIX bracket expression here
+    self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
+    self.first_name = first_name.mb_chars.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
+    self.email = email.downcase if email
+  end
 end

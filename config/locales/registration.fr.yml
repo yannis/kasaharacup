@@ -1,0 +1,75 @@
+fr:
+  activerecord:
+    attributes:
+      registration:
+        first_name: "Prénom"
+        last_name: 'Nom'
+        dob: 'Date de naissance'
+        gender: 'Sexe'
+        female: Femme
+        male: Homme
+    errors:
+      models:
+        registration:
+          attributes:
+            dob:
+              blank: 'requise pour les juniors'
+  registrations: #views
+    self:
+      exist: "Il semblerait que vous soyez déjà inscrit. Voulez-vous modifier cette inscription?"
+    show:
+      mr: M.
+      ms: Mme
+      register_someone_else: "Inscrivez quelqu'un d'autre à la compétition"
+    index:
+      title: Toutes les inscriptions
+      title_team: Inscriptions Team
+      title_open: Inscriptions Open
+      title_ladies: Inscriptions Ladies
+      title_juniors: Inscriptions Juniors
+      no_registrations: "Pas encore d'inscription…"
+      enroll_someone: "Inscrivez quelqu'un!"
+      title_for_user: "Les inscriptions de %{user_full_name}"
+    destroy:
+      title: Détruire
+      confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
+    edit:
+      title: "Modifiez l'inscription de %{full_name}"
+    new:
+      title: Inscrivez quelqu'un à la compétition
+      yourself: Finalisez votre inscription à la compétition
+      duplicate: "Dupliquez l'inscription de %{full_name}"
+      button: Confirmez l'inscription
+    form:
+      explanation: "Pour vous inscrire à la compétition, vous devez d'abord vous connecter ou créez un compte. Ce compte vous permettra ensuite de vous inscrire vous et vos-coéquipiers à la compétition et de modifer ces inscriptions le cas échéant."
+      button:
+        create: "Confirmez l'inscription"
+        update: "Modifiez l'inscription"
+      oldfashion: ou utilisez le formulaire ci-dessous
+      chose_team: Choisissez une équipe existante
+      create_team: ou créez une nouvelle équipe
+      saturday_night: Diner du samedi soir
+      dormitory: Dortoire
+      ronin_info: Cochez cette boîte si vous voulez participez à la compétition par équipe mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
+      team_id_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers.
+      team_name_info: "Si l'équipe à laquelle vous avez prévu de participer n'existe pas encore dans le menu déroulant ci-dessus, créez-là en lui donnant un nom ici."
+      button_info: "Vous pourrez modifier cette inscription jusqu'au %{deadline}."
+      sign_in:
+        text: "Si vous avez déjà un compte, s'il vous plaît"
+        link: connectez-vous.
+    create:
+      flash:
+        notice: Kenshi inscrit avec succès
+    update:
+      flash:
+        notice: Inscription modifiée avec succès
+    deadline_passed: "Date limite d'inscription dépassée. Please contact <a href='mailto:%{email}'>%{email}</a>."
+  registration:
+    title: Inscriptions
+    link:
+      title: Vous avez déjà
+      registration: inscription
+    deadline: "Attention: le dernier délai pour vous inscrire est le %{deadline}!"
+  last_registrations:
+    title: Dernières inscriptions
+    all: Toute les inscriptions

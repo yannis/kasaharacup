@@ -1,0 +1,11 @@
+en:
+  layout:
+    header:
+      title: Kasahara Cup
+      title_em: "Geneva, Switzerland"
+    footer:
+      cright: www.kasaharacup.com is made by the kendo section of the
+      media: "Pics, vids, links and more…"
+    form:
+      mandatory: marks mandatory fields
+      date_placeholder: dd-mm-yyyy

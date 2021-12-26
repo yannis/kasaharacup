@@ -1,0 +1,83 @@
+fr:
+  activerecord:
+    # models:
+    #   kenshi: inscription
+    attributes:
+      kenshi:
+        mr: M.
+        ms: Mme
+        first_name: "Prénom"
+        last_name: 'Nom'
+        name: Nom
+        dob: 'Date de naissance'
+        gender: 'Sexe'
+        female: Femme
+        male: Homme
+        categories: Catégories
+    errors:
+      models:
+        kenshi:
+          attributes:
+            dob:
+              blank: 'requise pour les juniors'
+  kenshis: #views
+    self:
+      exist: "Il semblerait que vous soyez déjà inscrit. Voulez-vous modifier cette inscription?"
+    show:
+      mr: M.
+      ms: Mme
+      register_someone_else: "Inscrivez quelqu'un d'autre"
+    index:
+      title: Toutes les inscriptions
+      title_team: Inscriptions Team
+      title_open: Inscriptions Open
+      title_ladies: Inscriptions Ladies
+      title_juniors: Inscriptions Juniors
+      no_kenshis: "Pas encore d'inscription…"
+      enroll_someone: "Inscrivez quelqu'un!"
+      title_for_user: "Les inscriptions de %{user_full_name}"
+    destroy:
+      title: Détruire
+      confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
+      notice: "Kenshi détruit avec succès"
+      alert: "Erreur lors de la destruction du kenshi"
+    edit:
+      title: "Modifiez l'inscription de %{full_name}"
+    new:
+      title: Inscrivez quelqu'un à la compétition
+      yourself: Finalisez votre inscription à la compétition
+      duplicate: "Dupliquez l'inscription de %{full_name}"
+      button: Confirmez l'inscription
+    form:
+      explanation: "Pour vous inscrire à la compétition, vous devez d'abord créez un compte. Ce compte vous permettra ensuite de vous inscrire vous et vos-coéquipiers à la compétition et de modifer ces inscriptions le cas échéant."
+      button:
+        create: "Confirmez l'inscription"
+        update: "Modifiez l'inscription"
+      oldfashion: ou utilisez le formulaire ci-dessous
+      chose_team: Choisissez une équipe existante
+      create_team: ou créez une nouvelle équipe
+      categories: "Catégories"
+      individual_categories: "Catégories individuelles"
+      saturday_night: Diner du samedi soir
+      dormitory: Dortoire
+      ronin_info: "Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous."
+      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos coéquipiers ou créez-la en lui donnant un nom ici."
+      button_info: "Vous pourrez modifier cette inscription jusqu'au %{deadline}."
+      not_avalaible: "Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir vérifier ici plus tard pour toute disponibilité."
+    create:
+      flash:
+        notice: Kenshi inscrit avec succès
+    update:
+      flash:
+        notice: Inscription modifiée avec succès
+    deadline_passed: "Date limite d'inscription dépassée. Please contact <a href='mailto:%{email}'>%{email}</a>."
+  kenshi:
+    title: Inscriptions
+    link:
+      title: Vous avez déjà
+      registration: inscription
+    deadline: "Attention: le dernier délai pour vous inscrire est le %{deadline}!"
+    registered_by: Inscrit par
+  last_kenshis:
+    title: Dernières inscriptions
+    all: Toute les inscriptions

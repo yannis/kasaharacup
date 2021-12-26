@@ -1,0 +1,7 @@
+en:
+  headlines: #views
+    title: Latest headline
+    link: Read more headlines
+    index:
+      title: Headlines
+      no_news: No headlines yet…

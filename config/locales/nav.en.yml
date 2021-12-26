@@ -1,0 +1,17 @@
+en:
+  navigation:
+    home:
+      text: Home
+      title: "What, when <span class='ampersand'>&</span> where"
+    teams:
+      text: "Teams (%{teams})"
+      title: Already registered teams
+    kenshis:
+      text: "Kenshis (%{kenshis})"
+      title: Already registered kenshis
+    headlines:
+      text: "Headlines"
+      title: Latest news
+    register:
+      text: Register
+      title: Register to the competition

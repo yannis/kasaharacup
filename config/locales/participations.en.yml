@@ -1,0 +1,15 @@
+en:
+  activerecord:
+    errors:
+      models:
+        participation:
+          attributes:
+            category:
+              too_young: "Sorry, you're too young to participate to the %{name} category!"
+              too_old: "Sorry, you're too old to participate to the %{name} category!"
+  participations:
+    destroy:
+      title: Destroy
+      confirm: Are you sure you want to destroy this participation? This is irreversible…
+      notice: "Participation successfully destroyed"
+      alert: "Unable to destroy participation"

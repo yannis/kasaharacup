@@ -1,0 +1,49 @@
+fr:
+  users:
+    index:
+      title: Les utilisateurs
+    show:
+      title:
+        show_self: "Vos données"
+        show: "Compte de %{full_name}"
+      register_someone_else: Inscrivez quelqu'un d'autre à la compétition
+      register_yourself: Inscrivez-vous à la compétition
+      your_registrations: Vos inscriptions
+      register: "Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?"
+      yourself: "vous inscrire"
+      someone: "un autre kenshi"
+    destroy:
+      title: Détruire ce compte
+      confirm: "Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
+      session:
+        sign_in: Accèdez
+    edit:
+      title:
+        edit_self: 'Modifiez votre compte'
+        edit: 'Modifiez ce compte'
+        edit_someone: "Modifiez le compte de %{full_name}"
+    form:
+      button:
+        create: Créez le compte
+        update: Modifiez le compte
+    resume:
+      kenshis_number: "Vous avez déjà %{number} inscriptions"
+      register_someone_else: "Inscrivez quelqu'un d'autre"
+      details: "Détails"
+  activerecord:
+    models:
+      user: utilisateur
+    attributes:
+      user:
+        email: "Email"
+        first_name: "Prénom"
+        last_name: 'Nom'
+        password: 'Mot de passe'
+        password_confirmation: 'Confirmation du mot de passe'
+        remember_me: 'Garder en mémoire'
+        dob: 'Date de naissance'
+        gender: 'Sexe'
+        female: Femme
+        male: Homme
+        club_name: Club
+        fees: "Frais"

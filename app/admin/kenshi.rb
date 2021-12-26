@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Kenshi, as: "Kenshi" do
-  permit_params :id, :user, :cup_id, :last_name, :first_name, :female, :email, :dob, :email, :grade, :club_id,
-    :user_id, :remarks, purchases_attributes: [:_destroy, :product_id, :id],
+  permit_params :id, :user, :cup_id, :last_name, :first_name, :female, :email,
+    :dob, :email, :grade, :club_id, :user_id, :remarks,
+    purchases_attributes: [:_destroy, :product_id, :id],
     participations_attributes: [:id, :category_individual, :category_team, :_destroy]
 
   controller do
