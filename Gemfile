@@ -34,6 +34,9 @@ gem "redis", "~> 4.0"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
+# PDF generation
+gem "prawn"
+
 # Misc
 gem "bootsnap", require: false
 gem "rack-cors"

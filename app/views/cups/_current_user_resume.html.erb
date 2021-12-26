@@ -1,0 +1,27 @@
+- if user_signed_in?
+  .panel.panel-warning.user-account
+    .panel-heading
+      %h4
+        - if Time.now.hour <= 10
+          Ohayō gozaimasu
+        - elsif Time.now.hour >= 22
+          Konbanwa
+        - else
+          Konnichiwa
+        %em= current_user.first_name
+    - if current_user.has_kenshis_for_cup?(@cup)
+      .panel-body
+        = t "users.resume.kenshis_number", number: current_user.kenshis.for_cup(@cup).count
+      %ul.list-group
+        - current_user.kenshis.for_cup(@cup).each do |kenshi|
+          %li.list-group-item
+            %em= kenshi.full_name
+            = "(#{kenshi.participations.map{|p| p.category.name}.join(", ")})" if kenshi.participations.present?
+            / = link_to t("users.resume.details"), user_path(current_user)+"#kenshi_#{kenshi.id}", class: "btn btn-default btn-xs pull-right"
+    - else
+      .panel-body
+        You have no registrations yet.
+        Would you like to
+        = link_to "register someone?", new_cup_user_kenshi_path(@cup, current_user)
+    .panel-footer
+      = link_to "<span class='glyphicon glyphicon-plus'></span> #{t("users.resume.register_someone_else")}".html_safe, new_cup_user_kenshi_path(@cup, current_user, locale: I18n.locale), class: "btn btn-info btn-xs"

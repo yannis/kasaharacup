@@ -16,7 +16,7 @@ class TeamCategoryMatchSheetPdf < Prawn::Document
     text "Combat n°   ", align: :center
 
     bounding_box [bounds.right - 75, bounds.top + 20], width: 300 do
-      logo = "#{Engine.root}/lib/assets/images/logo-75.jpg"
+      logo = Rails.root.join("app/assets/images/logo-75.jpg")
       image logo, at: [0, 0], width: 60
     end
 

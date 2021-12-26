@@ -13,7 +13,7 @@ class ConvertParticipationsCategoryTypes < ActiveRecord::Migration[7.0]
 
   def down
     Participation.find_each do |participation|
-      participation.update!(category_type: "Kendocup::#{participation.category_type}")
+      participation.update!(category_type: "#{participation.category_type}")
     end
   end
 end

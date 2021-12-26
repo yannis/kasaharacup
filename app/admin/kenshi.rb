@@ -162,10 +162,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
   member_action :pdf do
     @kenshi = Kenshi.find params[:id]
     pdf = KenshiPdf.new(@kenshi)
-    send_data pdf.render, filename: @kenshi.full_name.parameterize("_"),
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+    send_data(pdf.render, filename: @kenshi.full_name.parameterize("_"))
   end
 
   # member_action :receipt do

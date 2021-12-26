@@ -8,7 +8,7 @@ class TeamsPdf < Prawn::Document
     @teams = teams
     font_families.update(
       "Inconsolata" => {
-        normal: "#{Engine.root}/lib/assets/fonts/Inconsolata.ttf"
+        normal: Rails.root.join("app/assets/fonts/Inconsolata.ttf")
       }
     )
     font "Inconsolata"

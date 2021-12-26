@@ -1,0 +1,39 @@
+.col-xs-12
+  .row
+    .jumbotron
+      %h1
+        = t 'layout.header.title'
+        = @cup.year
+        😢
+        %br
+        %small
+          - if @cup.end_on
+            = "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :day_only)} #{l(@cup.end_on, format: :month_only)},"
+          - else
+            = "#{l(@cup.start_on, format: :long)}, "
+          = t("layout.header.title_em")
+
+  .row#program
+    - if I18n.locale == :fr
+      %p Chères amies et chers amis,
+      %p
+        Au vu de la situation sanitaire encore incertaine cette année, la section kendo du Shung Do Kwan Budo a pris une fois de plus la décision de ne pas organiser la Coupe Kasahara.
+      %p
+        Les raisons justifiant une telle décision sont multiples: pas de garantie d'accès à la salle du tournoi, modalité de voyage et de participations (pass sanitaire), etc.
+      %p
+        Toutefois, ce n’est que partie remise, car évidemment, nous espèrons pouvoir à nouveau organiser la compétition l’année prochaine et nous nous réjouissons d’avance de vous revoir nombreux au mois de septembre 2022.
+      %p
+        D’ici là, veuillez trouver ici l’assurance de notre amitié sincère.
+      %p ❤️❤️❤️
+    - else
+      %p
+        Dear friends Kenshis,
+      %p
+        Due to the still uncertain health situation this year, the Shung Do Kwan Budo Kendo Section has once again decided not to hold the Kasahara Cup.
+      %p
+        The reasons justifying such a decision are multiple: no guarantee of access to the tournament hall, travel and participation modalities (health pass), etc.
+      %p
+        However, this is only a postponement, because of course, we hope to be able to organize the competition again next year and we look forward to seeing many of you in September 2022.
+      %p
+        Until then, please find here the assurance of our sincere friendship.
+      %p ❤️❤️❤️

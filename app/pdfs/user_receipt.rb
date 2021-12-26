@@ -8,7 +8,7 @@ class UserReceipt < Prawn::Document
     # start_new_page :layout => :landscape
 
     bounding_box [bounds.left + 0, bounds.top - 40], width: 700 do
-      logo = "#{Engine.root}/lib/assets/images/logo-128.jpg"
+      logo = Rails.root.join("app/assets/images/logo-128.jpg")
       image logo, at: [0, 50], width: 100
     end
 

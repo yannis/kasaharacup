@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
-    <title>Kasaharacup</title>
+    <title>Kasahara Cup</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="language" content="<%= I18n.locale %>" data-turbo-track="reload"><%# without this, html lang won’t update %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-gray-100">
+    <%= render "layouts/navigation" %>
+    <%= content_for?(:content) ? yield(:content) : yield %>
   </body>
 </html>
