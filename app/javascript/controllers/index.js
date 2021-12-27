@@ -3,6 +3,6 @@
 // ./bin/rails generate stimulus controllerName
 
 import { application } from './application';
-import NavigationProfileController from './navigation_profile_controller';
+import NavigationDropdownController from './navigation_dropdown_controller';
 
-application.register('navigation-profile', NavigationProfileController);
+application.register('navigation-dropdown', NavigationDropdownController);
