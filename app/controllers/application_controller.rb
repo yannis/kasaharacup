@@ -3,6 +3,10 @@
 class ApplicationController < ActionController::Base
   before_action :set_locale, :set_current_cup
 
+  def default_url_options
+    {locale: I18n.locale}
+  end
+
   private def set_locale
     params_locale = params[:locale] if params[:locale]&.to_sym&.in?(I18n.available_locales)
     session_locale = session[:locale] if session[:locale]&.to_sym&.in?(I18n.available_locales)

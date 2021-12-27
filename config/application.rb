@@ -33,8 +33,13 @@ module Kasaharacup
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # I18n
     config.i18n.available_locales = %i[en fr]
     config.i18n.default_locale = :en
+
+    # ViewComponent config
+    config.view_component.preview_paths << Rails.root.join("lib/component_previews")
+    config.view_component.preview_route = "/styleguide/components"
 
     # Don't generate system test files.
     config.generators do |g|

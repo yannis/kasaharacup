@@ -51,6 +51,10 @@ gem "inherited_resources", github: "activeadmin/inherited_resources" # FIXME: re
 gem "kaminari", github: "kaminari/kaminari" # FIXME: remove
 gem "ransack", github: "activerecord-hackery/ransack" # FIXME: remove
 
+# ViewComponent
+gem "view_component"
+gem "lookbook" # Need to be after the `view_component` gem
+
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"

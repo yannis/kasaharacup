@@ -31,5 +31,10 @@ Rails.application.routes.draw do
   end
 
   get "/", to: redirect(I18n.locale.to_s)
+
+  if Rails.env.development?
+    mount Lookbook::Engine, at: "/styleguide"
+    mount LetterOpenerWeb::Engine, at: "/emails"
+  end
   ActiveAdmin.routes(self)
 end
