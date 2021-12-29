@@ -10,7 +10,7 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body class="bg-gray-100">
+  <body class="bg-gray-50">
     <%= render "layouts/navigation" %>
     <%= content_for?(:content) ? yield(:content) : yield %>
   </body>

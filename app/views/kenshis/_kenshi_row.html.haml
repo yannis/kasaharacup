@@ -1,0 +1,22 @@
+%tr
+  %td= Kenshi.human_attribute_name kenshi.female ? :ms : :mr
+  %td= kenshi.full_name
+  - if current_user_admin_or_owner?(kenshi)
+    %td= kenshi.email
+    %td= kenshi.dob
+  - elsif user_signed_in?
+    %td nd
+    %td nd
+  %td= kenshi.norm_club
+  %td= kenshi.grade
+  %td
+    = kenshi.participations.map{|p| p.category ? p.category.name : kenshi.full_name }.compact.join("; ")
+  - if current_user_admin_or_owner?(kenshi)
+    %td= kenshi.user.full_name
+    %td= kenshi_admin_links(kenshi)
+  - elsif user_signed_in?
+    %td nd
+    %td nd
+    %td nd
+    %td nd
+    %td nd

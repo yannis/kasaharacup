@@ -217,10 +217,3 @@ fr:
   form:
     or: ou
     cancel: "annulation"
-  # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
-  activemodel:
-    errors:
-      <<: *errors
-  activerecord:
-    errors:
-      <<: *errors

@@ -1,0 +1,7 @@
+%tr
+  %td= "#{index})"
+  %td= link_to team.name, cup_team_path(@current_cup, team)
+  %td=raw team.kenshis.map{|kenshi| link_to kenshi.full_name, cup_kenshi_path(@current_cup, kenshi) }.join(', ')
+  %td= team.complete? ? "complete" : "incomplete"
+  %td= team.isvalid? ? "valid" : "invalid"
+  %td=raw team_admin_links(team)

@@ -33,14 +33,6 @@
         </div>
         <div class="hidden sm:block sm:ml-6">
           <div class="flex space-x-4">
-            <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-            <a href="#" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Dashboard</a>
-
-            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Team</a>
-
-            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Projects</a>
-
-            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Archive</a>
             <%=
               render(NavigationDropdownComponent.new(
                 name: "archive",
@@ -59,10 +51,12 @@
         %>
         <% if user_signed_in? %>
           <%=
+            links = [{text: "Log out", url: destroy_user_session_path}]
+            links.unshift({text: "Admin", url: "/admin"}) if current_user.admin?
             render(NavigationDropdownComponent.new(
               name: "profile",
               text: current_user.first_name,
-              links: [{text: "Log out", url: destroy_user_session_path}]))
+              links: links))
           %>
         <% else %>
           <div class="ml-3 relative">

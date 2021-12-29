@@ -1,0 +1,20 @@
+- @title ||= t(".title"); title @title
+.row.headlines
+  .col-xs-12.col-md-12
+    %h2= @title
+    - if @headlines.present?
+      - @headlines.each do |headline|
+        .row.headlines-headline
+          .col-xs-12.col-md-4
+            %h4
+              = headline.title
+              %br
+              %small
+                = headline.created_at.to_s :day_month_year
+                |
+                = link_to "Permalink", cup_headline_path(@current_cup, headline)
+          .col-xs-12.col-md-8
+            =raw headline.content
+    - else
+      .well
+        = t(".no_news")

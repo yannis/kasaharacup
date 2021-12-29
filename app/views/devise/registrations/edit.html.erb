@@ -1,0 +1,34 @@
+<div class="row">
+  <div class="col-xs-12 col-md-6 col-md-offset-3">
+    <h2>Edit <%= resource_name.to_s.humanize %></h2>
+
+    <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="form-inputs">
+        <%= f.input :first_name, required: true, autofocus: true %>
+        <%= f.input :last_name, required: true, autofocus: true %>
+
+        <%= f.input :email, required: true %>
+        <%= f.input :dob, as: :date_picker %>
+        <%= f.input :club_name, label: 'Club', as: :select2, input_html: {data: {options: Club.all.map{|c| {id: c.name, text: c.name}}}} %>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
+        <% end %>
+
+        <%= f.input :password, autocomplete: "off", hint: t(".password.hint"), required: false %>
+        <%= f.input :password_confirmation, required: false %>
+        <%= f.input :current_password, hint: t(".current_password"), required: true %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.button :submit, "Update" %>
+      </div>
+    <% end %>
+
+    <h3><%= t(".cancel_my_account") %></h3>
+
+    <p><%= t(".unhappy") %> <%= link_to t(".cancel_my_account"), registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
+  </div>
+</div>

@@ -33,4 +33,18 @@ class ApplicationController < ActionController::Base
       raise "Cup is missing!!!"
     end
   end
+
+  private def configure_permitted_parameters
+    unless current_user_admin?
+      devise_parameter_sanitizer.for(:sign_up) << :admin
+    end
+  end
+
+  private def check_deadline
+    set_current_cup
+    if !current_user.try("admin?") && Time.current > @current_cup.deadline
+      flash[:alert] = t("kenshis.deadline_passed", email: "info@kendo-geneve.ch")
+      redirect_to root_path and return
+    end
+  end
 end

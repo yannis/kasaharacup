@@ -18,9 +18,9 @@ GIT
 
 GIT
   remote: https://github.com/activerecord-hackery/ransack.git
-  revision: 25c5c9dfec216a5fafcd90b8893abcfe19460e50
+  revision: 49a43fc9519408e47a4844d3cdbeb2838687041a
   specs:
-    ransack (2.4.2)
+    ransack (2.5.0)
       activerecord (>= 5.2.4)
       activesupport (>= 5.2.4)
       i18n
@@ -44,7 +44,7 @@ GIT
 
 GIT
   remote: https://github.com/tagliala/activeadmin.git
-  revision: 38918a3c838aed5959be82c574272762bbc88f9a
+  revision: 12ef798e1a02084565fa2ea698e26334dbc56e42
   branch: feature/railties-7
   specs:
     activeadmin (2.9.0)
@@ -419,7 +419,7 @@ GEM
       nokogiri (~> 1.8)
     yard (0.9.27)
       webrick (~> 1.7.0)
-    zeitwerk (2.5.1)
+    zeitwerk (2.5.2)
 
 PLATFORMS
   x86_64-darwin-20

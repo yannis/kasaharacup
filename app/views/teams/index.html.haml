@@ -1,0 +1,12 @@
+- @title ||= t(".title"); title @title
+.row.teams
+  .col-xs-12.col-md-12
+    %h2= @title
+    %table.table.teams-table.table-condensed
+      = render "table_head"
+      - @teams.each_with_index do |team, i|
+        = render partial: "team_row", locals: {team: team, index: i+1}
+      - if @ronins.present?
+        %tr
+          %td Ronins
+          %td{colspan: 2}=raw @ronins.map{|kenshi| link_to kenshi.full_name, cup_kenshi_path(@cup, kenshi) }.join(', ')

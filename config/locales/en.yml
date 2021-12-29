@@ -7,8 +7,12 @@ en:
 
   date:
     formats:
-      # default: "%d/%m/%Y"
-      # short: "%e %b"
-      # long: "%e %B %Y"
+      default: "%d/%m/%Y"
+      short: "%e %b"
+      long: "%e %B %Y"
       day_only: "%d"
       month_only: "%B"
+
+  form:
+    or: ou
+    cancel: "annulation"

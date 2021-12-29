@@ -1,0 +1,11 @@
+- @title ||= t(".title", team_name: @team.name); title @title
+.row.teams
+  .col-xs-12.col-md-12
+    %h2= @title
+    .team
+      %table.table.team-kenshis-table
+        = render "kenshis/table_head"
+        - @team.kenshis.each do |kenshi|
+          = render partial: "kenshis/kenshi_row", locals: {kenshi: kenshi}
+      = team_admin_links @team
+

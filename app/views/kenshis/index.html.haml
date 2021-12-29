@@ -1,0 +1,8 @@
+- @title ||= t(".title"); title @title
+.row.kenshis
+  .col-xs-12.col-md-12
+    %h2= @title
+    %table.table.kenshis-table
+      = render "table_head"
+      - @kenshis.each do |kenshi|
+        = render partial: "kenshi_row", locals: {kenshi: kenshi}

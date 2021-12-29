@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Cup do
+  menu priority: 1
+
   permit_params :year, :start_on, :end_on, :deadline, :adult_fees_chf, :adult_fees_eur, :junior_fees_chf,
     :junior_fees_eur
 

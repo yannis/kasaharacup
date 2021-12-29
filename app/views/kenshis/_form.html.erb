@@ -1,0 +1,130 @@
+<%= form_with model: [@user, @kenshi], url: polymorphic_path([@cup, @user, @kenshi]), html: { class: 'form-horizontal' }, wrapper: :horizontal_form, wrapper_mappings: {check_boxes: :horizontal_radio_and_checkboxes, radio_buttons: :horizontal_radio_and_checkboxes, file: :horizontal_file_input, boolean: :horizontal_boolean} do |f| %>
+  <%= render 'layouts/error_messages', target: f.object %>
+  <%= f.text_field :female, label: "Genre", as: :radio_buttons, collection: [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
+  <%= f.text_field :first_name %>
+  <%= f.text_field :last_name, label: t('activerecord.attributes.kenshi.last_name') %>
+  <%= f.text_field :dob, label: t('activerecord.attributes.kenshi.dob'), placeholder: t('layout.form.date_placeholder'), as: :date_picker %>
+  <%= f.text_field :club_name, label: 'Club', as: :select2, input_html: {data: {options: Club.all.map{|c| {id: c.name, text: c.name}}}}, required: true %>
+  <%= f.select :grade, collection: Kenshi::GRADES, prompt: "Please select" %>
+  <%= field_set_tag t("kenshis.form.categories") do %>
+    <% @cup.team_categories.all.each do |c| %>
+      <% participation = f.object.participations.detect{|p| p.category == c} %>
+      <% if participation.blank? %>
+        <% p = Participation.new(category: c); %>
+      <% else %>
+        <% p = participation; %>
+      <% end %>
+      <%= f.fields_for :participations, p do |g| %>
+        <div class="form-group">
+          <h4>
+            <%= g.label :team_name, c.name.capitalize, class: "col-sm-2" %>
+          </h4>
+          <div class="col-sm-10">
+            <% if p.persisted? %>
+              <%= g.hidden_field :id %>
+            <% end %>
+            <%= g.hidden_field :category_type %>
+            <%= g.hidden_field :category_id %>
+            <div class="col-sm-12">
+              <%= g.check_box :ronin %>
+              <%= g.label :ronin %>
+              <p class="help-block">
+                <%= t '.ronin_info', category_name: c.name %>
+              </p>
+            </div>
+            <div class="col-sm-12">
+              <%= hidden_field_tag "#{g.object_name}[team_name]", p.team.try(:name), class: "col-sm-12", data: {behaviour: 'select2', options: c.teams.all.map{|c| {id: c.name, text: c.name}}} %>
+              <br/>
+              <p class="help-block">
+                <%= t '.team_info' %>
+              </p>
+              <% if p.errors.present? %>
+                <p class="errors">
+                  <%= p.errors.full_messages.to_sentence %>
+                </p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+    <% if @cup.individual_categories.present? %>
+      <h4>
+        <%= t("kenshis.form.individual_categories") %>
+      </h4>
+    <% end %>
+    <% @cup.individual_categories.all.each do |c| %>
+      <% if @kenshi.takes_part_to?(c) %>
+        <% p = @kenshi.participations.detect{|p| p.category == c} %>
+        <%= f.fields_for :participations, p do |g| %>
+          <div>
+            <div class="col-sm-10 col-sm-offset-2">
+              <% if p.persisted? %>
+                <%= label_tag "kenshi_individual_categories_#{c.id}", c.name %>
+                <%= label_tag "#{g.object_name}[_destroy]", "<span class='glyphicon glyphicon-trash'></span>".html_safe %>
+                <%= check_box_tag "#{g.object_name}[_destroy]" %>
+              <% else %>
+                <%= check_box_tag "kenshi[individual_category_ids][]", c.id, @kenshi.takes_part_to?(c), id: "kenshi_individual_categories_#{c.id}" %>
+                <%= label_tag "kenshi_individual_categories_#{c.id}", c.name %>
+              <% end %>
+              <% if p.errors.present? %>
+                <p class="help-block">
+                  <%= p.errors.full_messages_for(:category).to_sentence %>
+                </p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+            <%= check_box_tag "kenshi[individual_category_ids][]", c.id, false, id: "kenshi_individual_categories_#{c.id}" %>
+            <%= label_tag "kenshi_individual_categories_#{c.id}", c.name %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if @cup.products.present? %>
+    <%= field_set_tag "Extra" do %>
+      <% @cup.products.all.each do |p| %>
+        <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+            <% price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} " %>
+            <% if @kenshi.purchased?(p) %>
+              <% purchase = @kenshi.purchases.detect{|purchase| purchase.product == p} %>
+              <%= f.fields_for :purchases, purchase do |g| %>
+                <%= g.label :product_id, "#{p.name} (#{price})" %>
+                <%= g.label :_destroy, "<span class='glyphicon glyphicon-trash'></span>".html_safe %>
+                <%= g.check_box :_destroy %>
+              <% end %>
+            <% else %>
+              <% if product_available?(p) %>
+                <% purchase = @kenshi.purchases.new(product: p) %>
+                <%= f.fields_for :purchases, purchase do |g| %>
+                  <%= check_box_tag "#{g.object_name}[product_id]", p.id %>
+                  <%= g.label :product_id, "#{p.name} (#{price})" %>
+                <% end %>
+              <% else %>
+                <p>
+                  <%= t('kenshis.form.not_avalaible', product_name: p.name) %>
+                </p>
+              <% end %>
+            <% end %>
+            <% if p.description.present? %>
+              <p class="help-block">
+                <%= p.description %>
+              </p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+  <div class="actions">
+    <%= submit_or_cancel_form(f, f.object.new_record? ? t(".button.create") : t(".button.update")) %>
+    <p class="help-block">
+      <%= t '.button_info', deadline: l(@cup.deadline, format: :long) %>
+    </p>
+  </div>
+<% end %>
