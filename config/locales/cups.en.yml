@@ -23,10 +23,10 @@ en:
       fees:
         title: Registration fees
         adults:
-          title: Adults (born in 2001 or before)<br><em>+ Sunday lunch</em>
+          title: Adults (born in %{year} or before)<br><em>+ Sunday lunch</em>
           fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
         juniors:
-          title: Juniors (born in 2002 or after)<br><em>+ Sunday lunch</em>
+          title: Juniors (born in %{year} or after)<br><em>+ Sunday lunch</em>
           fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
         night:
           title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>
@@ -67,8 +67,5 @@ en:
         dormitory: "This year the dorms will be located in the complex of the Cité Bleue (University Centre), for the night of September 28-29. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linen is provided and sleeping bags are not allowed. Please note that the number of spot is limited to 50!
         <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday."
         hotels: "If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer."
-      contact:
-        title: Contact
-        text: "Contact us at %{mail} if you have any questions. We're looking forward to answer to you…"
       over: "The tournament is over! Thanks to all for participating and see you next year!"
       other_links: "Other links"

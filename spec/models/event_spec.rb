@@ -7,7 +7,6 @@ RSpec.describe Event, type: :model do
 
   it { is_expected.to respond_to :name_en }
   it { is_expected.to respond_to :name_fr }
-  it { is_expected.to respond_to :name_de }
   it { is_expected.to respond_to :start_on }
   it { is_expected.to respond_to :duration }
   it { is_expected.to respond_to :year }

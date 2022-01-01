@@ -11,6 +11,7 @@ param_method: :my_sanitizer, parent: false, except: [:new]
   before_action :set_variables, only: [:new, :edit, :update, :create]
   before_action :set_user
   before_action :check_deadline, only: [:new, :edit, :update, :create, :destroy]
+  before_action :prevent_page_caching, only: [:new, :create, :edit, :update]
   respond_to :html
 
   # autocomplete :kenshi, :club, scopes: [:unique_by_club], full_model: true
@@ -121,7 +122,6 @@ param_method: :my_sanitizer, parent: false, except: [:new]
         }
       end
     else
-
       if @user.blank? || (@user != current_user && !current_user.admin?)
         redirect_to new_cup_user_kenshi_path(@cup, current_user, locale: I18n.locale)
         return
@@ -151,15 +151,6 @@ param_method: :my_sanitizer, parent: false, except: [:new]
         @title = t("kenshis.new.title")
       end
       @kenshi.female = false if @kenshi.female.nil?
-      # @cup.team_categories.each do |cat|
-      #   @kenshi.participations.build category: cat
-      # end
-      # @cup.individual_categories.each do |cat|
-      #   @kenshi.participations.build category: cat
-      # end
-      # @participations_to_teams = @kenshi.participations.select{|p| p.category.is_a? TeamCategory}
-      # @participations_to_ind = @kenshi.participations.select{|p| p.category.is_a? IndividualCategory}
-
       respond_with @kenshi do |format|
         flash.now[:alert] = "Kenshi not registered"
         format.html { render :new }
@@ -212,7 +203,6 @@ param_method: :my_sanitizer, parent: false, except: [:new]
     end
   rescue => e
     alert = e.message
-    alert = alert
     respond_to do |format|
       format.html {
         redirect_to cup_kenshi_path(@current_cup, @kenshi, locale: I18n.locale)
@@ -223,19 +213,21 @@ param_method: :my_sanitizer, parent: false, except: [:new]
     end
   end
 
-  private
-    def set_user
-      @user = User.find params[:user_id] if params[:user_id]
-      @products = @cup.products
-    end
+  private def set_user
+    @user = User.find params[:user_id] if params[:user_id]
+    @products = @cup.products
+  end
 
-    def set_variables
-      @teams = @cup.teams.incomplete.order(:name) + @current_cup.teams.complete.order(:name)
-      # @team_name = params[:kenshi][:team_name] if params[:kenshi] && params[:kenshi][:team_name]
-    end
+  private def set_variables
+    @teams = @cup.teams.incomplete.order(:name) + @current_cup.teams.complete.order(:name)
+    # @team_name = params[:kenshi][:team_name] if params[:kenshi] && params[:kenshi][:team_name]
+  end
 
-    def my_sanitizer
-      params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade,
-        :club_name, purchases_attributes: [:id, :product_id, :_destroy], individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy], product_ids: [])
-    end
+  private def my_sanitizer
+    params[:kenshi][:participations_attributes].reject! { |k, v|
+      v["category_type"] == "IndividualCategory" && v["category_id"].blank?
+    }
+    params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade,
+      :club_name, purchases_attributes: [:id, :product_id, :_destroy], individual_category_ids: [], participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy], product_ids: [])
+  end
 end

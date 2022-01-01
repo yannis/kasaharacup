@@ -47,4 +47,13 @@ class ApplicationController < ActionController::Base
       redirect_to root_path and return
     end
   end
+
+  private def prevent_page_caching
+    @cache_disabled = true
+    h = response.headers
+    h["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    h["Pragma"] = "no-cache"
+    h["Expires"] = "0"
+    h.delete("ETag")
+  end
 end

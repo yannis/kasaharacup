@@ -5,45 +5,66 @@
     <%= raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% end %>
 <% end %>
+
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <%= render(HeroComponent.new(cup: @cup, current_user: current_user)) %>
-  <div class="row" id="program">
-    <div class="col-xs-12 col-md-12">
-      <h2>
+  <div class="lg:grid lg:grid-cols-2 lg:gap-12">
+    <div class="mt-6 prose prose-red-900 prose-lg text-gray-500" id="program">
+      <h2 class="mt-10">
         <%= t '.program.title' %>
       </h2>
-    </div>
-    <% @grouped_events.each do |date, events| %>
-      <div class="col-xs-12 col-md-6">
-        <table class="table">
-          <thead>
-            <tr>
-              <td colspan="2">
-                <h3>
-                  <%= l date, format: :short %>
-                </h3>
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <% for event in events %>
-              <tr>
-                <th>
-                  <%= event.start_on.to_s(:time_only) %>
-                </th>
-                <td>
-                  <%= event.name %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+      <div class="lg:grid lg:grid-cols-2 lg:gap-8">
+        <% @grouped_events.each do |date, events| %>
+          <div class="lg:col-1">
+            <h3 class="mt-0">
+              <%= l date, format: :short %>
+            </h3>
+            <table class="table">
+              <tbody>
+                <% for event in events %>
+                  <tr>
+                    <th>
+                      <%= event.start_on.to_s(:time_only) %>
+                    </th>
+                    <td>
+                      <%= event.name %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
       </div>
-    <% end %>
+    </div>
+    <div class="mt-10">
+      <% if @headline.present? %>
+        <div class="panel panel-default headlines">
+          <div class="panel-heading">
+            <h2 class="mt-10">
+              <%= t 'headlines.title' %>
+            </h2>
+          </div>
+          <div class="panel-body">
+            <h4>
+              <%= @headline.title %>
+              <small>
+                <%= @headline.created_at.to_s :day_month_year %>
+              </small>
+            </h4>
+            <%= raw @headline.content %>
+          </div>
+          <div class="panel-footer">
+            <%= link_to t('headlines.link'), cup_headlines_path(@cup) %>
+          </div>
+        </div>
+      <% end %>
+      <%= render "current_user_resume" %>
+    </div>
   </div>
-  <div class="row" id="categories_and_fees">
-    <div class="col-xs-12 col-md-6" id="categories">
-      <h2>
+  <div class="lg:grid lg:grid-cols-2 lg:gap-12">
+    <div id="categories" class="prose prose-red-900 prose-lg">
+      <h2 class="mt-10">
         <%= t '.categories.title' %>
       </h2>
       <table class="table">
@@ -90,15 +111,16 @@
         </tbody>
       </table>
     </div>
-    <div class="col-xs-12 col-md-6" id="fees">
-      <h2>
+
+    <div id="fees" class="prose prose-red-900 prose-lg">
+      <h2 class="mt-10">
         <%= t '.fees.title' %>
       </h2>
       <table class="table">
         <tbody>
           <tr>
             <th>
-              <%= raw t '.fees.adults.title' %>
+              <%= raw t(".fees.adults.title", year: @cup.year - 17) %>
             </th>
             <td>
               <%= raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur %>
@@ -106,7 +128,7 @@
           </tr>
           <tr>
             <th>
-              <%= raw t '.fees.juniors.title' %>
+              <%= raw t(".fees.juniors.title", year: @cup.year - 16) %>
             </th>
             <td>
               <%= raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur %>
@@ -135,117 +157,34 @@
       </table>
     </div>
   </div>
-  <div class="row venue">
-    <div class="col-xs-12 col-md-12 venue-title">
-      <h2>
-        <%= t '.venue.title' %>
-      </h2>
-    </div>
-    <div class="col-xs-12 col-md-6 venue-details">
-      <p>
-        <%= raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/') %>
-      </p>
-      <h3>
-        <%= t '.venue.address' %>
-      </h3>
-      <p>
-        Centre sportif du Bout-du-Monde, Hall A
-        <br/>
-        Route de Vessy 12
-        <br/>
-        1206 Geneve
-        <br/>
-        <em>
-          GPS: 46.180588,6.155893
-        </em>
-      </p>
-    </div>
-    <div class="col-xs-12 col-md-6 venue-map">
-      <%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map' %>
-    </div>
+  <div id="venue" class="prose prose-red-900 prose-lg">
+    <h2 class="mt-10">
+      <%= t '.venue.title' %>
+    </h2>
+    <p>
+      <%= raw t '.venue.a', stade_du_bout_du_monde: link_to('Centre sportif du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/') %>
+    </p>
+    <h3>
+      <%= t '.venue.address' %>
+    </h3>
+    <p>
+      Centre sportif du Bout-du-Monde, Hall A
+      <br/>Route de Vessy 12
+      <br/>1206 Geneve
+      <br/><em>GPS: 46.180588,6.155893</em>
+      <br><%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map' %>
+    </p>
   </div>
-  <div class="row accomodation_contact">
-    <div class="col-xs-12 col-md-6 venue">
-      <h2>
-        <%= t '.accomodation.title' %>
-      </h2>
-      <p>
-        <%= raw t '.accomodation.dormitory' %>
-      </p>
-      <p>
-        <%= raw t '.accomodation.hotels' %>
-      </p>
-    </div>
-    <div class="col-xs-12 col-md-6 contact">
-      <h2>
-        <%= t '.contact.title' %>
-      </h2>
-      <p>
-        <%= raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_") %>
-      </p>
-    </div>
+
+  <div id="accomodation" class="prose prose-red-900 prose-lg">
+    <h2 class="mt-10">
+      <%= t '.accomodation.title' %>
+    </h2>
+    <p>
+      <%= raw t '.accomodation.dormitory' %>
+    </p>
+    <p>
+      <%= raw t '.accomodation.hotels' %>
+    </p>
   </div>
-</div>
-<div class="col-xs-12 col-md-4">
-  <%= render "current_user_resume" if @cup.year == 2016 %>
-  <% if @headline.present? %>
-    <div class="panel panel-default headlines">
-      <div class="panel-heading">
-        <h2>
-          <%= t 'headlines.title' %>
-        </h2>
-      </div>
-      <div class="panel-body">
-        <h4>
-          <%= @headline.title %>
-          <small>
-            <%= @headline.created_at.to_s :day_month_year %>
-          </small>
-        </h4>
-        <%= raw @headline.content %>
-      </div>
-      <div class="panel-footer">
-        <%= link_to t('headlines.link'), cup_headlines_path(@cup) %>
-      </div>
-    </div>
-  <% end %>
-  <div class="panel panel-default competition">
-    <div class="panel-heading">
-      <h2>
-        <%= t '.tournament.title' %>
-      </h2>
-    </div>
-    <div class="panel-body">
-      <p>
-        <%= raw t '.tournament.a' %>
-      </p>
-      <figure class="img-thumbnail">
-        <%= image_tag 'kasahara_toshiaki.jpg' %>
-        <figcaption>Kasahara Toshiaki sensei</figcaption>
-      </figure>
-      <p>
-        <%= raw t '.tournament.b' %>
-      </p>
-    </div>
-  </div>
-  <%= form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "form" do %>
-    <%= hidden_field_tag :u, "5545e540aff9e8b07df2f5531" %>
-    <%= hidden_field_tag :id, "4b7d62b6b3" %>
-    <div class="panel panel-default contact">
-      <div class="panel-heading">
-        <h3>
-          <%= label_tag 'EMAIL', "Newsletter" %>
-        </h3>
-      </div>
-      <div class="panel-body form-inline">
-        <div class="form-group">
-          <%= email_field_tag 'EMAIL', nil, required: true, placeholder: t('.newsletter.email'), class: "form-control" %>
-          <%= button_tag t('.newsletter.button'), class: "btn btn-info" %>
-        </div>
-        <p class="help-block">
-          <%= t('.newsletter.register') %>
-        </p>
-      </div>
-    </div>
-  <% end %>
 </div>

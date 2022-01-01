@@ -1,13 +1,10 @@
 @tailwind base;
 @tailwind components;
+@tailwind forms;
 @tailwind utilities;
+@tailwind typography;
 
 @layer base {
-  @font-face {
-    font-family: 'Inter';
-    src: url("Inter.ttf");
-  }
-
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -67,5 +64,35 @@
 
   .btn-secondary {
     @apply bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-50 focus:ring-brand;
+  }
+}
+
+@layer base {
+  .kasa-form {
+    @apply space-y-8 divide-y divide-gray-200 border-t-0;
+  }
+
+  .kasa-form > :not([hidden]) ~ :not([hidden]) {
+    @apply border-t-0;
+  }
+
+  .input-group {
+    @apply sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5;
+  }
+
+  .input-field {
+    @apply mt-1 sm:mt-0 sm:col-span-2;
+  }
+
+  select {
+    @apply max-w-lg block focus:ring-red-500 focus:border-red-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md;
+  }
+
+  input[type='text'], input[type='date'], input[type='email'], input[type='password'] {
+    @apply max-w-lg block w-full shadow-sm focus:ring-red-500 focus:border-red-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md;
+  }
+
+  .helper-text {
+    @apply text-gray-500;
   }
 }

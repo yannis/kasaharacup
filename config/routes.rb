@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  get 'static_pages/about'
   devise_for :users, controllers: {registrations: "devise/users/registrations"}
   scope ":locale", locale: /fr|en/ do |locale|
+    get "/about", to: "static_pages#about"
     resources :cups, only: [:index, :show] do
       resources :headlines, only: [:index, :show]
       resources :kenshis do

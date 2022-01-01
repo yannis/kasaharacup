@@ -1,0 +1,129 @@
+<% title @title %>
+<div class="row">[@kenshi]
+  <div class="col-xs-12 col-md-12">
+    <h2>
+      <%= @title %>
+      <% if current_user_admin_or_owner?(@kenshi) %>
+        <%= raw kenshi_admin_links(@kenshi, options: {class: "pull-right"}) %>
+      <% end %>
+    </h2>
+    <table class="table table-condensed">
+      <tr></tr>
+      <% if current_user_admin_or_owner?(@kenshi) %>
+        <tr>
+          <th colspan="2">
+            <%= Kenshi.human_attribute_name :email %>
+          </th>
+          <td colspan="2">
+            <%= @kenshi.email.presence || "–" %>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2">
+            <%= Kenshi.human_attribute_name :dob %>
+          </th>
+          <td colspan="2">
+            <%= @kenshi.dob %>
+          </td>
+        </tr>
+      <% end %>
+      <tr>
+        <th colspan="2">
+          <%= Kenshi.human_attribute_name :sex %>
+        </th>
+        <td colspan="2">
+          <%= @kenshi.female ? 'female' : 'male' %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="2">
+          <%= Kenshi.human_attribute_name :club %>
+        </th>
+        <td colspan="2">
+          <%= @kenshi.club %>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="2">
+          <%= Kenshi.human_attribute_name :grade %>
+        </th>
+        <td colspan="2">
+          <%= @kenshi.grade %>
+        </td>
+      </tr>
+      <% if current_user_admin_or_owner?(@kenshi) %>
+        <tr>
+          <th colspan="2">
+            <%= t("kenshi.registered_by") %>
+          </th>
+          <td colspan="2">
+            <%= @kenshi.user.full_name %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @kenshi.participations.present? %>
+        <tr>
+          <th colspan="3">
+            <h4>Categories</h4>
+          </th>
+        </tr>
+        <% @kenshi.participations.each do |participation| %>
+          <tr>
+            <th colspan="2">
+              <%= participation.category.name.capitalize %>
+            </th>
+            <td>
+              <%= participation.team.try(:name) %>
+            </td>
+            <td>
+              <%= participation_admin_links participation %>
+            </td>
+          </tr>
+        <% end %>
+        <tr>
+          <th colspan="2">Total competition fees</th>
+          <td>
+            <%= "#{@kenshi.competition_fee(:chf)} CHF / #{@kenshi.competition_fee(:eur)} €" %>
+          </td>
+          <td></td>
+        </tr>
+      <% end %>
+      <% if @kenshi.purchases.present? %>
+        <tr>
+          <th colspan="4">
+            <h4>Extra</h4>
+          </th>
+        </tr>
+        <% @kenshi.purchases.each do |purchase| %>
+          <tr>
+            <th colspan="2">
+              <%= purchase.product.name %>
+            </th>
+            <td>
+              <%= "#{purchase.product.fee_chf} CHF / #{purchase.product.fee_eu} €" %>
+            </td>
+            <td>
+              <%= purchase_admin_links purchase %>
+            </td>
+          </tr>
+        <% end %>
+        <tr>
+          <th colspan="2">Total extra fees</th>
+          <td>
+            <%= "#{@kenshi.products_fee(:chf)} CHF / #{@kenshi.products_fee(:eur)} €" %>
+          </td>
+          <td></td>
+        </tr>
+      <% end %>
+      <tr>
+        <th colspan="2">
+          <h4>Total fees</h4>
+        </th>
+        <th>
+          <%= "#{@kenshi.fees(:chf)} CHF / #{@kenshi.fees(:eur)} €" %>
+        </th>
+        <th></th>
+      </tr>
+    </table>
+  </div>
+</div>

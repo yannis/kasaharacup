@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register TeamCategory, as: "TeamCategory" do
-  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr, :description_de,
+  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr,
     :cup_id
 
   controller do
@@ -31,7 +31,6 @@ ActiveAdmin.register TeamCategory, as: "TeamCategory" do
       row :cup
       row :description_en
       row :description_fr
-      row :description_de
       row :pool_size
       row :out_of_pool
     end

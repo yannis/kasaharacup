@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
-  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr, :description_de,
+  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr,
     :cup_id
 
   controller do
@@ -19,7 +19,6 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     column :description_en
     column :description_fr
-    column :description_de
     column :pool_size
     column :out_of_pool
     column :min_age
@@ -44,7 +43,6 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       row :name
       row :description_en
       row :description_fr
-      row :description_de
       row :pool_size
       row :out_of_pool
     end

@@ -3,6 +3,9 @@
 // ./bin/rails generate stimulus controllerName
 
 import { application } from './application';
-import NavigationDropdownController from './navigation_dropdown_controller';
+import NavigationDropdownController
+  from '../../components/navigation_dropdown_component/navigation_dropdown_controller';
+import ParticipationsTeamController from './participations_team_controller';
 
 application.register('navigation-dropdown', NavigationDropdownController);
+application.register('participations-team', ParticipationsTeamController);

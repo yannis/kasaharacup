@@ -5,7 +5,6 @@ FactoryBot.define do
     cup
     name_en { "#{Faker::Adjective.positive} #{Faker::Ancient.primordial}" }
     name_fr { "#{Faker::Adjective.positive} #{Faker::Ancient.primordial}" }
-    name_de { "#{Faker::Adjective.positive} #{Faker::Ancient.primordial}" }
     fee_chf { 10 }
     fee_eu { 8 }
   end

@@ -66,9 +66,6 @@ fr:
           <br />
           En réservant votre nuit au dortoir, vous recevrez également un pass pour les transports publics genevois (à conserver) pour les journées du samedi et du dimanche."
         hotels: "Si vous préfèrez quelque chose d'encore plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir."
-      contact:
-        title: Contact
-        text: "Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre."
 
       over: "Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!"
       other_links: "Autres liens"

@@ -1,27 +1,38 @@
-- if user_signed_in?
-  .panel.panel-warning.user-account
-    .panel-heading
-      %h4
-        - if Time.now.hour <= 10
+<% if user_signed_in? %>
+  <div class="w-full bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mt-0">
+        <% if Time.current.hour <= 10 %>
           Ohayō gozaimasu
-        - elsif Time.now.hour >= 22
+        <% elsif Time.current.hour >= 22 %>
           Konbanwa
-        - else
+        <% else %>
           Konnichiwa
-        %em= current_user.first_name
-    - if current_user.has_kenshis_for_cup?(@cup)
-      .panel-body
-        = t "users.resume.kenshis_number", number: current_user.kenshis.for_cup(@cup).count
-      %ul.list-group
-        - current_user.kenshis.for_cup(@cup).each do |kenshi|
-          %li.list-group-item
-            %em= kenshi.full_name
-            = "(#{kenshi.participations.map{|p| p.category.name}.join(", ")})" if kenshi.participations.present?
-            / = link_to t("users.resume.details"), user_path(current_user)+"#kenshi_#{kenshi.id}", class: "btn btn-default btn-xs pull-right"
-    - else
-      .panel-body
-        You have no registrations yet.
-        Would you like to
-        = link_to "register someone?", new_cup_user_kenshi_path(@cup, current_user)
-    .panel-footer
-      = link_to "<span class='glyphicon glyphicon-plus'></span> #{t("users.resume.register_someone_else")}".html_safe, new_cup_user_kenshi_path(@cup, current_user, locale: I18n.locale), class: "btn btn-info btn-xs"
+        <% end %>
+        <em>
+          <%= current_user.first_name %>
+        </em>
+      </h3>
+      <div class="mt-2 max-w-xl text-sm text-gray-500 prose prose-red-900 prose-lg">
+        <% if current_user.has_kenshis_for_cup?(@cup) %>
+          <%= t "users.resume.kenshis_number", number: current_user.kenshis.for_cup(@cup).count %>
+          <ul class="">
+            <% current_user.kenshis.for_cup(@cup).each do |kenshi| %>
+              <li class="">
+                <em>
+                  <%= kenshi.full_name %>
+                </em>
+                <%= "(#{kenshi.participations.map{|p| p.category.name}.join(", ")})" if kenshi.participations.present? %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          You have no registrations yet.
+          Would you like to
+          <%= link_to "register someone?", new_cup_user_kenshi_path(@cup, current_user) %>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

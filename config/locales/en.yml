@@ -1,10 +1,60 @@
+---
 en:
+  activerecord:
+    errors:
+      models:
+        team:
+          participations: Participations
+  categories:
+    dès: Dès
+  cups:
+    show_2019:
+      accomodation:
+        dormitory: Dormitory
+        hotels: Hotels
+        title: Title
+      categories:
+        title: Title
+      deadline: Deadline
+      deadline_passed: Deadline passed
+      fees:
+        adults:
+          fee: Fee
+          title: Title
+        juniors:
+          fee: Fee
+          title: Title
+        title: Title
+        variable: Variable
+      program:
+        title: Title
+      social:
+        title: Title
+      tournament:
+        a: A
+        b: B
+        title: Title
+      venue:
+        a: A
+        address: Address
+        title: Title
+  description: Description
   errors:
-    template: &errors_template
+    template:
       header:
-        one:   "1 error prohibited this %{model} from being saved"
-        other:   "%{count} errors prohibited this %{model} from being saved"
-
+        other: Other
+  form:
+    cancel: Cancel
+    or: Or
+  name: Name
+  static_pages:
+    about:
+      title: The tournament
+      a: |
+        The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
+        <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
+      b: "The tournament is organized in Geneva since 1995 by the kendo branch of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>. In 2018, it gathered about 110 kenshis from from France, Italy, Japan, Germany and, of course, Switzerland. In 2019, the 33d Kasahara cup will be held on September 28th-29th, at «Le stade du Bout-du-Monde», close to Geneva's city center."
+  title: Title
   date:
     formats:
       default: "%d/%m/%Y"
@@ -12,7 +62,3 @@ en:
       long: "%e %B %Y"
       day_only: "%d"
       month_only: "%B"
-
-  form:
-    or: ou
-    cancel: "annulation"

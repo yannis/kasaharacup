@@ -5,9 +5,8 @@ FactoryBot.define do
 
   factory :event do
     association :cup
-    name_en { Faker::Name.unique.last_name }
-    name_fr { Faker::Name.unique.last_name }
-    name_de { Faker::Name.unique.last_name }
+    name_en { "#{Faker::Adjective.positive} #{Faker::Tea.variety}" }
+    name_fr { "#{Faker::Adjective.positive} #{Faker::Tea.variety}" }
     start_on { |e| e.cup.start_on.to_time + generate(:integer).hours }
   end
 end

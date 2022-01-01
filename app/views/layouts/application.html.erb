@@ -4,14 +4,23 @@
     <title>Kasahara Cup</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="language" content="<%= I18n.locale %>" data-turbo-track="reload"><%# without this, html lang won’t update %>
+    <% if @cache_disabled %>
+    <meta name="turbo-cache-control" content="no-cache">
+    <% end %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body class="bg-gray-50">
-    <%= render "layouts/navigation" %>
-    <%= content_for?(:content) ? yield(:content) : yield %>
+  <body class="bg-gray-50 flex flex-col h-full">
+    <div class="flex flex-col h-screen justify-between">
+      <%= render "layouts/navigation" %>
+      <main class="flex-1 ">
+        <%= content_for?(:content) ? yield(:content) : yield %>
+      </main>
+      <%= render "layouts/footer" %>
+    </div>
   </body>
 </html>

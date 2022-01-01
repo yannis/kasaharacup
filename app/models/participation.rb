@@ -88,6 +88,12 @@ class Participation < ApplicationRecord
   #   category
   # end
 
+  def team_name
+    return unless category.is_a?(TeamCategory)
+
+    team&.name
+  end
+
   def team_name=(team_name)
     if category.is_a? TeamCategory
       if team_name.blank? && ronin.blank?
