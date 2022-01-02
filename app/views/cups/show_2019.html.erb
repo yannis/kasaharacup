@@ -33,7 +33,7 @@
             - for event in events
               %tr
                 %th
-                  = event.start_on.to_s(:time_only)
+                  = event.start_on.to_formatted_s(:time_only)
                 %td
                   = event.name
 

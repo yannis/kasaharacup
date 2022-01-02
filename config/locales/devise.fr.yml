@@ -59,6 +59,8 @@ fr:
       email: "Email"
       password: "Mot de passe"
       remember: "Se souvenir de moi"
+      new:
+        title: "Connectez-vous"
     unlocks:
       send_instructions: 'Vous allez recevoir les instructions nécessaires au déverrouillage de votre compte dans quelques instants'
       send_paranoid_instructions: 'Si votre compte existe, vous allez bientôt recevoir un email contenant les instructions pour le déverrouiller.'

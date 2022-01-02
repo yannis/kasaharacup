@@ -7,7 +7,7 @@ class NavigationDropdownComponentPreview < ViewComponent::Preview
       text: "Profile",
       links: [
         {text: "Settings", url: "#"},
-        {text: "Sign out", url: "#"}
+        {text: "Log out", url: "#"}
       ]
     ))
   end

@@ -25,7 +25,7 @@ RSpec.configure do |config|
       fill_in "user_password", with: user.password
       click_button :user_submit
     end
-    # page.should have_content('Signed in successfully.')
+    # page.should have_content('Logged in successfully.')
   end
 
   # def embersignin(user)

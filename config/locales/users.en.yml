@@ -21,7 +21,7 @@ en:
         edit: 'Edit this account'
         edit_someone: "Edit the account of %{full_name}"
     session:
-      sign_in: Sign in
+      sign_in: Log in
     form:
       button:
         create: Create account

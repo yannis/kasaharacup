@@ -5,7 +5,12 @@
 import { application } from './application';
 import NavigationDropdownController
   from '../../components/navigation_dropdown_component/navigation_dropdown_controller';
-import ParticipationsTeamController from './participations_team_controller';
+import FlashController
+  from '../../components/flash_component/flash_controller';
+import NavigationController from './navigation_controller';
+import Select2SingleTagController from './select2_single_tag_controller';
 
 application.register('navigation-dropdown', NavigationDropdownController);
-application.register('participations-team', ParticipationsTeamController);
+application.register('navigation', NavigationController);
+application.register('flash', FlashController);
+application.register('select2-single-tag', Select2SingleTagController);

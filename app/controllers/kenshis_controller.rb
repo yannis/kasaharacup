@@ -3,7 +3,7 @@
 class KenshisController < ApplicationController
   prepend_before_action :set_user
 
-  # load_and_authorize_resource :user
+  load_and_authorize_resource :user
   load_and_authorize_resource :cup, find_by: :year, class: "Cup"
   load_and_authorize_resource :kenshi, find_by: :id, class: "Kenshi", shallow: true, through: [:cup, :user],
 param_method: :my_sanitizer, parent: false, except: [:new]

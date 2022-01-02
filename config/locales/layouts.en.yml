@@ -2,6 +2,7 @@ en:
   layouts:
     navigation:
       about: About
+      account: Account
     footer:
       contact:
         title: Contact

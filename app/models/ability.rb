@@ -5,6 +5,7 @@ class Ability
 
   def initialize(user)
     user ||= User.new
+    can :read, Cup
     can :read, Kenshi
     can :read, Team
     can :read, Headline

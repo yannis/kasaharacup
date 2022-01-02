@@ -2,13 +2,12 @@
   <div>
     <button
       type="button"
-      class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
       id="<%= @name %>-button"
       aria-expanded="false"
       aria-haspopup="true"
       data-action="navigation-dropdown#toggle"
       type="button"
-      class="inline-flex items-center justify-center w-full rounded-md py-2 text-sm font-medium text-gray-700  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-brand"
+      class="<%= @css_class %>"
     >
       <span>
         <%= @text %>

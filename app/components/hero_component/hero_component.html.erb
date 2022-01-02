@@ -16,10 +16,8 @@
       <% end %>
       <%= t("layout.header.title_em") %>
     </p>
-    <div class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
-      <div class="space-y-4 sm:space-y-0 sm:mx-auto">
-        <%= link_to t("navigation.register.text"), @current_user ? cup_user_path(@cup, @current_user.id) : user_session_path, title: t("navigation.register.title").html_safe, class: "x items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50 sm:px-8" %>
-      </div>
+    <div class="mt-10 max-w-sm mx-auto text-center">
+      <%= link_to t("navigation.register.text"), @current_user ? cup_user_path(@cup, @current_user.id) : user_session_path, title: t("navigation.register.title").html_safe, class: "px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-red-700 bg-white hover:bg-red-50" %>
     </div>
   </div>
 </div>

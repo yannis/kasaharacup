@@ -75,7 +75,7 @@
                     <div class="max-w-lg space-y-4">
                       <div class="relative flex items-start">
                         <div class="flex items-center h-5">
-                          <%= g.check_box :ronin, class: "focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                          <%= g.check_box :ronin, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded" %>
                         </div>
                         <div class="ml-3 text-sm">
                           <%= g.label :ronin, class: "font-medium text-gray-700" %>
@@ -135,7 +135,7 @@
                                 g.check_box :_destroy,
                                 {
                                   checked: true,
-                                  class: "focus:ring-red-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                  class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
                                 },
                                 0, # checked_value
                                 1 # unchecked_value
@@ -153,7 +153,7 @@
                           <%= f.fields_for :participations, participation do |g| %>
                             <%= g.hidden_field :category_type %>
                             <div class="flex items-center h-5">
-                              <%= check_box_tag "#{g.object_name}[category_id]", individual_category.id, nil, class: "focus:ring-red-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                              <%= check_box_tag "#{g.object_name}[category_id]", individual_category.id, nil, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded" %>
                             </div>
                             <div class="ml-3 text-sm">
                               <%= g.label :category_id, individual_category.name, class: "font-medium text-gray-700" %>
@@ -198,7 +198,7 @@
                                 g.check_box :_destroy,
                                 {
                                   checked: true,
-                                  class: "focus:ring-red-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                  class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
                                 },
                                 0, # checked_value
                                 1 # unchecked_value
@@ -216,7 +216,7 @@
                             <% purchase = @kenshi.purchases.new(product: p) %>
                             <%= f.fields_for :purchases, purchase do |g| %>
                               <div class="flex items-center h-5">
-                                <%= check_box_tag "#{g.object_name}[product_id]", p.id, nil, class: "focus:ring-red-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" %>
+                                <%= check_box_tag "#{g.object_name}[product_id]", p.id, nil, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded" %>
                               </div>
                               <div class="ml-3 text-sm">
                                 <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium text-gray-700" %>

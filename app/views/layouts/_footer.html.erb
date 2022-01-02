@@ -17,8 +17,8 @@
 <footer class="bg-white pin-b" aria-labelledby="footer-heading">
   <h2 id="footer-heading" class="sr-only">Footer</h2>
   <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-    <div class="lg:grid lg:grid-cols-12 lg:gap divide-x">
-      <div class="lg:col-1 lg:col-span-4 pr-8">
+    <div class="grid grid-cols-1 gap-10 divide-y lg:grid-cols-12 lg:divide-x lg:divide-y-0">
+      <div class="lg:col-span-4">
         <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
           <%= t '.contact.title' %>
         </h3>
@@ -26,7 +26,7 @@
           <%= raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_") %>
         </p>
       </div>
-      <div class="lg:col-1 lg:col-span-8 pl-8">
+      <div class="pt-10 lg:pt-0 lg:col-span-8 lg:pl-10">
         <div class="lg:flex lg:items-center lg:justify-between xl:mt-0">
           <div>
             <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
@@ -36,7 +36,7 @@
               <%= t('.newsletter.subtitle') %>
             </p>
           </div>
-          <%= form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "mt-4 sm:flex sm:max-w-md lg:mt-0" do %>
+          <%= form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "mt-4 sm:flex sm:max-w-md lg:mt-0 lg:ml-10 lg:grow" do %>
             <%= hidden_field_tag :u, "5545e540aff9e8b07df2f5531" %>
             <%= hidden_field_tag :id, "4b7d62b6b3" %>
             <%= label_tag 'EMAIL', "Email address", class: "sr-only" %>
@@ -46,15 +46,15 @@
                 autocomplete: "email",
                 required: true,
                 placeholder: t('.newsletter.placeholder'),
-                class: "appearance-none min-w-0 w-full bg-white border border-gray-300 py-2 px-4 text-base rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:placeholder-gray-400 sm:max-w-xs"
+                class: "appearance-none min-w-0 w-full lg:flex-1"
             %>
-            <%= button_tag t('.newsletter.button'), class: "w-3/4 bg-red-600 border border-transparent rounded-md py-2 px-4 flex items-center justify-center text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ml-2" %>
+            <%= button_tag t('.newsletter.button'), class: "w-full bg-red-600 border border-transparent py-2 px-4 rounded-md mt-4 flex items-center justify-center text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 lg:mt-0 lg:ml-2 lg:flex-1" %>
           <% end %>
         </div>
       </div>
     </div>
-    <div class="mt-8 border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
-      <div class="flex space-x-6 md:order-2">
+    <div class="pt-10 flex items-center justify-between border-t mt-10">
+      <div class="flex space-x-6 order-2">
         <a href="https://www.instagram.com/sdkbudo/" class="text-gray-400 hover:text-gray-500">
           <span class="sr-only">Instagram</span>
           <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -69,7 +69,7 @@
           </svg>
         </a>
       </div>
-      <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+      <p class="mt-0 text-base text-gray-400 order-1">
         &copy; <%= Date.current.year %>
       </p>
     </div>
