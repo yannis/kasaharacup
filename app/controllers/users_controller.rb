@@ -9,8 +9,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @title = (@user == current_user ? t("users.show.title.show_self") : t("users.show.title.show",
-      full_name: @user.full_name))
+    @title = t("users.show.title.show", full_name: @user.full_name)
     respond_with @user
   end
 

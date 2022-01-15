@@ -12,6 +12,7 @@ en:
       register: "No registrations yet. Would you like to register %{yourself}? Or %{someone}?"
       yourself: "yourself"
       someone: "someone else"
+      edit: edit
     destroy:
       title: "Destroy account"
       confirm: "Are you sure? Your data as well as your registrations will be definitely destroyed."
@@ -41,6 +42,8 @@ en:
         password_confirmation: Password confirmation
         dob: 'Date of birth'
         gender: 'Sexe'
+        mr: Mr
+        ms: Ms
         female: Woman
         male: Man
         club_name: Club

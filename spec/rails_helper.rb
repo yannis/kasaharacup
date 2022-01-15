@@ -69,7 +69,7 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   # Includes Helpers and Matchers for ViewComponent
-  # config.include ViewComponent::TestHelpers, type: :component
+  config.include ViewComponent::TestHelpers, type: :component
   config.include Capybara::RSpecMatchers, type: :component
 
   Shoulda::Matchers.configure do |config|

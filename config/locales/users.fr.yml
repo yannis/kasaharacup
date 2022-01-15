@@ -12,6 +12,7 @@ fr:
       register: "Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?"
       yourself: "vous inscrire"
       someone: "un autre kenshi"
+      edit: Modifier
     destroy:
       title: Détruire ce compte
       confirm: "Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
@@ -44,6 +45,8 @@ fr:
         dob: 'Date de naissance'
         gender: 'Sexe'
         female: Femme
+        mr: M.
+        ms: Mme.
         male: Homme
         club_name: Club
         fees: "Frais"

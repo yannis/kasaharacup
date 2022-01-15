@@ -14,6 +14,9 @@ fr:
         female: Femme
         male: Homme
         categories: Catégories
+        competition_fees: Frais de compétition
+        products_fees: Frais extra
+        salutations: Salutations
     errors:
       models:
         kenshi:
@@ -71,6 +74,14 @@ fr:
       flash:
         notice: Inscription modifiée avec succès
     deadline_passed: "Date limite d'inscription dépassée. Please contact <a href='mailto:%{email}'>%{email}</a>."
+    helpers:
+      edit:
+        text: Modifier
+      destroy:
+        text: Détruire
+        confirm: "Êtes vous sûr?"
+      duplicate:
+        text: Dupliquer
   kenshi:
     title: Inscriptions
     link:

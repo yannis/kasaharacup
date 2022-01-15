@@ -10,7 +10,7 @@
     <div style="border: 0">
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="input-group">
-          <%= f.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+          <%= f.label :female, Kenshi.human_attribute_name(:salutations), class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
           </div>
@@ -40,7 +40,7 @@
         <div class="input-group">
           <%= f.label :club_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
-            <%= f.select :club_name, Club.order(:name).pluck(:name, :id) %>
+            <%= f.select :club_name, Club.order(:name).pluck(:name, :name) %>
           </div>
         </div>
 

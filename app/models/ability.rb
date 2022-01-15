@@ -16,10 +16,10 @@ class Ability
       # can [:create, :update, :destroy], Kenshi do |kenshi|
       #   kenshi.user_id == user.id && Time.zone.current < kenshi.cup.deadline
       # end
-      can [:destroy], Participation do |participation|
+      can :destroy, Participation do |participation|
         participation.kenshi.user_id == user.id
       end
-      can [:destroy], Purchase do |purchase|
+      can :destroy, Purchase do |purchase|
         purchase.kenshi.user_id == user.id
       end
       can [:read, :update, :destroy], User, id: user.id

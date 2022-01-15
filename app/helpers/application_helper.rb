@@ -23,7 +23,7 @@ title: "Cancel #{f.object_name} form", class: "cancel #{request.format == "appli
     if object.is_a?(Array)
       object = object.last
     end
-    text = options.fetch(:text, "<span class='glyphicon glyphicon-trash'></span> Destroy")
+    text = options.fetch(:text, "Destroy")
     title = options.fetch(:title,
       "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "' + object.name + '"' if object.respond_to?(:name)}")
     remote = options.fetch(:remote, false)
@@ -47,7 +47,7 @@ title: "Cancel #{f.object_name} form", class: "cancel #{request.format == "appli
 
   def edit_link(object, title: "Edit", classes: "")
     classes += " btn btn-info"
-    link_to("<span class='glyphicon glyphicon-edit'></span> #{title}".html_safe, polymorphic_path([:edit, *object]),
+    link_to(title, polymorphic_path([:edit, *object]),
       title: "Edit #{object.class.to_s.humanize}#{object.respond_to?(:name) ? " #{object.name}" : ""}", class: classes)
   end
 

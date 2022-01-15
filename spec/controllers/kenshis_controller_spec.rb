@@ -66,7 +66,7 @@ RSpec.describe KenshisController, type: :controller do
             eval(m)
           end
 
-          should_be_asked_to_sign_in
+          it { should_be_asked_to_sign_in }
         end
       end
     end
@@ -154,7 +154,7 @@ RSpec.describe KenshisController, type: :controller do
       describe "on GET to :edit with :id = kenshi1.to_param," do
         before { get :edit, params: {cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale} }
 
-        should_not_be_authorized
+        it { should_not_be_authorized }
       end
 
       describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data" do
@@ -187,7 +187,7 @@ RSpec.describe KenshisController, type: :controller do
             params: {id: kenshi1.to_param, cup_id: cup.to_param, kenshi: {last_name: "alaNma2"}, locale: I18n.locale}
         }
 
-        should_not_be_authorized
+        it { should_not_be_authorized }
       end
 
       describe "on DELETE to :destroy with :id = basic_user_kenshi.to_param," do
@@ -206,7 +206,7 @@ RSpec.describe KenshisController, type: :controller do
       describe "on DELETE to :destroy with :id = kenshi1.to_param," do
         before { delete :destroy, params: {cup_id: cup.to_param, id: kenshi1.to_param, locale: I18n.locale} }
 
-        should_not_be_authorized
+        it { should_not_be_authorized }
       end
 
       context "when deadline is passed" do

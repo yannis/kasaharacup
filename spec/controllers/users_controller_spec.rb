@@ -23,7 +23,7 @@ RSpec.describe UsersController, type: :controller do
           eval(m)
         end
 
-        should_be_asked_to_sign_in
+        it { should_be_asked_to_sign_in }
       end
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe UsersController, type: :controller do
           eval(m)
         end
 
-        should_not_be_authorized
+        it { should_not_be_authorized }
       end
     end
 

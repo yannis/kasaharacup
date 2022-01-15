@@ -1,90 +1,46 @@
 <% title @title %>
-<div class="row">
-  <div class="col-xs-12 col-md-6">
-    <h2>
-      <%= @title %>
-    </h2>
-    <% if @user.attributes == current_user.attributes %>
-      <table class="table table-condensed">
-        <tr>
-          <th>
-            <%= User.human_attribute_name :last_name %>
-          </th>
-          <td>
-            <%= @user.last_name %>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <%= User.human_attribute_name :first_name %>
-          </th>
-          <td>
-            <%= @user.first_name %>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <%= User.human_attribute_name :dob %>
-          </th>
-          <td>
-            <%= @user.dob.to_s %>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <%= User.human_attribute_name :gender %>
-          </th>
-          <td>
-            <%= @user.gender %>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <%= User.human_attribute_name :email %>
-          </th>
-          <td>
-            <%= @user.email %>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            <%= User.human_attribute_name :club %>
-          </th>
-          <td>
-            <%= @user.club if @user.club %>
-          </td>
-          <!-- # %td= mail_to(@user.email, 'Email', encode: 'hex', class: 'email')
-          -->
-        </tr>
-        <tr>
-          <th>
-            <h4>Fees due</h4>
-          </th>
-          <th>
-            <%= "#{@user.fees(:chf, @current_cup)} CHF / #{@user.fees(:eur, @current_cup)} €" %>
-          </th>
-        </tr>
-      </table>
-    <% end %>
-    <%= user_admin_links @user %>
-  </div>
-  <div class="col-xs-12 col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2>
-          <%= t(".your_registrations") %>
-          <%= link_to "<span class='glyphicon glyphicon-plus'></span> #{t("kenshis.show.register_someone_else")}".html_safe, new_cup_user_kenshi_path(@current_cup, current_user), class: "btn btn-info btn-xs" %>
-        </h2>
+<div class="py-10">
+  <header>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between">
+      <div>
+        <h1 class="text-3xl font-bold leading-tight text-gray-900">
+          <%= @title %>
+        </h1>
+        <p>
+          <em>
+            <%= [@user.email, l(@user.dob), @user.club.name].compact.join(" • ") %>
+          </em>
+        </p>
       </div>
-      <div class="panel-body">
-        <% if @user.kenshis.for_cup(@current_cup).present? %>
-          <%= render partial: "kenshis/kenshi", collection: @user.kenshis.for_cup(@current_cup) %>
-        <% else %>
-          <p>
-            <%= raw t(".register", yourself: link_to(t(".yourself"), new_cup_user_kenshi_path(@current_cup, current_user, self: true, locale: I18n.locale)), someone: link_to(t(".someone"), new_cup_user_kenshi_path(@current_cup, current_user, locale: I18n.locale))) %>
-          </p>
-        <% end %>
+      <%= user_admin_links @user %>
+    </div>
+  </header>
+  <main>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+
+      <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+          <h3 class="text-xl leading-6 font-medium text-gray-900 flex justify-between">
+            <%= t(".your_registrations") %>
+            <%= link_to t("kenshis.show.register_someone_else"), new_cup_user_kenshi_path(@current_cup, current_user), class: "btn btn-primary" %>
+          </h3>
+        </div>
+
+        <ul role="list" class="divide-y divide-gray-200">
+          <% if @user.kenshis.for_cup(@current_cup).any? %>
+            <%= render @user.kenshis.for_cup(@current_cup) %>
+          <% else %>
+            <li>
+              <div class="px-4 py-4 sm:px-6 prose">
+                <%= raw t(".register", yourself: link_to(t(".yourself"), new_cup_user_kenshi_path(@current_cup, current_user, self: true, locale: I18n.locale)), someone: link_to(t(".someone"), new_cup_user_kenshi_path(@current_cup, current_user, locale: I18n.locale))) %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
       </div>
     </div>
-  </div>
+  </main>
 </div>
+
+

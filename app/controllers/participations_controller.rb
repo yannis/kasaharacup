@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class ParticipationsController < ApplicationController
-  load_and_authorize_resource class: Participation, param_method: :my_sanitizer, through: [:user], shallow: true
+  load_and_authorize_resource :user
+  load_and_authorize_resource :participation, param_method: :my_sanitizer, through: :user, shallow: true
+
   before_action :check_deadline, only: [:destroy]
   before_action :configure_permitted_parameters, if: :devise_controller?
-  respond_to :html
 
   def destroy
     @participation.destroy ? notice = t("participations.destroy.notice") : alert = t("participations.destroy.notice")

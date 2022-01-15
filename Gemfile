@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.0.3"
 
-gem "rails", "~> 7.0.0"
+gem "rails", "~> 7.0.1"
 
 # Database
 gem "pg", "~> 1.1"
@@ -68,7 +68,7 @@ end
 
 group :development do
   gem "brakeman"
-  # gem "i18n-tasks" => Temporary deactivated, see https://github.com/digitalepidemiologylab/myfoodrepo/issues/113
+  gem "i18n-tasks"
   gem "letter_opener_web", "~> 2.0"
   gem "solargraph"
   gem "rack-mini-profiler"
@@ -77,6 +77,7 @@ end
 
 group :test do
   gem "capybara"
+  gem "rails-controller-testing", "~> 1.0"
   gem "selenium-webdriver"
   gem "shoulda-matchers"
   gem "webdrivers"

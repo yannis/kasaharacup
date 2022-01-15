@@ -30,7 +30,11 @@ class User < ApplicationRecord
   end
 
   def full_name
-    "#{first_name} #{last_name}"
+    [
+      female ? self.class.human_attribute_name(:ms) : self.class.human_attribute_name(:mr),
+      first_name,
+      last_name
+    ].join(" ")
   end
 
   def registered_for_cup?(cup)

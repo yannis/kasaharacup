@@ -14,6 +14,9 @@ en:
         # female: Woman
         # male: Man
         categories: Categories
+        competition_fees: Competition fees
+        products_fees: Extra fees
+        salutations: Salutations
     errors:
       models:
         kenshi:
@@ -24,8 +27,6 @@ en:
     self:
       exist: "It seems you're already registered. Do you want to modify this registration?"
     show:
-      mr: Mr
-      ms: Ms
       register_someone_else: "Register someone else to the competition"
     index:
       title: All registrations
@@ -74,6 +75,14 @@ en:
       flash:
         notice: Registration successfully updated
     deadline_passed: "The registration deadline is overpassed. Please contact <a href='mailto:%{email}'>%{email}</a>."
+    helpers:
+      edit:
+        text: Edit
+      destroy:
+        text: Destroy
+        confirm: Are you sure?
+      duplicate:
+        text: Duplicate
   kenshi:
     title: Registration
     button: Register

@@ -109,11 +109,12 @@ class Participation < ApplicationRecord
     end
   end
 
-  # def full_name
-  #   full_name = [category.name]
-  #   full_name << "(#{team.name})" if team
-  #   full_name.join(" ")
-  # end
+  def descriptive_name
+    full_name = [category.name]
+    full_name << "(#{team.name})" if team
+    full_name << "(ronin)" if ronin
+    full_name.join(" ")
+  end
 
   protected
     def assign_category

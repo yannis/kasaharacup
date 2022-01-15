@@ -7,7 +7,7 @@ module ParticipationsHelper
       :destroy, participation
     )
       links << destroy_link([@current_cup, participation],
-        {text: "<span class='glyphicon glyphicon-trash'></span>", title: t("participations.destroy.title"),
+        {text: "Destroy", title: t("participations.destroy.title"),
          confirm: t("participations.destroy.confirm"), classes: "btn-xs"})
     end
 

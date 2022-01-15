@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  devise_for :user, controllers: {registrations: "users/registrations"}
-  devise_scope :user do
-    get "log_out", to: "devise/sessions#destroy"
-  end
-
   scope ":locale", locale: /fr|en/ do |locale|
+    devise_for :user, controllers: {registrations: "users/registrations"}
+    devise_scope :user do
+      get "log_out", to: "devise/sessions#destroy"
+    end
     get "/about", to: "static_pages#about"
     resources :cups, only: [:index, :show] do
       resources :headlines, only: [:index, :show]

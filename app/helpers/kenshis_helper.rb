@@ -3,22 +3,29 @@
 module KenshisHelper
   def kenshi_admin_links(kenshi, options: {})
     links = []
+
     if can?(:update, kenshi)
-      links << edit_link([@current_cup, kenshi], classes: "btn-xs")
+      links << link_to(t("kenshis.helpers.edit.text"), edit_cup_kenshi_path(@current_cup, kenshi), class: "btn btn-sm btn-secondary ml-2")
     end
+
     if can?(:destroy, kenshi)
-      links << destroy_link([@current_cup, kenshi],
-        {title: t("kenshis.destroy.title"), confirm: t("kenshis.destroy.confirm"), classes: "btn-xs"})
+      links << link_to(
+        t("kenshis.helpers.destroy.text"),
+        cup_kenshi_path(@current_cup, kenshi, locale: I18n.locale),
+        data: {confirm: t("kenshis.helpers.destroy.confirm")},
+        method: :delete,
+        class: "btn btn-sm btn-secondary ml-2"
+      )
     end
+
     if can?(:create, Kenshi) && current_user_admin_or_owner?(kenshi)
-      links << link_to("<i class='fa fa-files-o'></i> Duplicate".html_safe,
-        duplicate_cup_user_kenshi_path(@current_cup, kenshi.user, kenshi), class: "btn btn-default btn-xs")
+      links << link_to(t("kenshis.helpers.duplicate.text"),
+        duplicate_cup_user_kenshi_path(@current_cup, kenshi.user, kenshi), class: "btn btn-sm btn-secondary ml-2")
     end
 
     classes = options.fetch(:class, "")
 
-    content_tag(:div, class: "admin_links #{classes} btn-group",
-id: "#{kenshi.class.to_s.tableize}_#{kenshi.id}_admin_links") do
+    tag.div(class: "admin_links #{classes} btn-group", id: "#{kenshi.class.to_s.tableize}_#{kenshi.id}_admin_links") do
       links.each do |link|
         concat(link)
       end

@@ -2,14 +2,13 @@
 
 RSpec.configure do |config|
   def should_be_asked_to_sign_in
-    it { expect(response).to redirect_to("http://test.host/users/sign_in?locale=en") }
-    it { expect(flash.alert).to eql "You need to sign in or sign up before continuing." }
+    expect(response).to redirect_to(new_user_session_path)
+    expect(flash.alert).to eql "You need to sign in or sign up before continuing."
   end
 
   def should_not_be_authorized
-    it { expect(response.status).to eq 401 }
-    # it {expect(response.body).to match /You are not authorized to access this page/ }
-    it { expect(flash[:alert]).to match /You are not authorized to access this page/ }
+    expect(response.status).to eq 401
+    expect(flash[:alert]).to match /You are not authorized to access this page/
   end
 
   def should_not_find_model

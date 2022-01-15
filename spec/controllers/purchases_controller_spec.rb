@@ -17,7 +17,7 @@ RSpec.describe PurchasesController, type: :controller do
           delete :destroy, params: {id: purchase.to_param, locale: I18n.locale, cup_id: cup.to_param}
         }
 
-        should_be_asked_to_sign_in
+        it { should_be_asked_to_sign_in }
       end
     end
 
@@ -44,7 +44,7 @@ RSpec.describe PurchasesController, type: :controller do
           delete :destroy, params: {id: another_purchase.to_param, locale: I18n.locale, cup_id: cup.to_param}
         }
 
-        should_not_be_authorized
+        it { should_not_be_authorized }
       end
     end
   end
