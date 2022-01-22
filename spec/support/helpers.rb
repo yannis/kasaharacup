@@ -7,7 +7,7 @@ RSpec.configure do |config|
   end
 
   def should_not_be_authorized
-    expect(response.status).to eq 401
+    expect(response.status).to redirect_to(root_path)
     expect(flash[:alert]).to match /You are not authorized to access this page/
   end
 
@@ -26,21 +26,6 @@ RSpec.configure do |config|
     end
     # page.should have_content('Logged in successfully.')
   end
-
-  # def embersignin(user)
-  #   visit "/"
-  #   login_as user, scope: :user
-  #   page.driver.browser.manage.add_cookie(name: "authToken", value: user.authentication_token)
-  #   page.driver.browser.manage.add_cookie(name: "authUserId", value: user.id)
-  #   visit "/"
-  # end
-
-  # def embersignout
-  #   logout :user
-  #   Capybara.reset_sessions!
-  #   page.driver.browser.manage.delete_cookie(name: "authToken")
-  #   page.driver.browser.manage.delete_cookie(name: "authUserId")
-  # end
 
   def flash_is(message)
     within(".notifications") do

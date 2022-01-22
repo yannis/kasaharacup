@@ -8,7 +8,7 @@ en:
         show: "Account of %{full_name}"
       register_someone_else: Register someone else to the competition
       register_yourself: Register yourself to the competition
-      your_registrations: Your registrations
+      your_registrations: Your registrations for Kasahara Cup %{year}
       register: "No registrations yet. Would you like to register %{yourself}? Or %{someone}?"
       yourself: "yourself"
       someone: "someone else"

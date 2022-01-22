@@ -46,7 +46,7 @@ RSpec.describe ParticipationsController, type: :controller do
           delete :destroy, params: {id: another_participation.to_param, cup_id: cup.to_param, locale: I18n.locale}
         }
 
-        it { should_not_be_authorized }
+        fit { should_not_be_authorized }
       end
     end
   end

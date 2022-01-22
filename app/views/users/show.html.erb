@@ -22,7 +22,7 @@
       <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-md">
         <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
           <h3 class="text-xl leading-6 font-medium text-gray-900 flex justify-between">
-            <%= t(".your_registrations") %>
+            <%= t(".your_registrations", year: @current_cup.year) %>
             <%= link_to t("kenshis.show.register_someone_else"), new_cup_user_kenshi_path(@current_cup, current_user), class: "btn btn-primary" %>
           </h3>
         </div>

@@ -44,6 +44,7 @@ en:
       new:
         title: "Sign up"
       edit:
+        title: Update
         password:
           hint: leave it blank if you don't want to change it
         current_password:

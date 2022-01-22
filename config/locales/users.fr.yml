@@ -8,7 +8,7 @@ fr:
         show: "Compte de %{full_name}"
       register_someone_else: Inscrivez quelqu'un d'autre à la compétition
       register_yourself: Inscrivez-vous à la compétition
-      your_registrations: Vos inscriptions
+      your_registrations: Vos inscriptions pour la Coupe Kasahara %{year}
       register: "Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?"
       yourself: "vous inscrire"
       someone: "un autre kenshi"
