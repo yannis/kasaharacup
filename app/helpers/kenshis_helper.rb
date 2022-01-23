@@ -5,7 +5,8 @@ module KenshisHelper
     links = []
 
     if can?(:update, kenshi)
-      links << link_to(t("kenshis.helpers.edit.text"), edit_cup_kenshi_path(@current_cup, kenshi), class: "btn btn-sm btn-secondary ml-2")
+      links << link_to(t("kenshis.helpers.edit.text"), edit_cup_kenshi_path(@current_cup, kenshi),
+        class: "btn btn-sm btn-secondary ml-2")
     end
 
     if can?(:destroy, kenshi)

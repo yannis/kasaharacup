@@ -83,7 +83,7 @@ ActiveAdmin.register Product, as: "Product" do
     end
 
     send_data csv, type: "text/csv; charset=utf-8; header=present",
-disposition: "attachment; filename=product_#{@product.name.parameterize}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
+      disposition: "attachment; filename=product_#{@product.name.parameterize}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
   end
 
   action_item :kenshi_list, only: :show do

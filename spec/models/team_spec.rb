@@ -47,7 +47,7 @@ RSpec.describe Team, type: :model do
       before {
         5.times do |i|
           create :participation, team: team, category: team_category,
-kenshi: create(:kenshi, dob: 30.years.ago, grade: "#{i + 1}Dan", cup: cup)
+            kenshi: create(:kenshi, dob: 30.years.ago, grade: "#{i + 1}Dan", cup: cup)
         end
         team.reload
       }

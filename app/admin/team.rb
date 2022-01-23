@@ -91,10 +91,10 @@ ActiveAdmin.register Team, as: "Team" do
   member_action :pdf do
     @team = Team.find params[:id]
     pdf = TeamPdf.new(@team)
-    send_data pdf.render, filename: @team.name.parameterize("_"),
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+    send_data pdf.render, filename: @team.name.parameterize(separator: "_"),
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
   end
   action_item :pdf, only: :show do
     link_to "PDF", pdf_admin_team_path(team)

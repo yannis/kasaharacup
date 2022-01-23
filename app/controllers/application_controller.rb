@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     if current_user.present?
-      redirect_to root_path, alert: exception.message, status: :unauthorized
+      redirect_to root_path, alert: exception.message
     else
       redirect_to new_user_session_path(locale: I18n.locale), alert: I18n.t("devise.failure.unauthenticated")
     end

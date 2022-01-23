@@ -33,7 +33,7 @@ RSpec.describe User, type: :model do
       it {
         expect {
           create :user, first_name: "Yannis",
-          last_name: "Jaquet"
+            last_name: "Jaquet"
         }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Last name has already been taken")
       }
     end
@@ -43,7 +43,7 @@ RSpec.describe User, type: :model do
     let!(:cup) { create :cup }
     let(:user) {
       create :user, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
-      email: "STUPIDLY.FORAMaTTED@EMAIL.COM"
+        email: "STUPIDLY.FORAMaTTED@EMAIL.COM"
     }
 
     it { expect(user).to be_valid_verbose }

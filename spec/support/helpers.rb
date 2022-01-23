@@ -7,13 +7,13 @@ RSpec.configure do |config|
   end
 
   def should_not_be_authorized
-    expect(response.status).to redirect_to(root_path)
-    expect(flash[:alert]).to match /You are not authorized to access this page/
+    expect(response).to redirect_to(root_path)
+    expect(flash[:alert]).to match(/You are not authorized to access this page/)
   end
 
   def should_not_find_model
     it { expect(response.status).to eq 422 }
-    it { expect(response.body).to match /Couldn't find/ }
+    it { expect(response.body).to match(/Couldn't find/) }
   end
 
   def signin(user)
@@ -71,8 +71,8 @@ RSpec.configure do |config|
   #   # page.execute_script("editor.setValue('#{text}')")
   # end
 
-  def deadline_passed
-    it { expect(response).to redirect_to root_path(locale: I18n.locale) }
-    it { expect(flash[:alert]).to eq I18n.t("kenshis.deadline_passed", email: "info@kendo-geneve.ch") }
+  def has_passed_deadline
+    expect(response).to redirect_to root_path(locale: I18n.locale)
+    expect(flash[:alert]).to eq I18n.t("kenshis.deadline_passed", email: "info@kendo-geneve.ch")
   end
 end

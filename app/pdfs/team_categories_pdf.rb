@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "poster_size"
-class TeamsPdf < Prawn::Document
+class TeamCategoriesPdf < Prawn::Document
   include PosterSize
   def initialize(teams)
     super(page_layout: :portrait)

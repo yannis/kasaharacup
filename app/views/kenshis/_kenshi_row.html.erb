@@ -1,0 +1,36 @@
+<li>
+  <div class="py-4 px-3 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-lg font-medium text-gray-600 prose">
+          <%= "#{(kenshi_counter + 1)})" if defined?(kenshi_counter) %>
+          <%= link_to(cup_kenshi_path(kenshi.cup, kenshi)) do %>
+            <%= kenshi.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %> <%= kenshi.full_name %>
+          <% end %>
+        </p>
+        <p class="text-sm font-medium text-gray-400 truncate">
+          <em><%= kenshi.grade %></em>, <em><%= kenshi.club.name %></em>
+        </p>
+      </div>
+      <div class="ml-2 flex-shrink-0 flex">
+        <% if current_user_admin_or_owner?(kenshi) %>
+          <%= raw kenshi_admin_links(kenshi, options: {class: "pull-right"}) %>
+        <% end %>
+      </div>
+    </div>
+    <div class="mt-6 sm:flex sm:justify-between">
+      <div class="sm:flex">
+        <p class="flex items-center text-sm text-gray-500">
+          <!-- Heroicon name: flag -->
+          <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
+          </svg>
+          <%= Kenshi.human_attribute_name(:categories) %>
+          <% if kenshi.participations.any? %>
+            : <%= kenshi.participations.map { |p| p.descriptive_name }.join(", ") %>
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </div>
+</li>

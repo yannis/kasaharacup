@@ -14,7 +14,7 @@ module ApplicationHelper
     link = [f.submit(text, class: "btn btn-success")]
     link << t("form.or")
     link << link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
-title: "Cancel #{f.object_name} form", class: "cancel #{request.format == "application/javascript" ? "close_div" : ""}")
+      title: "Cancel #{f.object_name} form", class: "cancel #{request.format == "application/javascript" ? "close_div" : ""}")
     link.join(" ").html_safe
   end
 

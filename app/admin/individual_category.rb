@@ -129,10 +129,10 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   member_action :pdf do
     @category = IndividualCategory.find params[:id]
     pdf = IndividualCategoryPdf.new(@category)
-    send_data pdf.render, filename: @category.name.parameterize("_"),
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+    send_data pdf.render, filename: @category.name.parameterize(separator: "_"),
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
   end
   action_item :pdf, only: :show do
     link_to "PDF", pdf_admin_individual_category_path(individual_category)
@@ -141,10 +141,10 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   member_action :pdf_recap do
     @category = IndividualCategory.find params[:id]
     pdf = IndividualCategoryPdfRecap.new(@category)
-    send_data pdf.render, filename: @category.name.parameterize("_"),
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+    send_data pdf.render, filename: @category.name.parameterize(separator: "_"),
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
   end
   action_item :pdf_recap, only: :show do
     link_to "PDF Recap", pdf_recap_admin_individual_category_path(individual_category)
@@ -153,19 +153,19 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   member_action :pool_sheets do
     @category = IndividualCategory.find params[:id]
     pdf = IndividualCategoryPoolMatchesPdf.new(@category)
-    send_data pdf.render, filename: @category.name.parameterize("_"),
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+    send_data pdf.render, filename: @category.name.parameterize(separator: "_"),
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
   end
 
   member_action :sheet do
     @category = IndividualCategory.find params[:id]
     pdf = IndividualCategoryMatchSheetPdf.new(@category)
-    send_data pdf.render, filename: @category.name.parameterize("_"),
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+    send_data pdf.render, filename: @category.name.parameterize(separator: "_"),
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
   end
 
   action_item :match_sheet, only: :show do
@@ -199,6 +199,6 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   end
 
   action_item :kenshi_list, only: :show do
-    link_to("Kenshis list", params.merge(action: :download_kenshi_list))
+    link_to("Kenshis list", params.permit!.merge(action: :download_kenshi_list))
   end
 end

@@ -41,6 +41,21 @@
           <div class="flex space-x-4">
             <%= link_to t(".about"), about_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
             <%=
+              link_to(
+                t("navigation.kenshis.text", kenshis: @current_cup.kenshis.count),
+                cup_kenshis_path(@current_cup),
+                class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              )
+            %>
+            <%=
+              link_to(
+                t("navigation.teams.text", teams: @current_cup.teams.count),
+                cup_teams_path(@current_cup),
+                title: t("navigation.teams.title").html_safe,
+                class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              )
+            %>
+            <%=
               render(NavigationDropdownComponent.new(
                 name: "archive",
                 text: "Archive",
@@ -77,7 +92,6 @@
       </div>
     </div>
   </div>
-
   <!-- Mobile menu, show/hide based on menu state. -->
   <div class="hidden"
     id="mobile-menu"

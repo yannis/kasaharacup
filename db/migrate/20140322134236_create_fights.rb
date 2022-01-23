@@ -1,4 +1,4 @@
-class CreateFights < ActiveRecord::Migration
+class CreateFights < ActiveRecord::Migration[7.0]
   def change
     create_table :fights do |t|
       t.belongs_to :individual_category, index: true

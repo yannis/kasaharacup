@@ -2,11 +2,11 @@
 
 require "rails_helper"
 
-RSpec.describe UsersController, type: :controller do
-  let!(:cup) { create :kendocup_cup, start_on: Date.current + 2.days }
-  let(:user) { create :kendocup_user }
-  let(:basic_user) { create :kendocup_user }
-  let(:admin_user) { create :kendocup_user, admin: true }
+RSpec.describe UsersController do
+  let!(:cup) { create :cup, start_on: Date.current + 2.days }
+  let(:user) { create :user }
+  let(:basic_user) { create :user }
+  let(:admin_user) { create :user, admin: true }
 
   def valid_attributes
     {last_name: "a_last_name#{rand(1..1000)}", first_name: "a_first_name", email: "anemail@address.com",
@@ -46,7 +46,7 @@ RSpec.describe UsersController, type: :controller do
 
     # describe "GET index" do
     #   before {get :index}
-    #   it {expect(response).to be_success}
+    #   it {expect(response).to have_http_status(:success)}
     #   it {expect(response).to render_template 'index'}
     #   it {assigns(:users).should =~ [basic_user]}
     # end
@@ -54,7 +54,7 @@ RSpec.describe UsersController, type: :controller do
     describe "GET show with self user_id" do
       before { get :show, params: {id: basic_user.to_param, locale: I18n.locale, cup_id: cup.to_param} }
 
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(response).to render_template "show" }
       it { expect(assigns(:user)).to eq(basic_user) }
     end
@@ -62,7 +62,7 @@ RSpec.describe UsersController, type: :controller do
     describe "GET edit with self user_id" do
       before { get :edit, params: {id: basic_user.to_param, locale: I18n.locale, cup_id: cup.to_param} }
 
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(response).to render_template "edit" }
       it { expect(assigns(:user)).to eq(basic_user) }
     end
@@ -97,7 +97,7 @@ RSpec.describe UsersController, type: :controller do
 
     # describe "GET index" do
     #   before {get :index}
-    #   it{ expect(response).to be_success}
+    #   it{ expect(response).to have_http_status(:success)}
     #   it{expect(response).to render_template 'index'}
     #   it {expect(assigns(:users)).to eq User.all.to_a}
     # end
@@ -106,7 +106,7 @@ RSpec.describe UsersController, type: :controller do
       before { get :show, params: {id: admin_user.to_param, locale: I18n.locale, cup_id: cup.to_param} }
 
       it { expect(assigns(:user)).to eq(admin_user) }
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(response).to render_template "show" }
     end
 
@@ -114,7 +114,7 @@ RSpec.describe UsersController, type: :controller do
       before { get :show, params: {id: user.to_param, locale: I18n.locale, cup_id: cup.to_param} }
 
       it { expect(assigns(:user)).to eq(user) }
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(response).to render_template "show" }
     end
 
@@ -122,7 +122,7 @@ RSpec.describe UsersController, type: :controller do
       before { get :edit, params: {id: admin_user.to_param, locale: I18n.locale, cup_id: cup.to_param} }
 
       it { expect(assigns(:user)).to eq admin_user }
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(response).to render_template "edit" }
     end
 
@@ -130,7 +130,7 @@ RSpec.describe UsersController, type: :controller do
       before { get :edit, params: {id: user.to_param, locale: I18n.locale, cup_id: cup.to_param} }
 
       it { expect(assigns(:user)).to eq user }
-      it { expect(response).to be_success }
+      it { expect(response).to have_http_status(:success) }
       it { expect(response).to render_template "edit" }
     end
 
@@ -183,7 +183,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     describe "DELETE destroy with another user_id" do
-      let!(:another_user) { create :kendocup_user }
+      let!(:another_user) { create :user }
 
       it "destroys the requested user" do
         expect {

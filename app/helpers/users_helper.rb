@@ -9,8 +9,11 @@ module UsersHelper
     end
 
     if can?(:update, user)
-      links << link_to(t("users.show.edit"),
-        edit_user_registration_path(user.id, locale: I18n.locale), class: "btn btn-sm btn-secondary ml-2")
+      links << link_to(
+        t("users.show.edit"),
+        edit_user_registration_path,
+        class: "btn btn-sm btn-secondary ml-2"
+      )
     end
 
     if can?(:destroy, user)

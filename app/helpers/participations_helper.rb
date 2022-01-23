@@ -12,7 +12,7 @@ module ParticipationsHelper
     end
 
     content_tag(:div, class: "admin_links #{nav}",
-id: "#{participation.class.to_s.tableize}_#{participation.id}_admin_links") do
+      id: "#{participation.class.to_s.tableize}_#{participation.id}_admin_links") do
       links.each do |link|
         concat(link)
       end

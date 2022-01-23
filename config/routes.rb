@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :participations, only: [:destroy]
       resources :purchases, only: [:destroy]
       resources :teams, only: [:index, :show]
-      resources :users do
+      resources :users, only: %i[show] do
         resources :charges
         resources :kenshis do
           member do

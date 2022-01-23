@@ -1,4 +1,4 @@
-class CreateKenshis < ActiveRecord::Migration
+class CreateKenshis < ActiveRecord::Migration[7.0]
   def change
     create_table :kenshis do |t|
       t.string :first_name

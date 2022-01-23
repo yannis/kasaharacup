@@ -37,7 +37,7 @@ RSpec.describe Kenshi, type: :model do
     let(:club) { create :club, name: "Shung Do Kwan" }
     let(:kenshi) {
       create :kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, club: club, dob: 20.years.ago,
-      cup: cup
+        cup: cup
     }
 
     it { expect(kenshi).to be_valid_verbose }
@@ -60,7 +60,7 @@ RSpec.describe Kenshi, type: :model do
   describe "A kenshi with badly formatted name and email" do
     let(:kenshi) {
       create :kenshi, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
-      email: "STUPIDLY.FORAMaTTED@EMAIL.COM", cup: cup
+        email: "STUPIDLY.FORAMaTTED@EMAIL.COM", cup: cup
     }
 
     it { expect(kenshi.norm_last_name).to eq "Last-J.-Name Name" }

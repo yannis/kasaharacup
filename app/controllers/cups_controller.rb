@@ -8,7 +8,7 @@ class CupsController < ApplicationController
   end
 
   def show
-    @cup = Cup.where("extract(year from cups.start_on) = ?", params[:id]).first
+    @cup = Cup.where("EXTRACT(YEAR FROM cups.start_on) = ?", params[:id]).first
     if @cup.nil?
       set_current_cup
       redirect_to cup_path(@current_cup, locale: I18n.locale)

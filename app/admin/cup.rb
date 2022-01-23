@@ -154,7 +154,7 @@ ActiveAdmin.register Cup do
     end
 
     send_data csv, type: "text/csv; charset=utf-8; header=present",
-disposition: "attachment; filename=cup_#{@cup.year}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
+      disposition: "attachment; filename=cup_#{@cup.year}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
   end
 
   action_item :kenshi_list, only: :show do

@@ -20,3 +20,8 @@ en:
       confirm: Are you sure you want to destroy this team? This is irreversible…
       notice: "Team successfully destroyed"
       alert: "Unable to destroy team"
+    team_row:
+      incomplete: Incomplete
+      complete: Complete
+      invalid: Invalid
+      valid: Valid

@@ -8,9 +8,9 @@ GIT
 
 GIT
   remote: https://github.com/activeadmin/inherited_resources.git
-  revision: a0a350245a2ec76c040f8751707c1d98792534dd
+  revision: df8dbe36148329351643d4a00d5e9e105b133552
   specs:
-    inherited_resources (1.13.0)
+    inherited_resources (1.13.1)
       actionpack (>= 5.2, < 7.1)
       has_scope (~> 0.6)
       railties (>= 5.2, < 7.1)
@@ -44,7 +44,7 @@ GIT
 
 GIT
   remote: https://github.com/tagliala/activeadmin.git
-  revision: 12ef798e1a02084565fa2ea698e26334dbc56e42
+  revision: 3ff80bb9e3896714af9fcbc6005568f8693860a4
   branch: feature/railties-7
   specs:
     activeadmin (2.9.0)
@@ -132,8 +132,8 @@ GEM
     bcrypt (3.1.16)
     benchmark (0.2.0)
     bindex (0.8.1)
-    bootsnap (1.9.4)
-      msgpack (~> 1.0)
+    bootsnap (1.10.2)
+      msgpack (~> 1.2)
     brakeman (5.2.0)
     builder (3.2.4)
     cancancan (3.3.0)
@@ -243,7 +243,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     minitest (5.15.0)
-    msgpack (1.4.2)
+    msgpack (1.4.4)
     net-imap (0.2.3)
       digest
       net-protocol
@@ -353,9 +353,9 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.10.3)
-    rubocop (1.24.1)
+    rubocop (1.25.0)
       parallel (~> 1.10)
-      parser (>= 3.0.0.0)
+      parser (>= 3.1.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
@@ -368,7 +368,7 @@ GEM
       rubocop (>= 0.90, < 2.0)
     rubocop-packaging (0.5.1)
       rubocop (>= 0.89, < 2.0)
-    rubocop-performance (1.13.1)
+    rubocop-performance (1.13.2)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     rubocop-rails (2.13.2)
@@ -388,8 +388,6 @@ GEM
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
-    sass-rails (6.0.0)
-      sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -426,9 +424,9 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    standard (1.6.0)
-      rubocop (= 1.24.1)
-      rubocop-performance (= 1.13.1)
+    standard (1.7.0)
+      rubocop (= 1.25.0)
+      rubocop-performance (= 1.13.2)
     stimulus-rails (1.0.2)
       railties (>= 6.0.0)
     strscan (3.0.1)
@@ -438,7 +436,7 @@ GEM
     tilt (2.0.10)
     timeout (0.2.0)
     ttfunk (1.7.0)
-    turbo-rails (1.0.0)
+    turbo-rails (1.0.1)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
     tzinfo (2.0.4)
@@ -504,7 +502,7 @@ DEPENDENCIES
   rspec-rails (~> 5.0.0)
   rubocop-rails_config
   rubocop-rspec
-  sass-rails
+  sassc-rails
   selenium-webdriver
   shoulda-matchers
   solargraph

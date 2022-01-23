@@ -3,11 +3,11 @@
 require "rails_helper"
 RSpec.describe PurchasesController, type: :controller do
   describe "with a purchase in the database," do
-    let(:cup) { create :kendocup_cup, start_on: Date.today + 3.weeks }
-    let(:product) { create :kendocup_product, cup: cup }
-    let(:user) { create :kendocup_user }
-    let(:kenshi) { create :kendocup_kenshi, female: false, user: user, cup: cup }
-    let!(:purchase) { create :kendocup_purchase, product: product, kenshi: kenshi }
+    let(:cup) { create :cup, start_on: Date.today + 3.weeks }
+    let(:product) { create :product, cup: cup }
+    let(:user) { create :user }
+    let(:kenshi) { create :kenshi, female: false, user: user, cup: cup }
+    let!(:purchase) { create :purchase, product: product, kenshi: kenshi }
 
     it { expect(purchase).to be_valid_verbose }
 
@@ -38,7 +38,7 @@ RSpec.describe PurchasesController, type: :controller do
       end
 
       describe "on DELETE to :destroy with a purchase that does not belong to the user" do
-        let(:another_purchase) { create :kendocup_purchase }
+        let(:another_purchase) { create :purchase }
 
         before {
           delete :destroy, params: {id: another_purchase.to_param, locale: I18n.locale, cup_id: cup.to_param}

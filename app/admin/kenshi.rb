@@ -162,13 +162,13 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
   member_action :pdf do
     @kenshi = Kenshi.find params[:id]
     pdf = KenshiPdf.new(@kenshi)
-    send_data(pdf.render, filename: @kenshi.full_name.parameterize("_"))
+    send_data(pdf.render, filename: @kenshi.full_name.parameterize(separator: "_"))
   end
 
   # member_action :receipt do
   #   @kenshi = Kenshi.find params[:id]
   #   pdf = KenshiReceipt.new(@kenshi)
-  #   send_data pdf.render, filename: @kenshi.full_name.parameterize('_')+"_receipt",
+  #   send_data pdf.render, filename: @kenshi.full_name.parameterize(separator: '_')+"_receipt",
   #                         type: "application/pdf",
   #                         disposition: "inline",
   #                         page_size: 'A4'
@@ -179,8 +179,8 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     @kenshis = Kenshi.order(:last_name)
     pdf = KenshisPdf.new(@kenshis)
     send_data pdf.render, filename: "kenshis",
-                          type: "application/pdf",
-                          disposition: "inline",
-                          page_size: "A4"
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
   end
 end

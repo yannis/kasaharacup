@@ -12,7 +12,7 @@ class ParticipationsController < ApplicationController
     respond_with @participation do |format|
       format.html {
         flash[:notice] = notice
-        redirect_back_or_default([cup, current_user])
+        redirect_back_or_to([cup, current_user])
       }
       format.js {
         flash.now[:notice] = notice if notice.present?
@@ -25,7 +25,7 @@ class ParticipationsController < ApplicationController
     alert = e.message
     respond_to do |format|
       format.html {
-        redirect_back_or_default
+        redirect_back_or_to(cup_participation_path(@participation.cup, @participation))
       }
       format.js {
         render("layouts/show_flash")

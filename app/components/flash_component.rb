@@ -21,7 +21,6 @@ class FlashComponent < ViewComponent::Base
   end
 end
 
-
 # keep this for tailwind styles
 #
 # bg-green-50
@@ -56,4 +55,4 @@ end
 # text-red-500
 # text-red-800
 
-#p-4
+# p-4

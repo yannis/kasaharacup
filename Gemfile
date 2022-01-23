@@ -20,7 +20,7 @@ gem "cancancan"
 # Front stuff
 gem "cssbundling-rails"
 gem "jsbundling-rails"
-gem "sass-rails"
+gem "sassc-rails"
 gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"

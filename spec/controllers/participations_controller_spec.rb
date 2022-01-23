@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
-RSpec.describe ParticipationsController, type: :controller do
+RSpec.describe ParticipationsController do
   describe "with a participation in the database," do
     let(:cup) { create :cup, start_on: Date.current + 3.weeks }
     let(:category) { create :individual_category, cup: cup }
@@ -26,7 +26,7 @@ RSpec.describe ParticipationsController, type: :controller do
 
       describe "on DELETE to :destroy with a participation that does belong to the user" do
         let(:delete_request) do
-          delete(:destroy, params: {id: participation.id, cup_id: cup.to_param, locale: I18n.locale})
+          delete cup_participation_path(cup, participation)
         end
 
         it do
@@ -43,10 +43,11 @@ RSpec.describe ParticipationsController, type: :controller do
         let(:another_participation) { create :participation }
 
         before {
-          delete :destroy, params: {id: another_participation.to_param, cup_id: cup.to_param, locale: I18n.locale}
+          delete cup_participation_path(cup, another_participation)
+          # delete :destroy, params: {id: another_participation.to_param, cup_id: cup.to_param, locale: I18n.locale}
         }
 
-        fit { should_not_be_authorized }
+        it { should_not_be_authorized }
       end
     end
   end

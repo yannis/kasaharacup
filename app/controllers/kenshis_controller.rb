@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 class KenshisController < ApplicationController
-  prepend_before_action :set_user
-
-  load_and_authorize_resource :user
   load_and_authorize_resource :cup, find_by: :year, class: "Cup"
   load_and_authorize_resource :kenshi, find_by: :id, class: "Kenshi", shallow: true, through: [:cup, :user],
-param_method: :my_sanitizer, parent: false, except: [:new]
+    param_method: :my_sanitizer, parent: false, except: [:new]
 
   before_action :set_variables, only: [:new, :edit, :update, :create]
   before_action :set_user
@@ -214,7 +211,9 @@ param_method: :my_sanitizer, parent: false, except: [:new]
   end
 
   private def set_user
-    @user = User.find params[:user_id] if params[:user_id]
+    return unless params[:user_id]
+
+    @user = User.find(params[:user_id])
     @products = @cup.products
   end
 
@@ -224,7 +223,7 @@ param_method: :my_sanitizer, parent: false, except: [:new]
   end
 
   private def my_sanitizer
-    params[:kenshi][:participations_attributes].reject! { |k, v|
+    params[:kenshi][:participations_attributes]&.reject! { |k, v|
       v["category_type"] == "IndividualCategory" && v["category_id"].blank?
     }
     params.require(:kenshi).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade,
