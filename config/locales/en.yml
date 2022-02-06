@@ -1,10 +1,5 @@
 ---
 en:
-  activerecord:
-    errors:
-      models:
-        team:
-          participations: Participations
   categories:
     dès: Dès
   cups:
@@ -42,7 +37,8 @@ en:
   errors:
     template:
       header:
-        other: Other
+        one: "1 error prohibited this %{model} from being saved:"
+        other: "%{count} errors prohibited this %{model} from being saved:"
   form:
     cancel: Cancel
     or: Or

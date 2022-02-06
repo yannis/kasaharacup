@@ -5,7 +5,7 @@ module UsersHelper
     links = []
     if user.attributes == current_user.attributes && !user.registered_for_cup?(@current_cup)
       links << link_to(t("users.show.register_yourself"),
-        new_cup_user_kenshi_path(@current_cup, current_user, self: true, locale: I18n.locale), class: "btn btn-sm btn-secondary ml-2")
+        new_cup_user_kenshi_path(@current_cup, self: true, locale: I18n.locale), class: "btn btn-sm btn-secondary ml-2")
     end
 
     if can?(:update, user)
@@ -19,9 +19,8 @@ module UsersHelper
     if can?(:destroy, user)
       links << link_to(
         t("devise.registrations.cancel_title"),
-        user_registration_path(user.id, locale: I18n.locale),
-        data: {confirm: t("devise.registrations.cancel_verif")},
-        method: :delete,
+        user_registration_path,
+        data: {turbo_method: :delete, turbo_confirm: t("devise.registrations.cancel_verif")},
         class: "btn btn-sm btn-secondary ml-2"
       )
     end

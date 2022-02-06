@@ -1,71 +1,67 @@
+---
 en:
   cups:
     show:
+      accomodation:
+        dormitory: This year the dorms will be located in the complex of the Cité Bleue (University Centre), for the night of September 28-29. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linen is provided and sleeping bags are not allowed. Please note that the number of spot is limited to 50! <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday.
+        hotels: If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
+        title: Accomodation
+      categories:
+        juniors: from 12 to 16 years old
+        ladies: over 16 years old
+        open: over 16 years old
+        team: 5 fighters over 16 years old
+        title: Categories
+      contact:
+        text: Contact us by email at
+        title: Contact
+      deadline: "<strong>Warning:</strong> The deadline for registration is %{deadline}"
+      deadline_passed: "<strong>Warning:</strong> Registration is closed since %{deadline}"
+      enrollments:
+        all: See all %{number} registrations
+      fees:
+        adults:
+          fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
+          title: Adults (born in %{year} or before)<br><em>+ Sunday lunch</em>
+        dinner:
+          fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
+          title: Saturday night dinner
+        juniors:
+          fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
+          title: Juniors (born in %{year} or after)<br><em>+ Sunday lunch</em>
+        night:
+          fee: "%{dormitory_fees_chf} CHF or %{dormitory_fees_eur} €"
+          title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>
+        title: Registration fees
+        variable: Price variable
+      love:
+        title: Share your love
+      newsletter:
+        button: Subscribe
+        email: Email address
+        register: Subscribe to our mailing list to get the latest new about the competition
+      other_links: Other links
+      over: The tournament is over! Thanks to all for participating and see you next year!
+      program:
+        title: Program
+      results:
+        coming_soon: Full results are coming soon…
+        downloads: Downloads
+        juniors: Juniors results
+        ladies: Ladies results
+        open: Open results
+        team: Team results
+        title: Results
+      social:
+        title: Follow us on
       tournament:
-        title: The tournament
         a: |
           The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
           <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
-        b: "The tournament is organized in Geneva since 1995 by the kendo branch of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>. In 2018, it gathered about 110 kenshis from from France, Italy, Japan, Germany and, of course, Switzerland. In 2019, the 33d Kasahara cup will be held on September 28th-29th, at «Le stade du Bout-du-Monde», close to Geneva's city center."
-      categories:
-        title: Categories
-        team: 5 fighters over 16 years old
-        open: over 16 years old
-        ladies: over 16 years old
-        juniors: from 12 to 16 years old
-      deadline: "<strong>Warning:</strong> The deadline for registration is %{deadline}"
-      deadline_passed: "<strong>Warning:</strong> Registration is closed since %{deadline}"
-      program:
-        title: Program
-      contact:
-        title: 'Contact'
-        text: 'Contact us by email at'
-      fees:
-        title: Registration fees
-        adults:
-          title: Adults (born in %{year} or before)<br><em>+ Sunday lunch</em>
-          fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
-        juniors:
-          title: Juniors (born in %{year} or after)<br><em>+ Sunday lunch</em>
-          fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
-        night:
-          title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>
-          fee: "%{dormitory_fees_chf} CHF or %{dormitory_fees_eur} €"
-        dinner:
-          title: Saturday night dinner
-          fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
-        variable: Price variable
-      newsletter:
-        register: "Subscribe to our mailing list to get the latest new about the competition"
-        email: Email address
-        button: Subscribe
-      enrollments:
-        all: "See all %{number} registrations"
-      social:
-        title: Follow us on
-      love:
-        title: Share your love
-      results:
-        title: Results
-        team: Team results
-        open: Open results
-        ladies: Ladies results
-        juniors: Juniors results
-        downloads: Downloads
-        coming_soon: Full results are coming soon…
-
+        b: The tournament is organized in Geneva since 1995 by the kendo branch of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>. In 2018, it gathered about 110 kenshis from from France, Italy, Japan, Germany and, of course, Switzerland. In 2019, the 33d Kasahara cup will be held on September 28th-29th, at «Le stade du Bout-du-Monde», close to Geneva's city center.
+        title: The tournament
       venue:
-        title: Venue
-        a: "Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}."
+        a: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
         address: Coordinates
         map_link: Larger map
-
-      accomodation:
-        title: Accomodation
-        # dormitory: "As every year, you can sleep for a small fee at the dormitory «des Charmettes» (you may book for it during registration)."
-        # dormitory: "Unfortunately, this year we don't have access to our usual dormitory. We found an alternative and you can spend the night in the <a href='http://www.ville-geneve.ch/plan-ville/securite/dortoirs-protection-civile-paquis/' target='_blank'>“abri PC des Pâquis”</a> (booking during registration)."
-        dormitory: "This year the dorms will be located in the complex of the Cité Bleue (University Centre), for the night of September 28-29. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linen is provided and sleeping bags are not allowed. Please note that the number of spot is limited to 50!
-        <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday."
-        hotels: "If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer."
-      over: "The tournament is over! Thanks to all for participating and see you next year!"
-      other_links: "Other links"
+        title: Venue

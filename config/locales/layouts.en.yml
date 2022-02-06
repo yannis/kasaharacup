@@ -1,15 +1,16 @@
+---
 en:
   layouts:
-    navigation:
-      about: About
-      account: Account
     footer:
       contact:
+        text: Contact us at %{mail} if you have any questions. We're looking forward to answer to you…
         title: Contact
-        text: "Contact us at %{mail} if you have any questions. We're looking forward to answer to you…"
       newsletter:
         button: Subscribe
         email: Enter your email
         placeholder: Email
         subtitle: Receive occasional news about the tournament.
         title: Subscribe to our newsletter
+    navigation:
+      about: About
+      account: Account

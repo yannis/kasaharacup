@@ -116,16 +116,15 @@ class Participation < ApplicationRecord
     full_name.join(" ")
   end
 
-  protected
-    def assign_category
-      if @category_individual.present? && @category_team.present?
-        errors.add(:category, "can't have both an individual and a team category")
-      end
-      if @category_individual.present?
-        self.category = IndividualCategory.find(@category_individual)
-      end
-      if @category_team.present?
-        self.category = TeamCategory.find(@category_team)
-      end
+  protected def assign_category
+    if @category_individual.present? && @category_team.present?
+      errors.add(:category, "can't have both an individual and a team category")
     end
+    if @category_individual.present?
+      self.category = IndividualCategory.find(@category_individual)
+    end
+    if @category_team.present?
+      self.category = TeamCategory.find(@category_team)
+    end
+  end
 end

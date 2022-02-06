@@ -1,5 +1,5 @@
 <% if flash.any? %>
-  <div class="fixed top-0 left-1/2 -translate-x-1/2 m-3 mt-2">
+  <div class="z-40 fixed top-0 left-1/2 -translate-x-1/2 m-3 mt-2">
     <%- flash.each do |key, value| %>
       <%= render(FlashComponent.new(type: key, text: value)) %>
     <% end %>

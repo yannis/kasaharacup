@@ -1,7 +1,7 @@
 <div class="w-full bg-white shadow sm:rounded-lg">
   <div class="px-4 py-5 sm:p-6 prose prose-red-900 prose-lg">
     <% if user_signed_in? %>
-      <h3 class="">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
         <% if Time.current.hour <= 10 %>
           Ohayō gozaimasu
         <% elsif Time.current.hour >= 22 %>
@@ -31,7 +31,7 @@
         <% end %>
         <p>
           Would you like to
-          <%= link_to "register someone?", new_cup_user_kenshi_path(@cup, current_user) %>
+          <%= link_to "register someone?", new_cup_user_kenshi_path(@cup), class: "font-medium text-red-600 hover:text-red-500" %>
         </p>
       </div>
     <% else %>

@@ -122,3 +122,13 @@
 .select2-selection__arrow {
   height: 37px !important;
 }
+
+@media (min-width: 640px) {
+  .form-full input[type='text'],
+  .form-full input[type='date'],
+  .form-full input[type='email'],
+  .form-full input[type='password'],
+  .form-full input[type='submit'] {
+    max-width: 100%;
+  }
+}

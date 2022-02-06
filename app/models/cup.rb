@@ -46,14 +46,13 @@ class Cup < ApplicationRecord
     currency.to_sym == :chf ? adult_fees_chf : adult_fees_eur
   end
 
-  private
-    def set_deadline
-      self.deadline = (start_on.to_time - 7.days) if start_on.present? && deadline.blank?
-    end
+  private def set_deadline
+    self.deadline = (start_on.to_time - 7.days) if start_on.present? && deadline.blank?
+  end
 
-    def set_year
-      if year.blank?
-        self.year = start_on.try(:year)
-      end
+  def set_year
+    if year.blank?
+      self.year = start_on.try(:year)
     end
+  end
 end

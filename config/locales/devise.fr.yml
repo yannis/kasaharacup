@@ -31,6 +31,7 @@ fr:
       send_paranoid_instructions: "Si votre e-mail existe dans notre base de données, vous allez recevoir un lien de réinitialisation par e-mail"
       updated: 'Votre mot de passe a été édité avec succès, vous êtes maintenant connecté'
       updated_not_active: 'Votre mot de passe a été changé avec succès.'
+      new: Démarrez la réinitialisation du mot de passe
     registrations:
       title: Inscrivez-vous
       edit_title: Modifiez votre compte

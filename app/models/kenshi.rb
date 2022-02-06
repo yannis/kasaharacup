@@ -17,7 +17,7 @@ class Kenshi < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_many :products, through: :purchases
 
-  validates_associated :participations
+  # validates_associated :participations
 
   validates :first_name, presence: true
   validates :last_name, presence: true

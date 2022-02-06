@@ -15,7 +15,7 @@ class CupsController < ApplicationController
     else
       @current_cup = @cup
       @grouped_events = @cup.events.order(:start_on).group_by { |e| e.start_on.to_date }
-      @headline = @cup.headlines.shown.order("headlines.created_at DESC").first
+      @headlines = @cup.headlines.shown.order("headlines.created_at DESC")
       if Date.current > @cup.start_on.to_date
         begin
           render "show_past_#{@cup.year.to_i}"

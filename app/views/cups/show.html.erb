@@ -5,11 +5,15 @@
     <%= raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% end %>
 <% end %>
-
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <%= render(HeroComponent.new(cup: @cup, current_user: current_user)) %>
-  <div class="lg:grid lg:grid-cols-2 lg:gap-12">
-    <div class="mt-6 prose prose-red-900 prose-lg text-gray-500" id="program">
+  <div class="lg:grid lg:grid-cols-3 lg:gap-12">
+    <div class="mt-6 prose prose-red-900 prose-lg text-gray-500 lg:col-span-2" id="program">
+      <% if @headlines.any? %>
+        <div class="mt-4">
+          <%= render "headline", headline: @headlines.first %>
+        </div>
+      <% end %>
       <h2 class="mt-10">
         <%= t '.program.title' %>
       </h2>
@@ -38,27 +42,6 @@
       </div>
     </div>
     <div class="mt-10">
-      <% if @headline.present? %>
-        <div class="panel panel-default headlines">
-          <div class="panel-heading">
-            <h2 class="mt-10">
-              <%= t 'headlines.title' %>
-            </h2>
-          </div>
-          <div class="panel-body">
-            <h4>
-              <%= @headline.title %>
-              <small>
-                <%= @headline.created_at.to_s :day_month_year %>
-              </small>
-            </h4>
-            <%= raw @headline.content %>
-          </div>
-          <div class="panel-footer">
-            <%= link_to t('headlines.link'), cup_headlines_path(@cup) %>
-          </div>
-        </div>
-      <% end %>
       <%= render "current_user_resume" %>
     </div>
   </div>
@@ -111,7 +94,6 @@
         </tbody>
       </table>
     </div>
-
     <div id="fees" class="prose prose-red-900 prose-lg">
       <h2 class="mt-10">
         <%= t '.fees.title' %>
@@ -140,51 +122,54 @@
                 <%= product.name %>
                 <% if !product_available?(product) %>
                   <br>
-                    <mark>(not available anymore)</mark>
-                  </br>
-                <% end %>
-              </th>
-              <td>
-                <% if product.fee_chf == 0 %>
-                  <%= t '.fees.variable' %>
-                <% else %>
-                  <%= "#{product.fee_chf} CHF / #{product.fee_eu} " %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+                  <mark>(not available anymore)</mark>
+                </br>
+              <% end %>
+            </th>
+            <td>
+              <% if product.fee_chf == 0 %>
+                <%= t '.fees.variable' %>
+              <% else %>
+                <%= "#{product.fee_chf} CHF / #{product.fee_eu} " %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
-  <div id="venue" class="prose prose-red-900 prose-lg">
-    <h2 class="mt-10">
-      <%= t '.venue.title' %>
-    </h2>
-    <p>
-      <%= raw t '.venue.a', stade_du_bout_du_monde: link_to('Centre sportif du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/') %>
-    </p>
-    <h3>
-      <%= t '.venue.address' %>
-    </h3>
-    <p>
-      Centre sportif du Bout-du-Monde, Hall A
-      <br/>Route de Vessy 12
-      <br/>1206 Geneve
-      <br/><em>GPS: 46.180588,6.155893</em>
-      <br><%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map' %>
-    </p>
-  </div>
-
-  <div id="accomodation" class="prose prose-red-900 prose-lg">
-    <h2 class="mt-10">
-      <%= t '.accomodation.title' %>
-    </h2>
-    <p>
-      <%= raw t '.accomodation.dormitory' %>
-    </p>
-    <p>
-      <%= raw t '.accomodation.hotels' %>
-    </p>
-  </div>
+</div>
+<div id="venue" class="prose prose-red-900 prose-lg">
+  <h2 class="mt-10">
+    <%= t '.venue.title' %>
+  </h2>
+  <p>
+    <%= raw t '.venue.a', stade_du_bout_du_monde: link_to('Centre sportif du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/') %>
+  </p>
+  <h3>
+    <%= t '.venue.address' %>
+  </h3>
+  <p>
+    Centre sportif du Bout-du-Monde, Hall A
+    <br/>
+    Route de Vessy 12
+    <br/>
+    1206 Geneve
+    <br/>
+    <em>GPS: 46.180588,6.155893</em>
+    <br>
+    <%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map' %>
+  </p>
+</div>
+<div id="accomodation" class="prose prose-red-900 prose-lg">
+  <h2 class="mt-10">
+    <%= t '.accomodation.title' %>
+  </h2>
+  <p>
+    <%= raw t '.accomodation.dormitory' %>
+  </p>
+  <p>
+    <%= raw t '.accomodation.hotels' %>
+  </p>
+</div>
 </div>

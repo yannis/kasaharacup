@@ -13,9 +13,6 @@ class Ability
     can :manage, "mailing_list"
     if user.persisted?
       can [:create, :update, :destroy], Kenshi, user_id: user.id
-      # can [:create, :update, :destroy], Kenshi do |kenshi|
-      #   kenshi.user_id == user.id && Time.zone.current < kenshi.cup.deadline
-      # end
       can :destroy, Participation do |participation|
         participation.kenshi.user_id == user.id
       end

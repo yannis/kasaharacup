@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :participations, only: [:destroy]
       resources :purchases, only: [:destroy]
       resources :teams, only: [:index, :show]
-      resources :users, only: %i[show] do
+      resource :user, only: %i[show destroy] do
         resources :charges
         resources :kenshis do
           member do
@@ -26,7 +26,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :users
+    resource :user, only: %i[show destroy]
 
     resource :mailing_list, only: [:new, :destroy]
     root to: "cups#show"

@@ -8,28 +8,12 @@ class ParticipationsController < ApplicationController
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   def destroy
-    @participation.destroy ? notice = t("participations.destroy.notice") : alert = t("participations.destroy.notice")
-    respond_with @participation do |format|
-      format.html {
-        flash[:notice] = notice
-        redirect_back_or_to([cup, current_user])
-      }
-      format.js {
-        flash.now[:notice] = notice if notice.present?
-        flash.now[:alert] = alert if alert.present?
-        @object = @participation
-        render "layouts/destroy"
-      }
-    end
+    @participation.destroy ? notice = t("participations.destroy.notice") : alert = t("participations.destroy.alert")
+    flash[:notice] = notice if notice.present?
+    flash[:alert] = alert if alert.present?
+    redirect_back_or_to(cup_user_path(@participation.cup), status: :see_other)
   rescue => e
-    alert = e.message
-    respond_to do |format|
-      format.html {
-        redirect_back_or_to(cup_participation_path(@participation.cup, @participation))
-      }
-      format.js {
-        render("layouts/show_flash")
-      }
-    end
+    flash[:alert] = e.message
+    redirect_back_or_to(cup_participation_path(@participation.cup, @participation), status: :see_other)
   end
 end

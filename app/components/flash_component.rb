@@ -3,14 +3,13 @@
 class FlashComponent < ViewComponent::Base
   def initialize(type:, text:)
     @text = text
-    color(type)
+    @color = color(type)
   end
 
   def color(type)
     case type.to_sym
     when :notice, :success
-      @color = "green"
-      @color = "green"
+      "green"
     when :info
       "blue"
     when :warning

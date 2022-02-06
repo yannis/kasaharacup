@@ -4,8 +4,10 @@ fr:
       teams:
         name: Nom
         kenshis: Kenshis
-    # errors:
-    #   models:
+    errors:
+      models:
+        team:
+          participations: Participations
     #     kenshi:
     #       attributes:
     #         dob:

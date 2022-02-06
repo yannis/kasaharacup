@@ -10,6 +10,7 @@ export default class extends Controller {
       $(this.element).select2({
         tags: true,
         placeholder: 'Please select',
+        width: 'style',
         createTag(params) {
           const term = params.term.trim();
 

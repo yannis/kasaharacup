@@ -13,15 +13,14 @@ module KenshisHelper
       links << link_to(
         t("kenshis.helpers.destroy.text"),
         cup_kenshi_path(@current_cup, kenshi, locale: I18n.locale),
-        data: {confirm: t("kenshis.helpers.destroy.confirm")},
-        method: :delete,
+        data: {turbo_method: :delete, turbo_confirm: t("kenshis.helpers.destroy.confirm")},
         class: "btn btn-sm btn-secondary ml-2"
       )
     end
 
     if can?(:create, Kenshi) && current_user_admin_or_owner?(kenshi)
       links << link_to(t("kenshis.helpers.duplicate.text"),
-        duplicate_cup_user_kenshi_path(@current_cup, kenshi.user, kenshi), class: "btn btn-sm btn-secondary ml-2")
+        duplicate_cup_user_kenshi_path(@current_cup, kenshi), class: "btn btn-sm btn-secondary ml-2")
     end
 
     classes = options.fetch(:class, "")

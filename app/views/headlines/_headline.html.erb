@@ -1,0 +1,21 @@
+<li>
+  <div class="py-4 px-3 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-lg font-medium text-gray-600 prose">
+          <%= link_to(cup_headline_path(@current_cup, headline)) do %>
+            <%= headline.title %>
+          <% end %>
+        </p>
+        <p class="text-sm font-medium text-gray-400 truncate">
+          <em><%= headline.created_at.to_formatted_s :day_month_year %></em>
+        </p>
+      </div>
+    </div>
+    <div class="mt-6 sm:flex sm:justify-between">
+      <div class="sm:flex">
+        <%= raw headline.content %>
+      </div>
+    </div>
+  </div>
+</li>

@@ -14,7 +14,8 @@ module ApplicationHelper
     link = [f.submit(text, class: "btn btn-success")]
     link << t("form.or")
     link << link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
-      title: "Cancel #{f.object_name} form", class: "cancel #{request.format == "application/javascript" ? "close_div" : ""}")
+      title: "Cancel #{f.object_name} form",
+      class: "cancel #{request.format == "application/javascript" ? "close_div" : ""}")
     link.join(" ").html_safe
   end
 
@@ -25,7 +26,7 @@ module ApplicationHelper
     end
     text = options.fetch(:text, "Destroy")
     title = options.fetch(:title,
-      "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase}#{' "' + object.name + '"' if object.respond_to?(:name)}")
+      "Destroy #{object.class.to_s.tableize.humanize.singularize.downcase} #{object&.name}")
     remote = options.fetch(:remote, false)
     confirm = options.fetch(:confirm,
       "Are you sure you want to destroy this #{object.class.to_s.tableize.humanize.singularize.downcase}?")

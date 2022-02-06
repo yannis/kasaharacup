@@ -8,7 +8,7 @@ module ParticipationsHelper
     )
       links << destroy_link([@current_cup, participation],
         {text: "Destroy", title: t("participations.destroy.title"),
-         confirm: t("participations.destroy.confirm"), classes: "btn-xs"})
+         data: {turbo_method: :delete, turbo_confirm: t("participations.destroy.confirm")}}, classes: "btn-xs")
     end
 
     content_tag(:div, class: "admin_links #{nav}",

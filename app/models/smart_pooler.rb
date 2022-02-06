@@ -34,16 +34,15 @@ class SmartPooler
     end
   end
 
-  protected
-    def set_participations
-      Participation.transaction do
-        poules.each_with_index do |poule, i|
-          poule.participations.each_with_index do |participation, j|
-            participation.update(pool_number: i + 1, pool_position: j + 1)
-          end
-        rescue StandardError? => e
-          Rails.logger.debug e
+  protected def set_participations
+    Participation.transaction do
+      poules.each_with_index do |poule, i|
+        poule.participations.each_with_index do |participation, j|
+          participation.update(pool_number: i + 1, pool_position: j + 1)
         end
+      rescue StandardError? => e
+        Rails.logger.debug e
       end
     end
+  end
 end

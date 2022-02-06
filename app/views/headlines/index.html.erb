@@ -12,7 +12,11 @@
       </div>
     </div>
     <ul role="list" class="divide-y divide-gray-200">
-      <%= render partial: "kenshi_row", collection: @kenshis, as: "kenshi" %>
+      <% if @headlines.length.positive? %>
+        <%= render @headlines %>
+      <% else %>
+        <%= t(".no_news") %>
+      <% end %>
     </ul>
   </div>
 </div>

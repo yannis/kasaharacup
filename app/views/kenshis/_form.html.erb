@@ -12,31 +12,27 @@
         <div class="input-group">
           <%= f.label :female, Kenshi.human_attribute_name(:salutations), class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
-            <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
+            <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]], prompt: true %>
           </div>
         </div>
-
         <div class="input-group">
           <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.text_field :first_name, autocomplete: "given-name" %>
           </div>
         </div>
-
         <div class="input-group">
           <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.text_field :last_name, autocomplete: "family-name" %>
           </div>
         </div>
-
         <div class="input-group">
           <%= f.label :dob, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.date_field :dob %>
           </div>
         </div>
-
         <div class="input-group">
           <%= f.label :club_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
@@ -45,20 +41,19 @@
                 Club.order(:name).pluck(:name),
                 {},
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                data: { controller: "select2-single-tag" }
+                data: { controller: "select2-single-tag" },
+                style: "width: 20em;"
             %>
           </div>
         </div>
-
         <div class="input-group">
           <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
-            <%= f.select :grade, Kenshi::GRADES, prompt: true %>
+            <%= f.select :grade, Kenshi::GRADES %>
           </div>
         </div>
       </div>
     </div>
-
     <div>
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="pt-6 sm:pt-5">
@@ -102,9 +97,10 @@
                             <%=
                               g.select :team_name,
                                 c.teams.order(:name).pluck(:name),
-                                {},
+                                prompt: true,
                                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                                data: { controller: "select2-single-tag" }
+                                data: { controller: "select2-single-tag" },
+                                style: "width: 20em;"
                             %>
                           </div>
                         </div>
@@ -118,7 +114,6 @@
         </div>
       </div>
     </div>
-
     <% if @cup.individual_categories.present? %>
       <div>
         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
@@ -134,7 +129,7 @@
                   <% @cup.individual_categories.all.each do |individual_category| %>
                     <div class="max-w-lg space-y-4">
                       <div class="relative flex items-start mb-4">
-                        <% participation = @kenshi.participations.find_by(category: individual_category) %>
+                        <% participation = @kenshi.participations.to_a.find { |p| p.category ==  individual_category } %>
                         <% if participation.present? %>
                           <%= f.fields_for :participations, participation do |g| %>
                             <% if participation.persisted? %>
@@ -154,7 +149,7 @@
                               %>
                             </div>
                             <div class="ml-3 text-sm">
-                              <%= g.label :category_id, individual_category.name, class: "font-medium text-gray-700" %>
+                              <%= g.label :_destroy, individual_category.name, class: "font-medium text-gray-700" %>
                               <p class="helper-text">
                                 <%= individual_category.description %>
                               </p>
@@ -185,7 +180,6 @@
         </div>
       </div>
     <% end %>
-
     <% if @cup.products.present? %>
       <div>
         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
@@ -202,7 +196,7 @@
                     <% price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
                     <div class="max-w-lg space-y-4">
                       <div class="relative flex items-start mb-4">
-                        <% purchase = @kenshi.purchases.find_by(product_id: p.id) %>
+                        <% purchase = @kenshi.purchases.to_a.find { |purch| purch .product_id ==  p.id } %>
                         <% if purchase.present? %>
                           <%= f.fields_for :purchases, purchase do |g| %>
                             <div class="flex items-center h-5">
@@ -254,7 +248,6 @@
       </div>
     <% end %>
   </div>
-
   <div class="py-5">
     <div class="flex justify-end">
       <%= link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",

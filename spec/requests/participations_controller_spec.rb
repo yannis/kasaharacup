@@ -14,7 +14,7 @@ RSpec.describe ParticipationsController do
     context "when not logged in," do
       describe "on DELETE to :destroy the participation" do
         before {
-          delete :destroy, params: {id: participation.to_param, cup_id: cup.to_param, locale: I18n.locale}
+          delete cup_participation_path(cup, participation)
         }
 
         it { should_be_asked_to_sign_in }
@@ -30,13 +30,11 @@ RSpec.describe ParticipationsController do
         end
 
         it do
-          delete_request
+          expect { delete_request }.to change(Participation, :count).by(-1)
           expect(assigns(:participation)).to eql participation
+          expect(flash[:notice]).to match "Participation successfully destroyed"
+          expect(response).to redirect_to(cup_user_path(cup))
         end
-
-        it { expect { delete_request }.to change(Participation, :count).by(-1) }
-        it { expect(flash[:notice]).to match "Participation successfully destroyed" }
-        it { expect(response).to redirect_to(root_path) }
       end
 
       describe "on DELETE to :destroy with a participation that does not belong to the user" do
@@ -44,7 +42,6 @@ RSpec.describe ParticipationsController do
 
         before {
           delete cup_participation_path(cup, another_participation)
-          # delete :destroy, params: {id: another_participation.to_param, cup_id: cup.to_param, locale: I18n.locale}
         }
 
         it { should_not_be_authorized }

@@ -21,7 +21,7 @@ RSpec.describe KenshisController do
     let!(:kenshi3) { create :kenshi, last_name: "kenshi3", user_id: user.to_param, cup: cup }
 
     context "when not logged in," do
-      describe "on GET to :index without param," do
+      describe "on GET to :index" do
         before do
           get(cup_kenshis_path(cup))
         end
@@ -33,26 +33,12 @@ RSpec.describe KenshisController do
         it { expect(flash).to be_empty }
       end
 
-      describe "on GET to :index with param :user_id" do
-        before { get(cup_user_kenshis_path(cup, user)) }
-
-        it { expect(response).to redirect_to(cup_kenshis_path(cup)) }
-        it { expect(flash).to be_empty }
-      end
-
       describe "when GET to :show for kenshi1.id," do
         before { get(cup_kenshi_path(cup, kenshi1)) }
 
         it { expect(response).to have_http_status(:success) }
         it { expect(assigns(:kenshi)).to eql kenshi1 }
         it { expect(response).to render_template(:show) }
-        it { expect(flash).to be_empty }
-      end
-
-      describe "when GET to :show for kenshi1.id with param :user_id" do
-        before { get(cup_user_kenshi_path(cup, user, kenshi1)) }
-
-        it { expect(response).to redirect_to cup_kenshi_path(cup, kenshi1.id) }
         it { expect(flash).to be_empty }
       end
 
@@ -117,7 +103,7 @@ RSpec.describe KenshisController do
       end
 
       describe "when GET to :new with user_id: basic_user.to_param," do
-        before { get(new_cup_user_kenshi_path(cup, basic_user)) }
+        before { get(new_cup_user_kenshi_path(cup)) }
 
         it { expect(assigns(:current_user)).to eql basic_user }
         it { expect(response).to have_http_status(:success) }
@@ -126,24 +112,18 @@ RSpec.describe KenshisController do
         it { expect(flash).to be_empty }
       end
 
-      describe "when GET to :new without user_id param" do
-        before { get(new_cup_kenshi_path(cup)) }
-
-        it { expect(response).to redirect_to new_cup_user_kenshi_path(cup, basic_user) }
-      end
-
       describe "when POST to :create with valid data," do
-        before { post(cup_user_kenshis_path(cup, basic_user), params: {kenshi: valid_params}) }
+        before { post(cup_user_kenshis_path(cup), params: {kenshi: valid_params}) }
 
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
         it { expect(assigns(:kenshi)).to be_valid_verbose }
-        it { expect(response).to redirect_to(cup_user_path(cup, basic_user)) }
+        it { expect(response).to redirect_to(cup_user_path(cup)) }
         it { expect(flash[:notice]).to match(/Kenshi successfully registered/) }
         it { expect(assigns(:kenshi).user_id).to eql basic_user.id }
       end
 
       describe "when POST to :create with invalid data," do
-        before { post(cup_user_kenshis_path(cup, basic_user), params: {kenshi: {last_name: ""}}) }
+        before { post(cup_user_kenshis_path(cup), params: {kenshi: {last_name: ""}}) }
 
         it { expect(assigns(:kenshi)).not_to be_nil }
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
@@ -170,7 +150,7 @@ RSpec.describe KenshisController do
         before { put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi: {last_name: "alaNma2"}}) }
 
         it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
-        it { expect(response).to redirect_to(cup_user_path(cup, basic_user_kenshi.user)) }
+        it { expect(response).to redirect_to(cup_user_path(cup)) }
         it { expect(flash[:notice]).to match(/Registration successfully updated/) }
         it { expect(basic_user_kenshi.reload.last_name).to eql "Alanma2" }
       end
@@ -180,7 +160,6 @@ RSpec.describe KenshisController do
 
         it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
         it { expect(response).to render_template(:edit) }
-        it { expect(flash[:alert]).to match(/Kenshi not updated/) }
       end
 
       describe "on PUT to :update with :id = kenshi1.to_param and valid data," do
@@ -192,14 +171,15 @@ RSpec.describe KenshisController do
       describe "on DELETE to :destroy with :id = basic_user_kenshi.to_param," do
         before {
           basic_user_kenshi.save
-          @kenshi_count = Kenshi.count
-          delete(cup_kenshi_path(cup, basic_user_kenshi))
         }
 
-        it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
-        it { expect(@kenshi_count - Kenshi.count).to be 1 }
-        it { expect(flash[:notice]).to match(/Kenshi successfully destroyed/) }
-        it { expect(response).to redirect_to(cup_user_path(cup, basic_user)) }
+        it do
+          expect { delete(cup_kenshi_path(cup, basic_user_kenshi)) }
+            .to change(Kenshi, :count).by(-1)
+          expect(assigns(:kenshi)).to eql basic_user_kenshi
+          expect(flash[:notice]).to match(/Kenshi successfully destroyed/)
+          expect(response).to redirect_to(cup_user_path(cup))
+        end
       end
 
       describe "on DELETE to :destroy with :id = kenshi1.to_param," do
@@ -214,7 +194,7 @@ RSpec.describe KenshisController do
         }
 
         describe "when GET to :new with user_id: basic_user.to_param," do
-          before { get(new_cup_user_kenshi_path(cup, basic_user)) }
+          before { get(new_cup_user_kenshi_path(cup)) }
 
           it { has_passed_deadline }
         end

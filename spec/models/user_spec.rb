@@ -52,7 +52,7 @@ RSpec.describe User, type: :model do
 
     it { expect(user.reload.last_name).to eq "Last-J.-Name Name" }
     it { expect(user.reload.first_name).to eq "First-J.-Sébastien Mühlebäch" }
-    it { expect(user.full_name).to eq "First-J.-Sébastien Mühlebäch Last-J.-Name Name" }
+    it { expect(user.full_name).to eq "Mr First-J.-Sébastien Mühlebäch Last-J.-Name Name" }
     it { expect(user.reload.email).to eq "stupidly.foramatted@email.com" }
     it { expect(user).not_to be_registered_for_cup(cup) }
 

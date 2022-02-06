@@ -1,7 +1,8 @@
+---
 en:
-  headlines: #views
-    title: Latest headline
-    link: Read more headlines
+  headlines:
     index:
-      title: Headlines
       no_news: No headlines yet…
+      title: Headlines
+    link: Read all headlines
+    title: Latest headline

@@ -41,6 +41,7 @@ fr:
         last_name: 'Nom'
         password: 'Mot de passe'
         password_confirmation: 'Confirmation du mot de passe'
+        current_password: 'Mot de passe actuel'
         remember_me: 'Garder en mémoire'
         dob: 'Date de naissance'
         gender: 'Sexe'
@@ -50,3 +51,11 @@ fr:
         male: Homme
         club_name: Club
         fees: "Frais"
+    errors:
+      models:
+        user:
+          attributes:
+            password_confirmation:
+              confirmation: ne correspond pas au mot de passe choisi
+            current_password:
+              invalid: non valide

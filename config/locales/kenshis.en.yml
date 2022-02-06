@@ -1,20 +1,18 @@
+---
 en:
   activerecord:
-    # models:
-    #   kenshi: registration
     attributes:
       kenshi:
-        mr: Mr
-        ms: Ms
-        first_name: First name
-        last_name: Last name
-        name: Name
-        dob: 'Date of birth'
-        gender: 'Sexe'
-        # female: Woman
-        # male: Man
         categories: Categories
         competition_fees: Competition fees
+        dob: Date of birth
+        female: Salutation
+        first_name: First name
+        gender: Sexe
+        last_name: Last name
+        mr: Mr
+        ms: Ms
+        name: Name
         products_fees: Extra fees
         salutations: Salutations
     errors:
@@ -22,75 +20,73 @@ en:
         kenshi:
           attributes:
             dob:
-              blank: 'Date of birth (DOB) is required for junior registrations'
-  kenshis: #views
-    self:
-      exist: "It seems you're already registered. Do you want to modify this registration?"
-    show:
-      register_someone_else: "Register someone else to the competition"
-    index:
-      title: All registrations
-      title_team: Registrations Team
-      title_open: Registrations Open
-      title_ladies: Registrations Ladies
-      title_juniors: Registrations Juniors
-
-      no_kenshis: "No registrations yet…"
-      enroll_someone: "Register someone!"
-      or: "or"
-      enroll_yourself: "yourself"
-      title_for_user: "Registrations of %{user_full_name}"
-    destroy:
-      title: Destroy
-      confirm: Are you sure you want to destroy this registration? This is irreversible…
-      notice: "Kenshi successfully destroyed"
-      alert: "Unable to destroy kenshi"
-    edit:
-      title: "Edit registration of %{full_name}"
-    new:
-      title: Register someone to the competition
-      yourself: Complete your registration to the competition
-      duplicate: "Duplicate the registration of %{full_name}"
-      # yourself: yourself?
-    form:
-      explanation: "First create an account that will allow you to register you and your team mates to the competition."
-      button:
-        create: "Register"
-        update: "Update registration"
-      oldfashion: or do it the oldfashioned way
-      chose_team: Chose an existing team
-      create_team: or create a new one
-      categories: "Categories"
-      individual_categories: "Individual categories"
-      saturday_night: Saturday night dinner
-      dormitory: Dormitory
-      ronin_info: "Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team."
-      team_info: "Chose your team here or create a new one by entering its name here."
-      button_info: "You'll be able to modify this registration until %{deadline}."
-      not_avalaible: "Sorry, “%{product_name}“ is not available for the time being. Check back later for availability."
+              blank: Date of birth (DOB) is required for junior registrations
+  kenshi:
+    button: Register
+    deadline: 'Warning: The registration deadline is %{deadline}!'
+    link:
+      registration: registration
+      title: You already have
+    registered_by: Registered by
+    title: Registration
+  kenshis:
     create:
       flash:
         notice: Kenshi successfully registered
+    deadline_passed: The registration deadline is overpassed. Please contact <a href='mailto:%{email}'>%{email}</a>.
+    destroy:
+      alert: Unable to destroy kenshi
+      confirm: Are you sure you want to destroy this registration? This is irreversible…
+      notice: Kenshi successfully destroyed
+      title: Destroy
+    edit:
+      title: Edit registration of %{full_name}
+    form:
+      button:
+        create: Register
+        update: Update registration
+      button_info: You'll be able to modify this registration until %{deadline}.
+      categories: Categories
+      chose_team: Chose an existing team
+      create_team: or create a new one
+      dormitory: Dormitory
+      explanation: First create an account that will allow you to register you and your team mates to the competition.
+      individual_categories: Individual categories
+      not_avalaible: Sorry, “%{product_name}“ is not available for the time being. Check back later for availability.
+      oldfashion: or do it the oldfashioned way
+      ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
+      saturday_night: Saturday night dinner
+      team_info: Chose your team here or create a new one by entering its name here.
+    helpers:
+      destroy:
+        confirm: Are you sure?
+        text: Destroy
+      duplicate:
+        text: Duplicate
+      edit:
+        text: Edit
+    index:
+      enroll_someone: Register someone!
+      enroll_yourself: yourself
+      no_kenshis: No registrations yet…
+      or: or
+      title: All registrations
+      title_for_user: Registrations of %{user_full_name}
+      title_juniors: Registrations Juniors
+      title_ladies: Registrations Ladies
+      title_open: Registrations Open
+      title_team: Registrations Team
+    new:
+      duplicate: Duplicate the registration of %{full_name}
+      title: Register someone to the competition
+      yourself: Complete your registration to the competition
+    self:
+      exist: It seems you're already registered. Do you want to modify this registration?
+    show:
+      register_someone_else: Register someone else to the competition
     update:
       flash:
         notice: Registration successfully updated
-    deadline_passed: "The registration deadline is overpassed. Please contact <a href='mailto:%{email}'>%{email}</a>."
-    helpers:
-      edit:
-        text: Edit
-      destroy:
-        text: Destroy
-        confirm: Are you sure?
-      duplicate:
-        text: Duplicate
-  kenshi:
-    title: Registration
-    button: Register
-    link:
-      title: You already have
-      registration: registration
-    deadline: "Warning: The registration deadline is %{deadline}!"
-    registered_by: Registered by
   last_kenshis:
-    title: Latest registrations
     all: All registrations
+    title: Latest registrations

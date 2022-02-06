@@ -1,0 +1,12 @@
+<% @title ||= @headline.title; title @title %>
+<div class="row headlines">
+  <div class="col-xs-12 col-md-12">
+    <h2>
+      <%= @title %>
+      <small>
+        <%= @headline.created_at.to_formatted_s :day_month_year %>
+      </small>
+    </h2>
+    <%= raw @headline.content %>
+  </div>
+</div>

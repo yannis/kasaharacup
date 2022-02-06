@@ -16,29 +16,9 @@ class TeamsController < ApplicationController
   end
 
   def destroy
-    @team.destroy ? notice = t("teams.destroy.notice") : alert = t("teams.destroy.notice")
-    respond_with @team do |format|
-      format.html {
-        flash[:notice] = notice
-        redirect_to cup_teams_path(@cup)
-      }
-      format.js {
-        flash.now[:notice] = notice if notice.present?
-        flash.now[:alert] = alert if alert.present?
-        @object = @team
-        render "layouts/destroy"
-      }
-    end
+    @team.destroy ? flash[:notice] = t("teams.destroy.notice") : flash[:alert] = t("teams.destroy.notice")
+    redirect_to cup_teams_path(@cup)
   rescue => e
-    alert = e.message
-    alert = alert
-    respond_to do |format|
-      format.html {
-        redirect_to cup_team_path(@cup, @team)
-      }
-      format.js {
-        render("layouts/show_flash")
-      }
-    end
+    redirect_to cup_team_path(@cup, @team), alert: e.message
   end
 end

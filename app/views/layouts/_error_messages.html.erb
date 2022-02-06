@@ -1,15 +1,15 @@
 <% if target.errors.any? %>
-  <div class="alert alert-danger fade in">
-    <h2>
+  <div class="text-red-600 mt-4">
+    <h2 class="text-2xl font-bold mt-4">
       <% if target.errors.size > 1 %>
-        <%= t("errors.template.header.other", count: target.errors.count, model: target.class.to_s.downcase) %>
+        <%= t("errors.template.header.other", count: target.errors.size, model: target.class.to_s.downcase) %>
       <% else %>
-        <%= t("errors.template.header.other", count: target.errors.count, model: target.class.to_s.downcase) %>
+        <%= t("errors.template.header.one", model: target.class.to_s.downcase) %>
       <% end %>
     </h2>
     <ul>
       <% target.errors.full_messages.each do |msg| %>
-        <li>
+        <li class="mt-3">
           <%= msg %>
         </li>
       <% end %>
