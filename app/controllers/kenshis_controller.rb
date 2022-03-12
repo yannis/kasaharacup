@@ -127,8 +127,8 @@ class KenshisController < ApplicationController
   end
 
   def destroy
-    @kenshi.destroy ? notice = t("kenshis.destroy.notice") : alert = t("kenshis.destroy.notice")
-    flash[:notice] = notice
+    @kenshi.destroy
+    flash[:notice] = t("kenshis.destroy.notice")
     redirect_to cup_user_path(@current_cup, locale: I18n.locale)
   rescue => e
     redirect_to cup_kenshi_path(@current_cup, @kenshi, locale: I18n.locale), alert: e.message

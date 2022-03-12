@@ -4,7 +4,7 @@ ActiveAdmin.register Cup do
   menu priority: 1
 
   permit_params :year, :start_on, :end_on, :deadline, :adult_fees_chf, :adult_fees_eur, :junior_fees_chf,
-    :junior_fees_eur
+    :junior_fees_eur, :canceled_at
 
   controller do
     def find_resource
@@ -18,6 +18,7 @@ ActiveAdmin.register Cup do
       f.input :start_on, as: :datepicker
       f.input :end_on, as: :datepicker
       f.input :deadline, as: :datepicker
+      f.input :canceled_at, as: :datepicker
     end
     f.inputs "Fees" do
       f.input :adult_fees_chf
@@ -33,6 +34,7 @@ ActiveAdmin.register Cup do
     column :start_on
     column :end_on
     column :deadline
+    column :canceled?
     column :adult_fees_chf
     column :adult_fees_eur
     column :junior_fees_chf
@@ -45,6 +47,7 @@ ActiveAdmin.register Cup do
       row :start_on
       row :end_on
       row :deadline
+      row :canceled?
       row :adult_fees_chf
       row :adult_fees_eur
       row :junior_fees_chf

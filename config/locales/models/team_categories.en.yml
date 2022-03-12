@@ -1,0 +1,9 @@
+---
+en:
+  activerecord:
+    attributes:
+      team_category:
+    models:
+      team_category:
+        one: Team category
+        other: Team category

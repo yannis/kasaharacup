@@ -16,15 +16,16 @@ class CupsController < ApplicationController
       @current_cup = @cup
       @grouped_events = @cup.events.order(:start_on).group_by { |e| e.start_on.to_date }
       @headlines = @cup.headlines.shown.order("headlines.created_at DESC")
-      if Date.current > @cup.start_on.to_date
-        begin
-          render "show_past_#{@cup.year.to_i}"
-        rescue ActionView::MissingTemplate
-          render "show_past"
+      template = if @cup.canceled?
+        "show_canceled"
+      elsif Date.current > @cup.start_on.to_date
+        if lookup_context.exists?("show_past_#{@cup.year.to_i}", _prefixes)
+          "show_past"
         end
       else
-        render "show"
+        "show"
       end
+      render template
     end
   end
 end

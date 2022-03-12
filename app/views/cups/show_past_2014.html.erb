@@ -1,164 +1,158 @@
-.col-xs-12.col-md-8
-.row
-.jumbotron
-%h1
-= t 'layout.header.title'
-= @cup.year
-%br
-%small
-- if @cup.end_on
-= "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :long)},"
-- else
-= "#{l(@cup.start_on, format: :long)}, "
-= t("layout.header.title_em")
-.row#deadline
-.col-xs-12.col-md-12.alert.alert-warning
-- if Time.current > @cup.deadline
-=raw t("cups.show.deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
-- else
-=raw t("cups.show.deadline", deadline: I18n.l(@cup.deadline, format: :long))
-.row#over
-.col-xs-12.col-md-12.alert.alert-warning
-=raw t("cups.show.over")
-.row#results
-.col-xs-12.col-md-12
-%h2= t 'cups.show.results.title'
-.col-xs-12.col-md-6
-%h3 Team
-%p
+<div class="col-xs-12 col-md-8"></div>
+<div class="row"></div>
+<div class="jumbotron"></div>
+<h1></h1>
+<%= t 'layout.header.title' %>
+<%= @cup.year %>
+<br/>
+<small></small>
+<% if @cup.end_on %>
+  <%= "#{l(@cup.start_on, format: :day_only)} - #{l(@cup.end_on, format: :long)}," %>
+<% else %>
+<% end %>
+<%= "#{l(@cup.start_on, format: :long)}, " %>
+<%= t("layout.header.title_em") %>
+<div class="row" id="deadline"></div>
+<div class="col-xs-12 col-md-12 alert alert-warning"></div>
+<% if Time.current > @cup.deadline %>
+  <%= raw t("cups.show.deadline_passed", deadline: I18n.l(@cup.deadline, format: :long)) %>
+<% else %>
+<% end %>
+<%= raw t("cups.show.deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
+<div class="row" id="over"></div>
+<div class="col-xs-12 col-md-12 alert alert-warning"></div>
+<%= raw t("cups.show.over") %>
+<div class="row" id="results"></div>
+<div class="col-xs-12 col-md-12"></div>
+<h2>
+  <%= t 'cups.show.results.title' %>
+</h2>
+<div class="col-xs-12 col-md-6"></div>
+<h3>Team</h3>
+<p></p>
 1. BUDO XI
-%br
-.small
+<br/>
+<div class="small"></div>
 Daniel Antoni, Jonathan Bertout, Walter Mccahon, Jukoh Takeuchi, Antoine Gascoin
-%p
+<p></p>
 2. Swiss Team 1
-%br
-.small
-Cyrian Pitteloud, Chris Kröbl, Yannick Rothacher, Mathieu Schoch, Oscar Kimura
-%p
+<br/>
+<div class="small"></div>
+Cyrian Pitteloud, Chris Krobl, Yannick Rothacher, Mathieu Schoch, Oscar Kimura
+<p></p>
 3. Alessandria
-%br
-.small
+<br/>
+<div class="small"></div>
 Antonella Alvarez Garcia, Guido Drago, Fabrizio Mandia, Alessandro Ricaldone, Alberto Sozzi
-%p
+<p></p>
 3. Saint Etienne 1
-%br
-.small
+<br/>
+<div class="small"></div>
 Alban Ranchon, Wilfried Olivier, Andres Massa, Arnaud Pons, Thomas Peyroche, Pauline Stolarz
-%ul
-%li= link_to "Competition tree", image_path("results2014/KASA_TEAM_2_2014.pdf")
-%li= link_to "Semi-final video (Swiss Team vs Alessandria)", "https://www.youtube.com/watch?v=Q-YvPdotx5k"
-%li= link_to "Semi-final video (Saint Etienne vs BUDO IX)", "https://www.youtube.com/watch?v=NVf5wzzSogE"
-%li= link_to "Final video (BUDO IX vs Swiss Team)", "https://www.youtube.com/watch?v=bosfNhQq5Dg"
-.col-xs-12.col-md-6
-%h3 Open
-%p
+<ul></ul>
+<li>
+  <%= link_to "Competition tree", image_path("results2014/KASA_TEAM_2_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Semi-final video (Swiss Team vs Alessandria)", "https://www.youtube.com/watch?v=Q-YvPdotx5k" %>
+</li>
+<li>
+  <%= link_to "Semi-final video (Saint Etienne vs BUDO IX)", "https://www.youtube.com/watch?v=NVf5wzzSogE" %>
+</li>
+<li>
+  <%= link_to "Final video (BUDO IX vs Swiss Team)", "https://www.youtube.com/watch?v=bosfNhQq5Dg" %>
+</li>
+<div class="col-xs-12 col-md-6"></div>
+<h3>Open</h3>
+<p></p>
 1. Fabrizio Mandia (Alessandria)
-%p
-2. Oscar Kimura (Zürich)
-%p
+<p></p>
+2. Oscar Kimura (Zurich)
+<p></p>
 3. Arnaud Pons (Saint Etienne)
-%p
-3. Yannick Rothacher (Zürich)
-%p
+<p></p>
+3. Yannick Rothacher (Zurich)
+<p></p>
 FS: Tom Widdows (Manchester)
-%ul
-%li= link_to "Pools", image_path("results2014/open_pools.pdf")
-%li= link_to "Competition tree A1", image_path("results2014/KASA_OPEN_A1_2014.pdf")
-%li= link_to "Competition tree A2", image_path("results2014/KASA_OPEN_A2_2014.pdf")
-%li= link_to "Competition tree B1", image_path("results2014/KASA_OPEN_B1_2014.pdf")
-%li= link_to "Competition tree B2", image_path("results2014/KASA_OPEN_B2_2014.pdf")
-%li= link_to "Final video (Mandia vs Kimura)", "https://www.youtube.com/watch?v=-qOLAfiTeKs"
-.col-xs-12.col-md-6
-%h3 Ladies
-%p
+<ul></ul>
+<li>
+  <%= link_to "Pools", image_path("results2014/open_pools.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree A1", image_path("results2014/KASA_OPEN_A1_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree A2", image_path("results2014/KASA_OPEN_A2_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree B1", image_path("results2014/KASA_OPEN_B1_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree B2", image_path("results2014/KASA_OPEN_B2_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Final video (Mandia vs Kimura)", "https://www.youtube.com/watch?v=-qOLAfiTeKs" %>
+</li>
+<div class="col-xs-12 col-md-6"></div>
+<h3>Ladies</h3>
+<p></p>
 1. Sabrina Kumpf (Germany)
-%p
+<p></p>
 2. Pauline Stolarz (Saint Etienne)
-%p
+<p></p>
 3. Safia Fadai (Germany)
-%p
+<p></p>
 4. Misato Chiba (Japan)
-%p
-FS: Catherine Köppe (Germany)
-%ul
-%li= link_to "Pools", image_path("results2014/ladies_pools.pdf")
-%li= link_to "Competition tree", image_path("results2014/KASA_LADIES_2014.pdf")
-%li= link_to "Final video (Kumpf vs Stolarz)", "https://www.youtube.com/watch?v=U8xJlHvaBq8"
-.col-xs-12.col-md-6
-%h3 Junior1
-%p
+<p></p>
+FS: Catherine Koppe (Germany)
+<ul></ul>
+<li>
+  <%= link_to "Pools", image_path("results2014/ladies_pools.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree", image_path("results2014/KASA_LADIES_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Final video (Kumpf vs Stolarz)", "https://www.youtube.com/watch?v=U8xJlHvaBq8" %>
+</li>
+<div class="col-xs-12 col-md-6"></div>
+<h3>Junior1</h3>
+<p></p>
 1. Ugo Goliard (Le Puy)
-%p
-2. Theo Renz (Zürich)
-%p
-3. Thais Kimura (Zürich)
-%p
+<p></p>
+2. Theo Renz (Zurich)
+<p></p>
+3. Thais Kimura (Zurich)
+<p></p>
 3. Takumi Henri-Viel (Annecy)
-%p
-FS: Léonie Lafont (Annecy)
-%ul
-%li= link_to "Pools", image_path("results2014/junior1_pools.pdf")
-%li= link_to "Competition tree", image_path("results2014/KASA_JUNIORS_2014.pdf")
-.col-xs-12.col-md-6
-%h3 Junior2
-%p
+<p></p>
+FS: Leonie Lafont (Annecy)
+<ul></ul>
+<li>
+  <%= link_to "Pools", image_path("results2014/junior1_pools.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree", image_path("results2014/KASA_JUNIORS_2014.pdf") %>
+</li>
+<div class="col-xs-12 col-md-6"></div>
+<h3>Junior2</h3>
+<p></p>
 1. Louis Moutarde (Annecy)
-%p
+<p></p>
 2. Gilliam Sayad (Saint Etienne)
-%p
+<p></p>
 3. Masahiro Ueda (Japan)
-%p
+<p></p>
 3. Guillaume Buob (Lausanne)
-%p
+<p></p>
 FS. Erik Koller (Gelterkinden)
-%ul
-%li= link_to "Pools", image_path("results2014/junior2_pools.pdf")
-%li= link_to "Competition tree", image_path("results2014/KASA_JUNIORS_2_2014.pdf")
-%li= link_to "Final video (Moutarde vs Sayad)", "https://www.youtube.com/watch?v=U8xJlHvaBq8"
-.row
-.panel.panel-info
-.panel-heading
-=raw t("cups.show.other_links")
-%ul.list-group
-%li.list-group-item
-= link_to "Stéphane Cazalet (Scaz) Flickr album", "https://www.flickr.com/photos/scazalet/sets/72157648154694195/"
-.col-xs-12.col-md-4
-- if @headline.present?
-.panel.panel-default.headlines
-.panel-heading
-%h2= t 'headlines.title'
-.panel-body
-%h4
-= @headline.title
-%small
-= @headline.created_at.to_formatted_s :day_month_year
-=raw @headline.content
-.panel-footer
-= link_to t('headlines.link'), cup_headlines_path(@cup)
-= form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "form" do
-= hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
-= hidden_field_tag :id, "4b7d62b6b3"
-.panel.panel-default.contact
-.panel-heading
-%h3
-= label_tag 'EMAIL', "Newsletter"
-.panel-body.form-inline
-.form-group
-= email_field_tag 'EMAIL', nil, required: true, placeholder: t('cups.show.newsletter.email'), class: "form-control"
-= button_tag t('cups.show.newsletter.button'), class: "btn btn-info"
-%p.help-block= t('cups.show.newsletter.register')
-%h3= t 'cups.show.social.title'
-%p
-= link_to "#{icon('fab', 'twitter')} | twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon', class: "btn btn-twitter"
-- if I18n.locale == :fr
-= link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Cette année, je vais à la coupe Kasahara!", via: "kendo_in_geneva", lang: 'fr', related: "kendo_in_geneva", hashtags: "kasa2013"}
-- else
-= link_to 'Tweet', "https://twitter.com/share", class: "twitter-share-button", data: {url: "http://kasaharacup.com", text: "Checkout the kasaharacup.com webpage!", via: "kendo_in_geneva", related: "kendo_in_geneva", hashtags: "kasa2013"}
-:javascript
-!function(d,s,id){
-var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
-}(document, 'script', 'twitter-wjs');
-%p
-%script{src: "https://apis.google.com/js/platform.js"}
-.g-ytsubscribe{data: {channel: "KendoGeneva", layout: "default", count: "default"}}
+<ul></ul>
+<li>
+  <%= link_to "Pools", image_path("results2014/junior2_pools.pdf") %>
+</li>
+<li>
+  <%= link_to "Competition tree", image_path("results2014/KASA_JUNIORS_2_2014.pdf") %>
+</li>
+<li>
+  <%= link_to "Final video (Moutarde vs Sayad)", "https://www.youtube.com/watch?v=U8xJlHvaBq8" %>
+</li>

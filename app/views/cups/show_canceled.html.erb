@@ -1,0 +1,25 @@
+<div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+  <div class="relative max-w-7xl mx-auto sm:px-6 lg:px-8 sm:rounded-2xl sm:overflow-hidden">
+    <div class="absolute inset-0">
+      <%= image_tag "canceled.jpg", class: "h-full w-full object-cover", alt: "hero" %>
+      <div class="absolute inset-0 bg-red-600 mix-blend-multiply"></div>
+    </div>
+    <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+      <h1 class="text-center text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+        <span class="block text-white"><%= t("layout.header.title") %></span>
+        <span class="block text-white"><%= @cup.year %></span>
+      </h1>
+      <p class="mt-6 max-w-lg mx-auto text-center text-xl text-white sm:max-w-3xl">
+        <% if @cup.end_on %>
+          <%= "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :long)}," %>
+        <% else %>
+          <%= "#{l(@cup.start_on, format: :long)}," %>
+        <% end %>
+        <%= t("layout.header.title_em") %>
+      </p>
+      <h2 class="text-center text-2xl text-white mt-8">
+        Unfortunately, we had to cancel this edition
+      </h2>
+    </div>
+  </div>
+</div>

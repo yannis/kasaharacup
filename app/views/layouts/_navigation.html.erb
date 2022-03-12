@@ -56,10 +56,15 @@
               )
             %>
             <%=
-              render(NavigationDropdownComponent.new(
-                name: "archive",
-                text: "Archive",
-                links: Cup.order(start_on: :desc).map { |cup| {text: cup.year.to_s, url: cup_path(cup.year)}}))
+              render(
+                NavigationDropdownComponent.new(
+                  name: "archive",
+                  text: "Archive",
+                  links: Cup.order(start_on: :desc).map do |cup|
+                            {text: cup.year.to_s, url: cup_path(cup.year), canceled: cup.canceled?}
+                          end
+                )
+              )
             %>
           </div>
         </div>
@@ -111,7 +116,10 @@
           name: "archive",
           text: "Archive",
           css_class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium",
-          links: Cup.order(start_on: :desc).map { |cup| {text: cup.year.to_s, url: cup_path(cup.year)}}))
+          links: Cup.order(start_on: :desc).map do |cup|
+                {text: cup.year.to_s, url: cup_path(cup.year), canceled: cup.canceled?}
+              end
+        ))
       %>
       <%=
         render(NavigationDropdownComponent.new(

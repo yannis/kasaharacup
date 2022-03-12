@@ -1,7 +1,7 @@
 ---
 fr:
   categories:
-    dès: Dès
+    from: Dès
   cups:
     show_2019:
       accomodation:
@@ -37,8 +37,8 @@ fr:
   errors:
     template:
       header:
-        one: "1 erreur a empêché ce(tte) %{model} d'être sauvegardé(e) :"
-        other: "%{count} erreurs ont empêché ce(tte) %{model} d'être sauvegardé(e) :"
+        one: "1 erreur a empêché ce(tte) %{model} d'être sauvegardé(e):"
+        other: "%{count} erreurs ont empêché ce(tte) %{model} d'être sauvegardé(e):"
   form:
     cancel: Cancel
     or: Or

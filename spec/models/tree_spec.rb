@@ -18,7 +18,7 @@ RSpec.describe Tree, type: :model do
     it { expect(open.participations.count).to eq 25 }
     it { expect(tree.branch_number).to eq 0 }
     it { expect(tree.depth).to eq 0 }
-    it { expect(elements.first).to be nil }
+    it { expect(elements.first).to be_nil }
 
     context "when pools are generated" do
       before { open.set_smart_pools }

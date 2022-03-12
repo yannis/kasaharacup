@@ -44,4 +44,16 @@ RSpec.describe Cup, type: :model do
     it { expect(described_class.past).to match_array [cup1, cup2] }
     it { expect(described_class.future).to match_array [cup3, cup4] }
   end
+
+  describe "#canceled?" do
+    let(:cup) { build(:cup) }
+
+    it { expect(cup).not_to be_canceled }
+
+    context "when canceled_at is set" do
+      before { cup.canceled_at = Time.current }
+
+      it { expect(cup).to be_canceled }
+    end
+  end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Team, as: "Team" do
-  permit_params :name, :cup, :team_category_id
+  permit_params :name, :cup, :team_category_id, :rank
 
   controller do
     def authenticate_admin_user!
@@ -84,6 +84,7 @@ ActiveAdmin.register Team, as: "Team" do
     f.inputs "Details" do
       f.input :team_category, collection: TeamCategory.all.map { |tc| ["#{tc.name} (#{tc.cup})", tc.id] }
       f.input :name
+      f.input :rank
     end
     f.actions
   end

@@ -62,11 +62,10 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
               column :age do |participation|
                 participation.kenshi.age_at_cup
               end
-              column :pool_number do |participation|
-                best_in_place participation, :pool_number, type: :input, url: [:admin, participation]
-              end
+              # column :pool_number do |participation|
+              #   best_in_place participation, :pool_number, type: :input, url: [:admin, participation]
+              # end
               column :admin_links do |participation|
-                # link_to "Move to another pool", edit_admin_participation_path(participation)
                 [
                   link_to("View", admin_participation_path(participation)),
                   link_to("Edit", edit_admin_participation_path(participation)),
@@ -80,9 +79,9 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
         end
       end
 
-      panel "Tree" do
-        render partial: "category_tree", locals: {category: category}
-      end
+      # panel "Tree" do
+      #   render partial: "category_tree", locals: {category: category}
+      # end
     end
 
     if category.participations.no_pool.present?

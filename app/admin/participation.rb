@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Participation, as: "Participation" do
   permit_params :category_id, :category_type, :team_id, :pool_number, :pool_position, :ronin, :category_individual,
-    :category_team
+    :category_team, :rank
 
   controller do
     def authenticate_admin_user!
@@ -44,7 +44,7 @@ ActiveAdmin.register Participation, as: "Participation" do
 
   form do |f|
     f.object.errors
-    f.semantic_errors(*f.object.errors.keys)
+    f.semantic_errors(*f.object.errors)
     f.inputs "Participation details" do
       if f.object.category.is_a?(IndividualCategory)
         f.input :pool_number

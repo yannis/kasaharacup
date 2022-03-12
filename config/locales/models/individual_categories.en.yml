@@ -1,0 +1,9 @@
+---
+en:
+  activerecord:
+    attributes:
+      individual_category:
+    models:
+      individual_category:
+        one: Individual category
+        other: Individual categories

@@ -14,12 +14,12 @@
 .row#deadline
 .col-xs-12.col-md-12.alert.alert-warning
 - if Time.current > @cup.deadline
-=raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
+=raw t("cups.show.deadline_passed", deadline: I18n.l(@cup.deadline, format: :long))
 - else
-=raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long))
+=raw t("cups.show.deadline", deadline: I18n.l(@cup.deadline, format: :long))
 .row#program
 .col-xs-12.col-md-12
-%h2= t '.program.title'
+%h2= t 'cups.show.program.title'
 - @grouped_events.each do |date, events|
 .col-xs-12.col-md-6
 %table.table
@@ -37,7 +37,7 @@
 = event.name
 .row#categories_and_fees
 #categories.col-xs-12.col-md-6
-%h2= t '.categories.title'
+%h2= t 'cups.show.categories.title'
 %table.table
 %tbody
 - @cup.individual_categories.each do |c|
@@ -47,7 +47,7 @@
 - if c.description.present?
 = c.description
 - elsif c.min_age
-= c.max_age ? t("categories.from") : t("categories.dès")
+= c.max_age ? t("categories.from") : t("categories.from")
 = c.min_age
 = t("categories.yo")
 - elsif c.max_age
@@ -60,22 +60,22 @@
 %td
 = "#{c.description},"
 - if c.min_age
-= c.max_age ? t("categories.from") : t("categories.dès")
+= c.max_age ? t("categories.from") : t("categories.from")
 = c.min_age
 - if c.max_age
 = t("categories.to")
 = c.max_age
 = t("categories.yo")
 #fees.col-xs-12.col-md-6
-%h2= t '.fees.title'
+%h2= t 'cups.show.fees.title'
 %table.table
 %tbody
 %tr
-%th=raw t '.fees.adults.title'
-%td=raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur
+%th=raw t 'cups.show.fees.adults.title'
+%td=raw t 'cups.show.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur
 %tr
-%th=raw t '.fees.juniors.title'
-%td=raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
+%th=raw t 'cups.show.fees.juniors.title'
+%td=raw t 'cups.show.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur
 - @cup.products.each do |product|
 %tr
 %th
@@ -85,15 +85,15 @@
 %mark (not available anymore)
 %td
 - if product.fee_chf == 0
-= t '.fees.variable'
+= t 'cups.show.fees.variable'
 - else
 = "#{product.fee_chf} CHF / #{product.fee_eu} €"
 .row.venue
 .col-xs-12.col-md-12.venue-title
-%h2= t '.venue.title'
+%h2= t 'cups.show.venue.title'
 .col-xs-12.col-md-6.venue-details
-%p=raw t '.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
-%h3= t '.venue.address'
+%p=raw t 'cups.show.venue.a', stade_du_bout_du_monde: link_to('Stade du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')
+%h3= t 'cups.show.venue.address'
 %p
 Centre sportif du Bout-du-Monde, Hall A
 %br
@@ -107,12 +107,12 @@ GPS: 46.180588,6.155893
 = link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map'
 .row.accomodation_contact
 .col-xs-12.col-md-6.venue
-%h2= t '.accomodation.title'
-%p=raw t '.accomodation.dormitory'
-%p=raw t '.accomodation.hotels'
+%h2= t 'cups.show.accomodation.title'
+%p=raw t 'cups.show.accomodation.dormitory'
+%p=raw t 'cups.show.accomodation.hotels'
 .col-xs-12.col-md-6.contact
-%h2= t '.contact.title'
-%p=raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
+%h2= t 'cups.show.contact.title'
+%p=raw t 'cups.show.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_")
 .col-xs-12.col-md-4
 = render "current_user_resume" if @cup.year == 2016
 - if @headline.present?
@@ -129,13 +129,13 @@ GPS: 46.180588,6.155893
 = link_to t('headlines.link'), cup_headlines_path(@cup)
 .panel.panel-default.competition
 .panel-heading
-%h2= t '.tournament.title'
+%h2= t 'cups.show.tournament.title'
 .panel-body
-%p=raw t '.tournament.a'
+%p=raw t 'cups.show.tournament.a'
 %figure.img-thumbnail
 = image_tag 'kasahara_toshiaki.jpg'
 %figcaption Kasahara Toshiaki sensei
-%p=raw t '.tournament.b'
+%p=raw t 'cups.show.tournament.b'
 = form_tag "http://kendo-geneve.us6.list-manage.com/subscribe/post", class: "form" do
 = hidden_field_tag :u, "5545e540aff9e8b07df2f5531"
 = hidden_field_tag :id, "4b7d62b6b3"
@@ -145,10 +145,10 @@ GPS: 46.180588,6.155893
 = label_tag 'EMAIL', "Newsletter"
 .panel-body.form-inline
 .form-group
-= email_field_tag 'EMAIL', nil, required: true, placeholder: t('.newsletter.email'), class: "form-control"
-= button_tag t('.newsletter.button'), class: "btn btn-info"
-%p.help-block= t('.newsletter.register')
-%h3= t '.social.title'
+= email_field_tag 'EMAIL', nil, required: true, placeholder: t('cups.show.newsletter.email'), class: "form-control"
+= button_tag t('cups.show.newsletter.button'), class: "btn btn-info"
+%p.help-block= t('cups.show.newsletter.register')
+%h3= t 'cups.show.social.title'
 %p
 = link_to "#{icon('fab', 'twitter')} | twitter".html_safe, "https://twitter.com/kendo_in_geneva", id: 'twitter_icon', class: "btn btn-twitter"
 - if I18n.locale == :fr

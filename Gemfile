@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.0.3"
 
-gem "rails", "~> 7.0.1"
+gem "rails", "~> 7.0.2"
 
 # Database
 gem "pg", "~> 1.1"
@@ -45,11 +45,7 @@ gem "rack-cors"
 # gem "image_processing", "~> 1.2"
 
 # activeadmin
-gem "activeadmin", github: "tagliala/activeadmin", branch: "feature/railties-7" # FIXME: revert to stable
-gem "arbre", github: "activeadmin/arbre" # FIXME: remove
-gem "inherited_resources", github: "activeadmin/inherited_resources" # FIXME: remove
-gem "kaminari", github: "kaminari/kaminari" # FIXME: remove
-gem "ransack", github: "activerecord-hackery/ransack" # FIXME: remove
+gem "activeadmin", github: "activeadmin/activeadmin", branch: "master"
 
 # ViewComponent
 gem "view_component"

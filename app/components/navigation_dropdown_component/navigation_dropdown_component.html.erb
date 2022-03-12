@@ -32,7 +32,11 @@
     role="menu"
   >
     <% @links.each do |link| %>
-      <%= link_to(link[:text], link[:url], class: "block px-4 py-2 text-sm text-gray-700", role: "menuitem") %>
+      <% if link[:canceled] %>
+        <span class="block px-4 py-2 text-sm text-gray-500" role="menuitem"><%= link[:text] %> (<%= t(".canceled") %>)</span>
+      <% else %>
+        <%= link_to_unless(link[:canceled], link[:text], link[:url], class: "block px-4 py-2 text-sm text-gray-700", role: "menuitem") %>
+      <% end %>
     <% end %>
   </div>
 </div>
