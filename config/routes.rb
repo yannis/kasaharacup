@@ -40,4 +40,12 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/emails"
   end
   ActiveAdmin.routes(self)
+  namespace :admin do
+    resources :team_categories do
+      resources :videos
+    end
+    resources :individual_categories do
+      resources :videos
+    end
+  end
 end

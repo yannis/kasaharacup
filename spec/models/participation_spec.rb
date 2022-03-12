@@ -6,6 +6,7 @@ RSpec.describe Participation, type: :model do
   it { is_expected.to respond_to :pool_number }
   it { is_expected.to respond_to :pool_position }
   it { is_expected.to respond_to :ronin }
+  it { is_expected.to respond_to :fighting_spirit }
 
   describe "Associations" do
     let(:participation) { build :participation }

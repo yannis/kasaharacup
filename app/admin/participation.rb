@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Participation, as: "Participation" do
   permit_params :category_id, :category_type, :team_id, :pool_number, :pool_position, :ronin, :category_individual,
-    :category_team, :rank
+    :category_team, :rank, :fighting_spirit
 
   controller do
     def authenticate_admin_user!
@@ -24,6 +24,7 @@ ActiveAdmin.register Participation, as: "Participation" do
     column :pool_position
     column :ronin
     column :rank
+    column :fighting_spirit
     actions
   end
 
@@ -39,6 +40,7 @@ ActiveAdmin.register Participation, as: "Participation" do
       row :pool_position
       row :ronin
       row :rank
+      row :fighting_spirit
     end
   end
 
@@ -50,6 +52,7 @@ ActiveAdmin.register Participation, as: "Participation" do
         f.input :pool_number
         f.input :pool_position
         f.input :rank
+        f.input :fighting_spirit
       elsif f.object.category.is_a?(TeamCategory)
         f.input :ronin
         f.input :team, collection: f.object.category.cup.teams.map { |c| ["#{c.name} (#{c.cup.year})", c.id] }

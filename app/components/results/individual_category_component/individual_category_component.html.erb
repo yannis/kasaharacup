@@ -1,8 +1,16 @@
-<h3 class="text-xl mt-8"><%= @individual_category.name %></h3>
+<h3 class="text-xl mt-8">
+  <%= @individual_category.name.capitalize %>
+  <small>(<%= @individual_category.description %>)</small>
+</h3>
 <ul class="sm:divide-y sm:divide-gray-200">
   <% @ranked_participations.each do |ranked_participation| %>
-    <li class="py-4 sm:py-5 grid grid-cols-3 gap-4 sm:px-6 text-sm font-medium text-gray-500">
+    <li class="py-4 sm:py-5 sm:px-6 text-sm font-bold text-gray-500">
       <%= ranked_participation.rank %>. <%= ranked_participation.kenshi.full_name %> (<%= ranked_participation.kenshi.club %>)
+    </li>
+  <% end %>
+  <% @fighting_spirit_participations.each do |fighting_spirit_participation| %>
+    <li class="py-4 sm:py-5 sm:px-6 text-sm font-medium text-gray-500">
+      Fighting Spirit Award: <%= fighting_spirit_participation.kenshi.full_name %> (<%= fighting_spirit_participation.kenshi.club %>)
     </li>
   <% end %>
 </ul>

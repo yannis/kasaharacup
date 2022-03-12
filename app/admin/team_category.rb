@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ActiveAdmin.register TeamCategory, as: "TeamCategory" do
+ActiveAdmin.register TeamCategory do
   permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr,
     :cup_id
 
@@ -76,6 +76,10 @@ ActiveAdmin.register TeamCategory, as: "TeamCategory" do
   end
   action_item :pdf, only: :show do
     link_to "PDF", pdf_admin_team_category_path(team_category)
+  end
+
+  action_item :video_new, only: :show do
+    link_to "New Video", new_admin_team_category_video(team_category)
   end
 
   # collection_action :pdfs do

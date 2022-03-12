@@ -112,6 +112,16 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
         end
       end
     end
+    if category.videos.any?
+      panel "Videos" do
+        table_for category.videos do |video|
+          column :name
+          column :url do |video|
+            link_to participation.url, participation.url
+          end
+        end
+      end
+    end
   end
 
   member_action :reset_smart_pools do

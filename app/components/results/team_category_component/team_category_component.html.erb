@@ -1,12 +1,20 @@
 <dl class="sm:divide-y sm:divide-gray-200">
   <% @teams.each do |team| %>
     <div class="py-4 sm:py-5 grid grid-cols-3 gap-4 sm:px-6">
-      <dt class="text-sm font-medium text-gray-500">
+      <dt class="text-sm font-bold text-gray-500">
         <%= team.rank %>. <%= team.name %>
       </dt>
       <dd class="mt-1 text-sm text-gray-800 sm:mt-0 sm:col-span-2">
-        <%= team.kenshis.map(&:full_name).join(", ") %>
+        <%= team.kenshis.order(:last_name, :first_name).map(&:full_name).join(", ") %>
       </dd>
     </div>
   <% end %>
 </dl>
+<ul class="prose">
+  <% @videos.each do |video| %>
+    <li>
+      Video:
+      <%= link_to video.name, video.url %>
+    </li>
+  <% end %>
+</ul>

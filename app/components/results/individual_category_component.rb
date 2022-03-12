@@ -9,6 +9,11 @@ module Results
         .includes(:kenshi)
         .where.not(rank: nil)
         .order(:rank, "kenshis.last_name", "kenshis.first_name")
+      @fighting_spirit_participations = individual_category
+        .participations
+        .includes(:kenshi)
+        .where(fighting_spirit: true)
+        .order(:rank, "kenshis.last_name", "kenshis.first_name")
     end
   end
 end
