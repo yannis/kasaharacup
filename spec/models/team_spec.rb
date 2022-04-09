@@ -7,10 +7,10 @@ RSpec.describe Team, type: :model do
   let(:team_category) { create :team_category, name: "team_cat", cup: cup }
   let(:team) { create :team, name: "SDK", team_category: team_category, participations: [] }
 
-  it { is_expected.to have_many :participations }
-  it { is_expected.to have_many :kenshis }
-  it { is_expected.to validate_presence_of(:name) }
-  it { is_expected.to validate_uniqueness_of(:name).scoped_to(:team_category_id) }
+  it { expect(team).to have_many :participations }
+  it { expect(team).to have_many :kenshis }
+  it { expect(team).to validate_presence_of(:name) }
+  it { expect(team).to validate_uniqueness_of(:name).scoped_to(:team_category_id) }
 
   describe "a empty team" do
     before { team.save! }

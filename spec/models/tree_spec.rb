@@ -11,7 +11,7 @@ RSpec.describe Tree, type: :model do
 
     before do
       # rubocop:disable RSpec/FactoryBot/CreateList
-      25.times { create :participation, category: open, kenshi: build(:kenshi, cup: cup) }
+      25.times { create :participation, category: open, kenshi: create(:kenshi, cup: cup) }
       # rubocop:enable RSpec/FactoryBot/CreateList
     end
 

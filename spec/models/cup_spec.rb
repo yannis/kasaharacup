@@ -3,25 +3,27 @@
 require "rails_helper"
 
 RSpec.describe Cup, type: :model do
-  it { is_expected.to have_many(:individual_categories).dependent(:destroy) }
-  it { is_expected.to have_many(:team_categories).dependent(:destroy) }
-  it { is_expected.to have_many(:events).dependent :destroy }
-  it { is_expected.to have_many(:headlines).dependent :destroy }
-  it { is_expected.to have_many(:kenshis).dependent :destroy }
-  it { is_expected.to have_many(:products).dependent :destroy }
-  it { is_expected.to respond_to(:start_on) }
-  it { is_expected.to respond_to(:end_on) }
-  it { is_expected.to respond_to(:deadline) }
-  it { is_expected.to respond_to(:year) }
-  it { is_expected.to respond_to(:participations) }
+  let(:cup) { build(:cup) }
 
-  it { is_expected.to validate_presence_of :start_on }
-  # it {is_expected.to validate_presence_of :deadline} set in before save
-  it { is_expected.to validate_presence_of :adult_fees_chf }
-  it { is_expected.to validate_presence_of :adult_fees_eur }
-  it { is_expected.to validate_presence_of :junior_fees_chf }
-  it { is_expected.to validate_presence_of :junior_fees_eur }
-  it { is_expected.to validate_uniqueness_of :start_on }
+  it { expect(cup).to have_many(:individual_categories).dependent(:destroy) }
+  it { expect(cup).to have_many(:team_categories).dependent(:destroy) }
+  it { expect(cup).to have_many(:events).dependent :destroy }
+  it { expect(cup).to have_many(:headlines).dependent :destroy }
+  it { expect(cup).to have_many(:kenshis).dependent :destroy }
+  it { expect(cup).to have_many(:products).dependent :destroy }
+  it { expect(cup).to respond_to(:start_on) }
+  it { expect(cup).to respond_to(:end_on) }
+  it { expect(cup).to respond_to(:deadline) }
+  it { expect(cup).to respond_to(:year) }
+  it { expect(cup).to respond_to(:participations) }
+
+  it { expect(cup).to validate_presence_of :start_on }
+  # it {expect(cup).to validate_presence_of :deadline} set in before save
+  it { expect(cup).to validate_presence_of :adult_fees_chf }
+  it { expect(cup).to validate_presence_of :adult_fees_eur }
+  it { expect(cup).to validate_presence_of :junior_fees_chf }
+  it { expect(cup).to validate_presence_of :junior_fees_eur }
+  it { expect(cup).to validate_uniqueness_of :start_on }
 
   describe "A cup without deadline" do
     let(:cup) { create :cup }

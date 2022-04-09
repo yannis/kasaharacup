@@ -80,7 +80,7 @@ namespace :temporary do
           kenshi_names: [
             ["Takumi", "Henry-Viel"],
             ["Niels", "Barraclough"],
-            ["Pénélope", "Jaquet"],
+            ["Pénélope", "Jaquet"]
           ],
           documents: [
             {file_path: "2018/Juniors_2_pools_2018.pdf", name: "Pools"},

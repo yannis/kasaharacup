@@ -3,20 +3,25 @@
 require "rails_helper"
 
 RSpec.describe Fight, type: :model do
-  it { is_expected.to belong_to(:individual_category) }
-  it { is_expected.to belong_to(:winner).optional }
-  it { is_expected.to belong_to(:fighter_1) }
-  it { is_expected.to belong_to(:fighter_2) }
+  describe "Associations" do
+    let(:fight) { create(:fight) }
 
-  it { is_expected.to respond_to :number }
-  it { is_expected.to respond_to :winner }
-  it { is_expected.to respond_to :score }
-  it { is_expected.to respond_to :parent_fight_1 }
-  it { is_expected.to respond_to :parent_fight_2 }
+    it do
+      expect(fight).to belong_to(:individual_category)
+      expect(fight).to belong_to(:winner).optional
+      expect(fight).to belong_to(:fighter_1)
+      expect(fight).to belong_to(:fighter_2)
 
-  # it {should validate_presence_of :fighter_1_id}
-  it { is_expected.to validate_presence_of :number }
-  it { is_expected.to validate_uniqueness_of(:number).scoped_to(:individual_category_id) }
+      expect(fight).to respond_to :number
+      expect(fight).to respond_to :winner
+      expect(fight).to respond_to :score
+      expect(fight).to respond_to :parent_fight_1
+      expect(fight).to respond_to :parent_fight_2
+
+      expect(fight).to validate_presence_of :number
+      expect(fight).to validate_uniqueness_of(:number).scoped_to(:individual_category_id)
+    end
+  end
 
   describe "A fight" do
     let(:cup) { create :cup }

@@ -8,7 +8,9 @@ FactoryBot.define do
       (max_number.presence || 0) + 1
     }
     fighter_type { "Kenshi" }
-    fighter_1_id { create(:kenshi).id }
-    fighter_2_id { create(:kenshi).id }
+    association :fighter_1, factory: :kenshi
+    fighter_2 do |fight|
+      build(:kenshi, cup: fight.fighter_1.cup)
+    end
   end
 end

@@ -3,27 +3,33 @@
 require "rails_helper"
 
 RSpec.describe IndividualCategory do
-  it { is_expected.to belong_to :cup }
-  it { is_expected.to have_many(:fights).dependent(:destroy) }
-  it { is_expected.to have_many(:participations).dependent(:destroy) }
-  it { is_expected.to have_many(:kenshis).through(:participations) }
-  it { is_expected.to have_many(:documents).dependent(:destroy) }
-  it { is_expected.to have_many(:videos).dependent(:destroy) }
+  describe "Associations" do
+    let(:individual_category) { create(:individual_category) }
 
-  it { is_expected.to respond_to :name }
-  it { is_expected.to respond_to :pool_size }
-  it { is_expected.to respond_to :out_of_pool }
-  it { is_expected.to respond_to :pools }
-  it { is_expected.to respond_to :fights }
-  it { is_expected.to respond_to :tree }
-  it { is_expected.to respond_to :min_age }
-  it { is_expected.to respond_to :max_age }
-  it { is_expected.to respond_to :description }
-  it { is_expected.to respond_to :year }
+    it do
+      expect(individual_category).to belong_to :cup
+      expect(individual_category).to have_many(:fights).dependent(:destroy)
+      expect(individual_category).to have_many(:participations).dependent(:destroy)
+      expect(individual_category).to have_many(:kenshis).through(:participations)
+      expect(individual_category).to have_many(:documents).dependent(:destroy)
+      expect(individual_category).to have_many(:videos).dependent(:destroy)
 
-  it { is_expected.to validate_presence_of :cup_id }
-  it { is_expected.to validate_presence_of :name }
-  it { is_expected.to validate_uniqueness_of(:name).scoped_to(:cup_id) }
+      expect(individual_category).to respond_to :name
+      expect(individual_category).to respond_to :pool_size
+      expect(individual_category).to respond_to :out_of_pool
+      expect(individual_category).to respond_to :pools
+      expect(individual_category).to respond_to :fights
+      expect(individual_category).to respond_to :tree
+      expect(individual_category).to respond_to :min_age
+      expect(individual_category).to respond_to :max_age
+      expect(individual_category).to respond_to :description
+      expect(individual_category).to respond_to :year
+
+      expect(individual_category).to validate_presence_of :cup_id
+      expect(individual_category).to validate_presence_of :name
+      expect(individual_category).to validate_uniqueness_of(:name).scoped_to(:cup_id)
+    end
+  end
 
   describe "A individual_category “open”", type: :model do
     let!(:individual_category) {

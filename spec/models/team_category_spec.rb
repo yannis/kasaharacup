@@ -3,27 +3,33 @@
 require "rails_helper"
 
 RSpec.describe TeamCategory do
-  it { is_expected.to belong_to :cup }
-  it { is_expected.to have_many(:fights).dependent(:destroy) }
-  it { is_expected.to have_many(:participations).dependent(:destroy) }
-  it { is_expected.to have_many(:documents).dependent(:destroy) }
-  it { is_expected.to have_many(:videos).dependent(:destroy) }
-  it { is_expected.to have_many(:kenshis).through(:teams) }
+  describe "Associations" do
+    let(:team_category) { create(:team_category) }
 
-  it { is_expected.to respond_to :name }
-  it { is_expected.to respond_to :pool_size }
-  it { is_expected.to respond_to :out_of_pool }
-  it { is_expected.to respond_to :pools }
-  it { is_expected.to respond_to :fights }
-  it { is_expected.to respond_to :tree }
-  it { is_expected.to respond_to :min_age }
-  it { is_expected.to respond_to :max_age }
-  it { is_expected.to respond_to :description }
-  it { is_expected.to respond_to :year }
+    it do
+      expect(team_category).to belong_to :cup
+      expect(team_category).to have_many(:fights).dependent(:destroy)
+      expect(team_category).to have_many(:participations).dependent(:destroy)
+      expect(team_category).to have_many(:documents).dependent(:destroy)
+      expect(team_category).to have_many(:videos).dependent(:destroy)
+      expect(team_category).to have_many(:kenshis).through(:teams)
 
-  it { is_expected.to validate_presence_of :cup_id }
-  it { is_expected.to validate_presence_of :name }
-  it { is_expected.to validate_uniqueness_of(:name).scoped_to(:cup_id) }
+      expect(team_category).to respond_to :name
+      expect(team_category).to respond_to :pool_size
+      expect(team_category).to respond_to :out_of_pool
+      expect(team_category).to respond_to :pools
+      expect(team_category).to respond_to :fights
+      expect(team_category).to respond_to :tree
+      expect(team_category).to respond_to :min_age
+      expect(team_category).to respond_to :max_age
+      expect(team_category).to respond_to :description
+      expect(team_category).to respond_to :year
+
+      expect(team_category).to validate_presence_of :cup_id
+      expect(team_category).to validate_presence_of :name
+      expect(team_category).to validate_uniqueness_of(:name).scoped_to(:cup_id)
+    end
+  end
 
   describe "A team_category team", type: :model do
     let!(:team_category) {

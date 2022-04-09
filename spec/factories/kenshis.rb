@@ -6,7 +6,7 @@ FactoryBot.define do
     user
     club
     female { false }
-    first_name { "#{Faker::Name.first_name} #{Faker::Name.middle_name}" }
+    first_name { "#{Faker::Name.first_name}-#{Faker::Name.first_name} #{Faker::Name.middle_name}" }
     last_name { "#{Faker::Name.last_name} #{Faker::Name.last_name}" }
     dob { "1990-01-01" }
     grade { "kyu" }

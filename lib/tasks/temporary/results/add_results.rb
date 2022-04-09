@@ -52,7 +52,7 @@ module AddResults
         .participations
         .find_by!(kenshi: Kenshi.where(first_name: first_name, last_name: last_name))
         .update!(rank: rank, fighting_spirit: fighting_spirit)
-    rescue => e
+    rescue
       debugger
     end
     create_videos(category: category, videos: videos)
@@ -63,7 +63,7 @@ module AddResults
     videos.each do |video|
       category.videos.create!(name: video.fetch(:name), url: video.fetch(:url))
     end
-  rescue => e
+  rescue
     debugger
   end
 

@@ -63,6 +63,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "active_record_doctor"
   gem "brakeman"
   gem "i18n-tasks"
   gem "letter_opener_web", "~> 2.0"
