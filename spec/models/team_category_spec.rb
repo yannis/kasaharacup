@@ -6,6 +6,7 @@ RSpec.describe TeamCategory do
   it { is_expected.to belong_to :cup }
   it { is_expected.to have_many(:fights).dependent(:destroy) }
   it { is_expected.to have_many(:participations).dependent(:destroy) }
+  it { is_expected.to have_many(:documents).dependent(:destroy) }
   it { is_expected.to have_many(:videos).dependent(:destroy) }
   it { is_expected.to have_many(:kenshis).through(:teams) }
 

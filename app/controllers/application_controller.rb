@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  include ActiveStorage::SetCurrent
+
   before_action :set_locale, :set_current_cup
 
   rescue_from CanCan::AccessDenied do |exception|

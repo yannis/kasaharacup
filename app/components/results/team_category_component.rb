@@ -6,6 +6,7 @@ module Results
       @team_category = team_category
       @teams = team_category.teams.where.not(rank: nil).order(:rank, :name)
       @videos = team_category.videos.order(:name)
+      @documents = team_category.documents
     end
   end
 end

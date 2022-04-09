@@ -7,6 +7,8 @@ RSpec.describe IndividualCategory do
   it { is_expected.to have_many(:fights).dependent(:destroy) }
   it { is_expected.to have_many(:participations).dependent(:destroy) }
   it { is_expected.to have_many(:kenshis).through(:participations) }
+  it { is_expected.to have_many(:documents).dependent(:destroy) }
+  it { is_expected.to have_many(:videos).dependent(:destroy) }
 
   it { is_expected.to respond_to :name }
   it { is_expected.to respond_to :pool_size }

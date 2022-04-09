@@ -14,3 +14,19 @@
     </li>
   <% end %>
 </ul>
+<ul class="prose">
+  <% @videos.each do |video| %>
+    <li>
+      Video:
+      <%= link_to video.name, video.url %>
+    </li>
+  <% end %>
+</ul>
+<ul class="prose">
+  <% @documents.each do |document| %>
+    <li>
+      Document:
+      <%= link_to document.file.filename, document.file.url %>
+    </li>
+  <% end %>
+</ul>
