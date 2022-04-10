@@ -7,6 +7,9 @@ namespace :temporary do
     task add: :environment do
       include AddResults
 
+      Kenshi.find_by(last_name: "HENRY-VIEL")&.update_columns(last_name: "Henry-Viel")
+      Kenshi.find_by(last_name: "sayad")&.update_columns(last_name: "Sayad")
+
       clean_kenshis
       clean_teams
       ActiveRecord::Base.transaction do

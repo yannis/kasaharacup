@@ -7,5 +7,9 @@ FactoryBot.define do
     email { Faker::Internet.unique.email }
     password { Faker::Internet.password }
     club
+
+    trait :admin do
+      admin { true }
+    end
   end
 end

@@ -51,7 +51,7 @@ namespace :temporary do
           ],
           videos: [{name: "Kasahara Kendo Cup 2016 – Ladies final", url: "https://youtu.be/66hyX1BFULI"}],
           documents: [
-            {file_path: "2016/Ladies_pools_2016.pdf", name: "Pools"},
+            {file_path: "2016/ladies_pools_2016.pdf", name: "Pools"},
             {file_path: "2016/Ladies_2016.pdf", name: "Tree"}
           ]
         )

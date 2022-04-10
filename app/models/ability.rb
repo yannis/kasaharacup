@@ -22,6 +22,10 @@ class Ability
       can [:read, :update, :destroy], User, id: user.id
       if user.admin?
         can :manage, :all
+        cannot :register, Cup
+      end
+      can :register, Cup do |cup|
+        cup.registerable?
       end
     end
   end

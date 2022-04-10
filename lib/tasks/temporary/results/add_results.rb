@@ -8,11 +8,6 @@ module AddResults
         last_name: kenshi.last_name.strip
       )
     end
-
-    Kenshi.find_by(last_name: "HENRY-VIEL")&.update_columns(last_name: "Henry-Viel")
-    Kenshi.find_by(last_name: "sayad")&.update_columns(last_name: "Sayad")
-  rescue => e
-    debugger
   end
 
   private def clean_teams
@@ -21,8 +16,6 @@ module AddResults
         name: team.name.strip
       )
     end
-  rescue => e
-    debugger
   end
 
   private def add_team_results(cup:, team_names:, videos: [], documents: [])
@@ -33,8 +26,6 @@ module AddResults
     end
     create_videos(category: category, videos: videos)
     create_documents(category: category, documents: documents)
-  rescue => e
-    debugger
   end
 
   private def add_individual_results(cup:, category_name:, kenshi_names:, videos: [], documents: [])
@@ -52,8 +43,6 @@ module AddResults
         .participations
         .find_by!(kenshi: Kenshi.where(first_name: first_name, last_name: last_name))
         .update!(rank: rank, fighting_spirit: fighting_spirit)
-    rescue
-      debugger
     end
     create_videos(category: category, videos: videos)
     create_documents(category: category, documents: documents)
@@ -63,8 +52,6 @@ module AddResults
     videos.each do |video|
       category.videos.create!(name: video.fetch(:name), url: video.fetch(:url))
     end
-  rescue
-    debugger
   end
 
   private def create_documents(category:, documents: [])
@@ -75,7 +62,5 @@ module AddResults
         filename: "#{document[:name]}.pdf"
       )
     end
-  rescue => e
-    debugger
   end
 end

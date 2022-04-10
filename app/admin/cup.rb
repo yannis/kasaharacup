@@ -4,7 +4,7 @@ ActiveAdmin.register Cup do
   menu priority: 1
 
   permit_params :year, :start_on, :end_on, :deadline, :adult_fees_chf, :adult_fees_eur, :junior_fees_chf,
-    :junior_fees_eur, :canceled_at
+    :junior_fees_eur, :canceled_at, :registerable_at, :header_image
 
   controller do
     def find_resource
@@ -19,6 +19,8 @@ ActiveAdmin.register Cup do
       f.input :end_on, as: :datepicker
       f.input :deadline, as: :datepicker
       f.input :canceled_at, as: :datepicker
+      f.input :registerable_at, as: :datepicker
+      f.input :header_image, as: :file
     end
     f.inputs "Fees" do
       f.input :adult_fees_chf
@@ -39,6 +41,15 @@ ActiveAdmin.register Cup do
     column :adult_fees_eur
     column :junior_fees_chf
     column :junior_fees_eur
+    column :header_image do |cup|
+      next unless cup.header_image.attached?
+
+      image = cup.header_image.variant(:thumb).processed ? cup.header_image.variant(:thumb) : cup.header_image
+      image_tag(
+        image,
+        alt: "hero"
+      )
+    end
     actions
   end
 
@@ -48,10 +59,20 @@ ActiveAdmin.register Cup do
       row :end_on
       row :deadline
       row :canceled?
+      row :registerable_at
       row :adult_fees_chf
       row :adult_fees_eur
       row :junior_fees_chf
       row :junior_fees_eur
+      row :header_image do |cup|
+        next unless cup.header_image.attached?
+
+        image = cup.header_image.variant(:thumb).processed ? cup.header_image.variant(:thumb) : cup.header_image
+        image_tag(
+          image,
+          alt: "hero"
+        )
+      end
     end
     if cup.kenshis.present?
       panel "Kenshis" do

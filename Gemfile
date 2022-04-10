@@ -47,6 +47,10 @@ gem "rack-cors"
 # activeadmin
 gem "activeadmin", github: "activeadmin/activeadmin", branch: "master"
 
+# ActiveStorage and Image processing
+gem "aws-sdk-s3"
+gem "image_processing", ">= 1.2"
+
 # ViewComponent
 gem "view_component"
 gem "lookbook" # Need to be after the `view_component` gem

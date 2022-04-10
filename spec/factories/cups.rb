@@ -12,5 +12,10 @@ FactoryBot.define do
     adult_fees_eur { 25 }
     junior_fees_chf { 16 }
     junior_fees_eur { 14 }
+
+    header_image do
+      image_path = Dir.glob(Rails.root.join("spec/fixtures/images/*.jpg")).sample
+      Rack::Test::UploadedFile.new(image_path)
+    end
   end
 end

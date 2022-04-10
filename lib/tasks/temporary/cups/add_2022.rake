@@ -142,7 +142,7 @@ namespace :temporary do
           description_en: "Born in #{2022 - 17} or before.
           Participants born in #{2022 - 17} will be required to show a document signed by a legal representative",
           description_fr: "Né(e) en #{2022 - 17} ou avant.
-          Les participants né en #{2022 - 17} devront présenter une décharge signée par un représentant légal"
+          Les participants nés en #{2022 - 17} devront présenter une décharge signée par un représentant légal"
         }
       ]
 
