@@ -7,10 +7,11 @@ namespace :temporary do
       cup_data = {
         start_on: Date.parse("2022-09-24"),
         end_on: Date.parse("2022-09-25"),
-        junior_fees_chf: 20,
-        junior_fees_eur: 20,
-        adult_fees_chf: 30,
-        adult_fees_eur: 30
+        junior_fees_chf: 10,
+        junior_fees_eur: 10,
+        adult_fees_chf: 20,
+        adult_fees_eur: 20,
+        registerable_at: Date.parse("2022-05-30")
       }
 
       events_data = [
@@ -35,8 +36,8 @@ namespace :temporary do
           start_on: "2022-09-24 18:00:00"
         },
         {
-          name_en: "Dinner",
-          name_fr: "Dîner",
+          name_en: "Saturday dinner",
+          name_fr: "Dîner du samedi",
           start_on: "2022-09-24 20:00:00"
         },
         {
@@ -71,37 +72,34 @@ namespace :temporary do
           fee_eu: 0
         },
         {
-          name_en: "Dinner",
-          name_fr: "Dîner",
+          name_en: "Saturday dinner",
+          name_fr: "Dîner du samedi",
           fee_chf: 30,
-          fee_eu: 27
+          fee_eu: 30
+        },
+        {
+          name_en: "Sunday lunch (sandwich menu)",
+          name_fr: "Lunch du dimanche (menu sandwich)",
+          fee_chf: 10,
+          fee_eu: 10
         },
         {
           name_en: "Night at the dormitory",
           name_fr: "Nuit au dortoir",
           fee_chf: 25,
-          fee_eu: 23
+          fee_eu: 25
         }
       ]
 
       individual_categories_data = [
         {
-          name: "Junior U12",
-          pool_size: 3,
-          out_of_pool: 2,
-          min_age: nil,
-          max_age: 12,
-          description_en: "Born in #{2022 - 11} or after",
-          description_fr: "Né(e) en #{2022 - 11} ou après"
-        },
-        {
-          name: "Junior U15",
+          name: "Junior U14",
           pool_size: 3,
           out_of_pool: 2,
           min_age: 12,
           max_age: 14,
-          description_en: "Born in #{2022 - 14}, #{2022 - 13} or #{2022 - 12}",
-          description_fr: "Né(e) en #{2022 - 14}, #{2022 - 13} ou #{2022 - 12}"
+          description_en: "Born in #{2022 - 13} or after",
+          description_fr: "Né(e) en #{2022 - 13} ou après"
         },
         {
           name: "Junior U18",
@@ -109,8 +107,8 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 15,
           max_age: 17,
-          description_en: "Born in #{2022 - 17}, #{2022 - 16} or #{2022 - 15}",
-          description_fr: "Né(e) en #{2022 - 17}, #{2022 - 16} ou #{2022 - 15}"
+          description_en: "Born in #{2022 - 17}, #{2022 - 16}, #{2022 - 15} or #{2022 - 14}",
+          description_fr: "Né(e) en #{2022 - 17}, #{2022 - 16}, #{2022 - 15} ou #{2022 - 14}"
         },
         {
           name: "Open",
@@ -139,10 +137,12 @@ namespace :temporary do
           out_of_pool: nil,
           min_age: 17,
           max_age: nil,
-          description_en: "Born in #{2022 - 17} or before.
-          Participants born in #{2022 - 17} will be required to show a document signed by a legal representative",
-          description_fr: "Né(e) en #{2022 - 17} ou avant.
-          Les participants nés en #{2022 - 17} devront présenter une décharge signée par un représentant légal"
+          description_en: "Born in #{2022 - 16} or before.
+          Participants born in #{2022 - 16}
+          and #{2022 - 17} will be required to show a document signed by a legal representative".squish,
+          description_fr: "Né(e) en #{2022 - 16} ou avant.
+          Les participants nés en #{2022 - 16}
+          et #{2022 - 17} devront présenter une décharge signée par un représentant légal".squish
         }
       ]
 

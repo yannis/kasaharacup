@@ -1,32 +1,48 @@
-<h3 class="text-xl mt-8">
-  <%= @individual_category.name.capitalize %>
-  <small>(<%= @individual_category.description %>)</small>
-</h3>
-<ul class="sm:divide-y sm:divide-gray-200">
-  <% @ranked_participations.each do |ranked_participation| %>
-    <li class="py-4 sm:py-5 sm:px-6 text-sm font-bold text-gray-500">
-      <%= ranked_participation.rank %>. <%= ranked_participation.kenshi.full_name %> (<%= ranked_participation.kenshi.club %>)
-    </li>
-  <% end %>
-  <% @fighting_spirit_participations.each do |fighting_spirit_participation| %>
-    <li class="py-4 sm:py-5 sm:px-6 text-sm font-medium text-gray-500">
-      Fighting Spirit Award: <%= fighting_spirit_participation.kenshi.full_name %> (<%= fighting_spirit_participation.kenshi.club %>)
-    </li>
-  <% end %>
-</ul>
-<ul class="prose">
-  <% @videos.each do |video| %>
-    <li>
-      Video:
-      <%= link_to video.name, video.url %>
-    </li>
-  <% end %>
-</ul>
-<ul class="prose">
-  <% @documents.each do |document| %>
-    <li>
-      Document:
-      <%= link_to document.file.filename, document.file.url %>
-    </li>
-  <% end %>
-</ul>
+<div class="bg-white shadow overflow-hidden sm:rounded-lg mt-10">
+  <div class="px-4 py-5 sm:px-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900"><%= @individual_category.name.capitalize %></h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= @individual_category.description %></p>
+  </div>
+  <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+    <dl class="sm:divide-y sm:divide-gray-200">
+      <% @ranked_participations.each do |ranked_participation| %>
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-bold text-gray-500"><%= ranked_participation.rank %>.</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= ranked_participation.kenshi.full_name %> (<%= ranked_participation.kenshi.club %>)</dd>
+        </div>
+      <% end %>
+      <% @fighting_spirit_participations.each do |fighting_spirit_participation| %>
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-bold text-gray-500">Fighting Spirit Award:</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= fighting_spirit_participation.kenshi.full_name %> (<%= fighting_spirit_participation.kenshi.club %>)</dd>
+        </div>
+      <% end %>
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500"></dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
+            <% @videos.each do |video| %>
+              <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                <div class="w-0 flex-1 flex items-center">
+                  <span class="ml-2 flex-1 w-0 truncate">Video:</span>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                  <%= link_to video.name, video.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+                </div>
+              </li>
+            <% end %>
+            <% @documents.each do |document| %>
+              <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                <div class="w-0 flex-1 flex items-center">
+                  <span class="ml-2 flex-1 w-0 truncate">Document:</span>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                  <%= link_to document.file.filename, document.file.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </dd>
+      </div>
+    </div>
+  </div>

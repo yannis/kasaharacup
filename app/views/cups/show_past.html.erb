@@ -7,13 +7,13 @@
     <%= t 'cups.show.results.title' %>
   </h2>
   <% if @cup.team_categories.any? %>
-    <h3 class="text-2xl mt-8"><%= t("activerecord.models.team_category.one") %></h3>
+    <h3 class="text-2xl font-bold mt-10"><%= t("activerecord.models.team_category.one") %></h3>
     <% @cup.team_categories.find_each do |team_category| %>
       <%= render(Results::TeamCategoryComponent.new(team_category: team_category)) %>
     <% end %>
   <% end %>
   <% if @cup.individual_categories.any? %>
-    <h3 class="text-2xl mt-8"><%= t("activerecord.models.individual_category.other") %></h3>
+    <h3 class="text-2xl font-bold mt-10"><%= t("activerecord.models.individual_category.other") %></h3>
     <% @cup.individual_categories.find_each do |individual_category| %>
       <%= render(Results::IndividualCategoryComponent.new(individual_category: individual_category)) %>
     <% end %>

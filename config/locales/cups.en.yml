@@ -3,7 +3,7 @@ en:
   cups:
     show:
       accomodation:
-        dormitory: This year the dorms will be located in the complex of the Cité Bleue (University Centre), for the night of September 28-29. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linen is provided and sleeping bags are not allowed. Please note that the number of spot is limited to 50! <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday.
+        dormitory: This year again the dorms will be located in the complex of the University Campus, for the night of September 24-25. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linens are provided and sleeping bags are not allowed. Please note that the number of beds is limited to 40! <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday.
         hotels: If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
         title: Accomodation
       categories:
@@ -23,13 +23,13 @@ en:
       fees:
         adults:
           fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
-          title: Adults (born in %{year} or before)<br><em>+ Sunday lunch</em>
+          title: Adults (born in %{year} or before)<br><em>Sunday lunch included</em>
         dinner:
           fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
           title: Saturday night dinner
         juniors:
           fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
-          title: Juniors (born in %{year} or after)<br><em>+ Sunday lunch</em>
+          title: Juniors (born in %{year} or after)<br><em>Sunday lunch included</em>
         night:
           fee: "%{dormitory_fees_chf} CHF or %{dormitory_fees_eur} €"
           title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>

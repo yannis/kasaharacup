@@ -29,7 +29,7 @@
               <tbody>
                 <% for event in events %>
                   <tr>
-                    <th>
+                    <th  class="whitespace-nowrap align-text-top">
                       <%= event.start_on.to_formatted_s(:time_only) %>
                     </th>
                     <td>
@@ -54,10 +54,10 @@
       </h2>
       <table class="table">
         <tbody>
-          <% @cup.individual_categories.each do |c| %>
+          <% @cup.individual_categories.order(:name).each do |c| %>
             <tr>
-              <th>
-                <%= c.name.capitalize %>
+              <th class="whitespace-nowrap">
+                <%= c.name %>
               </th>
               <td>
                 <% if c.description.present? %>
@@ -80,16 +80,7 @@
                 <%= c.name.capitalize %>
               </th>
               <td>
-                <%= "#{c.description}," %>
-                <% if c.min_age %>
-                  <%= c.max_age ? t("categories.from") : t("categories.from") %>
-                  <%= c.min_age %>
-                <% end %>
-                <% if c.max_age %>
-                  <%= t("categories.to") %>
-                  <%= c.max_age %>
-                <% end %>
-                <%= t("categories.yo") %>
+                <%= "#{c.description}" %>
               </td>
             </tr>
           <% end %>
@@ -103,8 +94,8 @@
       <table class="table">
         <tbody>
           <tr>
-            <th>
-              <%= raw t(".fees.adults.title", year: @cup.year - 17) %>
+            <th class="whitespace-nowrap align-text-top">
+              <%= raw t(".fees.adults.title", year: @cup.year - 18) %>
             </th>
             <td>
               <%= raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur %>
@@ -112,7 +103,7 @@
           </tr>
           <tr>
             <th>
-              <%= raw t(".fees.juniors.title", year: @cup.year - 16) %>
+              <%= raw t(".fees.juniors.title", year: @cup.year - 17) %>
             </th>
             <td>
               <%= raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur %>
@@ -120,7 +111,7 @@
           </tr>
           <% @cup.products.each do |product| %>
             <tr>
-              <th>
+              <th class="whitespace-nowrap">
                 <%= product.name %>
                 <% if !product_available?(product) %>
                   <br>
@@ -132,7 +123,7 @@
               <% if product.fee_chf == 0 %>
                 <%= t '.fees.variable' %>
               <% else %>
-                <%= "#{product.fee_chf} CHF / #{product.fee_eu} " %>
+                <%= "#{product.fee_chf} CHF / #{product.fee_eu} €" %>
               <% end %>
             </td>
           </tr>
