@@ -1,0 +1,7 @@
+# Required for Vips to work on Heroku together with the brandoncc/heroku-buildpack-vips
+# See https://elements.heroku.com/buildpacks/brandoncc/heroku-buildpack-vips for more details
+
+
+libglib2.0-0
+libglib2.0-dev
+libpoppler-glib8
