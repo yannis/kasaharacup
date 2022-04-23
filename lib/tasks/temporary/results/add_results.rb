@@ -63,4 +63,11 @@ module AddResults
       )
     end
   end
+
+  private def create_header_image(cup:, image:)
+    cup.header_image.attach(
+      io: File.open(Rails.root.join("lib/temporary/documents", cup.year.to_s, image)),
+      filename: image
+    )
+  end
 end

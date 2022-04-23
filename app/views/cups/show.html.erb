@@ -10,7 +10,7 @@
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <%= render(HeroComponent.new(cup: @cup, current_user: current_user)) %>
   <div class="lg:grid lg:grid-cols-3 lg:gap-12">
-    <div class="mt-6 prose prose-red-900 prose-lg text-gray-500 lg:col-span-2" id="program">
+    <div class="mt-6 prose prose-red-900 prose-lg text-gray-900 lg:col-span-2" id="program">
       <% if @headlines.any? %>
         <div class="mt-4">
           <%= render "headline", headline: @headlines.first %>
@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="lg:grid lg:grid-cols-2 lg:gap-12">
-    <div id="categories" class="prose prose-red-900 prose-lg">
+    <div id="categories" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
       <h2 class="mt-10">
         <%= t '.categories.title' %>
       </h2>
@@ -87,7 +87,7 @@
         </tbody>
       </table>
     </div>
-    <div id="fees" class="prose prose-red-900 prose-lg">
+    <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
       <h2 class="mt-10">
         <%= t '.fees.title' %>
       </h2>
@@ -132,7 +132,7 @@
     </table>
   </div>
 </div>
-<div id="venue" class="prose prose-red-900 prose-lg">
+<div id="venue" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
   <h2 class="mt-10">
     <%= t '.venue.title' %>
   </h2>
@@ -154,7 +154,7 @@
     <%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: 'google_map' %>
   </p>
 </div>
-<div id="accomodation" class="prose prose-red-900 prose-lg">
+<div id="accomodation" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
   <h2 class="mt-10">
     <%= t '.accomodation.title' %>
   </h2>

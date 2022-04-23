@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require_relative "../results/add_results"
 namespace :temporary do
   namespace :cups do
     desc "Add 2022"
     task add_2022: :environment do
+      include AddResults
+
       cup_data = {
         start_on: Date.parse("2022-09-24"),
         end_on: Date.parse("2022-09-25"),
@@ -148,6 +151,7 @@ namespace :temporary do
 
       ActiveRecord::Base.transaction do
         cup = Cup.create!(cup_data)
+        create_header_image(cup: cup, image: "kasa-2022.jpeg")
         events_data.each do |event_data|
           cup.events.create!(event_data)
         end

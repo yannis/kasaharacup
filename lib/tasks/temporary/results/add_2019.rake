@@ -8,6 +8,7 @@ namespace :temporary do
       include AddResults
       ActiveRecord::Base.transaction do
         cup = Cup.find_by!(year: 2019)
+        create_header_image(cup: cup, image: "kasa-2019.jpeg")
         add_team_results(
           cup: cup,
           team_names: ["Saint-Etienne", "Kodokan Alessandria", "Buchelay", "Swiss Men"],

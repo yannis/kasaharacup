@@ -48,16 +48,14 @@ RSpec.describe Cup, type: :model do
       end
 
       context "with an invalid file type" do
-        before do
-          cup.header_image.purge
+        let!(:cup) { build(:cup, header_image: nil) }
+
+        it do
           cup.header_image.attach(
             io: File.open(Rails.root.join("spec/fixtures/test.pdf")),
             filename: "a_csv.csv",
             content_type: "application/csv"
           )
-        end
-
-        it do
           expect(cup).not_to be_valid
           expect(cup.header_image).not_to be_attached
           expect(cup.errors[:header_image]).to contain_exactly("must be an image")
