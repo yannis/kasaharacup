@@ -35,7 +35,7 @@ module Kasaharacup
 
     # I18n
     config.i18n.available_locales = %i[en fr]
-    config.i18n.default_locale = :en
+    config.i18n.default_locale = :fr
 
     # ViewComponent config
     config.view_component.preview_paths << Rails.root.join("lib/component_previews")

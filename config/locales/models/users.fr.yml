@@ -1,61 +1,62 @@
+---
 fr:
-  users:
-    index:
-      title: Les utilisateurs
-    show:
-      title:
-        show_self: "Vos données"
-        show: "Compte de %{full_name}"
-      register_someone_else: Inscrivez quelqu'un d'autre à la compétition
-      register_yourself: Inscrivez-vous à la compétition
-      your_registrations: Vos inscriptions pour la Coupe Kasahara %{year}
-      register: "Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?"
-      yourself: "vous inscrire"
-      someone: "un autre kenshi"
-      edit: Modifier
-    destroy:
-      title: Détruire ce compte
-      confirm: "Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites."
-      session:
-        sign_in: Accèdez
-    edit:
-      title:
-        edit_self: 'Modifiez votre compte'
-        edit: 'Modifiez ce compte'
-        edit_someone: "Modifiez le compte de %{full_name}"
-    form:
-      button:
-        create: Créez le compte
-        update: Modifiez le compte
-    resume:
-      kenshis_number: "Vous avez déjà %{number} inscriptions"
-      register_someone_else: "Inscrivez quelqu'un d'autre"
-      details: "Détails"
   activerecord:
-    models:
-      user: utilisateur
     attributes:
       user:
-        email: "Email"
-        first_name: "Prénom"
-        last_name: 'Nom'
-        password: 'Mot de passe'
-        password_confirmation: 'Confirmation du mot de passe'
-        current_password: 'Mot de passe actuel'
-        remember_me: 'Garder en mémoire'
-        dob: 'Date de naissance'
-        gender: 'Sexe'
+        club_name: Club
+        current_password: Mot de passe actuel
+        dob: Date de naissance
+        email: Email
+        fees: Frais
         female: Femme
+        first_name: Prénom
+        gender: Sexe
+        last_name: Nom
+        male: Homme
         mr: M.
         ms: Mme.
-        male: Homme
-        club_name: Club
-        fees: "Frais"
+        password: Mot de passe
+        password_confirmation: Confirmation du mot de passe
+        remember_me: Garder en mémoire
     errors:
       models:
         user:
           attributes:
-            password_confirmation:
-              confirmation: ne correspond pas au mot de passe choisi
             current_password:
               invalid: non valide
+            password_confirmation:
+              confirmation: ne correspond pas au mot de passe choisi
+    models:
+      user: utilisateur
+  users:
+    destroy:
+      confirm: Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites.
+      session:
+        sign_in: Accèdez
+      title: Détruire ce compte
+    edit:
+      title:
+        edit: Modifiez ce compte
+        edit_self: Modifiez votre compte
+        edit_someone: Modifiez le compte de %{full_name}
+    form:
+      button:
+        create: Créez le compte
+        update: Modifiez le compte
+    index:
+      title: Les utilisateurs
+    resume:
+      details: Détails
+      kenshis_number: Vous avez déjà %{number} inscriptions
+      register_someone_else: Inscrivez quelqu'un d'autre
+    show:
+      edit: Modifier
+      register: Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?
+      register_someone_else: Inscrivez quelqu'un d'autre à la compétition
+      register_yourself: Inscrivez-vous à la compétition
+      someone: un autre kenshi
+      title:
+        show: Compte de %{full_name}
+        show_self: Vos données
+      your_registrations: Vos inscriptions pour la Coupe Kasahara %{year}
+      yourself: vous inscrire

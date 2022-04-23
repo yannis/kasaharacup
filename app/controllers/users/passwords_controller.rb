@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
+  include HasLocale
+
   # GET /resource/password/new
   # def new
   #   super
@@ -12,9 +14,10 @@ class Users::PasswordsController < Devise::PasswordsController
   # end
 
   # GET /resource/password/edit?reset_password_token=abcdef
-  # def edit
-  #   super
-  # end
+  def edit
+    debugger
+    super
+  end
 
   # PUT /resource/password
   # def update

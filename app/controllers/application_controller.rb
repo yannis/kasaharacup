@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  include HasLocale
   include ActiveStorage::SetCurrent
 
-  before_action :set_locale, :set_current_cup
+  before_action :set_current_cup
 
   rescue_from CanCan::AccessDenied do |exception|
     if current_user.present?
@@ -11,23 +12,6 @@ class ApplicationController < ActionController::Base
     else
       redirect_to new_user_session_path(locale: I18n.locale), alert: I18n.t("devise.failure.unauthenticated")
     end
-  end
-
-  def default_url_options
-    {locale: I18n.locale}
-  end
-
-  private def set_locale
-    params_locale = params[:locale] if params[:locale]&.to_sym&.in?(I18n.available_locales)
-    session_locale = session[:locale] if session[:locale]&.to_sym&.in?(I18n.available_locales)
-    request_locale = request
-      .env["HTTP_ACCEPT_LANGUAGE"]
-      &.scan(/^[a-z]{2}/)
-      &.select { |locale| locale.to_sym.in?(I18n.available_locales) }
-
-    @locale = params_locale.presence || session_locale.presence || request_locale.presence || I18n.default_locale
-    I18n.locale = session[:locale] = @locale.to_sym
-    @inverse_locale = (@locale.to_sym == :en ? :fr : :en)
   end
 
   private def set_current_cup
@@ -53,7 +37,7 @@ class ApplicationController < ActionController::Base
   private def check_deadline
     set_current_cup
     if !current_user.try("admin?") && Time.current > @current_cup.deadline
-      flash[:alert] = t("kenshis.deadline_passed", email: "info@kendo-geneve.ch")
+      flash[:alert] = t("kenshis.deadline_passed", email: ENV.fetch("CONTACT_EMAIL"))
       redirect_to root_path and return
     end
   end

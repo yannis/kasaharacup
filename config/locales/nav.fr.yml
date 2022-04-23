@@ -1,17 +1,18 @@
+---
 fr:
   navigation:
+    headlines:
+      text: News
+      title: Les dernières nouvelles
     home:
       text: Home
-      title: "Où, quand <span class='ampersand'>&</span> comment"
-    teams:
-      text: "Equipes (%{teams})"
-      title: Equipes déjà inscrites
+      title: Où, quand <span class='ampersand'>&</span> comment
     kenshis:
-      text: "Inscrits (%{kenshis})"
+      text: Inscrits (%{kenshis})
       title: Tous les kenshis inscrits
-    headlines:
-      text: "News"
-      title: Les dernières nouvelles
     register:
       text: Inscriptions
       title: Inscrivez-vous à la compétition
+    teams:
+      text: Equipes (%{teams})
+      title: Equipes déjà inscrites

@@ -16,7 +16,7 @@ class UserReceipt < Prawn::Document
       font_size 24
       text (ENV["CUP_NAME"]).to_s, align: :right
       font_size 14
-      text "info@kendo-geneve.ch"
+      text ENV.fetch("CONTACT_EMAIL")
       text "kasaharacup.com"
     end
 

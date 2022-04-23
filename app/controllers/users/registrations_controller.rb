@@ -2,6 +2,8 @@
 
 module Users
   class RegistrationsController < Devise::RegistrationsController
+    include HasLocale
+
     def new
       super
     end

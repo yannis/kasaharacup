@@ -23,7 +23,7 @@
           <%= t '.contact.title' %>
         </h3>
         <p class="mt-2 text-base text-gray-500 prose">
-          <%= raw t '.contact.text', mail: mail_to("info@kendo-geneve.ch", nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_") %>
+          <%= raw t '.contact.text', mail: mail_to(ENV.fetch("CONTACT_EMAIL"), nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_") %>
         </p>
         <%= image_tag "logo-avec-soutien-ville-geneve-couleur.png", class: "h-24 pt-6" %>
       </div>

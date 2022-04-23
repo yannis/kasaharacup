@@ -70,6 +70,18 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
+  config.action_mailer.default_url_options = {
+    host: ENV["APP_HOST"] || "#{ENV["HEROKU_APP_NAME"]}.herokuapp.com"
+  }
+  config.action_mailer.smtp_settings = {
+    address: ENV.fetch("MAILJET_SMTP_ADDRESS"),
+    enable_starttls_auto: true,
+    port: 587,
+    user_name: ENV.fetch("MAILJET_API_KEY"),
+    password: ENV.fetch("MAILJET_SECRET_KEY"),
+    authentication: :plain
+  }
+
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true

@@ -1,7 +1,8 @@
+---
 fr:
-  headlines: #views
-    title: Dernière nouvelle
-    link: Toutes les nouvelles
+  headlines:
     index:
-      title: Les nouvelles
       no_news: Pas de nouvelles pour l'instant…
+      title: Les nouvelles
+    link: Toutes les nouvelles
+    title: Dernière nouvelle

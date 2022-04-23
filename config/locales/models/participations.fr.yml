@@ -1,3 +1,4 @@
+---
 fr:
   activerecord:
     errors:
@@ -5,13 +6,11 @@ fr:
         participation:
           attributes:
             category:
-              too_young: "Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!"
-              too_old: "Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!"
-
-
+              too_old: Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!
+              too_young: Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!
   participations:
     destroy:
-      title: Détruire
+      alert: Erreur lors de la destruction de l'inscription
       confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
-      notice: "Participation détruite avec succès"
-      alert: "Erreur lors de la destruction de l'inscription"
+      notice: Participation détruite avec succès
+      title: Détruire

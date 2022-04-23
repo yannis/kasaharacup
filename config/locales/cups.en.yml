@@ -17,7 +17,6 @@ en:
         title: Contact
       deadline: "<strong>Warning:</strong> The deadline for registration is %{deadline}"
       deadline_passed: "<strong>Warning:</strong> Registration is closed since %{deadline}"
-      registrations_opening_soon: "<strong>Warning:</strong> Registrations will open soon"
       enrollments:
         all: See all %{number} registrations
       fees:
@@ -45,6 +44,7 @@ en:
       over: The tournament is over! Thanks to all for participating and see you next year!
       program:
         title: Program
+      registrations_opening_soon: "<strong>Warning:</strong> Registrations will open soon"
       results:
         coming_soon: Full results are coming soon…
         downloads: Downloads

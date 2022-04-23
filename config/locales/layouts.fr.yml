@@ -1,15 +1,16 @@
+---
 fr:
   layouts:
-    navigation:
-      about: A propos
-      account: Compte
     footer:
       contact:
+        text: Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre.
         title: Contact
-        text: "Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre."
       newsletter:
         button: Abonnez-vous
         email: Entrez votre email
         placeholder: Email
         subtitle: Recevez des informations occasionnelles sur le tournoi.
         title: Abonnez-vous à notre newsletter
+    navigation:
+      about: A propos
+      account: Compte

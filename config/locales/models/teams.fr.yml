@@ -1,29 +1,26 @@
+---
 fr:
   activerecord:
     attributes:
       teams:
-        name: Nom
         kenshis: Kenshis
+        name: Nom
     errors:
       models:
         team:
           participations: Participations
-    #     kenshi:
-    #       attributes:
-    #         dob:
-    #           blank: 'Date of birth (DOB) is required for junior registrations'
-  teams: #views
-    show:
-      title: "Equipe “%{team_name}”"
+  teams:
+    destroy:
+      alert: Erreur lors de la destruction de l'équipe
+      confirm: Etes-vous bien sûr de vouloir détruire cette équipe? Le processus est irréversible…
+      notice: Equipe détruite avec succès
+      title: Détruire
     index:
       title: Toutes les équipes
-    destroy:
-      title: Détruire
-      confirm: Etes-vous bien sûr de vouloir détruire cette équipe? Le processus est irréversible…
-      notice: "Equipe détruite avec succès"
-      alert: "Erreur lors de la destruction de l'équipe"
+    show:
+      title: Equipe “%{team_name}”
     team_row:
-      incomplete: Incomplète
       complete: Complète
+      incomplete: Incomplète
       invalid: Invalide
       valid: Valide

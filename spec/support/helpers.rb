@@ -73,6 +73,6 @@ RSpec.configure do |config|
 
   def has_passed_deadline
     expect(response).to redirect_to root_path(locale: I18n.locale)
-    expect(flash[:alert]).to eq I18n.t("kenshis.deadline_passed", email: "info@kendo-geneve.ch")
+    expect(flash[:alert]).to eq I18n.t("kenshis.deadline_passed", email: ENV.fetch("CONTACT_EMAIL"))
   end
 end
