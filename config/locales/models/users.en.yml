@@ -23,6 +23,7 @@ en:
           attributes:
             current_password:
               invalid: invalid
+              blank: We need your current password to confirm your changes
             password_confirmation:
               confirmation: does not match the chosen password
   users:
