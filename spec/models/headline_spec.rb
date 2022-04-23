@@ -22,6 +22,6 @@ RSpec.describe Headline, type: :model do
     let!(:headline_not_shown) { create :headline, cup: cup, shown: false }
 
     it { expect(described_class.shown.to_a).to eql [headline_shown] }
-    it { expect(headline_shown.to_param).to eql "#{headline_shown.id}-a-title" }
+    it { expect(headline_shown.to_param).to eql "#{headline_shown.id}-un-titre" }
   end
 end

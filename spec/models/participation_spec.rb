@@ -46,8 +46,8 @@ RSpec.describe Participation, type: :model do
 
         it {
           participation.valid?
-          expect(participation.errors[:category]).to eql ["not valid: You're too young to participate"\
-            " to the #{individual_category.name} category!"]
+          expect(participation.errors[:category]).to contain_exactly("Désolé, mais vous êtes trop jeune pour
+            participer à la catégorie #{individual_category.name}!".squish)
         }
       end
 
@@ -58,7 +58,8 @@ RSpec.describe Participation, type: :model do
         it {
           participation.valid?
           expect(participation.errors[:category])
-            .to eql ["not valid: You're too old to participate to the #{individual_category.name} category!"]
+            .to contain_exactly("Désolé, mais vous êtes trop vieux pour participer à la
+              catégorie #{individual_category.name}!".squish)
         }
       end
     end

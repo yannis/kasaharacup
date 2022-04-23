@@ -1,0 +1,23 @@
+---
+fr:
+  errors:
+    messages:
+      blank: ne peut pas rester vide
+      date_string_not_iso8601: must be valid date in the format “YYYY-MM-DD”
+      doesnt_exist: n’existe pas
+      invalid_codename: must only contain “letters, numbers, underscores, and ampersands”
+      invalid_uuid: must be a UUID according to RFC 4122
+      positive: doit être positif
+      taken: a déjà été pris(e)
+  helpers:
+    are_you_sure: Vous êtes sûr?
+    cancel: Annuler
+  locales:
+    de: Allemand
+    en: Anglais
+    fr: Français
+  roles:
+    annotator: annotateur(trice)
+    manager: manager
+  time:
+    zone: Fuseau horaire

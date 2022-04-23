@@ -3,7 +3,7 @@
 RSpec.configure do |config|
   def should_be_asked_to_sign_in
     expect(response).to redirect_to(new_user_session_path)
-    expect(flash.alert).to eql "You need to sign in or sign up before continuing."
+    expect(flash.alert).to eql "Vous devez vous connecter ou vous inscrire pour continuer."
   end
 
   def should_not_be_authorized

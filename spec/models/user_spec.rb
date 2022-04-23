@@ -23,7 +23,7 @@ RSpec.describe User, type: :model do
         expect {
           create :user,
             last_name: nil
-        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Last name can't be blank")
+        }.to raise_error(ActiveRecord::RecordInvalid, "La validation a échoué : Nom ne peut pas rester vide")
       }
     end
 
@@ -34,7 +34,7 @@ RSpec.describe User, type: :model do
         expect {
           create :user, first_name: "Yannis",
             last_name: "Jaquet"
-        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Last name has already been taken")
+        }.to raise_error(ActiveRecord::RecordInvalid, "La validation a échoué : Nom a déjà été pris(e)")
       }
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe User, type: :model do
 
     it { expect(user.reload.last_name).to eq "Last-J.-Name Name" }
     it { expect(user.reload.first_name).to eq "First-J.-Sébastien Mühlebäch" }
-    it { expect(user.full_name).to eq "Mr First-J.-Sébastien Mühlebäch Last-J.-Name Name" }
+    it { expect(user.full_name).to eq "M. First-J.-Sébastien Mühlebäch Last-J.-Name Name" }
     it { expect(user.reload.email).to eq "stupidly.foramatted@email.com" }
     it { expect(user).not_to be_registered_for_cup(cup) }
 

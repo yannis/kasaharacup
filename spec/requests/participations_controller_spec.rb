@@ -32,7 +32,7 @@ RSpec.describe ParticipationsController do
         it do
           expect { delete_request }.to change(Participation, :count).by(-1)
           expect(assigns(:participation)).to eql participation
-          expect(flash[:notice]).to match "Participation successfully destroyed"
+          expect(flash[:notice]).to match "Participation détruite avec succès"
           expect(response).to redirect_to(cup_user_path(cup))
         end
       end
