@@ -7,7 +7,9 @@ select2($);
 export default class extends Controller {
   connect() {
     if (this.element != null) {
+      const { locale } = this.element.dataset;
       $(this.element).select2({
+        language: locale,
         tags: true,
         placeholder: 'Please select',
         width: 'style',
