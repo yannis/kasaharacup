@@ -91,6 +91,6 @@ ActiveAdmin.register Product, as: "Product" do
   end
 
   action_item :kenshi_list, only: :show do
-    link_to("Kenshis list", params.merge(action: :download_kenshi_list))
+    link_to("Kenshis list", request.params.merge(action: :download_kenshi_list))
   end
 end
