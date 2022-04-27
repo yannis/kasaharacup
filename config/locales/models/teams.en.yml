@@ -16,6 +16,8 @@ en:
       notice: Team successfully destroyed
       title: Destroy
     index:
+      ronins:
+        info: We are loking for a team for the following Ronins. Let us know if you have an available spot!
       title: All teams
     show:
       title: Team “%{team_name}”

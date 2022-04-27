@@ -37,9 +37,11 @@ RSpec.describe IndividualCategory do
         cup: create(:cup, start_on: Date.parse("2016-09-28"))
     }
 
-    it { expect(individual_category).to be_valid_verbose }
-    it { expect(individual_category.name).to eql "open" }
-    it { expect(individual_category.year).to be 2016 }
+    it do
+      expect(individual_category).to be_valid_verbose
+      expect(individual_category.name).to eql "open"
+      expect(individual_category.year).to be 2016
+    end
 
     context "with a pool of 3 participations" do
       let!(:participation1) {
@@ -55,10 +57,12 @@ RSpec.describe IndividualCategory do
           kenshi: create(:kenshi, cup: individual_category.cup)
       }
 
-      it { expect(participation1).to be_valid_verbose }
-      it { expect(participation1.category).to eql individual_category }
-      it { expect(individual_category.pools.size).to eq 1 }
-      it { expect(individual_category.participations.size).to eq 3 }
+      it do
+        expect(participation1).to be_valid_verbose
+        expect(participation1.category).to eql individual_category
+        expect(individual_category.pools.size).to eq 1
+        expect(individual_category.participations.size).to eq 3
+      end
     end
 
     context "with 24 participations" do
@@ -71,18 +75,21 @@ RSpec.describe IndividualCategory do
         individual_category.reload
       }
 
-      # it {expect(Participation.count).to eq 24}
-      it { expect(individual_category.participations.count).to eq 24 }
-      it { expect(individual_category.pools.size).to eq 0 }
+      it do
+        expect(individual_category.participations.count).to eq 24
+        expect(individual_category.pools.size).to eq 0
+      end
 
       context "when pools are generated" do
         before { individual_category.set_smart_pools }
 
-        it { expect(individual_category.pools.size).to eq 8 }
-        # it {expect(individual_category.tree).to be_a Tree}
-        # it {expect(individual_category.data).to be_a Hash}
-        # it {expect(individual_category.data.keys).to eq [:tree]}
-        # it {expect(individual_category.data[:tree].keys).to eq [:elements, :depth, :branch_number]}
+        it do
+          expect(individual_category.pools.size).to eq 8
+          expect(individual_category.tree).to be_a Tree
+          expect(individual_category.data).to be_a Hash
+          expect(individual_category.data.keys).to eq [:tree]
+          expect(individual_category.data[:tree].keys).to eq [:elements, :depth, :branch_number]
+        end
       end
     end
   end
