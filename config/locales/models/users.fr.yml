@@ -23,8 +23,8 @@ fr:
         user:
           attributes:
             current_password:
-              invalid: non valide
               blank: Nous avons besoin de votre mot de passe actuel afin de valider votre modification
+              invalid: non valide
             password_confirmation:
               confirmation: ne correspond pas au mot de passe choisi
     models:
