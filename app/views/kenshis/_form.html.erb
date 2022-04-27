@@ -51,6 +51,9 @@
           <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.select :grade, Kenshi::GRADES %>
+            <p class="helper-text text-sm mt-2">
+              <%= t("cups.show.shinpans.info") %>
+            </p>
           </div>
         </div>
       </div>
@@ -193,7 +196,7 @@
                   </div>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% @cup.products.all.each do |p| %>
+                  <% @cup.products.sort_by(&:name).each do |p| %>
                     <% price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
                     <div class="max-w-lg space-y-4">
                       <div class="relative flex items-start mb-4">

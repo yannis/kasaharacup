@@ -56,7 +56,7 @@ fr:
       oldfashion: ou utilisez le formulaire ci-dessous
       ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
       saturday_night: Diner du samedi soir
-      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos coéquipiers ou créez-la en lui donnant un nom ici."
+      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos coéquipiers ou créez-la en lui donnant un nom ici.
     helpers:
       destroy:
         confirm: Êtes vous sûr?

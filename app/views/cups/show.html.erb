@@ -52,6 +52,9 @@
       <h2 class="mt-10">
         <%= t '.categories.title' %>
       </h2>
+      <p>
+        <%= t(".shinpans.info") %>
+      </p>
       <table class="table">
         <tbody>
           <% @cup.individual_categories.order(:name).each do |c| %>

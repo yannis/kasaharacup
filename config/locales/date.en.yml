@@ -3,7 +3,4 @@ en:
   date:
     formats:
       day_only: "%d"
-      default: "%d/%m/%Y"
-      long: "%e %B %Y"
       month_only: "%B"
-      short: "%e %b"
