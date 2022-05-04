@@ -66,7 +66,7 @@ ActiveAdmin.register Team, as: "Team" do
             team.kenshis.order(:last_name, :first_name).each do |kenshi|
               tr do
                 td do
-                  kenshi.last_name
+                  link_to(kenshi.last_name, admin_kenshi_path(kenshi))
                 end
                 td do
                   kenshi.first_name

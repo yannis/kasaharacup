@@ -13,15 +13,27 @@
       </div>
     </div>
     <ul role="list" class="divide-y divide-gray-200">
-      <%= render partial: "team_row", collection: @teams, as: "team" %>
       <% if @ronins.any? %>
         <li>
-          <td>Ronins</td>
-          <td colspan="2">
-            <%= raw @ronins.map{|kenshi| link_to kenshi.full_name, cup_kenshi_path(@cup, kenshi) }.join(', ') %>
-          </td>
+          <div class="py-4 px-3 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-lg font-medium text-gray-600 prose">
+                  <%= t(".ronins.info") %>
+                </p>
+              </div>
+            </div>
+            <div class="mt-2 sm:flex sm:justify-between">
+              <div class="sm:flex">
+                <p class="flex items-center text-gray-500">
+                  <%=  safe_join(@ronins.map{|kenshi| link_to kenshi.full_name, cup_kenshi_path(@cup, kenshi) }, raw("<span class='px-2'>•</span>")) %>
+                </p>
+              </div>
+            </div>
+          </div>
         </li>
       <% end %>
+      <%= render partial: "team_row", collection: @teams, as: "team" %>
     </ul>
   </div>
 </div>
