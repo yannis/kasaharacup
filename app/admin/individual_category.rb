@@ -127,7 +127,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   member_action :reset_smart_pools do
     @category = IndividualCategory.find params[:id]
     @category.set_smart_pools
-    flash[:notice] = "Pool smartly reset"
+    flash[:notice] = "Pool smartly reset" # rubocop:disable Rails/I18nLocaleTexts
     redirect_to action: "show"
   end
   action_item :smart_pool_reset, only: :show do

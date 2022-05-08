@@ -7,6 +7,7 @@ en:
         hotels: If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
         title: Accomodation
       categories:
+        description: The Junior categories are subject to change depending on the number of registrations
         juniors: from 12 to 16 years old
         ladies: over 16 years old
         open: over 16 years old
@@ -23,6 +24,7 @@ en:
         adults:
           fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
           title: Adults (born in %{year} or before)<br><em>Sunday lunch included</em>
+        description: Payment of fees upon arrival at the competition venue (in cash only, € or CHF).
         dinner:
           fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
           title: Saturday night dinner

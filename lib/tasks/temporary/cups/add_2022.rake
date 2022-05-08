@@ -31,7 +31,7 @@ namespace :temporary do
         {
           name_en: "Team competition",
           name_fr: "Compétition par équipe",
-          start_on: "2022-09-24 12:30:00"
+          start_on: "2022-09-24 13:00"
         },
         {
           name_en: "Free jigeiko",
@@ -61,7 +61,7 @@ namespace :temporary do
         {
           name_en: "Finals and ending",
           name_fr: "Finales et clôture",
-          start_on: "2022-09-25 17:00:00"
+          start_on: "2022-09-25 16:30:00"
         }
       ]
 
@@ -81,14 +81,16 @@ namespace :temporary do
           fee_eu: 30
         },
         {
-          name_en: "Sunday lunch (sandwich menu)",
-          name_fr: "Lunch du dimanche (menu sandwich)",
+          name_en: "Sunday lunch - sandwich menu",
+          name_fr: "Lunch du dimanche - menu sandwich",
           fee_chf: 10,
           fee_eu: 10
         },
         {
           name_en: "Night at the dormitory",
           name_fr: "Nuit au dortoir",
+          description_en: "Breakfast included",
+          description_fr: "Petit déjeuner inclus",
           fee_chf: 25,
           fee_eu: 25
         }
@@ -96,13 +98,13 @@ namespace :temporary do
 
       individual_categories_data = [
         {
-          name: "Junior U14",
+          name: "Junior U15",
           pool_size: 3,
           out_of_pool: 2,
           min_age: 12,
           max_age: 14,
-          description_en: "Born in #{2022 - 13} or after",
-          description_fr: "Né(e) en #{2022 - 13} ou après"
+          description_en: "Born in #{2022 - 14}, #{2022 - 13} or #{2022 - 12}",
+          description_fr: "Né(e) en #{2022 - 14}, #{2022 - 13} ou #{2022 - 12}"
         },
         {
           name: "Junior U18",
@@ -110,8 +112,8 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 15,
           max_age: 17,
-          description_en: "Born in #{2022 - 17}, #{2022 - 16}, #{2022 - 15} or #{2022 - 14}",
-          description_fr: "Né(e) en #{2022 - 17}, #{2022 - 16}, #{2022 - 15} ou #{2022 - 14}"
+          description_en: "Born in #{2022 - 17}, #{2022 - 16} or #{2022 - 15}",
+          description_fr: "Né(e) en #{2022 - 17}, #{2022 - 16} or #{2022 - 15}"
         },
         {
           name: "Open",
