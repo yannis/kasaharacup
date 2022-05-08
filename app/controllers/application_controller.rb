@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   include HasLocale
+  include HasHttpAuth
   include ActiveStorage::SetCurrent
 
   before_action :set_current_cup
