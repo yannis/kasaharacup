@@ -7,6 +7,7 @@ fr:
         hotels: Si vous préfèrez quelque chose d'encore plus confortable, vous pouvez toujours choisir parmi <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
         title: Logement
       categories:
+        description: Les catégories Juniors sont susceptibles à changement en fonction des inscriptions
         title: Les catégories
       deadline: "<strong>Attention:</strong> Le délai pour les inscriptions est fixé au %{deadline}"
       deadline_passed: "<strong>Attention:</strong> Les inscriptions sont fermée depuis le %{deadline}"
@@ -15,13 +16,14 @@ fr:
       fees:
         adults:
           fee: "%{adult_fees_chf} CHF ou %{adult_fees_eur} €"
-          title: Adultes – né(e) en %{year} ou avant<br><em>lunch du dimanche inclu</em>
+          title: Adultes – né(e) en %{year} ou avant
+        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèce seulement, € ou CHF).
         dinner:
           fee: "%{dinner_fees_chf} CHF ou %{dinner_fees_eur} €"
           title: Repas du samedi soir<br><em>+ une boisson comprise</em>
         juniors:
           fee: "%{junior_fees_chf} CHF ou %{junior_fees_eur} €"
-          title: Juniors – né(e) en %{year} ou après<br><em>lunch du dimanche inclu</em>
+          title: Juniors – né(e) en %{year} ou après
         night:
           fee: "%{dormitory_fees_chf} CHF ou %{dormitory_fees_eur} €"
           title: Nuit au dortoir<br><em>+ petit-déjeuner (avec votre sac de couchage)</em>

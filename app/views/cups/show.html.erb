@@ -55,6 +55,9 @@
       <p>
         <%= t(".shinpans.info") %>
       </p>
+      <p>
+        <%= t(".categories.description") %>
+      </p>
       <table class="table">
         <tbody>
           <% @cup.individual_categories.order(:name).each do |c| %>
@@ -94,6 +97,9 @@
       <h2 class="mt-10">
         <%= t '.fees.title' %>
       </h2>
+      <p>
+        <%= t(".fees.description") %>
+      </p>
       <table class="table">
         <tbody>
           <tr>
@@ -115,10 +121,13 @@
           <% @cup.products.each do |product| %>
             <tr>
               <th class="whitespace-nowrap">
-                <%= product.name %>
                 <% if !product_available?(product) %>
+                  <mark class="text-red-800 px-1">not available anymore</mark>
                   <br>
-                  <mark>(not available anymore)</mark>
+                <% end %>
+                <%= product.name %>
+                <% if product.description.present? %>
+                  <em class="text-gray-500 ">(<%= product.description %>)</em>
                 </br>
               <% end %>
             </th>
