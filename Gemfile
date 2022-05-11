@@ -55,6 +55,9 @@ gem "image_processing", ">= 1.2"
 gem "view_component"
 gem "lookbook" # Need to be after the `view_component` gem
 
+# Edit in place
+gem "best_in_place", git: "https://github.com/mmotherwell/best_in_place"
+
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"

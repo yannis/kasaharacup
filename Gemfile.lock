@@ -13,6 +13,14 @@ GIT
       railties (>= 6.1, < 7.1)
       ransack (>= 2.1.1, < 4)
 
+GIT
+  remote: https://github.com/mmotherwell/best_in_place
+  revision: 88eb3052623a9a6cd346864d2aca05021c2f80d0
+  specs:
+    best_in_place (3.1.1)
+      actionpack (>= 3.2)
+      railties (>= 3.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -487,6 +495,7 @@ DEPENDENCIES
   active_record_doctor
   activeadmin!
   aws-sdk-s3
+  best_in_place!
   bootsnap
   brakeman
   cancancan

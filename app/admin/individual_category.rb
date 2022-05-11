@@ -62,9 +62,9 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
               column :age do |participation|
                 participation.kenshi.age_at_cup
               end
-              # column :pool_number do |participation|
-              #   best_in_place participation, :pool_number, type: :input, url: [:admin, participation]
-              # end
+              column :pool_number do |participation|
+                best_in_place participation, :pool_number, type: :input, url: [:admin, participation]
+              end
               column :admin_links do |participation|
                 [
                   link_to("View", admin_participation_path(participation)),
