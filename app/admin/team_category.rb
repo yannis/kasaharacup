@@ -79,7 +79,7 @@ ActiveAdmin.register TeamCategory do
   end
 
   action_item :video_new, only: :show do
-    link_to "New Video", new_admin_team_category_video(team_category)
+    link_to "New Video", new_admin_team_category_video_path(team_category)
   end
 
   # collection_action :pdfs do
