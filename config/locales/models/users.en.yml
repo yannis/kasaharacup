@@ -49,7 +49,7 @@ en:
       sign_in: Log in
     show:
       edit: edit
-      no_registrations: No registrations yet.
+      no_registrations: You have no registrations yet.
       register: Would you like to register %{yourself}? Or %{someone}?
       register_someone_else: Register someone else to the competition
       register_yourself: Register yourself to the competition
