@@ -46,7 +46,7 @@ en:
       over: The tournament is over! Thanks to all for participating and see you next year!
       program:
         title: Program
-      registrations_opening_soon: "<strong>Warning:</strong> Registrations will open soon"
+      registrations_opening_soon: Registrations will open soon
       results:
         coming_soon: Full results are coming soon…
         downloads: Downloads
