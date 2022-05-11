@@ -52,7 +52,8 @@ fr:
       register_someone_else: Inscrivez quelqu'un d'autre
     show:
       edit: Modifier
-      register: Vous n'avez pas encore d'inscription. Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?
+      no_registrations: Vous n'avez pas encore d'inscription.
+      register: Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?
       register_someone_else: Inscrivez quelqu'un d'autre à la compétition
       register_yourself: Inscrivez-vous à la compétition
       someone: un autre kenshi

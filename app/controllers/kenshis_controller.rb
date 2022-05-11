@@ -41,6 +41,7 @@ class KenshisController < ApplicationController
 
   def new
     authorize! :create, Kenshi
+    authorize! :register, @cup
     @current_cup = @cup.presence || @current_cup
     if params[:self] == "true"
       existing_kenshis = current_user.kenshis.where(first_name: current_user
@@ -75,6 +76,7 @@ class KenshisController < ApplicationController
   end
 
   def create
+    authorize! :register, @cup
     if Time.current > @cup.deadline
       redirect_back_or_default user_path, notice: "Deadline is passed"
       return

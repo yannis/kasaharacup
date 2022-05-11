@@ -3,7 +3,9 @@
 module UsersHelper
   def user_admin_links(user, nav: nil)
     links = []
-    if user.attributes == current_user.attributes && !user.registered_for_cup?(@current_cup)
+    if user.attributes == current_user.attributes &&
+        !user.registered_for_cup?(@current_cup) &&
+        can?(:register, @current_cup)
       links << link_to(t("users.show.register_yourself"),
         new_cup_user_kenshi_path(@current_cup, self: true, locale: I18n.locale), class: "btn btn-sm btn-secondary ml-2")
     end
