@@ -17,7 +17,7 @@ class Kenshi < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_many :products, through: :purchases
 
-  # validates_associated :participations
+  validates_associated :participations
 
   validates :first_name, presence: true
   validates :last_name, presence: true
@@ -60,16 +60,17 @@ class Kenshi < ApplicationRecord
     club.try(:name)
   end
 
+  # here we take into account only the year of birth
+  # example: in 2022, someone bor on 31.12.2005 has
+  # `#age_at_cup == 17` when in fact they will be 16
   def age_at_cup
-    return 0 if dob.blank?
+    return 0 if dob.blank? || cup.year.blank?
 
-    cup_start = cup.start_on
-    month_diff = (cup_start.month > dob.month || (cup_start.month == dob.month && cup_start.day >= dob.day) ? 0 : 1)
-    cup_start.year - dob.year - month_diff
+    cup.year - dob.year
   end
 
   def junior?
-    age_at_cup <= 16
+    age_at_cup < 18
   end
 
   def adult?

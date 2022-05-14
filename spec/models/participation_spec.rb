@@ -3,10 +3,16 @@
 require "rails_helper"
 
 RSpec.describe Participation, type: :model do
-  it { is_expected.to respond_to :pool_number }
-  it { is_expected.to respond_to :pool_position }
-  it { is_expected.to respond_to :ronin }
-  it { is_expected.to respond_to :fighting_spirit }
+  describe "Attributes" do
+    let(:participation) { build :participation }
+
+    it do
+      expect(participation).to respond_to :pool_number
+      expect(participation).to respond_to :pool_position
+      expect(participation).to respond_to :ronin
+      expect(participation).to respond_to :fighting_spirit
+    end
+  end
 
   describe "Associations" do
     let(:participation) { build :participation }
@@ -37,7 +43,7 @@ RSpec.describe Participation, type: :model do
     end
 
     context "for a kenshi" do
-      let(:cup) { create :cup, start_on: 2.months.since }
+      let(:cup) { create :cup, start_on: 2.months.from_now }
       let(:individual_category) { create :individual_category, min_age: 8, max_age: 10, cup: cup }
 
       context "too young for the category" do

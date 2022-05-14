@@ -110,6 +110,7 @@
                         </div>
                       </div>
                     </div>
+                    <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
                   </div>
                 <% end %>
               <% end %>
@@ -157,7 +158,9 @@
                               <p class="helper-text">
                                 <%= individual_category.description %>
                               </p>
+                              <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
                             </div>
+
                           <% end %>
                         <% else %>
                           <% participation = @kenshi.participations.new(category: individual_category) %>
@@ -171,6 +174,7 @@
                               <p class="helper-text">
                                 <%= individual_category.description %>
                               </p>
+                              <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
                             </div>
                           <% end %>
                         <% end %>
