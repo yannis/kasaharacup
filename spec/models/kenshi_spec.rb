@@ -5,32 +5,48 @@ require "rails_helper"
 RSpec.describe Kenshi, type: :model do
   let(:cup) { create :cup, start_on: 10.years.since }
 
-  before { create :kenshi }
+  describe "Attributes" do
+    let(:kenshi) { build(:kenshi) }
 
-  it { is_expected.to belong_to :cup }
-  it { is_expected.to belong_to :user }
-  it { is_expected.to belong_to :club }
-  it { is_expected.to have_many(:participations).dependent(:destroy) }
-  it { is_expected.to have_many(:individual_categories).through(:participations) }
-  it { is_expected.to have_many(:teams).through(:participations) }
-  it { is_expected.to have_many(:purchases).dependent(:destroy) }
-  it { is_expected.to have_many(:products).through(:purchases) }
+    it do
+      expect(kenshi).to respond_to :first_name
+      expect(kenshi).to respond_to :last_name
+      expect(kenshi).to respond_to :dob
+      expect(kenshi).to respond_to :club
+      expect(kenshi).to respond_to :grade
+      expect(kenshi).to respond_to :email
+      expect(kenshi).to respond_to :remarks
+    end
+  end
 
-  it { is_expected.to respond_to :first_name }
-  it { is_expected.to respond_to :last_name }
-  it { is_expected.to respond_to :dob }
-  it { is_expected.to respond_to :club }
-  it { is_expected.to respond_to :grade }
-  it { is_expected.to respond_to :email }
-  it { is_expected.to respond_to :remarks }
+  describe "Associations" do
+    let(:kenshi) { build(:kenshi) }
 
-  it { is_expected.to validate_presence_of :first_name }
-  it { is_expected.to validate_presence_of :last_name }
-  it { is_expected.to validate_presence_of :dob }
-  it { is_expected.to validate_presence_of :grade }
-  it { is_expected.to validate_uniqueness_of(:last_name).scoped_to([:cup_id, :first_name]).case_insensitive }
-  it { is_expected.to validate_inclusion_of(:grade).in_array Kenshi::GRADES }
-  it { is_expected.to act_as_fighter }
+    it do
+      expect(kenshi).to belong_to :cup
+      expect(kenshi).to belong_to :user
+      expect(kenshi).to belong_to :club
+      expect(kenshi).to have_many(:participations).dependent(:destroy)
+      expect(kenshi).to have_many(:individual_categories).through(:participations)
+      expect(kenshi).to have_many(:teams).through(:participations)
+      expect(kenshi).to have_many(:purchases).dependent(:destroy)
+      expect(kenshi).to have_many(:products).through(:purchases)
+    end
+  end
+
+  describe "Validations" do
+    let(:kenshi) { create(:kenshi) }
+
+    it do
+      expect(kenshi).to validate_presence_of :first_name
+      expect(kenshi).to validate_presence_of :last_name
+      expect(kenshi).to validate_presence_of :dob
+      expect(kenshi).to validate_presence_of :grade
+      expect(kenshi).to validate_uniqueness_of(:last_name).scoped_to([:cup_id, :first_name]).case_insensitive
+      expect(kenshi).to validate_inclusion_of(:grade).in_array Kenshi::GRADES
+      expect(kenshi).to act_as_fighter
+    end
+  end
 
   describe "A kenshi" do
     let(:cup) { create :cup, start_on: "#{Date.current.year}-12-29" }

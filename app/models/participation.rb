@@ -10,8 +10,6 @@ class Participation < ApplicationRecord
 
   before_validation :assign_category
 
-  # validates :category, presence: true
-
   validates :pool_position, presence: {if: lambda { |p| p.pool_number.present? }}
   validates :kenshi_id,
     uniqueness: {scope: [:category_type, :category_id], if: ->(p) { p.ronin.blank? }, allow_nil: true}
