@@ -41,6 +41,7 @@ en:
         update: Update registration
       button_info: You'll be able to edit this registration until %{deadline}.
       chose_team: Chose an existing team
+      club_info: Choose here the Dojo or Club you belong to. If it does not exist yet create it by entering its name followed by ↩︎ in the search field.
       create_team: or create a new one
       dormitory: Dormitory
       explanation: To register you and your team mates to the competition, you must first sign in or create an account.

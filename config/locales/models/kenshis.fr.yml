@@ -4,6 +4,7 @@ fr:
     attributes:
       kenshi:
         categories: Catégories
+        club_name: Club / Dojo / Association
         competition_fees: Frais de compétition
         dob: Date de naissance
         female: Femme
@@ -16,6 +17,7 @@ fr:
         name: Nom
         products_fees: Frais extra
         salutations: Salutations
+        team: Équipe
     errors:
       models:
         kenshi:
@@ -56,7 +58,7 @@ fr:
       oldfashion: ou utilisez le formulaire ci-dessous
       ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
       saturday_night: Diner du samedi soir
-      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos coéquipiers ou créez-la en lui donnant un nom ici.
+      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers. Si l'équipe n'existe pas encore créez-là en entrant son nom suivi de ↩︎ dans le champs de recherche.
     helpers:
       destroy:
         confirm: Êtes vous sûr?

@@ -3,6 +3,7 @@
 module Users
   class RegistrationsController < Devise::RegistrationsController
     include HasLocale
+    before_action :set_variables, only: [:new, :edit, :update, :create] # rubocop:disable Rails/LexicallyScopedActionFilter
 
     def new
       super
@@ -65,6 +66,10 @@ module Users
     private def needs_password?(user, params)
       user.email != params[:user][:email] ||
         params[:user][:password].present?
+    end
+
+    private def set_variables
+      @club_names = Club.order(:name).pluck(:name).map { |club| club.strip }.uniq
     end
   end
 end

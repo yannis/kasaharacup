@@ -1,6 +1,9 @@
 ---
 en:
   activerecord:
+    attributes:
+      participation:
+        team_name: Team name
     errors:
       models:
         participation:
