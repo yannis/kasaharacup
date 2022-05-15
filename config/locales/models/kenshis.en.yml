@@ -4,6 +4,7 @@ en:
     attributes:
       kenshi:
         categories: Categories
+        club_name: Club / Dojo / Association
         competition_fees: Competition fees
         dob: Date of birth
         female: Salutation
@@ -15,6 +16,7 @@ en:
         name: Name
         products_fees: Extra fees
         salutations: Salutations
+        team: Team
     errors:
       models:
         kenshi:
@@ -56,7 +58,7 @@ en:
       oldfashion: or do it the oldfashioned way
       ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
       saturday_night: Saturday night dinner
-      team_info: Chose your team here or create a new one by entering its name here.
+      team_info: Choose here the team you plan to participate in with your teammates. If the team does not exist yet create it by entering its name followed by ↩︎ in the search field.
     helpers:
       destroy:
         confirm: Are you sure?

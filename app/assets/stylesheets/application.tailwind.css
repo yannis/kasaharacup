@@ -101,7 +101,7 @@
   }
 
   .helper-text {
-    @apply text-gray-500;
+    @apply text-gray-500 text-sm;
   }
 }
 
@@ -125,6 +125,11 @@
 
 .select2-selection__arrow {
   height: 37px !important;
+}
+
+.select2-selection__clear {
+  height: 34px !important;
+  @apply text-gray-500;
 }
 
 @media (min-width: 640px) {

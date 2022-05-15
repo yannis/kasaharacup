@@ -13,6 +13,7 @@ export default class extends Controller {
         tags: true,
         placeholder: 'Please select',
         width: 'style',
+        allowClear: true,
         createTag(params) {
           const term = params.term.trim();
 

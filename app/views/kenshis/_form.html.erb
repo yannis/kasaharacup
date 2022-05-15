@@ -38,20 +38,21 @@
           <div class="input-field">
             <%=
               f.select :club_name,
-                Club.order(:name).pluck(:name),
-                {},
+                @club_names,
+                {include_blank: true},
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
                 data: { controller: "select2-single-tag",
                 locale: I18n.locale },
                 style: "width: 20em;"
             %>
+            <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
           </div>
         </div>
         <div class="input-group">
           <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.select :grade, Kenshi::GRADES %>
-            <p class="helper-text text-sm mt-2">
+            <p class="helper-text mt-2">
               <%= t("cups.show.shinpans.info") %>
             </p>
           </div>
@@ -65,7 +66,7 @@
             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
               <div>
                 <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
-                  Team
+                  <%= Kenshi.human_attribute_name(:team) %>
                 </div>
               </div>
               <% @cup.team_categories.all.each do |c| %>
@@ -91,21 +92,19 @@
                       </div>
                       <div>
                         <div class="relative">
-                          <div class="mb-3 text-sm">
+                          <div class="mb-1 text-sm">
                             <%= g.label :team_name, class: "font-medium text-gray-700" %>
-                            <p class="helper-text">
-                              <%= t(".team_info") %>
-                            </p>
                           </div>
                           <div class="">
                             <%=
                               g.select :team_name,
                                 c.teams.order(:name).pluck(:name),
-                                {},
+                                {prompt: true},
                                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
                                 data: { controller: "select2-single-tag", locale: I18n.locale },
                                 style: "width: 20em;"
                             %>
+                            <p class="helper-text mt-2"><%= t(".team_info") %></p>
                           </div>
                         </div>
                       </div>
