@@ -127,6 +127,11 @@
   height: 37px !important;
 }
 
+.select2-selection__clear {
+  height: 34px !important;
+  @apply text-gray-500;
+}
+
 @media (min-width: 640px) {
   .form-full input[type='text'],
   .form-full input[type='date'],
