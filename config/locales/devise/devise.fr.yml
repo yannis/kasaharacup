@@ -71,7 +71,7 @@ fr:
         unhappy: Mécontent?
       edit_title: Modifiez votre compte
       new:
-        title: Cration d'un compte
+        title: Création d'un compte
       signed_up: Bienvenu, vous êtes connecté.
       signed_up_but_inactive: Vous êtes bien enregistré. Vous ne pouvez cependant pas vous connecter car votre compte n'est pas encore activé.
       signed_up_but_locked: Vous êtes bien enregistré. Vous ne pouvez cependant pas vous connecter car votre compte est verrouillé.
