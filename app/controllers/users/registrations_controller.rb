@@ -11,13 +11,9 @@ module Users
 
     def create
       @user = User.new(my_sanitizer)
-      if @user.save
+      if verify_recaptcha(model: @user) && @user.save
         sign_in @user
         redirect_to new_cup_user_kenshi_path(@current_cup, self: true)
-        # set_flash_message(:notice, :success) if is_navigational_format?
-        # notice = t("devise.confirmations.send_instructions")
-        # redirect_to root_path(locale: I18n.locale)
-        # Rails.logger.info "alert #{flash}"
       else
         render action: :new, status: :unprocessable_entity
       end
