@@ -44,6 +44,8 @@ en:
         register: Subscribe to our mailing list to get the latest new about the competition
       other_links: Other links
       over: The tournament is over! Thanks to all for participating and see you next year!
+      products:
+        not_available: Unfortunately not available anymore
       program:
         title: Program
       registrations_opening_soon: Registrations will open soon

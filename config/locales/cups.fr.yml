@@ -37,6 +37,8 @@ fr:
         register: Inscrivez-vous pour recevoir toutes les informations concernant la compétition
       other_links: Autres liens
       over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
+      products:
+        not_available: Malheureusement plus disponible
       program:
         title: Programme
       registrations_opening_soon: "<strong>Warning:</strong> Les inscriptions vont ouvrir bientôt"

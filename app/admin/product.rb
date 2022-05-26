@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Product, as: "Product" do
   permit_params :name_en, :name_fr, :description_en, :description_fr, :cup_id, :event_id,
-    :fee_chf, :fee_eu
+    :fee_chf, :fee_eu, :quota
 
   controller do
     def authenticate_admin_user!
@@ -23,6 +23,7 @@ ActiveAdmin.register Product, as: "Product" do
     column :description_fr
     column :fee_chf
     column :fee_eu
+    column :quota
     actions
   end
 
@@ -39,6 +40,7 @@ ActiveAdmin.register Product, as: "Product" do
       row :description_fr
       row :fee_chf
       row :fee_eu
+      row :quota
     end
 
     if product.kenshis.present?
@@ -59,13 +61,16 @@ ActiveAdmin.register Product, as: "Product" do
   form do |f|
     f.inputs "Details" do
       f.input :cup
-      f.input :event, collection: Event.all.map { |e| ["#{e.name} (#{e.cup})", e.id] }
+      f.input :event, collection: Event.joins(:cup).where(cup: f.object.cup).all.map { |e|
+                                    ["#{e.name} (#{e.cup})", e.id]
+                                  }
       f.input :name_en
       f.input :name_fr
       f.input :description_en
       f.input :description_fr
       f.input :fee_chf
       f.input :fee_eu
+      f.input :quota, as: :number
     end
     f.actions
   end

@@ -1,5 +1,12 @@
 ---
 fr:
+  activerecord:
+    errors:
+      models:
+        purchase:
+          attributes:
+            product_id:
+              quota_reached: ce produit n'est malheureusement plus disponible
   purchases:
     destroy:
       alert: Erreur lors de la destruction de l'extra

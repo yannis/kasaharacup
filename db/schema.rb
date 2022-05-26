@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_09_152556) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_26_053112) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -209,6 +209,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_09_152556) do
     t.datetime "updated_at", precision: nil
     t.string "name_de"
     t.text "description_de"
+    t.integer "quota"
     t.index ["cup_id", "name_en"], name: "index_products_on_cup_id_and_name_en", unique: true
     t.index ["cup_id", "name_fr"], name: "index_products_on_cup_id_and_name_fr", unique: true
     t.index ["cup_id"], name: "index_products_on_cup_id"

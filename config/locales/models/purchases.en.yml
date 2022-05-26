@@ -1,5 +1,12 @@
 ---
 en:
+  activerecord:
+    errors:
+      models:
+        purchase:
+          attributes:
+            product_id:
+              quota_reached: this product is unfortunately no longer available
   purchases:
     destroy:
       alert: Unable to remove extra

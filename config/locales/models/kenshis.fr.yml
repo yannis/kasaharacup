@@ -54,7 +54,7 @@ fr:
       dormitory: Dortoire
       explanation: Pour vous inscrire à la compétition, vous devez d'abord créez un compte. Ce compte vous permettra ensuite de vous inscrire vous et vos-coéquipiers à la compétition et de modifer ces inscriptions le cas échéant.
       individual_categories: Catégories individuelles
-      not_avalaible: Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir vérifier ici plus tard pour toute disponibilité.
+      not_available: Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir  plus tard vérifier une disponibilité éventuelle.
       oldfashion: ou utilisez le formulaire ci-dessous
       ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
       saturday_night: Diner du samedi soir
