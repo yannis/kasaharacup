@@ -11,6 +11,7 @@ class Product < ApplicationRecord
   validates :name_fr, presence: true, uniqueness: {scope: :cup_id}
   validates :fee_chf, presence: true, numericality: {allow_nil: true}
   validates :fee_eu, presence: true, numericality: {allow_nil: true}
+  validates :quota, numericality: {allow_nil: true, only_integer: true, greater_than: 0}
 
   translate :name, :description
 
