@@ -16,4 +16,8 @@ class Product < ApplicationRecord
   translate :name, :description
 
   delegate :year, to: :cup
+
+  def still_available?
+    quota.nil? || purchases.count < quota
+  end
 end

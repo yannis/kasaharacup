@@ -4,9 +4,15 @@ class Purchase < ApplicationRecord
   belongs_to :kenshi, inverse_of: :purchases
   belongs_to :product, inverse_of: :purchases
 
+  validate :in_quota
+
   def descriptive_name
-    descriptive_name = [product.name]
-    descriptive_name << "(#{product.fee_chf} CHF / #{product.fee_eu} €)"
-    descriptive_name.join(" ")
+    "#{product.name} (#{product.fee_chf} CHF / #{product.fee_eu} €)"
+  end
+
+  private def in_quota
+    return if product&.quota.nil? || product.purchases.count < product.quota
+
+    errors.add(:product_id, :quota_reached)
   end
 end

@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :purchase do
-    association :product
-    association :kenshi
+    product
+    kenshi { |p| association :kenshi, cup: p.product.cup }
   end
 end

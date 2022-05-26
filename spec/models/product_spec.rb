@@ -29,4 +29,26 @@ RSpec.describe Product, type: :model do
 
   it { expect(product).to validate_numericality_of(:fee_chf) }
   it { expect(product).to validate_numericality_of(:fee_eu) }
+
+  describe "#still_available?" do
+    let(:product) { create(:product, quota: quota, purchases: build_list(:purchase, 2)) }
+
+    context "without quota" do
+      let(:quota) { nil }
+
+      it { expect(product).to be_still_available }
+    end
+
+    context "with purchases count < quota" do
+      let(:quota) { 3 }
+
+      it { expect(product).to be_still_available }
+    end
+
+    context "with purchases count == quota" do
+      let(:quota) { 2 }
+
+      it { expect(product).not_to be_still_available }
+    end
+  end
 end

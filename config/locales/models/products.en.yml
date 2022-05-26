@@ -1,0 +1,7 @@
+---
+en:
+  activerecord:
+    models:
+      product:
+        one: Product
+        other: Products

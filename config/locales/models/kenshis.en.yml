@@ -54,7 +54,7 @@ en:
       dormitory: Dormitory
       explanation: First create an account that will allow you to register you and your team mates to the competition.
       individual_categories: Individual categories
-      not_avalaible: Sorry, “%{product_name}“ is not available for the time being. Check back later for availability.
+      not_available: Sorry, “%{product_name}“ is not available for the time being. Check back later for availability.
       oldfashion: or do it the oldfashioned way
       ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
       saturday_night: Saturday night dinner
