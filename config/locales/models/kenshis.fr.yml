@@ -59,6 +59,9 @@ fr:
       ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
       saturday_night: Diner du samedi soir
       team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers. Si l'équipe n'existe pas encore créez-là en entrant son nom suivi de ↩︎ dans le champs de recherche.
+      waiver:
+        file_name: Décharge de responsabilité
+        info: 'Les juniors de moins de 18 ans qui participent à la catégorie Team doivent présenter une décharge de responsabilité signée par un responsable légal. Merci de télécharger et compléter le document suivant et de le présenter le jour de la compétition:'
     helpers:
       destroy:
         confirm: Êtes vous sûr?
