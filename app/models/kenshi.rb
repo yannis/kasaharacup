@@ -32,6 +32,7 @@ class Kenshi < ApplicationRecord
 
   before_validation :format
   after_validation :logs
+  after_create_commit :notify_slack
 
   def self.from(user)
     new(
@@ -158,5 +159,10 @@ class Kenshi < ApplicationRecord
     self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
     self.first_name = first_name.mb_chars.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
     self.email = email.downcase if email
+  end
+
+  private def notify_slack
+    notification = Slack::Notifications::Registration.new(self)
+    Slack::NotificationService.new.call(notification: notification)
   end
 end

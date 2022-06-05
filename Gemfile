@@ -64,6 +64,9 @@ gem "best_in_place", git: "https://github.com/mmotherwell/best_in_place"
 # Exceptions notification
 gem "honeybadger"
 
+# HTTP requests
+gem "httparty"
+
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"
@@ -91,4 +94,5 @@ group :test do
   gem "selenium-webdriver"
   gem "shoulda-matchers"
   gem "webdrivers"
+  gem "webmock"
 end
