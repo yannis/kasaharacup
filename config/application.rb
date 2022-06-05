@@ -41,6 +41,12 @@ module Kasaharacup
     config.view_component.preview_paths << Rails.root.join("lib/component_previews")
     config.view_component.preview_route = "/styleguide/components"
 
+    Rails.application.routes.default_url_options = {
+      protocol: ENV.fetch("APP_PROTOCOL", "http"),
+      host: ENV.fetch("APP_HOST"),
+      port: ENV.fetch("APP_PORT", 80)
+    }
+
     # Don't generate system test files.
     config.generators do |g|
       g.system_tests = nil
