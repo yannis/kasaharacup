@@ -48,6 +48,17 @@ RSpec.describe Kenshi, type: :model do
     end
   end
 
+  describe "Callbacks" do
+    describe "after_create_commit" do
+      let(:kenshi) { build(:kenshi) }
+
+      it do
+        expect(kenshi).to receive(:notify_slack).once
+        kenshi.save
+      end
+    end
+  end
+
   describe "A kenshi" do
     let(:cup) { create :cup, start_on: "#{Date.current.year}-12-29" }
     let(:club) { create :club, name: "Shung Do Kwan" }
