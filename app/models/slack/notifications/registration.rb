@@ -25,7 +25,7 @@ module Slack
               fields: [
                 {
                   type: "mrkdwn",
-                  text: "*Name:*\n<#{cup_kenshi_url(@kenshi.cup.id, @kenshi.id,
+                  text: "*Name:*\n<#{cup_kenshi_url(@kenshi.cup, @kenshi,
                     locale: I18n.locale)}|#{@kenshi.full_name}>"
                 },
                 {

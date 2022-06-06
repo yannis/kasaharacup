@@ -117,7 +117,17 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
         table_for category.videos do |video|
           column :name
           column :url do |video|
-            link_to participation.url, participation.url
+            link_to video.url, video.url
+          end
+        end
+      end
+    end
+    if category.documents.any?
+      panel "Documents" do
+        table_for category.documents do |document|
+          column :name
+          column :url do |document|
+            link_to document.file.filename, document.file.url
           end
         end
       end
