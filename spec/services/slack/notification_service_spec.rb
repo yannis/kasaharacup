@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe(Slack::NotificationService) do
-  let!(:kenshi) { build_stubbed(:kenshi) }
+  let!(:kenshi) { create(:kenshi) }
   let(:notification) { Slack::Notifications::Registration.new(kenshi) }
   let(:service) { described_class.new }
 
