@@ -23,14 +23,14 @@ en:
       fees:
         adults:
           fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
-          title: Adults (born in %{year} or before)<br><em>Sunday lunch included</em>
+          title: Adults (born in %{year} or before)
         description: Payment of fees upon arrival at the competition venue (in cash only, € or CHF).
         dinner:
           fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
           title: Saturday night dinner
         juniors:
           fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
-          title: Juniors (born in %{year} or after)<br><em>Sunday lunch included</em>
+          title: Juniors (born in %{year} or after)
         night:
           fee: "%{dormitory_fees_chf} CHF or %{dormitory_fees_eur} €"
           title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>
