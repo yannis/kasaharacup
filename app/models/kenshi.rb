@@ -136,9 +136,10 @@ class Kenshi < ApplicationRecord
     competition_fee(currency) + products_fee(currency)
   end
 
-  def poster_name
+  def poster_name(category: nil)
     poster_name = [last_name]
-    if Kenshi.where(last_name: last_name).count > 1
+
+    if Kenshi.includes(:cup).where(last_name: last_name, cups: category&.cup.presence || Cup.last).count > 1
       poster_name << first_name.split(/[\s|-]/).map { |s|
         s.first + "."
       }.join

@@ -55,7 +55,7 @@ ActiveAdmin.register TeamCategory do
                 end
                 td do
                   team.kenshis.map do |k|
-                    link_to k.poster_name, [:admin, k]
+                    link_to k.poster_name(category: category), [:admin, k]
                   end.join(", ").html_safe
                 end
               end

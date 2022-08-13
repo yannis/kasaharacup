@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class IndividualCategoryMatchSheetPdf < Prawn::Document
+  include PosterSize
+
   def initialize(individual_category)
     super(page_layout: :portrait)
 
@@ -14,16 +16,7 @@ class IndividualCategoryMatchSheetPdf < Prawn::Document
       move_down font.height
     end
 
-    # bounding_box [bounds.right-75, bounds.top+20], width: 300 do
-    #   logo = "#{Rails.root}/app/assets/images/logo/logo-75.jpg"
-    #   image logo, at: [0,0], width: 60
-    # end
-
-    bounding_box [bounds.right - 280, bounds.top + 20], width: 280 do
-      font_size 24
-      fill_color "3399CC"
-      text "#{ENV["CUP_NAME"]} #{individual_category.cup.year}", align: :right
-    end
+    cup_name_and_logo(category: individual_category)
 
     font_size 12
 

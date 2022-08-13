@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "poster_size"
 class IndividualCategoryPdfRecap < Prawn::Document
   include PosterSize
 
@@ -13,16 +12,18 @@ class IndividualCategoryPdfRecap < Prawn::Document
         text individual_category.name.upcase
       end
 
-      # bounding_box [bounds.right-75, bounds.top+20], width: 300 do
-      #   logo = "#{Rails.root}/app/assets/images/logo/logo-75.jpg"
-      #   image logo, at: [0,0], width: 60
+      cup_name_and_logo(category: individual_category)
+
+      # bounding_box [bounds.right - 60, bounds.top], width: 300 do
+      #   logo = Rails.root.join("app/assets/images/logo-75.jpg")
+      #   image logo, at: [0, 0], width: 60
       # end
 
-      bounding_box [bounds.right - 280, bounds.top + 20], width: 280 do
-        font_size 24
-        fill_color "3399CC"
-        text "#{ENV["CUP_NAME"]} #{individual_category.cup.year}", align: :right
-      end
+      # bounding_box [bounds.right - 280, bounds.top + 20], width: 280 do
+      #   font_size 24
+      #   fill_color "3399CC"
+      #   text "Kasahara Cup #{individual_category.cup.year}", align: :right
+      # end
     end
 
     individual_category.pools.sort_by(&:number).each_with_index do |pool, i|
@@ -33,7 +34,7 @@ class IndividualCategoryPdfRecap < Prawn::Document
         move_down 40
       end
       move_down 15
-      bounding_box [bounds.left, cursor], width: 600 do
+      bounding_box [bounds.left, cursor - 10], width: 600 do
         top = cursor
         bounding_box [bounds.left, cursor], width: 70 do
           font_size 18
@@ -42,7 +43,7 @@ class IndividualCategoryPdfRecap < Prawn::Document
         bounding_box [bounds.left + 80, top + 20], width: 450 do
           data = []
           pool.participations.map(&:kenshi).each_with_index do |kenshi, i|
-            data << [i + 1, "#{kenshi.poster_name} (#{kenshi.club})"]
+            data << [i + 1, "#{kenshi.poster_name(category: individual_category)} (#{kenshi.club})"]
           end
           table(data, cell_style: {inline_format: true, size: 12}, width: 450) do
             column(0).width = 30
