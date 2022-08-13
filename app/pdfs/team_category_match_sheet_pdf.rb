@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class TeamCategoryMatchSheetPdf < Prawn::Document
+  include PosterSize
+
   def initialize(team_category)
     super(page_layout: :portrait)
 
@@ -15,16 +17,7 @@ class TeamCategoryMatchSheetPdf < Prawn::Document
     end
     text "Combat n°   ", align: :center
 
-    bounding_box [bounds.right - 75, bounds.top + 20], width: 300 do
-      logo = Rails.root.join("app/assets/images/logo-75.jpg")
-      image logo, at: [0, 0], width: 60
-    end
-
-    bounding_box [bounds.right - 280, bounds.top + 20], width: 200 do
-      font_size 24
-      fill_color "3399CC"
-      text "#{ENV["CUP_NAME"]} #{team_category.cup.year}", align: :right
-    end
+    cup_name_and_logo(category: team_category)
 
     font_size 12
 

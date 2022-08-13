@@ -39,6 +39,7 @@ gem "recaptcha"
 
 # PDF generation
 gem "prawn"
+gem "prawn-table"
 
 # Misc
 gem "bootsnap", require: false

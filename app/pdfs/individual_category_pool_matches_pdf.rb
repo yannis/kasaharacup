@@ -23,16 +23,7 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
       end
       text "Pool #{pool.number}", align: :center
 
-      # bounding_box [bounds.right-75, bounds.top+20], width: 300 do
-      #   logo = "#{Rails.root}/app/assets/images/logo/logo-75.jpg"
-      #   image logo, at: [0,0], width: 60
-      # end
-
-      bounding_box [bounds.right - 280, bounds.top + 20], width: 280 do
-        font_size 24
-        fill_color "3399CC"
-        text "#{ENV["CUP_NAME"]} #{individual_category.cup.year}", align: :right
-      end
+      cup_name_and_logo(category: individual_category)
 
       font_size 12
 
@@ -45,9 +36,11 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
           f = kenshi
           o = (kenshi == kenshis.last ? kenshis.first : kenshis[i + 1])
           data << if i.even?
-            ["#{i + 1}.", o.poster_name, nil, "x", nil, f.poster_name]
+            ["#{i + 1}.", o.poster_name(category: individual_category), nil, "x", nil,
+              f.poster_name(category: individual_category)]
           else
-            ["#{i + 1}.", f.poster_name, nil, "x", nil, o.poster_name]
+            ["#{i + 1}.", f.poster_name(category: individual_category), nil, "x", nil,
+              o.poster_name(category: individual_category)]
           end
         end
         table(data, cell_style: {inline_format: true, size: 12}) do

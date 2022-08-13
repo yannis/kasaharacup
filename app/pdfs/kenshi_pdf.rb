@@ -3,6 +3,7 @@
 require "poster_size"
 class KenshiPdf < Prawn::Document
   include PosterSize
+
   def initialize(kenshi)
     super(page_layout: :landscape)
     @kenshi = kenshi
