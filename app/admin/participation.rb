@@ -46,7 +46,7 @@ ActiveAdmin.register Participation, as: "Participation" do
 
   form do |f|
     f.object.errors
-    f.semantic_errors(*f.object.errors)
+    f.semantic_errors
     f.inputs "Participation details" do
       if f.object.category.is_a?(IndividualCategory)
         f.input :pool_number

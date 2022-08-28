@@ -10,7 +10,9 @@ ActiveAdmin.register Team, as: "Team" do
   end
 
   index do
-    column :name
+    column :name do |team|
+      link_to(team.name, [:admin, team])
+    end
     column :cup
     column :team_category
     column :rank
@@ -80,7 +82,7 @@ ActiveAdmin.register Team, as: "Team" do
   end
 
   form do |f|
-    f.semantic_errors # shows errors on :base
+    f.semantic_errors
     f.inputs "Details" do
       f.input :team_category, collection: TeamCategory.all.map { |tc| ["#{tc.name} (#{tc.cup})", tc.id] }
       f.input :name

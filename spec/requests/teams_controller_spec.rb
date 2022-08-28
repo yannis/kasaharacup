@@ -11,6 +11,8 @@ RSpec.describe TeamsController do
     let!(:team1) { create :team, name: "team1", team_category: team_category }
     let!(:team2) { create :team, name: "team2", team_category: team_category }
     let!(:team3) { create :team, name: "team3", team_category: team_category }
+    let!(:team1_participation) { create(:participation, category: team1.team_category, team: team1) }
+    let!(:team3_participation) { create(:participation, category: team3.team_category, team: team3) }
 
     context "when not logged in," do
       describe "on GET to :index without param," do
@@ -21,7 +23,7 @@ RSpec.describe TeamsController do
         it { expect(response).to have_http_status(:success) }
         it { expect(assigns(:teams)).not_to be_nil }
         it { expect(expect(response)).to render_template(:index) }
-        it { expect(assigns(:teams)).to match_array [team1, team2, team3] }
+        it { expect(assigns(:teams)).to match_array [team1, team3] }
         it { expect(flash).to be_empty }
       end
 
@@ -50,7 +52,7 @@ RSpec.describe TeamsController do
         it { expect(basic_user).to be_valid_verbose }
         it { expect(assigns(:teams)).not_to be_nil }
         it { expect(response).to render_template(:index) }
-        it { expect(assigns(:teams)).to match_array [team1, team2, team3] }
+        it { expect(assigns(:teams)).to match_array [team1, team3] }
         it { expect(flash).to be_empty }
       end
 

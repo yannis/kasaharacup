@@ -32,7 +32,9 @@ ActiveAdmin.register Cup do
   end
 
   index do
-    column :year
+    column :year do |cup|
+      link_to(cup.year, admin_cup_path(cup))
+    end
     column :start_on
     column :end_on
     column :deadline

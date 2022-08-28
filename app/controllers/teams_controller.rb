@@ -7,7 +7,10 @@ class TeamsController < ApplicationController
 
   def index
     @ronins = @cup.participations.ronins.map(&:kenshi)
-    @teams = @cup.teams.order(:name)
+    @teams = @cup.teams
+      .joins(:participations)
+      .order(:name)
+      .distinct
     respond_with @teams
   end
 
