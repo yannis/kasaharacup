@@ -1,26 +1,17 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Useful Snippets
 
-Things you may want to cover:
+### Find all teams without participations
 
-* Ruby version
+```ruby
+teams = Team.where.missing(:participations)
+```
 
-* System dependencies
+### Find shinpans in a category
 
-* Configuration
+```ruby
+category = IndividualCategory.find 31
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-* test commit
+shinpans = Kenshi.joins(:participations).merge(category.participations).where(grade: %w[5Dan 6Dan 7Dan 8Dan])
+```

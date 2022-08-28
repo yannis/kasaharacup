@@ -44,14 +44,28 @@ ActiveAdmin.register Product, as: "Product" do
     end
 
     if product.kenshis.present?
-      panel "Kenshis" do
-        table_for product.kenshis.order(:last_name, :first_name) do |kenshi|
-          column :last_name
-          column :first_name
-          column :email
-          column :club
-          column :user do |kenshi|
-            "#{kenshi.user.full_name} (#{kenshi.user.email})"
+      panel "Kenshis (#{product.kenshis.size})" do
+        table_for product.kenshis.order(:created_at).each_with_index do |kenshi_with_index|
+          column "#" do |kenshi_with_index|
+            kenshi_with_index.last + 1
+          end
+          column :last_name do |kenshi_with_index|
+            link_to(kenshi_with_index.first.last_name, [:admin, kenshi_with_index.first])
+          end
+          column :first_name do |kenshi_with_index|
+            kenshi_with_index.first.last_name
+          end
+          column :created_at do |kenshi_with_index|
+            l(kenshi_with_index.first.created_at, format: :short)
+          end
+          column :user_name do |kenshi_with_index|
+            kenshi_with_index.first.user.full_name
+          end
+          column :user_email do |kenshi_with_index|
+            kenshi_with_index.first.user.email
+          end
+          column :remarks do |kenshi_with_index|
+            kenshi_with_index.first.remarks
           end
         end
       end

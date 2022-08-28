@@ -47,7 +47,9 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
 
   index do
     column :cup
-    column :last_name
+    column :last_name do |kenshi|
+      link_to kenshi.last_name, [:admin, kenshi]
+    end
     column :first_name
     column :email
     column :grade
@@ -121,7 +123,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
 
   form do |f|
     f.object.errors
-    f.semantic_errors(*f.object.errors.keys)
+    f.semantic_errors
     f.inputs "Kenshi details" do
       f.input :cup
       f.input :user
