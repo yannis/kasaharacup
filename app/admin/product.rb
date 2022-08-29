@@ -91,12 +91,33 @@ ActiveAdmin.register Product, as: "Product" do
 
   member_action :download_kenshi_list, method: :get do
     @product = Product.find params[:id]
-    kenshis = @product.kenshis
+    kenshis = @product.kenshis.order(:created_at)
     csv = CSV.generate do |csv|
-      header = ["Last name", "First name", "Club", "Dob", "Grade"]
+      header = [
+        "Last name",
+        "First name",
+        "Gender",
+        "Registered at",
+        "Club",
+        "Dob",
+        "Grade",
+        "Registered by",
+        "Remarks"
+      ]
       csv << header.flatten
       kenshis.each do |kenshi|
-        kcsv = [kenshi.norm_last_name, kenshi.norm_first_name, kenshi.club.name, kenshi.dob, kenshi.grade]
+        kcsv = [
+          kenshi.norm_last_name,
+          kenshi.norm_first_name,
+          kenshi.female? ? "F" : "M",
+          kenshi.created_at,
+          kenshi.club.name,
+          kenshi.dob,
+          kenshi.grade,
+          kenshi.user.full_name,
+          kenshi.user.email,
+          kenshi.remarks
+        ]
         csv << kcsv.flatten
       end
     end
