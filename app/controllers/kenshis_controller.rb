@@ -18,7 +18,9 @@ class KenshisController < ApplicationController
       @kenshis = @kenshis.category(category) if category
       @title = t("kenshis.index.title_#{category}")
     end
-    @kenshis = @kenshis.includes(:user)
+    @kenshis = @kenshis
+      .includes(:user, :club, participations: [:category])
+      .order(created_at: :desc)
     respond_with @kenshis do |format|
       format.html
       format.csv {

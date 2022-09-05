@@ -15,6 +15,7 @@ class TeamsController < ApplicationController
   end
 
   def show
+    @kenshis = @team.kenshis.includes(:user, :club, participations: [:category]).order(:last_name, :first_name)
     respond_with @team
   end
 

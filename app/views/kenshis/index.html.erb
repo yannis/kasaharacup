@@ -12,7 +12,7 @@
       </div>
     </div>
     <ul role="list" class="divide-y divide-gray-200">
-      <%= render partial: "kenshi_row", collection: @kenshis, as: "kenshi" %>
+      <%= render partial: "kenshi_row", collection: @kenshis, as: "kenshi", locals: {kenshis_count: @kenshis.size} %>
     </ul>
   </div>
 </div>
