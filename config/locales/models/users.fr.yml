@@ -28,7 +28,7 @@ fr:
             password_confirmation:
               confirmation: ne correspond pas au mot de passe choisi
     models:
-      user: utilisateur
+      user: Utilisateur
   users:
     destroy:
       confirm: Etes-vous sûr? Vos données ainsi que vous inscriptions seront définitivement détruites.
