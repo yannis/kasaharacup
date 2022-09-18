@@ -13,22 +13,11 @@ class IndividualCategoryPdfRecap < Prawn::Document
       end
 
       cup_name_and_logo(category: individual_category)
-
-      # bounding_box [bounds.right - 60, bounds.top], width: 300 do
-      #   logo = Rails.root.join("app/assets/images/logo-75.jpg")
-      #   image logo, at: [0, 0], width: 60
-      # end
-
-      # bounding_box [bounds.right - 280, bounds.top + 20], width: 280 do
-      #   font_size 24
-      #   fill_color "3399CC"
-      #   text "Kasahara Cup #{individual_category.cup.year}", align: :right
-      # end
     end
 
     individual_category.pools.sort_by(&:number).each_with_index do |pool, i|
       font_size 12
-      move_down font.height * 0.5
+      move_down -3
       if i % 7 == 0
         start_new_page unless i == 0
         move_down 40
