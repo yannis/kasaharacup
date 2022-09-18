@@ -23,6 +23,9 @@ ActiveAdmin.register Product, as: "Product" do
     column :description_fr
     column :fee_chf
     column :fee_eu
+    column :total do |product|
+      product.purchases.count
+    end
     column :quota
     actions
   end
@@ -53,7 +56,7 @@ ActiveAdmin.register Product, as: "Product" do
             link_to(kenshi_with_index.first.last_name, [:admin, kenshi_with_index.first])
           end
           column :first_name do |kenshi_with_index|
-            kenshi_with_index.first.last_name
+            link_to(kenshi_with_index.first.first_name, [:admin, kenshi_with_index.first])
           end
           column :created_at do |kenshi_with_index|
             l(kenshi_with_index.first.created_at, format: :short)
