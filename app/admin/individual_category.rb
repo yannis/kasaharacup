@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
-  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr,
-    :cup_id
+  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr, :cup_id
 
   controller do
     def authenticate_admin_user!
@@ -185,6 +184,14 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       type: "application/pdf",
       disposition: "inline",
       page_size: "A4"
+  end
+
+  action_item :new_video, only: :show do
+    link_to("New video", new_admin_individual_category_video_path(individual_category))
+  end
+
+  action_item :new_document, only: :show do
+    link_to("New document", new_admin_individual_category_document_path(individual_category))
   end
 
   action_item :match_sheet, only: :show do

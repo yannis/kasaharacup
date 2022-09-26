@@ -42,9 +42,11 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
   namespace :admin do
     resources :team_categories do
+      resources :documents
       resources :videos
     end
     resources :individual_categories do
+      resources :documents
       resources :videos
     end
   end

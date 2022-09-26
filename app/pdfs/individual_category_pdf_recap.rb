@@ -17,7 +17,7 @@ class IndividualCategoryPdfRecap < Prawn::Document
 
     individual_category.pools.sort_by(&:number).each_with_index do |pool, i|
       font_size 12
-      move_down -3
+      move_down(-3)
       if i % 7 == 0
         start_new_page unless i == 0
         move_down 40

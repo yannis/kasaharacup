@@ -19,9 +19,7 @@ class CupsController < ApplicationController
       template = if @cup.canceled?
         "show_canceled"
       elsif Date.current > @cup.start_on.to_date
-        if lookup_context.exists?("show_past_#{@cup.year.to_i}", _prefixes)
-          "show_past"
-        end
+        "show_past"
       else
         "show"
       end
