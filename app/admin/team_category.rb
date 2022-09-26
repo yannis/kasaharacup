@@ -82,6 +82,10 @@ ActiveAdmin.register TeamCategory do
     link_to "New Video", new_admin_team_category_video_path(team_category)
   end
 
+  action_item :new_document, only: :show do
+    link_to("New document", new_admin_team_category_document_path(team_category))
+  end
+
   # collection_action :pdfs do
   #   @team_categories = TeamCategory.order(:name)
   #   pdf = TeamCategoryPdf.new(@team_categories)
