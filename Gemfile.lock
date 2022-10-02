@@ -531,6 +531,7 @@ DEPENDENCIES
   letter_opener_web (~> 2.0)
   libyear-bundler
   lookbook
+  matrix
   pg (~> 1.1)
   prawn
   prawn-table
