@@ -4,7 +4,9 @@ ActiveAdmin.register Event, as: "Event" do
   permit_params :cup_id, :name_en, :name_fr, :start_on, :duration
 
   controller do
-
+    def scoped_collection
+      super.includes(:cup)
+    end
   end
 
   index do

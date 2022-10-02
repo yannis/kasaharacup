@@ -6,8 +6,6 @@ ActiveAdmin.register Document do
   menu false
   controller do
     belongs_to :individual_category, :team_category, polymorphic: true
-
-
   end
 
   show do

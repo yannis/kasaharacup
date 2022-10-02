@@ -5,7 +5,9 @@ ActiveAdmin.register Participation, as: "Participation" do
     :category_team, :rank, :fighting_spirit
 
   controller do
-
+    def scoped_collection
+      super.includes(:team, :kenshi, category: :cup)
+    end
 
     def edit
       participation = Participation.find(params[:id])

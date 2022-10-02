@@ -5,8 +5,6 @@ ActiveAdmin.register Product, as: "Product" do
     :fee_chf, :fee_eu, :quota
 
   controller do
-
-
     def scoped_collection
       super.includes(:cup, :event, :purchases)
     end

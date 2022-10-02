@@ -51,7 +51,7 @@ class Team < ApplicationRecord
   end
 
   def complete?
-    participations.count >= 5
+    participations.size >= 5
   end
 
   def incomplete?
@@ -59,7 +59,7 @@ class Team < ApplicationRecord
   end
 
   def isvalid?
-    participations.count > 2
+    participations.size > 2
   end
 
   def name_and_status

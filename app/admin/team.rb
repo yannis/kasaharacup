@@ -4,7 +4,9 @@ ActiveAdmin.register Team, as: "Team" do
   permit_params :name, :cup, :team_category_id, :rank
 
   controller do
-
+    def scoped_collection
+      super.includes(kenshis: [:participations, :cup], team_category: :cup)
+    end
   end
 
   index do

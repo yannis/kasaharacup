@@ -7,7 +7,9 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     participations_attributes: [:id, :category_individual, :category_team, :_destroy]
 
   controller do
-
+    def scoped_collection
+      super.includes(:cup, :club, :user, participations: :category, purchases: :product)
+    end
   end
 
   csv do
@@ -52,13 +54,13 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     column :email
     column :grade
     column :individual_categories do |kenshi|
-      kenshi.individual_categories.map { |c| link_to(c.name, [:admin, c]) }.join(", ").html_safe
+      kenshi.individual_categories.map { |c| link_to(c.name, admin_individual_category_path(c)) }.join(", ").html_safe
     end
     column :team_categories do |kenshi|
-      kenshi.teams.map { |t| link_to t.name, [:admin, t] }.join(", ").html_safe
+      kenshi.teams.map { |t| link_to t.name, admin_team_path(t) }.join(", ").html_safe
     end
     column :products do |kenshi|
-      kenshi.products.map { |c| link_to(c.name, [:admin, c]) }.join(", ").html_safe
+      kenshi.products.map { |c| link_to(c.name, admin_product_path(c)) }.join(", ").html_safe
     end
     column :user do |kenshi|
       "#{kenshi.user.full_name} (#{kenshi.user.email})"

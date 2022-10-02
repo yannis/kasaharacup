@@ -5,7 +5,9 @@ ActiveAdmin.register TeamCategory do
     :cup_id
 
   controller do
-
+    def scoped_collection
+      super.includes(:cup, :participations, :teams)
+    end
   end
 
   index do
@@ -13,7 +15,7 @@ ActiveAdmin.register TeamCategory do
       link_to "#{c.name} (#{c.year})", [:admin, c]
     end
     column :teams_count, sortable: false do |team_category|
-      team_category.teams.count
+      team_category.teams.size
     end
     column :created_at
     column :updated_at
@@ -46,14 +48,14 @@ ActiveAdmin.register TeamCategory do
             end
           end
           tbody do
-            category.teams.order(:name).each do |team|
+            category.teams.includes(:kenshis).order(:name).each do |team|
               tr do
                 td do
-                  "Team “#{team.name}”"
+                  link_to(team.name, admin_team_path(team))
                 end
                 td do
                   team.kenshis.map do |k|
-                    link_to k.poster_name(category: category), [:admin, k]
+                    link_to(k.full_name, admin_kenshi_path(k))
                   end.join(", ").html_safe
                 end
               end

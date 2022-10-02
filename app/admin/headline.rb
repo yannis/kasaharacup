@@ -4,7 +4,9 @@ ActiveAdmin.register Headline, as: "Headline" do
   permit_params :title_en, :title_fr, :title_de, :content_fr, :content_en, :content_de, :shown, :cup_id
 
   controller do
-
+    def scoped_collection
+      super.includes(:cup)
+    end
   end
 
   index do

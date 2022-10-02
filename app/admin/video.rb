@@ -6,8 +6,6 @@ ActiveAdmin.register Video do
   menu false
   controller do
     belongs_to :individual_category, :team_category, polymorphic: true
-
-
   end
 
   form(title: proc { |video|
