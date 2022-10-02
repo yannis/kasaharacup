@@ -68,6 +68,9 @@ gem "honeybadger"
 # HTTP requests
 gem "httparty"
 
+# Required for Ruby 3.1
+gem "matrix"
+
 group :development, :test do
   gem "debug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"
