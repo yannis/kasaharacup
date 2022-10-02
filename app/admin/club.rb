@@ -26,7 +26,7 @@ ActiveAdmin.register Club, as: "Club" do
             end
           end
           tbody do
-            club.kenshis.order(:last_name, :first_name).each do |kenshi|
+            club.kenshis.includes(:cup).order(:last_name, :first_name).each do |kenshi|
               tr do
                 td do
                   link_to kenshi.norm_last_name, admin_kenshi_path(kenshi)

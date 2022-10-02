@@ -4,8 +4,8 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr, :cup_id
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
+    def scoped_collection
+      super.includes(:cup, :participations)
     end
   end
 
@@ -23,7 +23,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     column :min_age
     column :max_age
     column :kenshi_count do |c|
-      c.participations.count
+      c.participations.size
     end
     actions do |category|
       [
@@ -62,7 +62,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
                 participation.kenshi.age_at_cup
               end
               column :pool_number do |participation|
-                best_in_place participation, :pool_number, type: :input, url: [:admin, participation]
+                best_in_place participation, :pool_number, as: :input, url: [:admin, participation]
               end
               column :admin_links do |participation|
                 [
@@ -215,7 +215,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       "individual_category",
       @individual_category.name.parameterize,
       "kenshis_list",
-      Time.current.to_s(:flat),
+      Time.current.to_fs(:flat),
       "csv"
     ].join("_")
 

@@ -12,7 +12,7 @@ RSpec.configure do |config|
   end
 
   def should_not_find_model
-    it { expect(response.status).to eq 422 }
+    it { expect(response).to have_http_status :unprocessable_entity }
     it { expect(response.body).to match(/Couldn't find/) }
   end
 

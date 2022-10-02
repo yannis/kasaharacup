@@ -5,13 +5,13 @@ ActiveAdmin.register Participation, as: "Participation" do
     :category_team, :rank, :fighting_spirit
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
+    def scoped_collection
+      super.includes(:team, :kenshi, category: :cup)
     end
 
     def edit
       participation = Participation.find(params[:id])
-      @page_title = "Edit participation of #{participation.kenshi.full_name}"\
+      @page_title = "Edit participation of #{participation.kenshi.full_name}" \
        " to category #{participation.category.name} (#{participation.category.year})"
     end
   end
@@ -29,7 +29,7 @@ ActiveAdmin.register Participation, as: "Participation" do
   end
 
   show title: proc { |participation|
-                "Participation of #{participation.kenshi.full_name} to category"\
+                "Participation of #{participation.kenshi.full_name} to category" \
                 " #{participation.category.name} (#{participation.category.year})"
               } do
     attributes_table do

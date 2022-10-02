@@ -4,8 +4,8 @@ ActiveAdmin.register User, as: "User" do
   permit_params :first_name, :last_name, :email, :club, :dob, :club_id, :password, :password_confirmation
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
+    def scoped_collection
+      super.includes(:club)
     end
   end
 

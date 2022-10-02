@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.0.4"
 
-gem "rails", "~> 7.0.3.1"
+gem "rails", "~> 7.0.4"
 
 # Database
 gem "pg", "~> 1.1"
@@ -49,7 +49,7 @@ gem "rack-cors"
 # gem "image_processing", "~> 1.2"
 
 # activeadmin
-gem "activeadmin", github: "activeadmin/activeadmin", branch: "master"
+gem "activeadmin"
 
 # ActiveStorage and Image processing
 gem "aws-sdk-s3"
@@ -73,6 +73,7 @@ group :development, :test do
   gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "faker"
+  gem "libyear-bundler"
   gem "rspec-rails", "~> 5.1.0"
   gem "rubocop-rails_config", require: false
   gem "rubocop-rspec", require: false

@@ -18,7 +18,8 @@ module ActsAsCategory
     def pools
       pools = []
       if pool_size > 1
-        grouped_participations = participations.where.not(participations: {pool_number: nil}).group_by { |p|
+        grouped_participations = participations.includes(kenshi: [:cup,
+          :club]).where.not(participations: {pool_number: nil}).group_by { |p|
           p.pool_number
         }
         grouped_participations.each do |i, participations|

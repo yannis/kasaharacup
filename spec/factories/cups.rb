@@ -14,7 +14,7 @@ FactoryBot.define do
     junior_fees_eur { 14 }
 
     header_image do
-      image_path = Dir.glob(Rails.root.join("spec/fixtures/images/*.jpg")).sample
+      image_path = Rails.root.glob("spec/fixtures/images/*.jpg").sample
       Rack::Test::UploadedFile.new(image_path)
     end
   end
