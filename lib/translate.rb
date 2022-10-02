@@ -16,4 +16,4 @@ module Translate
   end
 end
 
-ActiveRecord::Base.extend Translate
+ActiveSupport.on_load(:active_record) { extend Translate }

@@ -35,7 +35,7 @@ RSpec.describe Cup, type: :model do
       context "with a valid file type" do
         before do
           cup.header_image.attach(
-            io: File.open(Rails.root.join("spec/fixtures/images/kasa.jpg")),
+            io: Rails.root.join("spec/fixtures/images/kasa.jpg").open,
             filename: "burger.jpg",
             content_type: "image/jpeg"
           )
@@ -52,7 +52,7 @@ RSpec.describe Cup, type: :model do
 
         it do
           cup.header_image.attach(
-            io: File.open(Rails.root.join("spec/fixtures/test.pdf")),
+            io: Rails.root.join("spec/fixtures/test.pdf").open,
             filename: "a_csv.csv",
             content_type: "application/csv"
           )

@@ -215,7 +215,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       "individual_category",
       @individual_category.name.parameterize,
       "kenshis_list",
-      Time.current.to_s(:flat),
+      Time.current.to_fs(:flat),
       "csv"
     ].join("_")
 

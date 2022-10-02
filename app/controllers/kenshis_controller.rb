@@ -24,7 +24,7 @@ class KenshisController < ApplicationController
     respond_with @kenshis do |format|
       format.html
       format.csv {
-        filename = Time.zone.now.to_s(:datetime).gsub(/[^0-9a-z]/,
+        filename = Time.zone.now.to_fs(:datetime).gsub(/[^0-9a-z]/,
           "") + "_" + @title.gsub(/[^0-9a-zA-Z]/, "_").gsub("__", "_") + ".csv"
         send_data(
           Kenshi.to_csv(@kenshis),

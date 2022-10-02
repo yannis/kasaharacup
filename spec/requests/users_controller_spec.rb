@@ -17,7 +17,7 @@ RSpec.describe UsersController do
     describe "GET #show" do
       before { get cup_user_path(cup) }
 
-      it { should_be_asked_to_sign_in }
+      it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
     end
   end
 

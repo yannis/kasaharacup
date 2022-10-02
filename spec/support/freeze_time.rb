@@ -4,7 +4,7 @@ RSpec.configure do |config|
   config.include ActiveSupport::Testing::TimeHelpers
 
   config.around(:each, :freeze_time) do |example|
-    travel_to(Time.current) do
+    freeze_time do
       example.run
     end
   end

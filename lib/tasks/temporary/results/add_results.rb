@@ -58,7 +58,7 @@ module AddResults
     documents.each do |document|
       doc = Document.create!(name: document[:name], category: category)
       doc.file.attach(
-        io: File.open(Rails.root.join("lib/temporary/documents", document[:file_path])),
+        io: Rails.root.join("lib/temporary/documents", document[:file_path]).open,
         filename: "#{document[:name]}.pdf"
       )
     end
@@ -66,7 +66,7 @@ module AddResults
 
   private def create_header_image(cup:, image:)
     cup.header_image.attach(
-      io: File.open(Rails.root.join("lib/temporary/documents", cup.year.to_s, image)),
+      io: Rails.root.join("lib/temporary/documents", cup.year.to_s, image).open,
       filename: image
     )
   end

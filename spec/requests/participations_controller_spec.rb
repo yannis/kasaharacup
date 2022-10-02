@@ -17,7 +17,7 @@ RSpec.describe ParticipationsController do
           delete cup_participation_path(cup, participation)
         }
 
-        it { should_be_asked_to_sign_in }
+        it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
     end
 
@@ -44,7 +44,7 @@ RSpec.describe ParticipationsController do
           delete cup_participation_path(cup, another_participation)
         }
 
-        it { should_not_be_authorized }
+        it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
       end
     end
   end

@@ -47,7 +47,7 @@ RSpec.describe KenshisController do
           get(new_cup_kenshi_path(cup))
         end
 
-        it { should_be_asked_to_sign_in }
+        it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
 
       describe "on post(cup_kenshis_path(cup), params: {kenshi: {last_name: 'just created kenshi'}})" do
@@ -55,7 +55,7 @@ RSpec.describe KenshisController do
           post(cup_kenshis_path(cup), params: {kenshi: {last_name: "just created kenshi"}})
         end
 
-        it { should_be_asked_to_sign_in }
+        it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
 
       describe "on put(cup_kenshi_path(cup, kenshi1), params: {kenshi: {last_name: 'just updated kenshi'}})" do
@@ -63,7 +63,7 @@ RSpec.describe KenshisController do
           put(cup_kenshi_path(cup, kenshi1), params: {kenshi: {last_name: "just updated kenshi"}})
         end
 
-        it { should_be_asked_to_sign_in }
+        it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
 
       describe "on delete(cup_kenshi_path(cup, kenshi1))" do
@@ -71,7 +71,7 @@ RSpec.describe KenshisController do
           delete(cup_kenshi_path(cup, kenshi1))
         end
 
-        it { should_be_asked_to_sign_in }
+        it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
     end
 
@@ -143,7 +143,7 @@ RSpec.describe KenshisController do
       describe "on GET to :edit with :id = kenshi1.to_param," do
         before { get(edit_cup_kenshi_path(cup, kenshi1)) }
 
-        it { should_not_be_authorized }
+        it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
       end
 
       describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data" do
@@ -165,7 +165,7 @@ RSpec.describe KenshisController do
       describe "on PUT to :update with :id = kenshi1.to_param and valid data," do
         before { put cup_kenshi_path(cup, kenshi1), params: {kenshi: {last_name: "alaNma2"}} }
 
-        it { should_not_be_authorized }
+        it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
       end
 
       describe "on DELETE to :destroy with :id = basic_user_kenshi.to_param," do
@@ -185,7 +185,7 @@ RSpec.describe KenshisController do
       describe "on DELETE to :destroy with :id = kenshi1.to_param," do
         before { delete(cup_kenshi_path(cup, kenshi1)) }
 
-        it { should_not_be_authorized }
+        it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
       end
 
       context "when deadline is passed" do
@@ -196,25 +196,25 @@ RSpec.describe KenshisController do
         describe "when GET to :new with user_id: basic_user.to_param," do
           before { get(new_cup_user_kenshi_path(cup)) }
 
-          it { has_passed_deadline }
+          it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
           before { get(edit_cup_kenshi_path(cup, basic_user_kenshi)) }
 
-          it { has_passed_deadline }
+          it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data," do
           before { put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi: {last_name: "AlaNma2"}}) }
 
-          it { has_passed_deadline }
+          it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "when POST to :create with valid data," do
           before { post(cup_kenshis_path(cup), params: {kenshi: valid_params}) }
 
-          it { has_passed_deadline }
+          it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "on DELETE to :destroy with :id = basic_user_kenshi.to_param," do
@@ -224,7 +224,7 @@ RSpec.describe KenshisController do
             delete(cup_kenshi_path(cup, basic_user_kenshi))
           end
 
-          it { has_passed_deadline }
+          it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
       end
     end

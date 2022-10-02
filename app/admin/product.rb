@@ -125,7 +125,7 @@ ActiveAdmin.register Product, as: "Product" do
       end
     end
 
-    disp = "attachment; filename=product_#{@product.name.parameterize}_kenshis_list_#{Time.current.to_s(:flat)}.csv"
+    disp = "attachment; filename=product_#{@product.name.parameterize}_kenshis_list_#{Time.current.to_fs(:flat)}.csv"
     send_data(
       csv,
       type: "text/csv; charset=utf-8; header=present",
