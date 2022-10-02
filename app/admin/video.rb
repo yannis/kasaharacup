@@ -7,9 +7,7 @@ ActiveAdmin.register Video do
   controller do
     belongs_to :individual_category, :team_category, polymorphic: true
 
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
-    end
+
   end
 
   form(title: proc { |video|

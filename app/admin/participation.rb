@@ -5,9 +5,7 @@ ActiveAdmin.register Participation, as: "Participation" do
     :category_team, :rank, :fighting_spirit
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
-    end
+
 
     def edit
       participation = Participation.find(params[:id])

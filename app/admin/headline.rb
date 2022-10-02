@@ -4,9 +4,7 @@ ActiveAdmin.register Headline, as: "Headline" do
   permit_params :title_en, :title_fr, :title_de, :content_fr, :content_en, :content_de, :shown, :cup_id
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
-    end
+
   end
 
   index do

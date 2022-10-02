@@ -7,9 +7,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     participations_attributes: [:id, :category_individual, :category_team, :_destroy]
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
-    end
+
   end
 
   csv do

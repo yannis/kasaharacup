@@ -4,9 +4,7 @@ ActiveAdmin.register Event, as: "Event" do
   permit_params :cup_id, :name_en, :name_fr, :start_on, :duration
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
-    end
+
   end
 
   index do

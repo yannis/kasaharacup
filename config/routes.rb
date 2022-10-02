@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  scope ":locale", locale: /fr|en/ do |locale|
+  scope ":locale", locale: /fr|en/, defaults: {locale: "fr"} do |locale|
     devise_for :user, controllers: {registrations: "users/registrations"}
     devise_scope :user do
       get "log_out", to: "devise/sessions#destroy"

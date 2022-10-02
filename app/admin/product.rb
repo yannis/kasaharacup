@@ -5,8 +5,10 @@ ActiveAdmin.register Product, as: "Product" do
     :fee_chf, :fee_eu, :quota
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
+
+
+    def scoped_collection
+      super.includes(:cup, :event, :purchases)
     end
   end
 
@@ -24,7 +26,7 @@ ActiveAdmin.register Product, as: "Product" do
     column :fee_chf
     column :fee_eu
     column :total do |product|
-      product.purchases.count
+      product.purchases.size
     end
     column :quota
     actions

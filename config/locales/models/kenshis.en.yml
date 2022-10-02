@@ -35,7 +35,7 @@ en:
     create:
       flash:
         notice: Kenshi successfully registered
-    deadline_passed: The registration deadline is overpassed. Please contact <a href='mailto:%{email}'>%{email}</a>.
+    deadline_passed: The registration deadline is overpassed. Please contact %{email}.
     destroy:
       alert: Unable to destroy kenshi
       confirm: Are you sure you want to destroy this registration? This is irreversible…

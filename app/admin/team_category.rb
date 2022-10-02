@@ -5,9 +5,7 @@ ActiveAdmin.register TeamCategory do
     :cup_id
 
   controller do
-    def authenticate_admin_user!
-      redirect_to root_url unless current_user.try(:admin?)
-    end
+
   end
 
   index do

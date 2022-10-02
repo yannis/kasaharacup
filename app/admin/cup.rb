@@ -105,7 +105,7 @@ ActiveAdmin.register Cup do
             end
           end
           tbody do
-            cup.kenshis.order(:last_name, :first_name).each do |kenshi|
+            cup.kenshis.includes(participations: :category, purchases: :product).order(:last_name, :first_name).each do |kenshi|
               tr do
                 td do
                   kenshi.norm_last_name

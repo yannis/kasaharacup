@@ -28,7 +28,7 @@ fr:
     create:
       flash:
         notice: Kenshi inscrit avec succès
-    deadline_passed: Date limite d'inscription dépassée. Please contact <a href='mailto:%{email}'>%{email}</a>.
+    deadline_passed: Date limite d'inscription dépassée. Merci de contacter %{email}.
     destroy:
       confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
       title: Détruire
