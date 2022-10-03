@@ -528,6 +528,7 @@ DEPENDENCIES
   i18n-tasks
   image_processing (>= 1.2)
   jsbundling-rails
+  kramdown
   letter_opener_web (~> 2.0)
   libyear-bundler
   lookbook
