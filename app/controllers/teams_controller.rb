@@ -8,6 +8,7 @@ class TeamsController < ApplicationController
   def index
     @ronins = @cup.participations.ronins.map(&:kenshi)
     @teams = @cup.teams
+      .includes(:kenshis, team_category: :cup)
       .joins(:participations)
       .order(:name)
       .distinct
