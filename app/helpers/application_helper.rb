@@ -34,7 +34,6 @@ module ApplicationHelper
 
     classes += " btn btn-danger"
 
-    Rails.logger.debug { "arr.class: #{arr.class}" }
     link_to(text.html_safe,
       polymorphic_path(arr),
       data: {
