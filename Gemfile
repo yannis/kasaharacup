@@ -68,6 +68,9 @@ gem "honeybadger"
 # HTTP requests
 gem "httparty"
 
+# Markdown
+gem "kramdown"
+
 # Required for Ruby 3.1
 gem "matrix"
 
