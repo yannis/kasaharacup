@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "translate"
 class Cup < ApplicationRecord
   has_many :kenshis, inverse_of: :cup, dependent: :destroy
   has_many :participations, through: :kenshis
@@ -9,6 +10,8 @@ class Cup < ApplicationRecord
   has_many :events, inverse_of: :cup, dependent: :destroy
   has_many :headlines, inverse_of: :cup, dependent: :destroy
   has_many :products, inverse_of: :cup, dependent: :destroy
+
+  translate :description
 
   validates :start_on, presence: true
   validates :deadline, presence: true

@@ -4,7 +4,7 @@ ActiveAdmin.register Cup do
   menu priority: 1
 
   permit_params :year, :start_on, :end_on, :deadline, :adult_fees_chf, :adult_fees_eur, :junior_fees_chf,
-    :junior_fees_eur, :canceled_at, :registerable_at, :header_image
+    :junior_fees_eur, :canceled_at, :registerable_at, :description_en, :description_fr, :header_image
 
   controller do
     def find_resource
@@ -20,6 +20,8 @@ ActiveAdmin.register Cup do
       f.input :deadline, as: :datepicker
       f.input :canceled_at, as: :datepicker
       f.input :registerable_at, as: :datepicker
+      f.input :description_en
+      f.input :description_fr
       f.input :header_image, as: :file
     end
     f.inputs "Fees" do
@@ -43,6 +45,9 @@ ActiveAdmin.register Cup do
     column :adult_fees_eur
     column :junior_fees_chf
     column :junior_fees_eur
+    column :description do |cup|
+      md_to_html(cup.description)
+    end
     column :header_image do |cup|
       next unless cup.header_image.attached?
 
@@ -66,6 +71,8 @@ ActiveAdmin.register Cup do
       row :adult_fees_eur
       row :junior_fees_chf
       row :junior_fees_eur
+      row :description_en
+      row :description_fr
       row :header_image do |cup|
         next unless cup.header_image.attached?
 

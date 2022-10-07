@@ -17,6 +17,12 @@ RSpec.describe Cup, type: :model do
     end
   end
 
+  describe "Translations" do
+    let(:cup) { build(:cup) }
+
+    it { expect(cup).to translate(:description) }
+  end
+
   describe "Validations" do
     let(:cup) { create(:cup) }
 
