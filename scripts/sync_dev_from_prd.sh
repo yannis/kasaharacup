@@ -80,6 +80,11 @@ echo "------------------------------"
 
 su $SUDO_USER <<'EOF'
   set -x
+  psql kasaharacup_development -c "CREATE SCHEMA IF NOT EXISTS heroku_ext; CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA heroku_ext;"
+EOF
+
+su $SUDO_USER <<'EOF'
+  set -x
   pg_restore -O -d kasaharacup_development tmp/kasaharacup-production.dmp
   bundle exec rails db:migrate
 EOF
