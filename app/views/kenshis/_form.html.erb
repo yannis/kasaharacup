@@ -206,7 +206,7 @@
                   </div>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% @cup.products.sort_by(&:name).each do |p| %>
+                  <% @cup.products.sort_by(&:position).each do |p| %>
                     <% price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
                     <div class="max-w-lg mb-4">
                       <% purchase = @kenshi.purchases.to_a.find { |purch| purch .product_id ==  p.id } %>

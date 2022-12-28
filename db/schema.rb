@@ -213,6 +213,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_07_123112) do
     t.string "name_de"
     t.text "description_de"
     t.integer "quota"
+    t.string "stripe_price_id"
+    t.integer "position"
     t.index ["cup_id", "name_en"], name: "index_products_on_cup_id_and_name_en", unique: true
     t.index ["cup_id", "name_fr"], name: "index_products_on_cup_id_and_name_fr", unique: true
     t.index ["cup_id"], name: "index_products_on_cup_id"
