@@ -57,40 +57,73 @@ namespace :temporary do
 
       products_data = [
         {
+          name_en: "Participation Junior (17-)",
+          name_fr: "Participation Junior (17-)",
+          fee_chf: 20,
+          fee_eu: 20,
+          stripe_price_id: "price_1MJb6lLyfuS5xR2zAaXiOtRf"
+        },
+        {
+          name_en: "Participation Adult (18+)",
+          name_fr: "Participation Adult (18+)",
+          fee_chf: 30,
+          fee_eu: 30,
+          stripe_price_id: "price_1MJb5uLyfuS5xR2zmLBZDldU"
+        },
+        {
           name_en: "2 Kyu examination",
           name_fr: "Examen de 2 Kyu",
-          description_en: "Variable price",
-          description_fr: "Prix variable",
-          fee_chf: 0,
-          fee_eu: 0
+          fee_chf: 20,
+          fee_eu: 20,
+          stripe_price_id: "price_1MJbEnLyfuS5xR2zdPcYzLGx"
         },
         {
           name_en: "1 Kyu examination",
           name_fr: "Examen de 1 Kyu",
           description_en: "Variable price",
           description_fr: "Prix variable",
-          fee_chf: 0,
-          fee_eu: 0
+          fee_chf: 30,
+          fee_eu: 30,
+          stripe_price_id: "price_1MJbERLyfuS5xR2zJVGdGYDG"
         },
         {
           name_en: "Saturday dinner",
           name_fr: "Dîner du samedi",
           fee_chf: 30,
-          fee_eu: 30
+          fee_eu: 30,
+          stripe_price_id: "price_1MJbB6LyfuS5xR2zJPesXgvK",
+          quota: 90
         },
         {
           name_en: "Sunday lunch - sandwich menu",
           name_fr: "Lunch du dimanche - menu sandwich",
           fee_chf: 10,
-          fee_eu: 10
+          fee_eu: 10,
+          stripe_price_id: "price_1MJbALLyfuS5xR2z9AVKJDYa"
         },
         {
-          name_en: "Night at the dormitory",
-          name_fr: "Nuit au dortoir",
-          description_en: "Breakfast included",
-          description_fr: "Petit déjeuner inclus",
+          name_en: "Night at the dormitory (Friday)",
+          name_fr: "Nuit au dortoir (Vendredi)",
           fee_chf: 25,
-          fee_eu: 25
+          fee_eu: 25,
+          stripe_price_id: "price_1MJbCTLyfuS5xR2zZ2HtVBHR",
+          quota: 50
+        },
+        {
+          name_en: "Night at the dormitory (Saturday)",
+          name_fr: "Nuit au dortoir (Samedi)",
+          fee_chf: 25,
+          fee_eu: 25,
+          stripe_price_id: "price_1MJbCTLyfuS5xR2zZ2HtVBHR",
+          quota: 50
+        },
+        {
+          name_en: "Night at the dormitory (Sunday)",
+          name_fr: "Nuit au dortoir (Dimanche)",
+          fee_chf: 25,
+          fee_eu: 25,
+          stripe_price_id: "price_1MJbCmLyfuS5xR2zjvCUtEOv",
+          quota: 50
         }
       ]
 

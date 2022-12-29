@@ -30,6 +30,8 @@ RSpec.describe Product, type: :model do
   it { expect(product).to validate_numericality_of(:fee_chf) }
   it { expect(product).to validate_numericality_of(:fee_eu) }
 
+  it { expect(product).to validate_numericality_of(:position).allow_nil.only_integer }
+
   describe "#still_available?" do
     let(:product) { create(:product, quota: quota, purchases: build_list(:purchase, 2)) }
 
