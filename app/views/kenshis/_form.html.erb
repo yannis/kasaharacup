@@ -194,7 +194,7 @@
         </div>
       </div>
     <% end %>
-    <% if @cup.products.present? %>
+    <% if products.present? %>
       <div>
         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
           <div class="pt-6 sm:pt-5">
@@ -206,7 +206,7 @@
                   </div>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% @cup.products.sort_by(&:position).each do |p| %>
+                  <% products.each do |p| %>
                     <% price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
                     <div class="max-w-lg mb-4">
                       <% purchase = @kenshi.purchases.to_a.find { |purch| purch .product_id ==  p.id } %>

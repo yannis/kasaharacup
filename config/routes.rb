@@ -24,6 +24,10 @@ Rails.application.routes.draw do
           end
         end
       end
+
+      namespace :stripe do
+        resource :checkout, only: :create
+      end
     end
 
     resource :user, only: %i[show destroy]

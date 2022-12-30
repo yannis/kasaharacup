@@ -71,6 +71,9 @@ gem "httparty"
 # Markdown
 gem "kramdown"
 
+# Stripe
+gem "stripe"
+
 # Required for Ruby 3.1
 gem "matrix"
 

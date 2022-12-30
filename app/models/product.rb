@@ -22,4 +22,8 @@ class Product < ApplicationRecord
   def still_available?
     quota.nil? || purchases.count < quota
   end
+
+  def stripe_price
+    @stripe_price ||= Stripe::Price.retrieve(stripe_price_id)
+  end
 end

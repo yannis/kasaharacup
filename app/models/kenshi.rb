@@ -155,6 +155,10 @@ class Kenshi < ApplicationRecord
     (grade.to_f / age_at_cup.to_f).round(4)
   end
 
+  def line_items
+    products.map(&:stripe_price_id)
+  end
+
   private def format
     # use POSIX bracket expression here
     self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name

@@ -124,11 +124,8 @@
                       <% end %>
                     </th>
                     <td>
-                      <% if product.fee_chf == 0 %>
-                        <%= t '.fees.variable' %>
-                      <% else %>
-                        <%= "#{product.fee_chf} CHF / #{product.fee_eu} €" %>
-                      <% end %>
+                      <%= product.stripe_price.unit_amount/100 %>
+                      <%= product.stripe_price.currency.upcase %>
                     </td>
                   </tr>
                 <% end %>

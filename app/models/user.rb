@@ -7,6 +7,8 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable
   belongs_to :club
   has_many :kenshis, dependent: :destroy
+  has_many :purchases, through: :kenshis
+  has_many :products, through: :purchases
 
   validates :email, presence: {unless: lambda {
     # Rails.logger.debug "SELF: #{self.inspect}"
@@ -56,6 +58,12 @@ class User < ApplicationRecord
 
   def fees(currency, cup)
     kenshis.for_cup(cup).map { |k| k.fees(currency) }.inject { |sum, x| sum + x }
+  end
+
+  def line_items(cup:)
+    line_items = kenshis.for_cup(cup).map(&:line_items).flatten
+    line_items = line_items.tally
+    line_items.map { |k, v| {price: k, quantity: v} }
   end
 
   private def format

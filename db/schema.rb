@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_28_100204) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -80,6 +80,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_100204) do
     t.datetime "registerable_at"
     t.text "description_en"
     t.text "description_fr"
+    t.string "stripe_adult_price_id"
+    t.string "stripe_junior_price_id"
+    t.bigint "product_junior_id"
+    t.bigint "product_adult_id"
+    t.index ["product_adult_id"], name: "index_cups_on_product_adult_id"
+    t.index ["product_junior_id"], name: "index_cups_on_product_junior_id"
     t.index ["start_on"], name: "index_cups_on_start_on", unique: true
   end
 
@@ -302,6 +308,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_100204) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cups", "products", column: "product_adult_id"
+  add_foreign_key "cups", "products", column: "product_junior_id"
   add_foreign_key "events", "cups"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"

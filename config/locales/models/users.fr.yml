@@ -53,6 +53,7 @@ fr:
     show:
       edit: Modifier
       no_registrations: Vous n'avez pas encore d'inscription.
+      pay_now: Payer %{amount} %{currency} maintenant avec Stripe
       register: Voulez-vous %{yourself}? Ou voulez-vous inscrire %{someone}?
       register_someone_else: Inscrivez quelqu'un d'autre à la compétition
       register_yourself: Inscrivez-vous à la compétition
