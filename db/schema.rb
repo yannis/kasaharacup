@@ -15,6 +15,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "order_states", ["pending", "paid", "cancelled"]
+
   create_table "active_admin_comments", id: :serial, force: :cascade do |t|
     t.string "namespace", limit: 255
     t.text "body"
@@ -186,6 +190,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
     t.index ["user_id"], name: "index_kenshis_on_user_id"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "cup_id", null: false
+    t.enum "state", default: "pending", null: false, enum_type: "order_states"
+    t.enum "enum", default: "pending", null: false, enum_type: "order_states"
+    t.datetime "state_at", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cup_id"], name: "index_orders_on_cup_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
   create_table "participations", id: :serial, force: :cascade do |t|
     t.integer "category_id", null: false
     t.string "category_type", limit: 255
@@ -233,7 +249,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
     t.integer "product_id", null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.bigint "order_id"
     t.index ["kenshi_id"], name: "index_purchases_on_kenshi_id"
+    t.index ["order_id"], name: "index_purchases_on_order_id"
     t.index ["product_id"], name: "index_purchases_on_product_id"
   end
 
@@ -316,11 +334,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
   add_foreign_key "kenshis", "clubs"
   add_foreign_key "kenshis", "cups"
   add_foreign_key "kenshis", "users"
+  add_foreign_key "orders", "cups"
+  add_foreign_key "orders", "users"
   add_foreign_key "participations", "kenshis"
   add_foreign_key "participations", "teams"
   add_foreign_key "products", "cups"
   add_foreign_key "products", "events"
   add_foreign_key "purchases", "kenshis"
+  add_foreign_key "purchases", "orders"
   add_foreign_key "purchases", "products"
   add_foreign_key "team_categories", "cups"
   add_foreign_key "teams", "team_categories"
