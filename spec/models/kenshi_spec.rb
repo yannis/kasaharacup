@@ -122,11 +122,9 @@ RSpec.describe Kenshi, type: :model do
 
       it { expect(kenshi.individual_categories.count).to be 1 }
       it { expect(kenshi.takes_part_to?(individual_category)).to be true }
-      it { expect(kenshi.competition_fee(:chf)).to be 30 }
-      it { expect(kenshi.competition_fee(:eur)).to be 25 }
       it { expect(kenshi).to be_adult }
-      it { expect(kenshi.fees(:chf)).to be 30 }
-      it { expect(kenshi.fees(:eur)).to be 25 }
+      it { expect(kenshi.fees(:chf)).to be 0 }
+      it { expect(kenshi.fees(:eur)).to be 0 }
 
       context "with a purchase" do
         let(:product) { create :product, cup: kenshi.cup }
@@ -139,10 +137,8 @@ RSpec.describe Kenshi, type: :model do
         it { expect(kenshi).to be_valid_verbose }
 
         it { expect(kenshi.products.count).to eq 1 }
-        it { expect(kenshi.products_fee(:chf)).to be 10 }
-        it { expect(kenshi.products_fee(:eur)).to be 8 }
-        it { expect(kenshi.fees(:chf)).to be 40 }
-        it { expect(kenshi.fees(:eur)).to be 33 }
+        it { expect(kenshi.fees(:chf)).to be 10 }
+        it { expect(kenshi.fees(:eur)).to be 8 }
         it { expect(kenshi.purchased?(product)).to be true }
       end
 

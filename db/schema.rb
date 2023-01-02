@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_30_173058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -74,10 +74,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_150846) do
     t.datetime "deadline", precision: nil, null: false
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.integer "junior_fees_chf", null: false
-    t.integer "junior_fees_eur", null: false
-    t.integer "adult_fees_chf", null: false
-    t.integer "adult_fees_eur", null: false
     t.date "published_on"
     t.integer "year"
     t.datetime "canceled_at"

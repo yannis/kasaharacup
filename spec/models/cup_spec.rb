@@ -30,10 +30,6 @@ RSpec.describe Cup, type: :model do
 
     it do
       expect(cup).to validate_presence_of :start_on
-      expect(cup).to validate_presence_of :adult_fees_chf
-      expect(cup).to validate_presence_of :adult_fees_eur
-      expect(cup).to validate_presence_of :junior_fees_chf
-      expect(cup).to validate_presence_of :junior_fees_eur
       expect(cup).to validate_uniqueness_of :start_on
     end
 

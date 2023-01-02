@@ -49,8 +49,8 @@ en:
       sign_in: Log in
     show:
       edit: edit
-      pay_now: Pay now with Stripe
       no_registrations: You have no registrations yet.
+      pay_now: Pay %{amount} %{currency} now with Stripe
       register: Would you like to register %{yourself}? Or %{someone}?
       register_someone_else: Register someone else to the competition
       register_yourself: Register yourself to the competition

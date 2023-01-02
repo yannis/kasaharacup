@@ -69,7 +69,7 @@ class Participation < ApplicationRecord
   def update_purchase
     if destroyed?
       purchase&.destroy!
-    elsif purchase.nil?
+    elsif purchase.nil? && product.present?
       kenshi.purchases.create!(product: product)
     end
   end

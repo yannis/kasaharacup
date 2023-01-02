@@ -17,10 +17,6 @@ class Cup < ApplicationRecord
 
   validates :start_on, presence: true
   validates :deadline, presence: true
-  validates :adult_fees_chf, presence: true
-  validates :adult_fees_eur, presence: true
-  validates :junior_fees_chf, presence: true
-  validates :junior_fees_eur, presence: true
   validates :start_on, uniqueness: true
 
   before_validation :set_deadline, :set_year
@@ -49,14 +45,6 @@ class Cup < ApplicationRecord
 
   def past?
     start_on < Date.current
-  end
-
-  def junior_fees(currency)
-    currency.to_sym == :chf ? junior_fees_chf : junior_fees_eur
-  end
-
-  def adult_fees(currency)
-    currency.to_sym == :chf ? adult_fees_chf : adult_fees_eur
   end
 
   def canceled?

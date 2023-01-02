@@ -14,7 +14,6 @@ en:
         mr: Mr
         ms: Ms
         name: Name
-        products_fees: Extra fees
         salutations: Salutations
         team: Team
     errors:
@@ -82,7 +81,7 @@ en:
       title_open: Registrations Open
       title_team: Registrations Team
     kenshi:
-      no_categories: "Not participating in any category for the moment"
+      no_categories: Not participating in any category for the moment
     new:
       duplicate: Duplicate the registration of %{full_name}
       title: Register someone to the competition

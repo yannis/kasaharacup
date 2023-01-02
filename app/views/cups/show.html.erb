@@ -96,23 +96,7 @@
             </p>
             <table class="table">
               <tbody>
-                <tr>
-                  <th class="whitespace-nowrap align-text-top">
-                    <%= raw t(".fees.adults.title", year: @cup.year - 18) %>
-                  </th>
-                  <td>
-                    <%= raw t '.fees.adults.fee', adult_fees_chf: @cup.adult_fees_chf, adult_fees_eur: @cup.adult_fees_eur %>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <%= raw t(".fees.juniors.title", year: @cup.year - 17) %>
-                  </th>
-                  <td>
-                    <%= raw t '.fees.juniors.fee', junior_fees_chf: @cup.junior_fees_chf, junior_fees_eur: @cup.junior_fees_eur %>
-                  </td>
-                </tr>
-                <% @cup.products.each do |product| %>
+                <% @cup.products.order(:position).each do |product| %>
                   <tr>
                     <th class="lg:whitespace-nowrap">
                       <%= product.name %>

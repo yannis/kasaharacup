@@ -10,10 +10,6 @@ namespace :temporary do
       cup_data = {
         start_on: Date.parse("2022-09-24"),
         end_on: Date.parse("2022-09-25"),
-        junior_fees_chf: 10,
-        junior_fees_eur: 10,
-        adult_fees_chf: 20,
-        adult_fees_eur: 20,
         registerable_at: Date.parse("2022-05-30")
       }
 
