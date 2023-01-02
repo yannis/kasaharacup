@@ -37,6 +37,10 @@ Rails.application.routes.draw do
     get "/", to: redirect(Date.current.year.to_s)
   end
 
+  namespace :stripe do
+    resource :webhook, only: :create
+  end
+
   get "/", to: redirect(I18n.locale.to_s)
 
   if Rails.env.development?
