@@ -25,6 +25,10 @@ class Purchase < ApplicationRecord
   private def set_order
     return if order.present? || [user, cup].any?(&:blank?)
 
-    self.order = Order.find_or_create_by!(user: user, cup: cup, state: :pending)
+    if existing_order = Order.find_by(user: user, cup: cup, state: :pending)
+      self.order = existing_order
+    else
+      self.order = Order.create!(user: user, cup: cup)
+    end
   end
 end

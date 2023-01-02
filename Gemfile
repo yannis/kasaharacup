@@ -71,6 +71,9 @@ gem "httparty"
 # Markdown
 gem "kramdown"
 
+# State machine
+gem "aasm"
+
 # Stripe
 gem "stripe"
 

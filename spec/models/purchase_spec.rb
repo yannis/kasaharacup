@@ -62,6 +62,7 @@ RSpec.describe Purchase, type: :model do
               expect { purchase.valid? }
                 .to change(Order, :count).by(1)
                 .and(change { purchase.order }.from(nil))
+              expect(purchase.order).to eq(Order.last)
             end
           end
 
@@ -83,8 +84,9 @@ RSpec.describe Purchase, type: :model do
 
               it do
                 expect { purchase.valid? }
-                  .to change(Order, :count)
-                  .and(change { purchase.order }.from(nil).to(Order.last))
+                  .to change(Order, :count).by(1)
+                  .and(change { purchase.order }.from(nil))
+                expect(purchase.order).to eq(Order.last)
               end
             end
           end

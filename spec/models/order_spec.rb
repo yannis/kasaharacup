@@ -14,9 +14,16 @@ describe(Order) do
     end
   end
 
-  describe("States") do
+  describe ("State machine") do
     let(:order) { build(:order) }
 
-    it { expect(order).to be_pending }
+    it do
+      expect(order).to(have_state(:pending))
+    end
+
+    it do
+      expect(order).to(transition_from(:pending).to(:paid).on_event(:pay))
+      expect(order).to(transition_from(:pending).to(:cancelled).on_event(:cancel))
+    end
   end
 end
