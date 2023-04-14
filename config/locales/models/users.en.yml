@@ -60,3 +60,6 @@ en:
         show_self: Your account
       your_registrations: Your registrations for Kasahara Cup %{year}
       yourself: yourself
+      paid: Paid
+      total_paid: Total paid
+      total_to_pay: Total to pay

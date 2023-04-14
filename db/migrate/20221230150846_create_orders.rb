@@ -8,7 +8,7 @@ class CreateOrders < ActiveRecord::Migration[7.0]
 
       t.references :user, null: false, foreign_key: true
       t.references :cup, null: false, foreign_key: true
-      t.enum :state, :enum, enum_type: :order_states, null: false, default: "pending"
+      t.enum :state, enum_type: :order_states, null: false, default: "pending"
       t.timestamp :state_at, null: true
 
       t.timestamps

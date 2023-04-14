@@ -17,12 +17,18 @@ class Ability
         participation.kenshi.user_id == user.id
       end
       can :destroy, Purchase do |purchase|
-        purchase.kenshi.user_id == user.id
+        !purchase.paid? && purchase.kenshi.user_id == user.id
       end
       can [:read, :update, :destroy], User, id: user.id
       if user.admin?
         can :manage, :all
         cannot :register, Cup
+        cannot :destroy, Kenshi do |kenshi|
+          kenshi.purchases.paid.any?
+        end
+        cannot :destroy, Purchase do |purchase|
+          purchase.paid?
+        end
       end
       can :register, Cup do |cup|
         cup.registerable?

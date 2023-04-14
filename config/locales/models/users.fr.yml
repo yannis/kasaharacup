@@ -63,3 +63,6 @@ fr:
         show_self: Vos données
       your_registrations: Vos inscriptions pour la Coupe Kasahara %{year}
       yourself: vous inscrire
+      paid: Payé
+      total_paid: Total payé
+      total_to_pay: Total à payer

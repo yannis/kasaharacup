@@ -2,20 +2,25 @@
 
 require "rails_helper"
 
-RSpec.describe User, type: :model do
-  it { is_expected.to belong_to :club }
-  it { is_expected.to have_many(:kenshis).dependent(:destroy) }
+describe(User) do
+  describe("Associations") do
+    let(:user) { build(:user) }
 
-  it { is_expected.to respond_to :first_name }
-  it { is_expected.to respond_to :last_name }
-  it { is_expected.to respond_to :email }
-  # it { should respond_to :password }
-  it { is_expected.to respond_to :admin }
-  it { is_expected.to respond_to :full_name }
+    it do
+      expect(user).to belong_to(:club)
+      expect(user).to have_many(:kenshis).dependent(:destroy)
+      expect(user).to have_many(:orders).dependent(:destroy)
+    end
+  end
 
-  it { is_expected.to validate_presence_of(:last_name) }
-  it { is_expected.to validate_presence_of(:first_name) }
-  # it { should validate_presence_of(:email) }
+  describe("Validations") do
+    let(:user) { build(:user) }
+
+    it do
+      expect(user).to validate_presence_of(:last_name)
+      expect(user).to validate_presence_of(:first_name)
+    end
+  end
 
   describe "A user" do
     context "without last_name" do

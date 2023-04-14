@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_30_173058) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_02_173114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -190,10 +190,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_173058) do
     t.bigint "user_id", null: false
     t.bigint "cup_id", null: false
     t.enum "state", default: "pending", null: false, enum_type: "order_states"
-    t.enum "enum", default: "pending", null: false, enum_type: "order_states"
     t.datetime "state_at", precision: nil
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.string "stripe_id"
     t.index ["cup_id"], name: "index_orders_on_cup_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
@@ -303,9 +304,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_173058) do
     t.datetime "updated_at", precision: nil
     t.string "provider", limit: 255
     t.string "uid", limit: 255
+    t.string "stripe_customer_id"
     t.index ["club_id"], name: "index_users_on_club_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", unique: true
   end
 
   create_table "videos", force: :cascade do |t|
@@ -318,6 +321,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_30_173058) do
     t.index ["category_type", "category_id"], name: "index_videos_on_category"
     t.index ["name", "category_type", "category_id"], name: "index_videos_on_name_and_category_type_and_category_id", unique: true
     t.index ["url"], name: "index_videos_on_url", unique: true
+  end
+
+  create_table "webhooks", force: :cascade do |t|
+    t.string "stripe_id"
+    t.string "event_type"
+    t.json "payload"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

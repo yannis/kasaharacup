@@ -5,3 +5,6 @@ en:
       order:
         one: Order
         other: Orders
+    attributes:
+      order:
+        paid: Paid

@@ -3,7 +3,8 @@
 ActiveAdmin.register Cup do
   menu priority: 1
 
-  permit_params :year, :start_on, :end_on, :deadline, :canceled_at, :registerable_at, :description_en, :description_fr, :header_image, :product_junior_id, :product_adult_id
+  permit_params :year, :start_on, :end_on, :deadline, :canceled_at, :registerable_at, :description_en, :description_fr,
+    :header_image, :product_junior_id, :product_adult_id
 
   controller do
     def find_resource
@@ -19,8 +20,12 @@ ActiveAdmin.register Cup do
       f.input :deadline, as: :datepicker
       f.input :canceled_at, as: :datepicker
       f.input :registerable_at, as: :datepicker
-      f.input :product_junior_id, as: :select, collection: f.object.products.order(:position).where("LOWER(products.name_en) ~ 'junior'").map { |p| [p.name, p.id] }
-      f.input :product_adult_id, as: :select, collection: f.object.products.order(:position).where("LOWER(products.name_en) ~ 'adult'").map { |p| [p.name, p.id] }
+      f.input :product_junior_id, as: :select, collection: f.object.products.order(:position).where("LOWER(products.name_en) ~ 'junior'").map { |p|
+                                                             [p.name, p.id]
+                                                           }
+      f.input :product_adult_id, as: :select, collection: f.object.products.order(:position).where("LOWER(products.name_en) ~ 'adult'").map { |p|
+                                                            [p.name, p.id]
+                                                          }
       f.input :description_en
       f.input :description_fr
       f.input :header_image, as: :file

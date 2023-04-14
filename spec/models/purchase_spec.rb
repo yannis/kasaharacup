@@ -61,7 +61,7 @@ RSpec.describe Purchase, type: :model do
             it do
               expect { purchase.valid? }
                 .to change(Order, :count).by(1)
-                .and(change { purchase.order }.from(nil))
+                .and(change(purchase, :order).from(nil))
               expect(purchase.order).to eq(Order.last)
             end
           end
@@ -73,7 +73,7 @@ RSpec.describe Purchase, type: :model do
               it do
                 expect { purchase.valid? }
                   .to not_change(Order, :count)
-                  .and(change { purchase.order }.from(nil).to(previous_order))
+                  .and(change(purchase, :order).from(nil).to(previous_order))
               end
             end
 
@@ -85,7 +85,7 @@ RSpec.describe Purchase, type: :model do
               it do
                 expect { purchase.valid? }
                   .to change(Order, :count).by(1)
-                  .and(change { purchase.order }.from(nil))
+                  .and(change(purchase, :order).from(nil))
                 expect(purchase.order).to eq(Order.last)
               end
             end
@@ -95,10 +95,46 @@ RSpec.describe Purchase, type: :model do
     end
   end
 
+  describe "Scopes" do
+    describe ".paid, .unpaid" do
+      let(:cup) { create(:cup) }
+      let!(:paid_purchase) { create(:purchase, order: build(:order, :paid)) }
+      let!(:unpaid_purchase_1) { create(:purchase, order: nil) }
+      let!(:unpaid_purchase_2) { create(:purchase, order: build(:order)) }
+
+      it do
+        expect(described_class.paid).to contain_exactly(paid_purchase)
+        expect(described_class.unpaid).to contain_exactly(unpaid_purchase_1, unpaid_purchase_2)
+      end
+    end
+  end
+
   describe "#descriptive_name" do
     let(:purchase) { build(:purchase, product: product) }
     let(:product) { build(:product, name_en: "Saturday dinner", name_fr: "Dîner du samedi", fee_chf: 8, fee_eu: 10) }
 
     it { expect(purchase.descriptive_name).to eq("Dîner du samedi (8 CHF / 10 €)") }
+  end
+
+  describe "#paid?" do
+    let(:purchase) { build(:purchase, order: order) }
+
+    context "when order is paid" do
+      let(:order) { build(:order, :paid) }
+
+      it { expect(purchase).to be_paid }
+    end
+
+    context "when order is not paid" do
+      let(:order) { build(:order) }
+
+      it { expect(purchase).not_to be_paid }
+    end
+
+    context "when order is nil" do
+      let(:order) { nil }
+
+      it { expect(purchase).not_to be_paid }
+    end
   end
 end

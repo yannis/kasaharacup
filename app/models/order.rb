@@ -8,7 +8,6 @@ class Order < ApplicationRecord
   has_many :purchases
   has_many :products, through: :purchases
 
-
   aasm column: :state, no_direct_assignment: true do
     state :pending, initial: true
     state :paid

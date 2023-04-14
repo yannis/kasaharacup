@@ -143,7 +143,9 @@ class Kenshi < ApplicationRecord
   end
 
   def line_items
-    products.map(&:stripe_price_id)
+    purchases.unpaid.map do |purchase|
+      purchase.product.stripe_price_id
+    end
   end
 
   private def format

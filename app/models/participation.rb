@@ -8,8 +8,8 @@ class Participation < ApplicationRecord
   belongs_to :kenshi, inverse_of: :participations
   belongs_to :team, optional: true
 
-  after_commit :update_purchase
   before_validation :assign_category
+  after_commit :update_purchase
 
   validates :pool_position, presence: {if: lambda { |p| p.pool_number.present? }}
   validates :kenshi_id,

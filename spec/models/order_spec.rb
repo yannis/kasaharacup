@@ -14,7 +14,7 @@ describe(Order) do
     end
   end
 
-  describe ("State machine") do
+  describe("State machine") do
     let(:order) { build(:order) }
 
     it do

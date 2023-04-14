@@ -37,44 +37,43 @@
           <% end %>
         </ul>
       </div>
-      <% purchases = Purchase.joins(:kenshi).merge(@user.kenshis.for_cup(@current_cup)) %>
-      <% products_and_count = Product.joins(:purchases).merge(purchases).order(:position).tally.to_h %>
-      <% if products_and_count.any? %>
+      <% purchases = Purchase.includes(:order, :product).where(kenshi: @user.kenshis.for_cup(@current_cup)) %>
+      <% if purchases.any? %>
+        <% currency = purchases.first.product.stripe_price.currency.upcase %>
         <div class="flex justify-end px-4 py-4 sm:px-6">
           <table class="text-sm text-gray-500">
             <tbody>
-              <% products_and_count.each do |product, count| %>
-                <tr>
-                  <td class="py-1">
-                    <%= count %> x
-                    <%= product.name %>
-                  </td>
-                  <td class="pl-4 text-right">
-                    <%= count * product.stripe_price.unit_amount/100 %>
-                    <%= product.stripe_price.currency.upcase %>
-                  </td>
-                </tr>
-              <% end %>
-              <tr class="border-t border-gray-300 border-w-2">
+              <tr>
                 <td class="py-2">
-                  Total:
+                  <%= t(".total_paid") %>
                 </td>
                 <td class="pl-4 text-right">
-                  <%= products_and_count.sum { |product, count| count * product.stripe_price.unit_amount/100 } %>
-                  <%= products_and_count.first.first.stripe_price.currency.upcase %>
+                  <%= purchases.paid.sum { |purchase| purchase.product.stripe_price.unit_amount/100 } %>
+                  <%= currency %>
+                </td>
+              </tr>
+              <tr class="border-t border-gray-300 border-w-2">
+                <td class="py-2">
+                  <%= t(".total_to_pay") %>
+                </td>
+                <td class="pl-4 text-right">
+                  <%= purchases.unpaid.sum { |purchase| purchase.product.stripe_price.unit_amount/100 } %>
+                  <%= currency %>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="flex justify-end px-4 py-4 sm:px-6">
-          <%= button_to(cup_stripe_checkout_path(@current_cup), class: "btn btn-primary", data: { turbo: false }) do %>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 pr-2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-            </svg>
-            <%= t(".pay_now", amount: products_and_count.sum { |product, count| count * product.stripe_price.unit_amount/100 }, currency: products_and_count.first.first.stripe_price.currency.upcase) %>
-          <% end %>
-        <div>
+        <% if purchases.unpaid.any? %>
+          <div class="flex justify-end px-4 py-4 sm:px-6">
+            <%= button_to(cup_stripe_checkout_path(@current_cup), class: "btn btn-primary", data: { turbo: false }) do %>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 pr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+              </svg>
+              <%= t(".pay_now", amount: purchases.unpaid.sum { |purchase| purchase.product.stripe_price.unit_amount/100 }, currency: currency) %>
+            <% end %>
+          <div>
+        <% end %>
       <% end %>
     </div>
   </main>

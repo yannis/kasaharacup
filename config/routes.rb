@@ -30,6 +30,13 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :orders, only: [:show] do
+      member do
+        get :success
+        get :cancel
+      end
+    end
+
     resource :user, only: %i[show destroy]
 
     resource :mailing_list, only: [:new, :destroy]

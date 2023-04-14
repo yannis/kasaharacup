@@ -7,6 +7,7 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable
   belongs_to :club
   has_many :kenshis, dependent: :destroy
+  has_many :orders, dependent: :destroy
 
   validates :email, presence: {unless: lambda {
     # Rails.logger.debug "SELF: #{self.inspect}"

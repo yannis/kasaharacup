@@ -5,3 +5,6 @@ fr:
       order:
         one: Commande
         other: Commandes
+    attributes:
+      order:
+        paid: Payé

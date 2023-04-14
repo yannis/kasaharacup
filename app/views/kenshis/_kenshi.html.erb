@@ -33,17 +33,22 @@
       </div>
     </div>
     <div class="mt-2 flex justify-end">
-      <% products = kenshi.products.order(:position) %>
+      <% purchases = kenshi.purchases.includes(:order, :product).order("products.position") %>
       <table class="text-sm text-gray-500 mb-4">
         <tbody>
-          <% products.each do |product| %>
+          <% purchases.each do |purchase| %>
             <tr>
               <td class="py-1">
-                <%= product.name %>
+                <%= purchase.product.name %>
               </td>
               <td class="pl-4">
-                <%= product.stripe_price.unit_amount/100 %>
-                <%= product.stripe_price.currency.upcase %>
+                <%= purchase.product.stripe_price.unit_amount/100 %>
+                <%= purchase.product.stripe_price.currency.upcase %>
+                <% if purchase.order.paid? %>
+                  <span class="text-xs text-gray-400">
+                    (<%= Order.human_attribute_name(:paid) %>)
+                  </span>
+                <% end %>
               </td>
             </tr>
           <% end %>
@@ -52,8 +57,8 @@
               Total:
             </td>
             <td class="pl-4">
-              <%= products.sum { |product| product.stripe_price.unit_amount/100 } %>
-              <%= products.first.stripe_price.currency.upcase %>
+              <%= purchases.sum { |purchase| purchase.product.stripe_price.unit_amount/100 } %>
+              <%= purchases.first.product.stripe_price.currency.upcase %>
             </td>
           </tr>
         </tbody>
