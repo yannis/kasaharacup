@@ -28,11 +28,9 @@ services:
     command: yarn build --watch
     depends_on:
       - css
-
   css:
     <<: *base
     command: yarn build:css --watch
-
   database:
     image: postgres:13.2
     ports:
