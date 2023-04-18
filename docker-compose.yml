@@ -1,10 +1,11 @@
 version: "3.7"
 
 x-base: &base
-  image: ghcr.io/yannis/kasaharacup
+  build:
+    context: .
+    dockerfile: Dockerfile
   environment:
     - POSTGRES_HOST=database
-    - REDIS_URL=redis://redis:6379
   volumes:
     - $PWD:/app:delegated
     - bundle_cache:/usr/local/bundle:cached
@@ -20,7 +21,6 @@ services:
       - "80:3000"
     depends_on:
       - database
-      - redis
       - js
 
   js:
@@ -41,21 +41,10 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - db_data:/var/lib/postgresql/data:cached
-
-  redis:
-    image: redis:6.2
-    volumes:
-      - redis_data:/data:cached
-
-  sidekiq:
-    <<: *base
-    command: bundle exec sidekiq -q default -q mailers
-    depends_on:
-      - database
-      - redis
+      - db_dump:/app/db_dump:cached
 
 volumes:
   db_data:
-  redis_data:
+  db_dump:
   bundle_cache:
   node_modules:
