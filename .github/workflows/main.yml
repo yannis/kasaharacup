@@ -24,6 +24,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set environment variables
+        run: |
+          echo "ENVIRONMENT=test" >> .env.override
+          echo "RAILS_ENV=test" >> .env.override
+          echo "CI=true" >> .env.override
+          echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}" >> .env.override
       - name: Setup database
         run: docker-compose run --rm app bundle exec rake db:drop db:create db:migrate
 
