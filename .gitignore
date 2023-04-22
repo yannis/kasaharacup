@@ -32,6 +32,9 @@
 .env.test.local
 /config/master.key
 
+# Ignore override environment variables file
+.env.override
+
 /app/assets/builds/*
 !/app/assets/builds/.keep
 

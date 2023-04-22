@@ -22,6 +22,7 @@ namespace :temporary do
         Rake::Task["temporary:cups:cancel_2020"].invoke
         Rake::Task["temporary:cups:cancel_2021"].invoke
         Rake::Task["temporary:cups:add_2022"].invoke
+        Rake::Task["temporary:cups:add_2023"].invoke
       end
     end
   end

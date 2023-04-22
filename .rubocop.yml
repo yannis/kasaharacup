@@ -1,0 +1,238 @@
+# We want Exclude directives from different
+# config files to get merged, not overwritten
+inherit_mode:
+  merge:
+    - Exclude
+
+inherit_gem:
+  rubocop-rails_config:
+    - config/rails.yml
+  standard:
+    - config/base.yml
+
+require:
+  - rubocop-rspec
+  # Performance cops are bundled with Standard
+  - rubocop-performance
+  # Standard's config uses this custom cop,
+  # so it must be loaded
+  - standard/cop/block_single_line_braces
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.0
+  DisabledByDefault: false
+  Exclude:
+    - "app/vendor/**/*"
+    - "db/**/*"
+    - "node_modules/**/*"
+    - "bin/**/*"
+    - "vendor/**/*"
+    - "tmp/**/*"
+
+# CUSTOM CONFIG
+# -----------------------------------------------
+
+# Style
+# --------------
+Style/Documentation:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: true
+  EnforcedStyle: inline
+
+Style/SymbolProc:
+  Exclude:
+    - "spec/**/*"
+    - "app/abilities/**/*"
+
+Style/MixinUsage:
+  Exclude:
+    - "spec/**/*"
+
+Style/BlockDelimiters:
+  Exclude:
+    - "spec/**/*"
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/NumericLiteralPrefix:
+  Enabled: false
+
+Style/MethodCallWithArgsParentheses:
+  AllowedMethods:
+    - require
+    - require_relative
+    - include
+    - source
+    - ruby
+    - gem
+    - puts
+    - print
+    - debug
+    - info
+    - warn
+    - error
+    - raise
+    - render
+    - send_data
+    - redirect_to
+    - redirect_back
+    - to
+    - not_to
+    - get
+    - post
+    - patch
+    - delete
+    - can
+    - cannot
+
+Style/ClassVars:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+Style/ExponentialNotation:
+  Enabled: false
+
+Style/HashAsLastArrayItem:
+  Enabled: false
+
+# Lint
+# --------------
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "spec/**/*"
+
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+Lint/SuppressedException:
+  AllowComments: true
+
+# Rails
+# --------------
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/OutputSafety:
+  Enabled: false
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Rails/InverseOf:
+  Enabled: false
+
+Rails/HelperInstanceVariable:
+  Enabled: false
+
+Rails/PluckInWhere:
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false # disabled for now, because too many bugs : https://github.com/rubocop-hq/rubocop-rails/search?q=Rails%2FUniqueValidationWithoutIndex&type=issues
+
+# Naming
+# --------------
+
+Naming/PredicateName:
+  Enabled: false
+
+Naming/VariableNumber:
+  Enabled: false
+
+# Performance
+# --------------
+
+Performance/InefficientHashSearch:
+  Enabled: false
+
+# RSpec
+# --------------
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/ExpectInHook:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/MessageChain:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 10
+
+RSpec/ExampleLength:
+  Max: 20
+  Exclude:
+    - "spec/features/**/*"
+    - "spec/services/**/*"
+    - "spec/abilities/**/*"
+
+RSpec/DescribeClass:
+  Exclude:
+    - "spec/abilities/**/*"
+    - "spec/features/**/*"
+
+RSpec/FilePath:
+  Exclude:
+    - "spec/routing/**/*"
+
+# Layout
+# --------------
+
+Layout/LineLength:
+  Enabled: true
+
+Layout/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+
+# Metrics
+# --------------
+
+Metrics:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/BlockLength:
+  AllowedMethods: ["describe", "context", "it", "shared_examples", "feature", "scenario", "namespace", "task"]
+  Exclude:
+    - spec/factories/*
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/ClassLength:
+  Max: 200

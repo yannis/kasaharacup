@@ -2,10 +2,6 @@
 
 class AddIndices < ActiveRecord::Migration[7.0]
   def change
-    add_index :users, :club_id
-    add_index :products, :event_id
-    add_index :products, :cup_id
-
     add_index :clubs, %i[name], unique: true
     add_index :cups, %i[start_on], unique: true
     add_index :individual_categories, %i[cup_id name], unique: true
