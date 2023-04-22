@@ -1,0 +1,27 @@
+name: Cleanup docker images
+
+on:
+  pull_request:
+    branches:
+    - main
+    - '**/main'
+    types: [closed]
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: List all versions
+      run: |
+        gh api "/yannis/packages/container/kasaharacup-app/versions?per_page=100" \
+           --jq '.[] | {id: .id, version: .metadata.container.tags.[0]} | select(.version == "pr-${{github.event.number}}") | .id' \
+           > version_id
+      env:
+        GITHUB_TOKEN: ${{ secrets.CLEANUP_DOCKER_IMAGES_GITHUB_TOKEN }}
+
+    - name: Delete package version
+      run: |
+        curl -X DELETE \
+             -u ${{ github.actor }}:${{ secrets.CLEANUP_DOCKER_IMAGES_GITHUB_TOKEN }} \
+             "https://api.github.com/yannis/packages/container/kasaharacup-app/versions/$(cat version_id)"
