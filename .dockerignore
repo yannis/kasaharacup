@@ -1,13 +1,5 @@
-# Git
-.git
-.gitignore
-
-# Logs
+.git*
 log/*
-
-# Temp files
 tmp/*
-
-# Editor temp files
-*.swp
-*.swo
+Dockerfile
+README.md
