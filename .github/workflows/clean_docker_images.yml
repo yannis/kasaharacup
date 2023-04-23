@@ -14,7 +14,7 @@ jobs:
     steps:
     - name: List all versions
       run: |
-        gh api "/yannis/packages/container/kasaharacup-app/versions?per_page=100" \
+        gh api "/users/yannis/packages/container/kasaharacup-app/versions?per_page=100" \
            --jq '.[] | {id: .id, version: .metadata.container.tags.[0]} | select(.version == "pr-${{github.event.number}}") | .id' \
            > version_id
       env:
@@ -23,5 +23,5 @@ jobs:
     - name: Delete package version
       run: |
         curl -X DELETE \
-             -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-             "https://api.github.com/yannis/packages/container/kasaharacup-app/versions/$(cat version_id)"
+             -u ${{ github.actor }}:${{ secrets.CLEANUP_DOCKER_IMAGES_GITHUB_TOKEN }} \
+             "https://api.github.com/users/yannis/packages/container/kasaharacup-app/versions/$(cat version_id)"
