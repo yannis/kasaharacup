@@ -21,7 +21,7 @@ class TeamsController < ApplicationController
   end
 
   def destroy
-    @team.destroy ? flash[:notice] = t("teams.destroy.notice") : flash[:alert] = t("teams.destroy.notice")
+    @team.destroy ? flash[:notice] = t(".notice") : flash[:alert] = t(".notice")
     redirect_to cup_teams_path(@cup)
   rescue => e
     redirect_to cup_team_path(@cup, @team), alert: e.message

@@ -2,8 +2,8 @@
 
 require "rails_helper"
 
-RSpec.describe Kenshi, type: :model do
-  let(:cup) { create :cup, start_on: 10.years.since }
+RSpec.describe Kenshi do
+  let(:cup) { create(:cup, start_on: 10.years.since) }
 
   describe "Attributes" do
     let(:kenshi) { build(:kenshi) }
@@ -60,11 +60,11 @@ RSpec.describe Kenshi, type: :model do
   end
 
   describe "A kenshi" do
-    let(:cup) { create :cup, start_on: "#{Date.current.year}-12-29" }
-    let(:club) { create :club, name: "Shung Do Kwan" }
+    let(:cup) { create(:cup, start_on: "#{Date.current.year}-12-29") }
+    let(:club) { create(:club, name: "Shung Do Kwan") }
     let(:kenshi) {
-      create :kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, club: club, dob: 20.years.ago,
-        cup: cup
+      create(:kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, club: club, dob: 20.years.ago,
+        cup: cup)
     }
 
     it { expect(kenshi).to be_valid_verbose }
@@ -86,8 +86,8 @@ RSpec.describe Kenshi, type: :model do
 
   describe "A kenshi with badly formatted name and email" do
     let(:kenshi) {
-      create :kenshi, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
-        email: "STUPIDLY.FORAMaTTED@EMAIL.COM", cup: cup
+      create(:kenshi, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
+        email: "STUPIDLY.FORAMaTTED@EMAIL.COM", cup: cup)
     }
 
     it { expect(kenshi.norm_last_name).to eq "Last-J.-Name Name" }
@@ -97,9 +97,9 @@ RSpec.describe Kenshi, type: :model do
   end
 
   describe "Updating a kenshi with participations data" do
-    let(:kenshi) { create :kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, cup: cup }
-    let(:individual_category) { create :individual_category, cup: kenshi.cup }
-    let(:team_category) { create :team_category, cup: kenshi.cup }
+    let(:kenshi) { create(:kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, cup: cup) }
+    let(:individual_category) { create(:individual_category, cup: kenshi.cup) }
+    let(:team_category) { create(:team_category, cup: kenshi.cup) }
 
     context "creating a team and an individual participations" do
       before {
@@ -117,7 +117,7 @@ RSpec.describe Kenshi, type: :model do
       it {
         expect(kenshi.participations.map { |p|
                  p.category.name
-               }).to match_array [individual_category.name, team_category.name]
+               }).to contain_exactly(individual_category.name, team_category.name)
       }
 
       it { expect(kenshi.individual_categories.count).to be 1 }
@@ -129,7 +129,7 @@ RSpec.describe Kenshi, type: :model do
       it { expect(kenshi.fees(:eur)).to be 25 }
 
       context "with a purchase" do
-        let(:product) { create :product, cup: kenshi.cup }
+        let(:product) { create(:product, cup: kenshi.cup) }
 
         before {
           kenshi.update product_ids: [product.id]
@@ -159,25 +159,25 @@ RSpec.describe Kenshi, type: :model do
 
   describe "fitness" do
     context "kenshi aged 20 and 0Dan" do
-      let(:kenshi) { build :kenshi, dob: 20.years.ago, grade: "kyu", cup: cup }
+      let(:kenshi) { build(:kenshi, dob: 20.years.ago, grade: "kyu", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.0 }
     end
 
     context "kenshi aged 20 and 1Dan" do
-      let(:kenshi) { build :kenshi, dob: 20.years.ago, grade: "1Dan", cup: cup }
+      let(:kenshi) { build(:kenshi, dob: 20.years.ago, grade: "1Dan", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.0333 }
     end
 
     context "kenshi aged 20 and 3Dan" do
-      let(:kenshi) { build :kenshi, dob: 20.years.ago, grade: "3Dan", cup: cup }
+      let(:kenshi) { build(:kenshi, dob: 20.years.ago, grade: "3Dan", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.1 }
     end
 
     context "kenshi aged 60 and 8Dan" do
-      let(:kenshi) { build :kenshi, dob: 60.years.ago, grade: "3Dan", cup: cup }
+      let(:kenshi) { build(:kenshi, dob: 60.years.ago, grade: "3Dan", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.0429 }
     end

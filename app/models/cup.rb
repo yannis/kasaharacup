@@ -50,11 +50,11 @@ class Cup < ApplicationRecord
   end
 
   def junior_fees(currency)
-    currency.to_sym == :chf ? junior_fees_chf : junior_fees_eur
+    (currency.to_sym == :chf) ? junior_fees_chf : junior_fees_eur
   end
 
   def adult_fees(currency)
-    currency.to_sym == :chf ? adult_fees_chf : adult_fees_eur
+    (currency.to_sym == :chf) ? adult_fees_chf : adult_fees_eur
   end
 
   def canceled?

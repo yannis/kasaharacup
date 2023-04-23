@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Fight, type: :model do
+RSpec.describe Fight do
   describe "Associations" do
     let(:fight) { create(:fight) }
 
@@ -24,10 +24,10 @@ RSpec.describe Fight, type: :model do
   end
 
   describe "A fight" do
-    let(:cup) { create :cup }
-    let(:kenshi1) { create :kenshi, cup: cup }
-    let(:kenshi2) { create :kenshi, cup: cup }
-    let(:fight) { create :fight, fighter_1_id: kenshi1.id, fighter_2_id: kenshi2.id }
+    let(:cup) { create(:cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup) }
+    let(:kenshi2) { create(:kenshi, cup: cup) }
+    let(:fight) { create(:fight, fighter_1_id: kenshi1.id, fighter_2_id: kenshi2.id) }
 
     it { expect(fight).to be_valid_verbose }
   end

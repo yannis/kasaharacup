@@ -37,7 +37,7 @@ class Tree
   end
 
   def depth
-    branch_number > 0 ? Math.log2(branch_number).to_i : 0
+    (branch_number > 0) ? Math.log2(branch_number).to_i : 0
   end
 
   def fight_number

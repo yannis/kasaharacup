@@ -34,7 +34,7 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
         data << [nil, nil, nil, nil, nil, nil]
         kenshis.each_with_index do |kenshi, i|
           f = kenshi
-          o = (kenshi == kenshis.last ? kenshis.first : kenshis[i + 1])
+          o = ((kenshi == kenshis.last) ? kenshis.first : kenshis[i + 1])
           data << if i.even?
             ["#{i + 1}.", o.poster_name(category: individual_category), nil, "x", nil,
               f.poster_name(category: individual_category)]

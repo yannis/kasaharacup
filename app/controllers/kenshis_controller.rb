@@ -12,7 +12,7 @@ class KenshisController < ApplicationController
 
   def index
     @current_cup = @cup.presence || @current_cup
-    @title = t("kenshis.index.title")
+    @title = t(".title")
     if params[:category] && %w[team open ladies juniors].include?(params[:category])
       category = params[:category]
       @kenshis = @kenshis.category(category) if category
@@ -54,26 +54,26 @@ class KenshisController < ApplicationController
         return
       else
         @kenshi = Kenshi.from(current_user)
-        @title = t("kenshis.new.yourself")
+        @title = t(".yourself")
       end
     elsif params[:id]
       origin_kenshi = Kenshi.find(params[:id])
       @kenshi = origin_kenshi.dup
       @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
-      @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)
+      @title = t(".duplicate", full_name: origin_kenshi.full_name)
       origin_kenshi.participations.each do |participation|
         @kenshi.participations << Participation.new(category: participation.category, team: participation.team,
           ronin: participation.ronin)
       end
     else
       @kenshi = Kenshi.new(email: current_user.email, club: current_user.club)
-      @title = t("kenshis.new.title")
+      @title = t(".title")
     end
     respond_with @kenshi
   end
 
   def edit
-    @title = t("kenshis.edit.title", full_name: @kenshi.full_name)
+    @title = t(".title", full_name: @kenshi.full_name)
     respond_with @kenshi
   end
 
@@ -132,7 +132,7 @@ class KenshisController < ApplicationController
 
   def destroy
     @kenshi.destroy
-    flash[:notice] = t("kenshis.destroy.notice")
+    flash[:notice] = t(".notice")
     redirect_to cup_user_path(@current_cup, locale: I18n.locale)
   rescue => e
     redirect_to cup_kenshi_path(@current_cup, @kenshi, locale: I18n.locale), alert: e.message

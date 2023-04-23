@@ -17,7 +17,7 @@ module HasLocale
 
     @locale = params_locale.presence || session_locale.presence || request_locale.presence || I18n.default_locale
     I18n.locale = session[:locale] = @locale.to_sym
-    @inverse_locale = (@locale.to_sym == :en ? :fr : :en)
+    @inverse_locale = ((@locale.to_sym == :en) ? :fr : :en)
   end
 
   def default_url_options

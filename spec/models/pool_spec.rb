@@ -2,19 +2,19 @@
 
 require "rails_helper"
 
-RSpec.describe Pool, type: :model do
-  let(:individual_category) { create :individual_category }
+RSpec.describe Pool do
+  let(:individual_category) { create(:individual_category) }
   let(:participation1) {
-    create :participation, category: individual_category,
-      kenshi: create(:kenshi, grade: "kyu", cup: individual_category.cup)
+    create(:participation, category: individual_category,
+      kenshi: create(:kenshi, grade: "kyu", cup: individual_category.cup))
   }
   let(:participation2) {
-    create :participation, category: individual_category,
-      kenshi: create(:kenshi, grade: "kyu", cup: individual_category.cup)
+    create(:participation, category: individual_category,
+      kenshi: create(:kenshi, grade: "kyu", cup: individual_category.cup))
   }
   let(:participation3) {
-    create :participation, category: individual_category,
-      kenshi: create(:kenshi, grade: "kyu", cup: individual_category.cup)
+    create(:participation, category: individual_category,
+      kenshi: create(:kenshi, grade: "kyu", cup: individual_category.cup))
   }
   let(:pool) { described_class.new number: 3, participations: [participation1, participation2, participation3] }
 

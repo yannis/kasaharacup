@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Cup, type: :model do
+RSpec.describe Cup do
   describe "Associations" do
     let(:cup) { build(:cup) }
 
@@ -71,7 +71,7 @@ RSpec.describe Cup, type: :model do
   end
 
   describe "A cup without deadline" do
-    let(:cup) { create :cup }
+    let(:cup) { create(:cup) }
 
     it { expect(cup.deadline).not_to be_nil }
   end
@@ -79,17 +79,17 @@ RSpec.describe Cup, type: :model do
   describe "4 cups, 2 pasts, 2 futures" do
     before { described_class.destroy_all }
 
-    let!(:cup1) { create :cup, start_on: Date.current - 2.years }
-    let!(:cup2) { create :cup, start_on: Date.current - 1.year }
-    let!(:cup3) { create :cup, start_on: Date.current + 1.year }
-    let!(:cup4) { create :cup, start_on: Date.current + 2.years }
+    let!(:cup1) { create(:cup, start_on: Date.current - 2.years) }
+    let!(:cup2) { create(:cup, start_on: Date.current - 1.year) }
+    let!(:cup3) { create(:cup, start_on: Date.current + 1.year) }
+    let!(:cup4) { create(:cup, start_on: Date.current + 2.years) }
 
     it { expect(cup1).to be_past }
     it { expect(described_class.count).to be 4 }
     it { expect(cup4).not_to be_past }
-    it { expect(described_class.all).to match_array [cup1, cup2, cup3, cup4] }
-    it { expect(described_class.past).to match_array [cup1, cup2] }
-    it { expect(described_class.future).to match_array [cup3, cup4] }
+    it { expect(described_class.all).to contain_exactly(cup1, cup2, cup3, cup4) }
+    it { expect(described_class.past).to contain_exactly(cup1, cup2) }
+    it { expect(described_class.future).to contain_exactly(cup3, cup4) }
   end
 
   describe "#canceled?" do

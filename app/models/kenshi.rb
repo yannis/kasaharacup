@@ -126,7 +126,7 @@ class Kenshi < ApplicationRecord
   def products_fee(currency = :chf)
     products_fee = 0
     products.each do |product|
-      products_fee += (currency.to_sym == :chf ? product.fee_chf : product.fee_eu)
+      products_fee += ((currency.to_sym == :chf) ? product.fee_chf : product.fee_eu)
     end
     products_fee
   end

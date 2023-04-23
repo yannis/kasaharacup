@@ -3,11 +3,11 @@
 require "rails_helper"
 RSpec.describe ParticipationsController do
   describe "with a participation in the database," do
-    let(:cup) { create :cup, start_on: Date.current + 3.weeks }
-    let(:category) { create :individual_category, cup: cup }
-    let(:user) { create :user }
-    let(:kenshi) { create :kenshi, user: user, cup: cup }
-    let!(:participation) { create :participation, category: category, kenshi: kenshi }
+    let(:cup) { create(:cup, start_on: Date.current + 3.weeks) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:user) { create(:user) }
+    let(:kenshi) { create(:kenshi, user: user, cup: cup) }
+    let!(:participation) { create(:participation, category: category, kenshi: kenshi) }
 
     it { expect(participation).to be_valid_verbose }
 
@@ -38,7 +38,7 @@ RSpec.describe ParticipationsController do
       end
 
       describe "on DELETE to :destroy with a participation that does not belong to the user" do
-        let(:another_participation) { create :participation }
+        let(:another_participation) { create(:participation) }
 
         before {
           delete cup_participation_path(cup, another_participation)

@@ -13,12 +13,12 @@ RSpec.describe KenshisController do
   }
 
   describe "with 3 kenshis in the database," do
-    let!(:cup) { create :cup, start_on: "#{Date.current.year}-11-30" }
-    let(:user) { create :user }
-    let(:user2) { create :user, admin: true }
-    let!(:kenshi1) { create :kenshi, last_name: "kenshi1", user_id: user.to_param, cup: cup }
-    let!(:kenshi2) { create :kenshi, last_name: "kenshi2", user_id: user2.to_param, cup: cup }
-    let!(:kenshi3) { create :kenshi, last_name: "kenshi3", user_id: user.to_param, cup: cup }
+    let!(:cup) { create(:cup, start_on: "#{Date.current.year}-11-30") }
+    let(:user) { create(:user) }
+    let(:user2) { create(:user, admin: true) }
+    let!(:kenshi1) { create(:kenshi, last_name: "kenshi1", user_id: user.to_param, cup: cup) }
+    let!(:kenshi2) { create(:kenshi, last_name: "kenshi2", user_id: user2.to_param, cup: cup) }
+    let!(:kenshi3) { create(:kenshi, last_name: "kenshi3", user_id: user.to_param, cup: cup) }
 
     context "when not logged in," do
       describe "on GET to :index" do
@@ -29,7 +29,7 @@ RSpec.describe KenshisController do
         it { expect(response).to have_http_status(:success) }
         it { expect(assigns(:kenshis)).not_to be_nil }
         it { expect(response).to render_template(:index) }
-        it { expect(assigns(:kenshis)).to match_array [kenshi1, kenshi2, kenshi3] }
+        it { expect(assigns(:kenshis)).to contain_exactly(kenshi1, kenshi2, kenshi3) }
         it { expect(flash).to be_empty }
       end
 
@@ -76,8 +76,8 @@ RSpec.describe KenshisController do
     end
 
     describe "when logged in" do
-      let(:basic_user) { create :user }
-      let(:basic_user_kenshi) { create :kenshi, user_id: basic_user.id, cup: cup }
+      let(:basic_user) { create(:user) }
+      let(:basic_user_kenshi) { create(:kenshi, user_id: basic_user.id, cup: cup) }
 
       before { sign_in basic_user }
 
@@ -88,7 +88,7 @@ RSpec.describe KenshisController do
 
         it { expect(assigns(:kenshis)).not_to be_nil }
         it { expect(response).to render_template(:index) }
-        it { expect(assigns(:kenshis)).to match_array [kenshi1, kenshi2, kenshi3] }
+        it { expect(assigns(:kenshis)).to contain_exactly(kenshi1, kenshi2, kenshi3) }
         it { expect(flash).to be_empty }
       end
 
