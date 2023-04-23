@@ -18,10 +18,10 @@ jobs:
            --jq '.[] | {id: .id, version: .metadata.container.tags.[0]} | select(.version == "pr-${{github.event.number}}") | .id' \
            > version_id
       env:
-        GITHUB_TOKEN: ${{ secrets.CLEANUP_DOCKER_IMAGES_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Delete package version
       run: |
         curl -X DELETE \
-             -u ${{ github.actor }}:${{ secrets.CLEANUP_DOCKER_IMAGES_GITHUB_TOKEN }} \
+             -u ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
              "https://api.github.com/yannis/packages/container/kasaharacup-app/versions/$(cat version_id)"
