@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Tree do
-  context "A open category with 24 kenshis" do
+  context "when open category has 24 kenshis" do
     let!(:cup) { create(:cup, start_on: Date.parse("2022-09-28")) }
     let!(:category) { create(:individual_category, name: "open", pool_size: 3, cup: cup, out_of_pool: 2) }
     let(:tree) { category.tree }

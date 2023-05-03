@@ -7,7 +7,7 @@ RSpec.describe CupsController do
   let!(:cup2) { create(:cup, start_on: Date.current - 2.years) }
   let!(:cup3) { create(:cup, start_on: Date.current + 1.year) }
 
-  context "When not logged in" do
+  context "when not logged in" do
     describe "when GET to :show for cup1" do
       before { get(cup_path(cup1)) }
 

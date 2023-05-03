@@ -74,7 +74,7 @@ RSpec.describe Kenshi do
     it { expect(kenshi.club.name).to eq "Shung Do Kwan" }
     it { expect(kenshi.poster_name).to eq "JAQUET" }
 
-    context "updated as junior" do
+    context "when updated as junior" do
       before {
         kenshi.update dob: 12.years.ago
       }
@@ -101,7 +101,7 @@ RSpec.describe Kenshi do
     let(:individual_category) { create(:individual_category, cup: kenshi.cup) }
     let(:team_category) { create(:team_category, cup: kenshi.cup) }
 
-    context "creating a team and an individual participations" do
+    context "when creating a team and an individual participations" do
       before {
         kenshi.update individual_category_ids: [individual_category.id],
           participations_attributes: {"0" => {category_type: "TeamCategory", category_id: team_category.id,
@@ -146,7 +146,7 @@ RSpec.describe Kenshi do
         it { expect(kenshi.purchased?(product)).to be true }
       end
 
-      context "and deleting the team participation" do
+      context "when deleting the team participation" do
         before {
           kenshi.update participations_attributes: {"0" => {id: kenshi.participations.first.id,
                                                             _destroy: 1}}
@@ -158,25 +158,25 @@ RSpec.describe Kenshi do
   end
 
   describe "fitness" do
-    context "kenshi aged 20 and 0Dan" do
+    context "when kenshi aged 20 and 0Dan" do
       let(:kenshi) { build(:kenshi, dob: 20.years.ago, grade: "kyu", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.0 }
     end
 
-    context "kenshi aged 20 and 1Dan" do
+    context "when kenshi aged 20 and 1Dan" do
       let(:kenshi) { build(:kenshi, dob: 20.years.ago, grade: "1Dan", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.0333 }
     end
 
-    context "kenshi aged 20 and 3Dan" do
+    context "when kenshi aged 20 and 3Dan" do
       let(:kenshi) { build(:kenshi, dob: 20.years.ago, grade: "3Dan", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.1 }
     end
 
-    context "kenshi aged 60 and 8Dan" do
+    context "when kenshi aged 60 and 8Dan" do
       let(:kenshi) { build(:kenshi, dob: 60.years.ago, grade: "3Dan", cup: cup) }
 
       it { expect(kenshi.fitness).to be 0.0429 }

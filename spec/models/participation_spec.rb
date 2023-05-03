@@ -42,11 +42,11 @@ RSpec.describe Participation do
       it { expect(participation.cup).to eql cup }
     end
 
-    context "for a kenshi" do
+    context "when for a kenshi" do
       let(:cup) { create(:cup, start_on: 2.months.from_now) }
       let(:individual_category) { create(:individual_category, min_age: 8, max_age: 10, cup: cup) }
 
-      context "too young for the category" do
+      context "when too young for the category" do
         let(:kenshi) { create(:kenshi, dob: 6.years.ago.to_date, cup: cup) }
         let(:participation) { build(:participation, kenshi: kenshi, category: individual_category) }
 
@@ -57,7 +57,7 @@ RSpec.describe Participation do
         }
       end
 
-      context "too old for the category" do
+      context "when too old for the category" do
         let(:kenshi) { create(:kenshi, dob: 14.years.ago.to_date, cup: cup) }
         let(:participation) { build(:participation, kenshi: kenshi, category: individual_category) }
 
