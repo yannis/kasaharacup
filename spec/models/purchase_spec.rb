@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Purchase, type: :model do
+RSpec.describe Purchase do
   describe "Associations" do
     let(:purchase) { build(:purchase) }
 

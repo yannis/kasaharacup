@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Event, type: :model do
+RSpec.describe Event do
   it { is_expected.to belong_to :cup }
 
   it { is_expected.to respond_to :name_en }
@@ -17,8 +17,8 @@ RSpec.describe Event, type: :model do
     it { is_expected.to validate_presence_of :start_on }
   end
 
-  describe "A event", type: :model do
-    let!(:event) { create :event, cup: create(:cup, start_on: Date.parse("2016-09-28")) }
+  describe "A event" do
+    let!(:event) { create(:event, cup: create(:cup, start_on: Date.parse("2016-09-28"))) }
 
     it { expect(event.year).to be 2016 }
   end

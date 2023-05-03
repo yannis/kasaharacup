@@ -31,10 +31,10 @@ RSpec.describe IndividualCategory do
     end
   end
 
-  describe "A individual_category “open”", type: :model do
+  describe "A individual_category “open”" do
     let!(:individual_category) {
-      create :individual_category, name: "open", pool_size: 3, out_of_pool: 2,
-        cup: create(:cup, start_on: Date.parse("2016-09-28"))
+      create(:individual_category, name: "open", pool_size: 3, out_of_pool: 2,
+        cup: create(:cup, start_on: Date.parse("2016-09-28")))
     }
 
     it do
@@ -45,16 +45,16 @@ RSpec.describe IndividualCategory do
 
     context "with a pool of 3 participations" do
       let!(:participation1) {
-        create :participation, category: individual_category, pool_number: 1, pool_position: 1,
-          kenshi: create(:kenshi, cup: individual_category.cup)
+        create(:participation, category: individual_category, pool_number: 1, pool_position: 1,
+          kenshi: create(:kenshi, cup: individual_category.cup))
       }
       let!(:participation2) {
-        create :participation, category: individual_category, pool_number: 1, pool_position: 2,
-          kenshi: create(:kenshi, cup: individual_category.cup)
+        create(:participation, category: individual_category, pool_number: 1, pool_position: 2,
+          kenshi: create(:kenshi, cup: individual_category.cup))
       }
       let!(:participation3) {
-        create :participation, category: individual_category, pool_number: 1, pool_position: 3,
-          kenshi: create(:kenshi, cup: individual_category.cup)
+        create(:participation, category: individual_category, pool_number: 1, pool_position: 3,
+          kenshi: create(:kenshi, cup: individual_category.cup))
       }
 
       it do
@@ -68,9 +68,9 @@ RSpec.describe IndividualCategory do
     context "with 24 participations" do
       before {
         24.times do |i|
-          kenshi = create :kenshi, first_name: "fn_#{i}", last_name: "ln_#{i}", cup: individual_category.cup
-          create :participation, category_type: "IndividualCategory",
-            category_id: individual_category.id, kenshi: kenshi
+          kenshi = create(:kenshi, first_name: "fn_#{i}", last_name: "ln_#{i}", cup: individual_category.cup)
+          create(:participation, category_type: "IndividualCategory",
+            category_id: individual_category.id, kenshi: kenshi)
         end
         individual_category.reload
       }

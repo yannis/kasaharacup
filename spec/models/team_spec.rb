@@ -2,10 +2,10 @@
 
 require "rails_helper"
 
-RSpec.describe Team, type: :model do
-  let!(:cup) { create :cup, start_on: 1.year.since }
-  let(:team_category) { create :team_category, name: "team_cat", cup: cup }
-  let(:team) { create :team, name: "SDK", team_category: team_category, participations: [] }
+RSpec.describe Team do
+  let!(:cup) { create(:cup, start_on: 1.year.since) }
+  let(:team_category) { create(:team_category, name: "team_cat", cup: cup) }
+  let(:team) { create(:team, name: "SDK", team_category: team_category, participations: []) }
 
   it { expect(team).to have_many :participations }
   it { expect(team).to have_many :kenshis }
@@ -22,14 +22,14 @@ RSpec.describe Team, type: :model do
     it { expect(team.name_and_category).to eql "SDK (team_cat)" }
     it { expect(team.poster_name).to eql "SDK" }
     it { expect(team.cup).to eql team_category.cup }
-    it { expect(team_category.cup.teams).to match_array [team] }
+    it { expect(team_category.cup.teams).to contain_exactly(team) }
     it { expect(described_class.empty.to_a).to include(team) }
     it { expect(described_class.empty.to_a).to eq [team] }
 
     context "with 1 participation" do
-      let(:kenshi) { create :kenshi, dob: 20.years.ago, grade: "3Dan" }
+      let(:kenshi) { create(:kenshi, dob: 20.years.ago, grade: "3Dan") }
       let!(:team_participation) {
-        create :participation, team_id: team.id, category: team_category, kenshi: kenshi
+        create(:participation, team_id: team.id, category: team_category, kenshi: kenshi)
       }
 
       before { team.reload }
@@ -46,8 +46,8 @@ RSpec.describe Team, type: :model do
     context "with 5 participations" do
       before {
         5.times do |i|
-          create :participation, team: team, category: team_category,
-            kenshi: create(:kenshi, dob: 30.years.ago, grade: "#{i + 1}Dan", cup: cup)
+          create(:participation, team: team, category: team_category,
+            kenshi: create(:kenshi, dob: 30.years.ago, grade: "#{i + 1}Dan", cup: cup))
         end
         team.reload
       }
@@ -62,7 +62,7 @@ RSpec.describe Team, type: :model do
 
     context "with 4 participations" do
       before {
-        create_list :participation, 4, team: team, category: team_category
+        create_list(:participation, 4, team: team, category: team_category)
         team.reload
       }
 
@@ -75,7 +75,7 @@ RSpec.describe Team, type: :model do
 
     context "with 6 participations" do
       before {
-        create_list :participation, 6, team: team, category: team_category
+        create_list(:participation, 6, team: team, category: team_category)
         team.reload
       }
 

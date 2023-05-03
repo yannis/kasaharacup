@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe User, type: :model do
+RSpec.describe User do
   it { is_expected.to belong_to :club }
   it { is_expected.to have_many(:kenshis).dependent(:destroy) }
 
@@ -21,29 +21,29 @@ RSpec.describe User, type: :model do
     context "without last_name" do
       it {
         expect {
-          create :user,
-            last_name: nil
+          create(:user,
+            last_name: nil)
         }.to raise_error(ActiveRecord::RecordInvalid, "La validation a échoué : Nom ne peut pas rester vide")
       }
     end
 
     context "when a user with same first_name and last_name already exists" do
-      let!(:user) { create :user, first_name: "Yannis", last_name: "Jaquet" }
+      let!(:user) { create(:user, first_name: "Yannis", last_name: "Jaquet") }
 
       it {
         expect {
-          create :user, first_name: "Yannis",
-            last_name: "Jaquet"
+          create(:user, first_name: "Yannis",
+            last_name: "Jaquet")
         }.to raise_error(ActiveRecord::RecordInvalid, "La validation a échoué : Nom a déjà été pris(e)")
       }
     end
   end
 
   describe "A basic user" do
-    let!(:cup) { create :cup }
+    let!(:cup) { create(:cup) }
     let(:user) {
-      create :user, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
-        email: "STUPIDLY.FORAMaTTED@EMAIL.COM"
+      create(:user, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
+        email: "STUPIDLY.FORAMaTTED@EMAIL.COM")
     }
 
     it { expect(user).to be_valid_verbose }
@@ -63,10 +63,10 @@ RSpec.describe User, type: :model do
     # end
 
     describe "a user with kenshis" do
-      let(:user) { create :user }
-      let!(:kenshi1) { create :kenshi, user: user, cup: cup }
-      let!(:kenshi2) { create :kenshi, user: user, cup: cup }
-      let!(:kenshi3) { create :kenshi, user: user, cup: cup }
+      let(:user) { create(:user) }
+      let!(:kenshi1) { create(:kenshi, user: user, cup: cup) }
+      let!(:kenshi2) { create(:kenshi, user: user, cup: cup) }
+      let!(:kenshi3) { create(:kenshi, user: user, cup: cup) }
 
       it { expect(kenshi1.fees(:chf)).to eq 0 }
       it { expect(user.fees(:chf, cup)).to eq 0 }
@@ -79,7 +79,7 @@ RSpec.describe User, type: :model do
     end
 
     context "with kenshi" do
-      let!(:kenshi) { create :kenshi, user: user }
+      let!(:kenshi) { create(:kenshi, user: user) }
 
       it { expect(user.has_kenshis?).to be true }
     end

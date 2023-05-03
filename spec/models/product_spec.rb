@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Product, type: :model do
+RSpec.describe Product do
   let(:product) { build(:product) }
 
   it { expect(product).to have_many(:purchases).dependent(:destroy) }

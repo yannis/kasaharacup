@@ -8,7 +8,7 @@ class ParticipationsController < ApplicationController
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   def destroy
-    @participation.destroy ? notice = t("participations.destroy.notice") : alert = t("participations.destroy.alert")
+    @participation.destroy ? notice = t(".notice") : alert = t(".alert")
     flash[:notice] = notice if notice.present?
     flash[:alert] = alert if alert.present?
     redirect_back_or_to(cup_user_path(@participation.cup), status: :see_other)

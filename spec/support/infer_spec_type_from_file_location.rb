@@ -6,7 +6,7 @@ RSpec.configure do |config|
   {
     %w[spec components] => :component
   }.each do |dir_parts, type|
-    escaped_path = Regexp.compile(dir_parts.join("[\\\/]") + "[\\\/]")
+    escaped_path = Regexp.compile(dir_parts.join("[\\/]") + "[\\/]")
     config.define_derived_metadata(file_path: escaped_path) do |metadata|
       metadata[:type] ||= type
     end

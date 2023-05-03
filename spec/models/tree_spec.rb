@@ -2,19 +2,19 @@
 
 require "rails_helper"
 
-RSpec.describe Tree, type: :model do
+RSpec.describe Tree do
   context "A open category with 24 kenshis" do
-    let!(:cup) { create :cup, start_on: Date.parse("2022-09-28") }
-    let!(:category) { create :individual_category, name: "open", pool_size: 3, cup: cup, out_of_pool: 2 }
+    let!(:cup) { create(:cup, start_on: Date.parse("2022-09-28")) }
+    let!(:category) { create(:individual_category, name: "open", pool_size: 3, cup: cup, out_of_pool: 2) }
     let(:tree) { category.tree }
     let(:elements) { tree.elements }
 
     before do
       25.times do |i|
-        create :kenshi,
+        create(:kenshi,
           first_name: "kenshi_#{i}",
           cup: cup,
-          participations: build_list(:participation, 1, category: category)
+          participations: build_list(:participation, 1, category: category))
       end
     end
 

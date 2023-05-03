@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Club, type: :model do
+RSpec.describe Club do
   let(:club) { create(:club) }
 
   it do

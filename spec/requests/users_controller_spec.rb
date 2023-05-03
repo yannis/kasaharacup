@@ -3,10 +3,10 @@
 require "rails_helper"
 
 RSpec.describe UsersController do
-  let!(:cup) { create :cup, start_on: Date.current + 2.days }
-  let(:user) { create :user }
-  let(:basic_user) { create :user }
-  let(:admin_user) { create :user, admin: true }
+  let!(:cup) { create(:cup, start_on: Date.current + 2.days) }
+  let(:user) { create(:user) }
+  let(:basic_user) { create(:user) }
+  let(:admin_user) { create(:user, admin: true) }
 
   def valid_attributes
     {last_name: "a_last_name#{rand(1..1000)}", first_name: "a_first_name", email: "anemail@address.com",

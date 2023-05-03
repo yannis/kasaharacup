@@ -3,13 +3,13 @@
 require "rails_helper"
 
 RSpec.describe HeadlinesController do
-  let!(:cup) { create :cup, start_on: Date.current + 20.days }
+  let!(:cup) { create(:cup, start_on: Date.current + 20.days) }
 
   describe "with 3 headlines in the database," do
-    let(:user) { create :user }
-    let!(:headline1) { create :headline, title_fr: "headline1", cup: cup }
-    let!(:headline2) { create :headline, title_fr: "headline2", cup: cup }
-    let!(:headline3) { create :headline, title_fr: "headline3", cup: cup }
+    let(:user) { create(:user) }
+    let!(:headline1) { create(:headline, title_fr: "headline1", cup: cup) }
+    let!(:headline2) { create(:headline, title_fr: "headline2", cup: cup) }
+    let!(:headline3) { create(:headline, title_fr: "headline3", cup: cup) }
 
     context "when not logged in," do
       describe "on GET to :index without param," do
@@ -18,7 +18,7 @@ RSpec.describe HeadlinesController do
         it { expect(response).to have_http_status(:success) }
         it { expect(assigns(:headlines)).not_to be_nil }
         it { expect(response).to render_template(:index) }
-        it { expect(assigns(:headlines)).to match_array [headline1, headline2, headline3] }
+        it { expect(assigns(:headlines)).to contain_exactly(headline1, headline2, headline3) }
         it { expect(flash).to be_empty }
       end
 
@@ -33,7 +33,7 @@ RSpec.describe HeadlinesController do
     end
 
     describe "when logged in as basic" do
-      let(:basic_user) { create :user }
+      let(:basic_user) { create(:user) }
 
       before { sign_in basic_user }
 
@@ -43,7 +43,7 @@ RSpec.describe HeadlinesController do
         it { expect(basic_user).to be_valid_verbose }
         it { expect(assigns(:headlines)).not_to be_nil }
         it { expect(response).to render_template(:index) }
-        it { expect(assigns(:headlines)).to match_array [headline1, headline2, headline3] }
+        it { expect(assigns(:headlines)).to contain_exactly(headline1, headline2, headline3) }
         it { expect(flash).to be_empty }
       end
 

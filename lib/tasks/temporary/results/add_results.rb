@@ -21,7 +21,7 @@ module AddResults
   private def add_team_results(cup:, team_names:, videos: [], documents: [])
     category = cup.team_categories.first
     team_names.each_with_index do |name, index|
-      rank = index == 3 ? 3 : index + 1
+      rank = (index == 3) ? 3 : index + 1
       category.teams.find_by!(name: name).update!(rank: rank)
     end
     create_videos(category: category, videos: videos)
@@ -36,7 +36,7 @@ module AddResults
         rank = nil
         fighting_spirit = true
       else
-        rank = index == 3 ? 3 : index + 1
+        rank = (index == 3) ? 3 : index + 1
         fighting_spirit = false
       end
       category

@@ -2,13 +2,13 @@
 
 require "rails_helper"
 
-RSpec.describe SmartPooler, type: :model do
-  let!(:cup) { create :cup }
+RSpec.describe SmartPooler do
+  let!(:cup) { create(:cup) }
   let(:smart_pooler) {
     described_class.new(individual_category)
   }
   let!(:individual_category) {
-    create :individual_category, name: "open", pool_size: 3, out_of_pool: 2, cup: cup
+    create(:individual_category, name: "open", pool_size: 3, out_of_pool: 2, cup: cup)
   }
 
   24.times do |i|
@@ -19,7 +19,7 @@ RSpec.describe SmartPooler, type: :model do
         puts "retries to create kenshi: SmartPooler spec, line 14"
         retry
       end
-      create :participation, category: individual_category, kenshi: kenshi
+      create(:participation, category: individual_category, kenshi: kenshi)
     }
   end
 

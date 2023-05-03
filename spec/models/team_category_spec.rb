@@ -31,10 +31,10 @@ RSpec.describe TeamCategory do
     end
   end
 
-  describe "A team_category team", type: :model do
+  describe "A team_category team" do
     let!(:team_category) {
-      create :team_category, name: "team", pool_size: 3, out_of_pool: 2,
-        cup: create(:cup, start_on: Date.parse("2016-09-28"))
+      create(:team_category, name: "team", pool_size: 3, out_of_pool: 2,
+        cup: create(:cup, start_on: Date.parse("2016-09-28")))
     }
 
     it { expect(team_category).to be_valid_verbose }
@@ -44,16 +44,16 @@ RSpec.describe TeamCategory do
 
     context "with a pool of 3 participations" do
       let!(:participation1) {
-        create :participation, category: team_category, pool_number: 1, pool_position: 1,
-          kenshi: create(:kenshi, cup: team_category.cup)
+        create(:participation, category: team_category, pool_number: 1, pool_position: 1,
+          kenshi: create(:kenshi, cup: team_category.cup))
       }
       let!(:participation2) {
-        create :participation, category: team_category, pool_number: 1, pool_position: 2,
-          kenshi: create(:kenshi, cup: team_category.cup)
+        create(:participation, category: team_category, pool_number: 1, pool_position: 2,
+          kenshi: create(:kenshi, cup: team_category.cup))
       }
       let!(:participation3) {
-        create :participation, category: team_category, pool_number: 1, pool_position: 3,
-          kenshi: create(:kenshi, cup: team_category.cup)
+        create(:participation, category: team_category, pool_number: 1, pool_position: 3,
+          kenshi: create(:kenshi, cup: team_category.cup))
       }
 
       it { expect(participation1).to be_valid_verbose }
@@ -65,9 +65,9 @@ RSpec.describe TeamCategory do
     context "with 24 participations" do
       before {
         24.times do |i|
-          kenshi = create :kenshi, first_name: "fn_#{i}", last_name: "ln_#{i}", cup: team_category.cup
-          create :participation, category_type: "TeamCategory", category_id: team_category.id,
-            kenshi: kenshi
+          kenshi = create(:kenshi, first_name: "fn_#{i}", last_name: "ln_#{i}", cup: team_category.cup)
+          create(:participation, category_type: "TeamCategory", category_id: team_category.id,
+            kenshi: kenshi)
         end
         team_category.reload
       }
