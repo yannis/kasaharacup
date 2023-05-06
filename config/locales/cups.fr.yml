@@ -13,6 +13,7 @@ fr:
       deadline_passed: "<strong>Attention:</strong> Les inscriptions sont fermée depuis le %{deadline}"
       enrollments:
         all: Voir les %{number} inscriptions
+      fee: "%{fee_chf} CHF ou %{fee_eu} €"
       fees:
         adults:
           fee: "%{adult_fees_chf} CHF ou %{adult_fees_eur} €"
@@ -28,7 +29,6 @@ fr:
           fee: "%{dormitory_fees_chf} CHF ou %{dormitory_fees_eur} €"
           title: Nuit au dortoir<br><em>+ petit-déjeuner (avec votre sac de couchage)</em>
         title: Combien ça coûte?
-        variable: Prix variable
       love:
         title: Partagez votre passion (pour nous ;-)
       newsletter:

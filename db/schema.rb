@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_06_062402) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_06_142316) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -217,6 +217,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_06_062402) do
     t.string "name_de"
     t.text "description_de"
     t.integer "quota"
+    t.integer "position"
+    t.boolean "display", default: true, null: false
     t.index ["cup_id", "name_en"], name: "index_products_on_cup_id_and_name_en", unique: true
     t.index ["cup_id", "name_fr"], name: "index_products_on_cup_id_and_name_fr", unique: true
     t.index ["cup_id"], name: "index_products_on_cup_id"

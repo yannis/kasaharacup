@@ -3,8 +3,8 @@
 ActiveAdmin.register Cup do
   menu priority: 1
 
-  permit_params :year, :start_on, :end_on, :deadline, :adult_fees_chf, :adult_fees_eur, :junior_fees_chf,
-    :junior_fees_eur, :canceled_at, :registerable_at, :description_en, :description_fr, :header_image
+  permit_params :year, :start_on, :end_on, :deadline, :canceled_at, :registerable_at, :description_en, :description_fr,
+    :header_image, :product_junior_id, :product_adult_id
 
   controller do
     def find_resource
@@ -20,15 +20,25 @@ ActiveAdmin.register Cup do
       f.input :deadline, as: :datepicker
       f.input :canceled_at, as: :datepicker
       f.input :registerable_at, as: :datepicker
+      f.input(
+        :product_junior_id,
+        as: :select,
+        collection: f.object.products
+          .order(:position)
+          .where("LOWER(products.name_en) ~ 'junior'")
+          .map { |p| [p.name, p.id] }
+      )
+      f.input(
+        :product_adult_id,
+        as: :select,
+        collection: f.object.products
+          .order(:position)
+          .where("LOWER(products.name_en) ~ 'adult'")
+          .map { |p| n[p.name, p.id] }
+      )
       f.input :description_en
       f.input :description_fr
       f.input :header_image, as: :file
-    end
-    f.inputs "Fees" do
-      f.input :adult_fees_chf
-      f.input :adult_fees_eur
-      f.input :junior_fees_chf
-      f.input :junior_fees_eur
     end
     f.actions
   end
@@ -41,10 +51,12 @@ ActiveAdmin.register Cup do
     column :end_on
     column :deadline
     column :canceled?
-    column :adult_fees_chf
-    column :adult_fees_eur
-    column :junior_fees_chf
-    column :junior_fees_eur
+    column :product_junior do |cup|
+      cup.product_junior&.name
+    end
+    column :product_adult do |cup|
+      cup.product_adult&.name
+    end
     column :description do |cup|
       md_to_html(cup.description)
     end
@@ -67,10 +79,12 @@ ActiveAdmin.register Cup do
       row :deadline
       row :canceled?
       row :registerable_at
-      row :adult_fees_chf
-      row :adult_fees_eur
-      row :junior_fees_chf
-      row :junior_fees_eur
+      row :product_junior do |cup|
+        link_to cup.product_junior&.name, [:admin, cup.product_junior] if cup.product_junior
+      end
+      row :product_adult do |cup|
+        link_to cup.product_adult&.name, [:admin, cup.product_adult] if cup.product_adult
+      end
       row :description_en
       row :description_fr
       row :header_image do |cup|
@@ -146,19 +160,6 @@ ActiveAdmin.register Cup do
 
   filter :year
 
-  # form do |f|
-  #   f.inputs "Details" do
-  #     f.input :start_on, as: :string, input_html: {class: "hasDatetimePicker"}
-  #     f.input :end_on, as: :string, input_html: {class: "hasDatetimePicker"}
-  #     f.input :deadline, as: :string, input_html: {class: "hasDatetimePicker"}
-  #     f.input :adult_fees_chf
-  #     f.input :adult_fees_eur
-  #     f.input :junior_fees_chf
-  #     f.input :junior_fees_eur
-  #   end
-  #   f.actions
-  # end
-
   member_action :download_kenshi_list, method: :get do
     @cup = Cup.all.detect { |c| c.year.to_i == params[:id].to_i }
     kenshis = @cup.kenshis
@@ -167,8 +168,6 @@ ActiveAdmin.register Cup do
       [@cup.team_categories, @cup.individual_categories, @cup.products].flatten.each do |tc|
         header << tc.name
       end
-      header += ["Competition fee (CHF)", "Competition fee (€)", "Product fee (CHF)", "Product fee (€)",
-        "Total fee (CHF)", "Total fee (€)"]
       csv << header.flatten
       kenshis.each do |kenshi|
         kcsv = [kenshi.norm_last_name, kenshi.norm_first_name, kenshi.club.name, kenshi.dob, kenshi.grade]
@@ -181,9 +180,6 @@ ActiveAdmin.register Cup do
         @cup.products.each do |p|
           kcsv << (kenshi.consume?(p) ? p.name : nil)
         end
-        kcsv += [kenshi.competition_fee(:chf), kenshi.competition_fee(:eur), kenshi.competition_fee(:chf),
-          kenshi.competition_fee(:eur), kenshi.fees(:chf), kenshi.fees(:eur)]
-        csv << kcsv.flatten
       end
     end
 

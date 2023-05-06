@@ -31,6 +31,8 @@ class Participation < ApplicationRecord
     end
   end
 
+  after_commit :update_purchase
+
   delegate :full_name, to: "kenshi", allow_nil: true
   delegate :grade, to: "kenshi", allow_nil: true
   delegate :club, to: "kenshi", allow_nil: true
@@ -61,6 +63,10 @@ class Participation < ApplicationRecord
     kenshi.junior? ? product_junior : product_adult
   end
 
+  def purchase
+    kenshi.purchases.find_by(product: product)
+  end
+
   def team_name
     return unless category.is_a?(TeamCategory)
 
@@ -87,6 +93,14 @@ class Participation < ApplicationRecord
     full_name << "(#{team.name})" if team
     full_name << "(ronin)" if ronin
     full_name.join(" ")
+  end
+
+  def update_purchase
+    if destroyed?
+      purchase&.destroy!
+    elsif purchase.nil? && product.present?
+      kenshi.purchases.create!(product: product)
+    end
   end
 
   protected def assign_category
