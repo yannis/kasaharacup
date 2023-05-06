@@ -22,6 +22,18 @@ RSpec.describe Participation do
     it { expect(participation).to belong_to(:team).optional }
   end
 
+  describe "Delegations" do
+    let(:participation) { build(:participation) }
+
+    it do
+      expect(participation).to delegate_method(:product_junior).to(:cup)
+      expect(participation).to delegate_method(:product_adult).to(:cup)
+      expect(participation).to delegate_method(:full_name).to(:kenshi).allow_nil
+      expect(participation).to delegate_method(:grade).to(:kenshi).allow_nil
+      expect(participation).to delegate_method(:club).to(:kenshi).allow_nil
+    end
+  end
+
   describe "A participation" do
     context "without team_id an individual_category_id" do
       context "when an individual_category_id is set" do
@@ -68,6 +80,26 @@ RSpec.describe Participation do
               catégorie #{individual_category.name}!".squish)
         }
       end
+    end
+  end
+
+  describe "#product" do
+    let(:product_junior) { build(:product) }
+    let(:product_adult) { build(:product) }
+    let(:cup) { create(:cup, product_junior: product_junior, product_adult: product_adult) }
+    let(:kenshi) { create(:kenshi, cup: cup) }
+    let(:participation) { create(:participation, kenshi: kenshi) }
+
+    context "when kenshi is junior" do
+      before { allow(kenshi).to receive(:junior?).and_return(true) }
+
+      it { expect(participation.product).to eq(product_junior) }
+    end
+
+    context "when kenshi is adult" do
+      before { allow(kenshi).to receive(:junior?).and_return(false) }
+
+      it { expect(participation.product).to eq(product_adult) }
     end
   end
 end

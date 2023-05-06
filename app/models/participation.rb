@@ -35,6 +35,7 @@ class Participation < ApplicationRecord
   delegate :grade, to: "kenshi", allow_nil: true
   delegate :club, to: "kenshi", allow_nil: true
   delegate :cup, to: "kenshi", allow_nil: true
+  delegate :product_junior, :product_adult, to: :cup
 
   def self.no_pool
     where(pool_number: nil)
@@ -56,35 +57,9 @@ class Participation < ApplicationRecord
     category.id if category.is_a?(TeamCategory)
   end
 
-  # def self.set_for_user(user, attributes)
-  #   id = attributes.fetch :id, nil
-  #   category_type = attributes.fetch :category_type
-  #   category_id = attributes.fetch :category_id
-  #   participation_id = attributes.fetch :id, nil
-  #   team_name = attributes.fetch :team_name, nil
-  #   ronin = attributes.fetch :ronin, nil
-
-  #   current_participation = self.find(id) if id.present?
-
-  #   if category_type == "TeamCategory"
-  #     category = TeamCategory.find category_id
-  #     params = {team_name: team_name, ronin: ronin}
-  #     if participation.present?
-  #       participation.update_attributes params
-  #     else
-  #       self.participations.new params.merge! category: category
-  #     end
-  #   elsif category_type == "IndividualCategory"
-  #     category = IndividualCategory.find category_id
-  #     if participation
-  #       participation.destroy unless participate
-  #     else
-  #       self.participations.new category: category
-  #     end
-  #   end
-
-  #   category
-  # end
+  def product
+    kenshi.junior? ? product_junior : product_adult
+  end
 
   def team_name
     return unless category.is_a?(TeamCategory)
