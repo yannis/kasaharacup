@@ -55,7 +55,7 @@ class User < ApplicationRecord
   end
 
   def fees(currency, cup)
-    kenshis.for_cup(cup).map { |k| k.fees(currency) }.inject { |sum, x| sum + x }
+    kenshis.for_cup(cup).sum { |k| k.fees(currency) }
   end
 
   private def format
