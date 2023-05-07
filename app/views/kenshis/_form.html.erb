@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <%=
   form_with(
     model: [@user, @kenshi],
@@ -12,10 +13,13 @@
 =======
 <%= form_with model: [@user, @kenshi], url: polymorphic_path([@cup, @user, @kenshi]), html: {class: "kasa-form"} do |f| %>
 >>>>>>> 74d90c7 (Add erb-lint and start to fix views)
+=======
+<%= form_with model: [user, kenshi], url: polymorphic_path([cup, user, kenshi]), html: {class: "kasa-form"} do |f| %>
+>>>>>>> 3c10cef (Add erb-lint and start to fix offenses)
   <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
     <div class="text-base max-w-prose">
       <div>
-        <h2 class="text-base text-red-600 font-semibold tracking-wide uppercase"><%= "#{t("layout.header.title")} #{@current_cup.year}" %></h2>
+        <h2 class="text-base text-red-600 font-semibold tracking-wide uppercase"><%= "#{t("layout.header.title")} #{cup.year}" %></h2>
         <h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"><%= form_title %></h3>
       </div>
     </div>
@@ -95,7 +99,7 @@
                   <%= Kenshi.human_attribute_name(:team) %>
                 </div>
               </div>
-              <% @cup.team_categories.all.each do |c| %>
+              <% cup.team_categories.all.each do |c| %>
                 <% participation = f.object.participations.detect { |p| p.category == c }.presence || Participation.new(category: c) %>
                 <%= f.fields_for :participations, participation do |g| %>
                   <% if participation.persisted? %>
@@ -140,7 +144,7 @@
                         </div>
                       </div>
                     </div>
-                    <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                    <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
                   </div>
                 <% end %>
               <% end %>
@@ -149,7 +153,7 @@
         </div>
       </div>
     </div>
-    <% if @cup.individual_categories.present? %>
+    <% if cup.individual_categories.present? %>
       <div>
         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
           <div class="pt-6 sm:pt-5">
@@ -161,10 +165,10 @@
                   </div>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% @cup.individual_categories.all.each do |individual_category| %>
+                  <% cup.individual_categories.all.each do |individual_category| %>
                     <div class="max-w-full space-y-4">
                       <div class="relative flex items-start mb-4">
-                        <% participation = @kenshi.participations.to_a.find { |p| p.category == individual_category } %>
+                        <% participation = kenshi.participations.to_a.find { |p| p.category == individual_category } %>
                         <% if participation.present? %>
                           <%= f.fields_for :participations, participation do |g| %>
                             <% if participation.persisted? %>
@@ -197,12 +201,12 @@
                               <p class="helper-text">
                                 <%= individual_category.description %>
                               </p>
-                              <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                              <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
                             </div>
 
                           <% end %>
                         <% else %>
-                          <% participation = @kenshi.participations.new(category: individual_category) %>
+                          <% participation = kenshi.participations.new(category: individual_category) %>
                           <%= f.fields_for :participations, participation do |g| %>
                             <%= g.hidden_field :category_type %>
                             <div class="flex items-center h-5">
@@ -213,7 +217,7 @@
                               <p class="helper-text">
                                 <%= individual_category.description %>
                               </p>
-                              <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                              <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
                             </div>
                           <% end %>
                         <% end %>
@@ -261,7 +265,7 @@
                   <% products.each do |p| %>
                     <% price = (p.fee_chf == 0) ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
                     <div class="max-w-lg mb-4">
-                      <% purchase = @kenshi.purchases.to_a.find { |purch| purch.product_id == p.id } %>
+                      <% purchase = kenshi.purchases.to_a.find { |purch| purch.product_id == p.id } %>
                       <% if purchase.present? %>
                         <div class="relative flex items-start">
                           <%= f.fields_for :purchases, purchase do |g| %>
@@ -304,7 +308,7 @@
                           <% end %>
                         </div>
                       <% else %>
-                        <% purchase = @kenshi.purchases.new(product: p) %>
+                        <% purchase = kenshi.purchases.new(product: p) %>
                         <%= f.fields_for :purchases, purchase do |g| %>
                           <div class="relative flex items-start">
                             <div class="flex items-center h-5">

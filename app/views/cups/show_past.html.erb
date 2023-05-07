@@ -1,5 +1,5 @@
 <%= render(BannerComponent.new) do %>
-  <%= raw t("cups.show.over") %>
+  <%= t("cups.show.over") %>
 <% end %>
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <%= render(HeroComponent.new(cup: @cup)) %>

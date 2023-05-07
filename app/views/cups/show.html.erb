@@ -1,10 +1,10 @@
 <%= render(BannerComponent.new) do %>
   <% if Time.current > @cup.deadline %>
-    <%= raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long)) %>
+    <%= t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% elsif @cup.not_yet_registerable? %>
-    <%= raw t(".registrations_opening_soon", deadline: I18n.l(@cup.deadline, format: :long)) %>
+    <%= t(".registrations_opening_soon", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% elsif @cup.registerable? %>
-    <%= raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
+    <%= t(".deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% end %>
 <% end %>
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
@@ -19,11 +19,7 @@
       <%= md_to_html(@cup.description) %>
       <% if @cup.registerable? %>
         <h2 class="mt-10">
-<<<<<<< HEAD
           <%= t(".program.title") %>
-=======
-          <%= t ".program.title" %>
->>>>>>> 74d90c7 (Add erb-lint and start to fix views)
         </h2>
         <div class="lg:grid lg:grid-cols-2 lg:gap-8">
           <% @grouped_events.each do |date, events| %>
@@ -49,11 +45,7 @@
           <% end %>
           <div id="categories" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">
-<<<<<<< HEAD
               <%= t(".categories.title") %>
-=======
-              <%= t ".categories.title" %>
->>>>>>> 74d90c7 (Add erb-lint and start to fix views)
             </h2>
             <p>
               <%= t(".shinpans.info") %>
@@ -86,11 +78,7 @@
                       <%= c.name.capitalize %>
                     </th>
                     <td>
-<<<<<<< HEAD
-                      <%= c.description %>
-=======
                       <%= c.description.to_s %>
->>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                     </td>
                   </tr>
                 <% end %>
@@ -99,11 +87,7 @@
           </div>
           <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">
-<<<<<<< HEAD
               <%= t(".fees.title") %>
-=======
-              <%= t ".fees.title" %>
->>>>>>> 74d90c7 (Add erb-lint and start to fix views)
             </h2>
             <p>
               <%= t(".fees.description") %>
@@ -123,10 +107,14 @@
                     </th>
                     <td>
 <<<<<<< HEAD
+<<<<<<< HEAD
                       <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
 =======
                       <%= raw t ".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu %>
 >>>>>>> 74d90c7 (Add erb-lint and start to fix views)
+=======
+                      <%= t ".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu %>
+>>>>>>> 3c10cef (Add erb-lint and start to fix offenses)
                     </td>
                   </tr>
                 <% end %>
@@ -161,7 +149,7 @@
     </div>
     <% if @cup.registerable? %>
       <div class="mt-10">
-        <%= render "current_user_resume" %>
+        <%= render "current_user_resume", cup: @cup %>
       </div>
     <% end %>
   </div>

@@ -7,6 +7,6 @@
         <%= @headline.created_at.to_fs :day_month_year %>
       </small>
     </h2>
-    <%= raw @headline.content %>
+    <%= md_to_html(@headline.content) %>
   </div>
 </div>

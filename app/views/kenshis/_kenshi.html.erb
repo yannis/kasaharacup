@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
       <div>
         <p class="text-lg font-medium text-gray-600">
-          <%= "#{kenshi_counter+1})" if kenshi_counter %>
+          <%= "#{kenshi_counter + 1})" if kenshi_counter %>
           <%= kenshi.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %> <%= kenshi.full_name %>
         </p>
         <p class="text-sm ml-5 font-medium text-gray-400 truncate">

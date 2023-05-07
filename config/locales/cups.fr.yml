@@ -9,8 +9,8 @@ fr:
       categories:
         description: Les catégories Juniors sont susceptibles à changement en fonction des inscriptions
         title: Les catégories
-      deadline: "<strong>Attention:</strong> Le délai pour les inscriptions est fixé au %{deadline}"
-      deadline_passed: "<strong>Attention:</strong> Les inscriptions sont fermée depuis le %{deadline}"
+      deadline: "Le délai pour les inscriptions est fixé au %{deadline}"
+      deadline_passed: "Les inscriptions sont fermée depuis le %{deadline}"
       enrollments:
         all: Voir les %{number} inscriptions
       fee: "%{fee_chf} CHF ou %{fee_eu} €"
