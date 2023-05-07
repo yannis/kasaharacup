@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Product, as: "Product" do
   permit_params :name_en, :name_fr, :description_en, :description_fr, :cup_id, :event_id,
-    :fee_chf, :fee_eu, :quota
+    :fee_chf, :fee_eu, :quota, :position, :display
 
   controller do
     def scoped_collection
@@ -27,6 +27,10 @@ ActiveAdmin.register Product, as: "Product" do
       product.purchases.size
     end
     column :quota
+    column :position do |product|
+      best_in_place product, :position, as: :input, url: [:admin, product]
+    end
+    column :display
     actions
   end
 
@@ -44,6 +48,8 @@ ActiveAdmin.register Product, as: "Product" do
       row :fee_chf
       row :fee_eu
       row :quota
+      row :position
+      row :display
     end
 
     if product.kenshis.present?
@@ -78,7 +84,7 @@ ActiveAdmin.register Product, as: "Product" do
   form do |f|
     f.inputs "Details" do
       f.input :cup
-      f.input :event, collection: Event.joins(:cup).where(cup: f.object.cup).all.map { |e|
+      f.input :event, collection: Event.includes(:cup).where(cup: f.object.cup).all.map { |e|
                                     ["#{e.name} (#{e.cup})", e.id]
                                   }
       f.input :name_en
@@ -88,6 +94,8 @@ ActiveAdmin.register Product, as: "Product" do
       f.input :fee_chf
       f.input :fee_eu
       f.input :quota, as: :number
+      f.input :position, as: :number
+      f.input :display, as: :boolean
     end
     f.actions
   end

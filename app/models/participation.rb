@@ -8,33 +8,21 @@ class Participation < ApplicationRecord
   belongs_to :kenshi, inverse_of: :participations
   belongs_to :team, optional: true
 
-  before_validation :assign_category
-
   validates :pool_position, presence: {if: lambda { |p| p.pool_number.present? }}
   validates :kenshi_id,
     uniqueness: {scope: [:category_type, :category_id], if: ->(p) { p.ronin.blank? }, allow_nil: true}
   validates :pool_number, numericality: {only_integer: true, greater_than: 0, allow_nil: true}
+  validate :individual_or_team_category
+  validate :category_age
 
-  validates_each :category do |participation, attr, value|
-    kenshi = participation.kenshi
-    category = participation.category
-    next unless kenshi && category
-
-    age = kenshi.age_at_cup
-    if category.present?
-      if category.min_age && age < category.min_age
-        participation.errors.add(attr, :too_young, name: category.name)
-      end
-      if category.max_age && age > category.max_age
-        participation.errors.add(attr, :too_old, name: category.name)
-      end
-    end
-  end
+  before_validation :assign_category
+  after_commit :update_purchase
 
   delegate :full_name, to: "kenshi", allow_nil: true
   delegate :grade, to: "kenshi", allow_nil: true
   delegate :club, to: "kenshi", allow_nil: true
   delegate :cup, to: "kenshi", allow_nil: true
+  delegate :product_junior, :product_adult, to: :cup
 
   def self.no_pool
     where(pool_number: nil)
@@ -56,35 +44,13 @@ class Participation < ApplicationRecord
     category.id if category.is_a?(TeamCategory)
   end
 
-  # def self.set_for_user(user, attributes)
-  #   id = attributes.fetch :id, nil
-  #   category_type = attributes.fetch :category_type
-  #   category_id = attributes.fetch :category_id
-  #   participation_id = attributes.fetch :id, nil
-  #   team_name = attributes.fetch :team_name, nil
-  #   ronin = attributes.fetch :ronin, nil
+  def product
+    kenshi.junior? ? product_junior : product_adult
+  end
 
-  #   current_participation = self.find(id) if id.present?
-
-  #   if category_type == "TeamCategory"
-  #     category = TeamCategory.find category_id
-  #     params = {team_name: team_name, ronin: ronin}
-  #     if participation.present?
-  #       participation.update_attributes params
-  #     else
-  #       self.participations.new params.merge! category: category
-  #     end
-  #   elsif category_type == "IndividualCategory"
-  #     category = IndividualCategory.find category_id
-  #     if participation
-  #       participation.destroy unless participate
-  #     else
-  #       self.participations.new category: category
-  #     end
-  #   end
-
-  #   category
-  # end
+  def purchase
+    kenshi.purchases.find_by(product: product)
+  end
 
   def team_name
     return unless category.is_a?(TeamCategory)
@@ -114,15 +80,37 @@ class Participation < ApplicationRecord
     full_name.join(" ")
   end
 
-  protected def assign_category
-    if @category_individual.present? && @category_team.present?
-      errors.add(:category, "can't have both an individual and a team category")
+  private def assign_category
+    return unless @category_individual.present? || @category_team.present?
+
+    self.category = @category_individual.presence || @category_team.presence
+  end
+
+  private def individual_or_team_category
+    return unless @category_individual.present? && @category_team.present?
+
+    errors.add(:category, "can't have both an individual and a team category")
+  end
+
+  private def update_purchase
+    if destroyed?
+      purchase&.destroy!
+    elsif purchase.nil? && product.present?
+      kenshi.purchases.create!(product: product)
     end
-    if @category_individual.present?
-      self.category = IndividualCategory.find(@category_individual)
-    end
-    if @category_team.present?
-      self.category = TeamCategory.find(@category_team)
+  end
+
+  private def category_age
+    return unless kenshi && category
+
+    age = kenshi.age_at_cup
+    if category.present?
+      if category.min_age && age < category.min_age
+        errors.add(:category, :too_young, name: category.name)
+      end
+      if category.max_age && age > category.max_age
+        errors.add(:category, :too_old, name: category.name)
+      end
     end
   end
 end

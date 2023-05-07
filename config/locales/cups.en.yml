@@ -20,6 +20,7 @@ en:
       deadline_passed: "<strong>Warning:</strong> Registration is closed since %{deadline}"
       enrollments:
         all: See all %{number} registrations
+      fee: "%{fee_chf} CHF or %{fee_eu} €"
       fees:
         adults:
           fee: "%{adult_fees_chf} CHF or %{adult_fees_eur} €"
@@ -28,9 +29,6 @@ en:
         dinner:
           fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
           title: Saturday night dinner
-        juniors:
-          fee: "%{junior_fees_chf} CHF or %{junior_fees_eur} €"
-          title: Juniors (born in %{year} or after)
         night:
           fee: "%{dormitory_fees_chf} CHF or %{dormitory_fees_eur} €"
           title: Night at the dormitory<br><em>+ breakfast (with own sleeping bag)</em>

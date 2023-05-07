@@ -22,31 +22,112 @@ RSpec.describe Participation do
     it { expect(participation).to belong_to(:team).optional }
   end
 
-  describe "A participation" do
-    context "without team_id an individual_category_id" do
-      context "when an individual_category_id is set" do
-        let(:participation) { build(:participation, category: create(:individual_category)) }
+  describe "Delegations" do
+    let(:participation) { build(:participation) }
 
-        it { expect(participation).to be_valid_verbose }
+    it do
+      expect(participation).to delegate_method(:product_junior).to(:cup)
+      expect(participation).to delegate_method(:product_adult).to(:cup)
+      expect(participation).to delegate_method(:full_name).to(:kenshi).allow_nil
+      expect(participation).to delegate_method(:grade).to(:kenshi).allow_nil
+      expect(participation).to delegate_method(:club).to(:kenshi).allow_nil
+    end
+  end
+
+  describe "Callbacks" do
+    describe "before_validation" do
+      describe "#assign_category" do
+        let!(:cup) { create(:cup) }
+        let!(:team_category) { create(:team_category, cup: cup) }
+        let!(:individual_category) { create(:individual_category, cup: cup) }
+        let!(:kenshi) { create(:kenshi, cup: cup) }
+        let!(:participation) { build(:participation, kenshi: kenshi, category: nil) }
+
+        context "when both ronin and team_category_id are set" do
+          before do
+            participation.update(ronin: true, category: team_category)
+          end
+
+          it { expect(participation).to be_valid_verbose }
+          it { expect(described_class.ronins.to_a).to eql [participation] }
+          it { expect(participation.cup).to eql cup }
+        end
+
+        context "when individual_category is set" do
+          before do
+            participation.category_individual = individual_category
+          end
+
+          it do
+            expect(participation).to be_valid
+            expect(participation.category).to eq(individual_category)
+          end
+        end
+
+        context "when team_category is set" do
+          before do
+            participation.category_team = team_category
+          end
+
+          it do
+            expect(participation).to be_valid
+            expect(participation.category).to eq(team_category)
+          end
+        end
       end
     end
 
-    context "with ronin and team_category_id" do
-      let(:cup) { create(:cup) }
-      let(:kenshi) { create(:kenshi, cup: cup) }
-      let(:team_category) { create(:team_category, cup: cup) }
-      let!(:participation) { create(:participation, category: team_category, ronin: true, kenshi: kenshi) }
+    describe "after_commit" do
+      describe "#update_purchase" do
+        let!(:cup) { create(:cup, product_junior: create(:product), product_adult: create(:product)) }
+        let!(:team_category) { build(:team_category, cup: cup) }
+        let!(:individual_category) { create(:individual_category, cup: cup) }
+        let!(:kenshi) { create(:kenshi, cup: cup) }
 
-      it { expect(participation).to be_valid_verbose }
-      it { expect(described_class.ronins.to_a).to eql [participation] }
-      it { expect(participation.cup).to eql cup }
+        context "when participation is destroyed" do
+          let!(:participation) { create(:participation, kenshi: kenshi, category: team_category) }
+
+          it do
+            expect { participation.destroy }
+              .to change { kenshi.purchases.count }.by(-1)
+          end
+        end
+
+        context "when participation is created" do
+          it do
+            expect { create(:participation, kenshi: kenshi, category: team_category) }
+              .to change { kenshi.purchases.count }.by(1)
+          end
+        end
+      end
+    end
+  end
+
+  describe "Validations" do
+    describe "#individual_or_team_category" do
+      let!(:cup) { create(:cup) }
+      let!(:team_category) { create(:team_category, cup: cup) }
+      let!(:individual_category) { create(:individual_category, cup: cup) }
+      let!(:kenshi) { create(:kenshi, cup: cup) }
+      let!(:participation) { build(:participation, kenshi: kenshi, category: nil) }
+
+      before do
+        participation.category_team = team_category
+        participation.category_individual = individual_category
+      end
+
+      it do
+        expect(participation).not_to be_valid
+        expect(participation.errors[:category])
+          .to contain_exactly("can't have both an individual and a team category")
+      end
     end
 
-    context "when for a kenshi" do
+    describe "#category_age" do
       let(:cup) { create(:cup, start_on: 2.months.from_now) }
       let(:individual_category) { create(:individual_category, min_age: 8, max_age: 10, cup: cup) }
 
-      context "when too young for the category" do
+      context "when kenshi is too young for the category" do
         let(:kenshi) { create(:kenshi, dob: 6.years.ago.to_date, cup: cup) }
         let(:participation) { build(:participation, kenshi: kenshi, category: individual_category) }
 
@@ -57,7 +138,7 @@ RSpec.describe Participation do
         }
       end
 
-      context "when too old for the category" do
+      context "when kenshi is too old for the category" do
         let(:kenshi) { create(:kenshi, dob: 14.years.ago.to_date, cup: cup) }
         let(:participation) { build(:participation, kenshi: kenshi, category: individual_category) }
 
@@ -68,6 +149,38 @@ RSpec.describe Participation do
               catégorie #{individual_category.name}!".squish)
         }
       end
+    end
+  end
+
+  describe "#product" do
+    let(:product_junior) { build(:product) }
+    let(:product_adult) { build(:product) }
+    let(:cup) { create(:cup, product_junior: product_junior, product_adult: product_adult) }
+    let(:kenshi) { create(:kenshi, cup: cup) }
+    let(:participation) { create(:participation, kenshi: kenshi) }
+
+    context "when kenshi is junior" do
+      before { allow(kenshi).to receive(:junior?).and_return(true) }
+
+      it { expect(participation.product).to eq(product_junior) }
+    end
+
+    context "when kenshi is adult" do
+      before { allow(kenshi).to receive(:junior?).and_return(false) }
+
+      it { expect(participation.product).to eq(product_adult) }
+    end
+  end
+
+  describe "#purchase" do
+    let(:product_adult) { create(:product) }
+    let(:cup) { create(:cup, product_adult: product_adult) }
+    let(:kenshi) { create(:kenshi, cup: cup) }
+    let(:participation) { create(:participation, kenshi: kenshi) }
+
+    it do
+      expect(participation.purchase).to be_a(Purchase)
+      expect(participation.purchase.product).to eq(product_adult)
     end
   end
 end

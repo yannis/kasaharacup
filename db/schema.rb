@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_07_123112) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_06_142316) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "active_admin_comments", id: :serial, force: :cascade do |t|
@@ -79,6 +80,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_07_123112) do
     t.datetime "registerable_at"
     t.text "description_en"
     t.text "description_fr"
+    t.bigint "product_junior_id"
+    t.bigint "product_adult_id"
+    t.index ["product_adult_id"], name: "index_cups_on_product_adult_id"
+    t.index ["product_junior_id"], name: "index_cups_on_product_junior_id"
     t.index ["start_on"], name: "index_cups_on_start_on", unique: true
   end
 
@@ -212,6 +217,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_07_123112) do
     t.string "name_de"
     t.text "description_de"
     t.integer "quota"
+    t.integer "position"
+    t.boolean "display", default: true, null: false
     t.index ["cup_id", "name_en"], name: "index_products_on_cup_id_and_name_en", unique: true
     t.index ["cup_id", "name_fr"], name: "index_products_on_cup_id_and_name_fr", unique: true
     t.index ["cup_id"], name: "index_products_on_cup_id"
@@ -298,6 +305,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_07_123112) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cups", "products", column: "product_adult_id"
+  add_foreign_key "cups", "products", column: "product_junior_id"
   add_foreign_key "events", "cups"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"

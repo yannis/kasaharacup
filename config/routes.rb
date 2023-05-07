@@ -17,7 +17,6 @@ Rails.application.routes.draw do
       resources :purchases, only: [:destroy]
       resources :teams, only: [:index, :show]
       resource :user, only: %i[show destroy] do
-        resources :charges
         resources :kenshis do
           member do
             get :duplicate, to: "kenshis#new"

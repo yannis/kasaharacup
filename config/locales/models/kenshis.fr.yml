@@ -79,6 +79,8 @@ fr:
       title_ladies: Inscriptions Ladies
       title_open: Inscriptions Open
       title_team: Inscriptions Team
+    kenshi:
+      no_categories: Ne participe à aucune catégorie pour l'instant
     new:
       button: Confirmez l'inscription
       duplicate: Dupliquez l'inscription de %{full_name}
