@@ -31,7 +31,7 @@
             <li>
               <div class="px-4 py-4 sm:px-6 prose">
                 <%= t(".no_registrations") %>
-                <%= raw t(".register", yourself: link_to(t(".yourself"), new_cup_user_kenshi_path(@current_cup, self: true, locale: I18n.locale)), someone: link_to(t(".someone"), new_cup_user_kenshi_path(@current_cup, locale: I18n.locale))) if can?(:register, @current_cup)  %>
+                <%= raw t(".register", yourself: link_to(t(".yourself"), new_cup_user_kenshi_path(@current_cup, self: true, locale: I18n.locale)), someone: link_to(t(".someone"), new_cup_user_kenshi_path(@current_cup, locale: I18n.locale))) if can?(:register, @current_cup) %>
               </div>
             </li>
           <% end %>

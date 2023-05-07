@@ -22,7 +22,7 @@
                 <em>
                   <%= kenshi.full_name %>
                 </em>
-                <%= "(#{kenshi.participations.map{|p| p.category.name}.join(", ")})" if kenshi.participations.present? %>
+                <%= "(#{kenshi.participations.map { |p| p.category.name }.join(", ")})" if kenshi.participations.present? %>
               </li>
             <% end %>
           </ul>
@@ -33,7 +33,7 @@
         <% end %>
         <% if can?(:register, @cup) %>
           <p>
-            <%== t("users.show.register", yourself: link_to(t("users.show.yourself"), new_cup_user_kenshi_path(@cup, self: true, locale: I18n.locale), class: "font-medium text-red-600 hover:text-red-500"), someone: link_to(t("users.show.someone"), new_cup_user_kenshi_path(@cup, locale: I18n.locale), class: "font-medium text-red-600 hover:text-red-500")) if can?(:register, @cup)  %>
+            <%== t("users.show.register", yourself: link_to(t("users.show.yourself"), new_cup_user_kenshi_path(@cup, self: true, locale: I18n.locale), class: "font-medium text-red-600 hover:text-red-500"), someone: link_to(t("users.show.someone"), new_cup_user_kenshi_path(@cup, locale: I18n.locale), class: "font-medium text-red-600 hover:text-red-500")) if can?(:register, @cup) %>
           </p>
         <% end %>
       </div>

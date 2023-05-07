@@ -19,7 +19,11 @@
       <%= md_to_html(@cup.description) %>
       <% if @cup.registerable? %>
         <h2 class="mt-10">
+<<<<<<< HEAD
           <%= t(".program.title") %>
+=======
+          <%= t ".program.title" %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
         </h2>
         <div class="lg:grid lg:grid-cols-2 lg:gap-8">
           <% @grouped_events.each do |date, events| %>
@@ -45,7 +49,11 @@
           <% end %>
           <div id="categories" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">
+<<<<<<< HEAD
               <%= t(".categories.title") %>
+=======
+              <%= t ".categories.title" %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
             </h2>
             <p>
               <%= t(".shinpans.info") %>
@@ -78,7 +86,11 @@
                       <%= c.name.capitalize %>
                     </th>
                     <td>
+<<<<<<< HEAD
                       <%= c.description %>
+=======
+                      <%= c.description.to_s %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                     </td>
                   </tr>
                 <% end %>
@@ -87,7 +99,11 @@
           </div>
           <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">
+<<<<<<< HEAD
               <%= t(".fees.title") %>
+=======
+              <%= t ".fees.title" %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
             </h2>
             <p>
               <%= t(".fees.description") %>
@@ -106,7 +122,11 @@
                       <% end %>
                     </th>
                     <td>
+<<<<<<< HEAD
                       <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
+=======
+                      <%= raw t ".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                     </td>
                   </tr>
                 <% end %>

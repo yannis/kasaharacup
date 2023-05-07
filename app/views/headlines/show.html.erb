@@ -4,7 +4,7 @@
     <h2>
       <%= @title %>
       <small>
-        <%= @headline.created_at.to_formatted_s :day_month_year %>
+        <%= @headline.created_at.to_fs :day_month_year %>
       </small>
     </h2>
     <%= raw @headline.content %>

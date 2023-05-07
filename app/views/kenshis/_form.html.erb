@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%=
   form_with(
     model: [@user, @kenshi],
@@ -8,6 +9,9 @@
     }
   ) do |f|
 %>
+=======
+<%= form_with model: [@user, @kenshi], url: polymorphic_path([@cup, @user, @kenshi]), html: {class: "kasa-form"} do |f| %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
   <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
     <div class="text-base max-w-prose">
       <div>
@@ -54,10 +58,15 @@
                 @club_names,
                 {include_blank: true},
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
+<<<<<<< HEAD
                 data: {
                   controller: "select2-single-tag",
                   locale: I18n.locale
                 },
+=======
+                data: {controller: "select2-single-tag",
+                       locale: I18n.locale},
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                 style: "width: 20em;"
             %>
             <%= tag.p(f.object.errors.full_messages_for(:club_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
@@ -103,7 +112,7 @@
                         <div class="ml-3 text-sm">
                           <%= g.label :ronin, class: "font-medium text-gray-700" %>
                           <p class="helper-text">
-                            <%= t '.ronin_info', category_name: c.name %>
+                            <%= t ".ronin_info", category_name: c.name %>
                           </p>
                         </div>
                       </div>
@@ -155,7 +164,7 @@
                   <% @cup.individual_categories.all.each do |individual_category| %>
                     <div class="max-w-full space-y-4">
                       <div class="relative flex items-start mb-4">
-                        <% participation = @kenshi.participations.to_a.find { |p| p.category ==  individual_category } %>
+                        <% participation = @kenshi.participations.to_a.find { |p| p.category == individual_category } %>
                         <% if participation.present? %>
                           <%= f.fields_for :participations, participation do |g| %>
                             <% if participation.persisted? %>
@@ -165,15 +174,22 @@
                             <%= g.hidden_field :category_id %>
                             <div class="flex items-center h-5">
                               <%=
+<<<<<<< HEAD
                                 g.check_box(
                                   :_destroy,
+=======
+                                g.check_box :_destroy,
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                                   {
                                     checked: true,
                                     class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
                                   },
                                   0, # checked_value
                                   1 # unchecked_value
+<<<<<<< HEAD
                                 )
+=======
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                               %>
                             </div>
                             <div class="ml-3 text-sm">
@@ -251,6 +267,7 @@
                           <%= f.fields_for :purchases, purchase do |g| %>
                             <div class="flex items-center h-5">
                               <%=
+<<<<<<< HEAD
                                 g.check_box(
                                   :_destroy,
                                   {
@@ -266,6 +283,16 @@
                                   0, # checked_value
                                   1 # unchecked_value
                                 )
+=======
+                                g.check_box :_destroy,
+                                  {
+                                    checked: true,
+                                    disabled: cannot?(:destroy, purchase),
+                                    class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
+                                  },
+                                  0, # checked_value
+                                  1 # unchecked_value
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
                               %>
                             </div>
                             <div class="ml-3 text-sm">
@@ -344,6 +371,7 @@
   </div>
   <div class="py-5">
     <div class="flex justify-end">
+<<<<<<< HEAD
       <%=
         link_to(
           t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
@@ -351,6 +379,10 @@
           class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         )
       %>
+=======
+      <%= link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
+            title: "Cancel #{f.object_name} form", class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500") %>
+>>>>>>> 74d90c7 (Add erb-lint and start to fix views)
       <%= f.submit(f.object.new_record? ? t(".button.create") : t(".button.update"), class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500") %>
     </div>
   </div>

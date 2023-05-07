@@ -61,8 +61,8 @@
                   name: "archive",
                   text: "Archive",
                   links: Cup.order(start_on: :desc).map do |cup|
-                            {text: cup.year.to_s, url: cup_path(cup.year), canceled: cup.canceled?}
-                          end
+                           {text: cup.year.to_s, url: cup_path(cup.year), canceled: cup.canceled?}
+                         end
                 )
               )
             %>
@@ -75,7 +75,8 @@
             name: "locale",
             text: I18n.locale.to_s.upcase,
             css_class: "hidden lg:block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
-            links: I18n.available_locales.map { |locale| {text: locale.to_s.upcase, url: {locale: locale}} }))
+            links: I18n.available_locales.map { |locale| {text: locale.to_s.upcase, url: {locale: locale}} }
+          ))
         %>
         <% if user_signed_in? %>
           <%=
@@ -87,7 +88,8 @@
             render(NavigationDropdownComponent.new(
               name: "profile",
               text: current_user.first_name,
-              links: links))
+              links: links
+            ))
           %>
         <% else %>
           <div class="ml-3 relative">
@@ -106,8 +108,7 @@
     data-transition-enter-to="transform opacity-100 scale-100"
     data-transition-leave-active="transition ease-in duration-75"
     data-transition-leave-from="transform opacity-100 scale-100"
-    data-transition-leave-to="transform opacity-0 scale-95"
-  >
+    data-transition-leave-to="transform opacity-0 scale-95">
     <div class="px-2 pt-2 pb-3 space-y-1">
       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
       <%= link_to t(".about"), about_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" %>
@@ -132,8 +133,8 @@
           text: "Archive",
           css_class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium",
           links: Cup.order(start_on: :desc).map do |cup|
-                {text: cup.year.to_s, url: cup_path(cup.year), canceled: cup.canceled?}
-              end
+                   {text: cup.year.to_s, url: cup_path(cup.year), canceled: cup.canceled?}
+                 end
         ))
       %>
       <%=
@@ -141,7 +142,8 @@
           name: "locale",
           text: I18n.locale.to_s.upcase,
           css_class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium",
-          links: I18n.available_locales.map { |locale| {text: locale.to_s.upcase, url: {locale: locale}} }))
+          links: I18n.available_locales.map { |locale| {text: locale.to_s.upcase, url: {locale: locale}} }
+        ))
       %>
     </div>
   </div>

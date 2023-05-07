@@ -1,4 +1,4 @@
-<% @title = t("devise.passwords.title")%>
+<% @title = t("devise.passwords.title") %>
 <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
     <%= image_tag "logo/kendo-logo-sticker.svg", alt: "logo", class: "mx-auto h-16 w-auto" %>
@@ -11,7 +11,7 @@
   </div>
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "form-full"}) do |f| %>
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: {method: :put, class: "form-full"}) do |f| %>
         <%= render "devise/shared/error_messages", resource: resource %>
         <%= f.hidden_field :reset_password_token %>
         <div class="space-y-6">
