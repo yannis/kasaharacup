@@ -10,10 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_06_142316) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_07_132150) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "document_type", ["passport", "id_card"]
 
   create_table "active_admin_comments", id: :serial, force: :cascade do |t|
     t.string "namespace", limit: 255
@@ -203,6 +207,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_06_142316) do
     t.index ["team_id"], name: "index_participations_on_team_id"
   end
 
+  create_table "personal_infos", force: :cascade do |t|
+    t.bigint "kenshi_id", null: false
+    t.text "residential_address"
+    t.string "residential_zip_code"
+    t.string "residential_city"
+    t.string "residential_country"
+    t.string "residential_phone_number"
+    t.string "origin_country"
+    t.enum "document_type", enum_type: "document_type"
+    t.string "document_number"
+    t.index ["kenshi_id"], name: "index_personal_infos_on_kenshi_id"
+  end
+
   create_table "products", id: :serial, force: :cascade do |t|
     t.string "name_en", limit: 255, null: false
     t.string "name_fr", limit: 255, null: false
@@ -315,6 +332,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_06_142316) do
   add_foreign_key "kenshis", "users"
   add_foreign_key "participations", "kenshis"
   add_foreign_key "participations", "teams"
+  add_foreign_key "personal_infos", "kenshis"
   add_foreign_key "products", "cups"
   add_foreign_key "products", "events"
   add_foreign_key "purchases", "kenshis"
