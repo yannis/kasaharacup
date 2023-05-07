@@ -81,6 +81,8 @@ en:
       title_ladies: Registrations Ladies
       title_open: Registrations Open
       title_team: Registrations Team
+    kenshi:
+      no_categories: Not participating in any category for the moment
     new:
       duplicate: Duplicate the registration of %{full_name}
       title: Register someone to the competition

@@ -34,7 +34,7 @@ ActiveAdmin.register Cup do
         collection: f.object.products
           .order(:position)
           .where("LOWER(products.name_en) ~ 'adult'")
-          .map { |p| n[p.name, p.id] }
+          .map { |p| [p.name, p.id] }
       )
       f.input :description_en
       f.input :description_fr

@@ -1,67 +1,63 @@
 <li>
-  <div class="hover:bg-gray-50">
-    <div class="px-4 py-4 sm:px-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-lg font-medium text-gray-600">
-            <%= "#{kenshi_counter+1})" if kenshi_counter %>
-            <%= kenshi.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %> <%= kenshi.full_name %>
-          </p>
-          <p class="text-sm ml-5 font-medium text-gray-400 truncate">
-            <em><%= kenshi.grade %></em>, <em><%= kenshi.club.name %></em>
-          </p>
-        </div>
-        <div class="ml-2 flex-shrink-0 flex">
-          <% if current_user_admin_or_owner?(kenshi) %>
-            <%= raw kenshi_admin_links(kenshi, options: {class: "pull-right"}) %>
-          <% end %>
-        </div>
+  <div class="px-4 py-4 sm:px-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-lg font-medium text-gray-600">
+          <%= "#{kenshi_counter+1})" if kenshi_counter %>
+          <%= kenshi.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %> <%= kenshi.full_name %>
+        </p>
+        <p class="text-sm ml-5 font-medium text-gray-400 truncate">
+          <em><%= kenshi.grade %></em>, <em><%= kenshi.club.name %></em>
+        </p>
       </div>
-      <div class="mt-6 sm:flex sm:justify-between">
-        <div class="sm:flex">
-          <p class="flex items-center text-sm text-gray-500">
-            <!-- Heroicon name: flag -->
+      <div class="ml-2 flex-shrink-0 flex">
+        <% if current_user_admin_or_owner?(kenshi) %>
+          <%= raw kenshi_admin_links(kenshi, options: {class: "pull-right"}) %>
+        <% end %>
+      </div>
+    </div>
+    <div class="mt-6 sm:flex sm:justify-between">
+      <div class="sm:flex">
+        <p class="flex items-center text-sm text-gray-500">
+          <!-- Heroicon name: flag -->
+          <% if kenshi.participations.any? %>
             <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
             </svg>
             <%= Kenshi.human_attribute_name(:categories) %>
-            <% if kenshi.participations.any? %>
-              : <%= kenshi.participations.map { |p| p.descriptive_name }.join(", ") %>
-            <% end %>
-          </p>
-        </div>
-        <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-          <p>
-            <%= Kenshi.human_attribute_name(:competition_fees) %>: <%= "#{kenshi.competition_fee(:chf)} CHF / #{kenshi.competition_fee(:eur)} €" %>
-          </p>
-        </div>
+            : <%= kenshi.participations.map { |p| p.descriptive_name }.join(", ") %>
+          <% else %>
+            <%= t(".no_categories") %>
+          <% end %>
+        </p>
       </div>
-      <div class="mt-2 sm:flex sm:justify-between">
-        <div class="sm:flex">
-          <p class="flex items-center text-sm text-gray-500">
-            <!-- Heroicon name: plus -->
-            <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
-            </svg>
-            Extra
-            <% if kenshi.purchases.any? %>
-              : <%= kenshi.purchases.map { |p| p.descriptive_name }.join(", ") %>
-            <% end %>
-          </p>
-        </div>
-        <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-          <p>
-            <%= Kenshi.human_attribute_name(:products_fees) %>: <%= "#{kenshi.products_fee(:chf)} CHF / #{kenshi.products_fee(:eur)} €" %>
-          </p>
-        </div>
-      </div>
-      <div class="mt-2 sm:flex sm:justify-end">
-        <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 pt-2 border-t border-gray-300">
-          <p>
-            <%= Kenshi.human_attribute_name(:total_fees) %>: <%= "#{kenshi.fees(:chf)} CHF / #{kenshi.fees(:eur)} €" %>
-          </p>
-        </div>
-      </div>
+    </div>
+    <div class="mt-2 flex justify-end">
+      <% purchases = kenshi.purchases.includes(:product).order("products.position") %>
+      <table class="text-sm text-gray-500 mb-4">
+        <tbody>
+          <% purchases.each do |purchase| %>
+            <tr>
+              <td class="py-1">
+                <%= purchase.product.name %>
+              </td>
+              <td class="pl-4">
+                <%= purchase.product.fee_chf %> CHF
+                <%= purchase.product.fee_eu %> €
+              </td>
+            </tr>
+          <% end %>
+          <tr class="border-t border-gray-300 border-w-2">
+            <td class="py-2">
+              Total:
+            </td>
+            <td class="pl-4">
+              <%= purchases.sum { |purchase| purchase.product.fee_chf } %> CHF
+              <%= purchases.sum { |purchase| purchase.product.fee_eu } %> €
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </li>

@@ -8,29 +8,14 @@ class Participation < ApplicationRecord
   belongs_to :kenshi, inverse_of: :participations
   belongs_to :team, optional: true
 
-  before_validation :assign_category
-
   validates :pool_position, presence: {if: lambda { |p| p.pool_number.present? }}
   validates :kenshi_id,
     uniqueness: {scope: [:category_type, :category_id], if: ->(p) { p.ronin.blank? }, allow_nil: true}
   validates :pool_number, numericality: {only_integer: true, greater_than: 0, allow_nil: true}
+  validate :individual_or_team_category
+  validate :category_age
 
-  validates_each :category do |participation, attr, value|
-    kenshi = participation.kenshi
-    category = participation.category
-    next unless kenshi && category
-
-    age = kenshi.age_at_cup
-    if category.present?
-      if category.min_age && age < category.min_age
-        participation.errors.add(attr, :too_young, name: category.name)
-      end
-      if category.max_age && age > category.max_age
-        participation.errors.add(attr, :too_old, name: category.name)
-      end
-    end
-  end
-
+  before_validation :assign_category
   after_commit :update_purchase
 
   delegate :full_name, to: "kenshi", allow_nil: true
@@ -95,7 +80,19 @@ class Participation < ApplicationRecord
     full_name.join(" ")
   end
 
-  def update_purchase
+  private def assign_category
+    return unless @category_individual.present? || @category_team.present?
+
+    self.category = @category_individual.presence || @category_team.presence
+  end
+
+  private def individual_or_team_category
+    return unless @category_individual.present? && @category_team.present?
+
+    errors.add(:category, "can't have both an individual and a team category")
+  end
+
+  private def update_purchase
     if destroyed?
       purchase&.destroy!
     elsif purchase.nil? && product.present?
@@ -103,15 +100,17 @@ class Participation < ApplicationRecord
     end
   end
 
-  protected def assign_category
-    if @category_individual.present? && @category_team.present?
-      errors.add(:category, "can't have both an individual and a team category")
-    end
-    if @category_individual.present?
-      self.category = IndividualCategory.find(@category_individual)
-    end
-    if @category_team.present?
-      self.category = TeamCategory.find(@category_team)
+  private def category_age
+    return unless kenshi && category
+
+    age = kenshi.age_at_cup
+    if category.present?
+      if category.min_age && age < category.min_age
+        errors.add(:category, :too_young, name: category.name)
+      end
+      if category.max_age && age > category.max_age
+        errors.add(:category, :too_old, name: category.name)
+      end
     end
   end
 end
