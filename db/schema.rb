@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_07_132150) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_17_120434) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -209,14 +209,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_132150) do
 
   create_table "personal_infos", force: :cascade do |t|
     t.bigint "kenshi_id", null: false
-    t.text "residential_address"
-    t.string "residential_zip_code"
-    t.string "residential_city"
-    t.string "residential_country"
-    t.string "residential_phone_number"
-    t.string "origin_country"
-    t.enum "document_type", enum_type: "document_type"
-    t.string "document_number"
+    t.text "residential_address", null: false
+    t.string "residential_zip_code", null: false
+    t.string "residential_city", null: false
+    t.string "residential_country", null: false
+    t.string "residential_phone_number", null: false
+    t.string "origin_country", null: false
+    t.enum "document_type", null: false, enum_type: "document_type"
+    t.string "document_number", null: false
     t.index ["kenshi_id"], name: "index_personal_infos_on_kenshi_id"
   end
 
@@ -236,6 +236,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_132150) do
     t.integer "quota"
     t.integer "position"
     t.boolean "display", default: true, null: false
+    t.boolean "require_personal_details", default: false, null: false
     t.index ["cup_id", "name_en"], name: "index_products_on_cup_id_and_name_en", unique: true
     t.index ["cup_id", "name_fr"], name: "index_products_on_cup_id_and_name_fr", unique: true
     t.index ["cup_id"], name: "index_products_on_cup_id"

@@ -26,6 +26,7 @@ RSpec.describe Kenshi do
       expect(kenshi).to belong_to :cup
       expect(kenshi).to belong_to :user
       expect(kenshi).to belong_to :club
+      expect(kenshi).to have_one(:personal_info).dependent(:destroy).inverse_of(:kenshi)
       expect(kenshi).to have_many(:participations).dependent(:destroy)
       expect(kenshi).to have_many(:individual_categories).through(:participations)
       expect(kenshi).to have_many(:teams).through(:participations)

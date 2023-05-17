@@ -8,8 +8,8 @@ class Kenshi < ApplicationRecord
   belongs_to :cup, inverse_of: :kenshis
   belongs_to :user, inverse_of: :kenshis
   belongs_to :club, inverse_of: :kenshis
+  has_one :personal_info, dependent: :destroy, inverse_of: :kenshi
   has_many :participations, inverse_of: :kenshi, dependent: :destroy, autosave: true
-  # has_many :categories, through: :participations
   has_many :individual_categories, through: :participations, source: :category,
     source_type: "IndividualCategory"
   has_many :team_categories, through: :participations, source: :category, source_type: "TeamCategory"
@@ -29,6 +29,7 @@ class Kenshi < ApplicationRecord
 
   accepts_nested_attributes_for :participations, allow_destroy: true
   accepts_nested_attributes_for :purchases, allow_destroy: true
+  accepts_nested_attributes_for :personal_info, allow_destroy: true
 
   before_validation :format
   after_validation :logs
