@@ -68,7 +68,7 @@ class Kenshi < ApplicationRecord
   def age_at_cup
     return 0 if dob.blank? || cup.year.blank?
 
-    cup.year - dob.year
+    (cup.start_on.to_date - dob).to_i.days.in_years.to_i
   end
 
   def junior?

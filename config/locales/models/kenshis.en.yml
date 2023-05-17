@@ -54,6 +54,9 @@ en:
       dormitory: Dormitory
       explanation: First create an account that will allow you to register you and your team mates to the competition.
       individual_categories: Individual categories
+      more_details:
+        title: More details
+        help: If you sleep at the dormitory, we need to communicate some of your information to the dormitory administration office. Indeed, as an hotel, the office as to declare each residents to the state of Geneva.
       not_available: Sorry, “%{product_name}“ is not available for the time being. Please come back later to check for any availability.
       oldfashion: or do it the oldfashioned way
       ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.

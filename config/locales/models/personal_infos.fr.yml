@@ -1,0 +1,14 @@
+---
+fr:
+  activerecord:
+    attributes:
+      personal_info:
+        personal_infos:
+        residential_phone_number: Numéro de téléphone du domicile
+        residential_address: Adresse du domicile
+        residential_city: Ville de résidence
+        residential_zip_code: Code postal de résidence
+        residential_country: Pays de résidence
+        origin_country: Pays d'origine
+        document_type: Type de document d'identité
+        document_number: Numéro du document d'identité

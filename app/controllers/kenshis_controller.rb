@@ -6,6 +6,7 @@ class KenshisController < ApplicationController
     param_method: :my_sanitizer, parent: false, except: [:new]
 
   before_action :set_variables, only: [:new, :edit, :update, :create]
+  before_action :set_personal_info, only: %w[new edit]
   before_action :check_deadline, only: [:new, :edit, :update, :create, :destroy]
   before_action :prevent_page_caching, only: [:new, :create, :edit, :update]
   respond_to :html
@@ -144,6 +145,10 @@ class KenshisController < ApplicationController
     @products = @cup.products.where(display: true).order(:position)
   end
 
+  private def set_personal_info
+    @kenshi.build_personal_info unless @kenshi.personal_info
+  end
+
   private def my_sanitizer
     params[:kenshi][:participations_attributes]&.reject! { |k, v|
       v["category_type"] == "IndividualCategory" && v["category_id"].blank?
@@ -153,7 +158,17 @@ class KenshisController < ApplicationController
       purchases_attributes: [:id, :product_id, :_destroy],
       individual_category_ids: [],
       participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy],
-      product_ids: []
+      product_ids: [],
+      personal_info_attributes: %i[
+        residential_address
+        residential_zip_code
+        residential_city
+        residential_country
+        residential_phone_number
+        origin_country
+        document_type
+        document_number
+      ]
     )
   end
 end
