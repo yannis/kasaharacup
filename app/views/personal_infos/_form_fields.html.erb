@@ -1,0 +1,54 @@
+<div class="input-field">
+  <%= g.label :origin_country, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.country_select :origin_country, prompt: t(".country_prompt") %>
+  <%= tag.p(g.object.errors.messages_for(:origin_country).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div class="input-field">
+  <%= g.label :residential_phone_number, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.text_field :residential_phone_number %>
+  <%= tag.p(g.object.errors.messages_for(:residential_phone_number).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div class="input-field">
+  <%= g.label :residential_address, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.text_area :residential_address %>
+  <%= tag.p(g.object.errors.messages_for(:residential_address).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div class="input-field">
+  <%= g.label :residential_zip_code, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.text_field :residential_zip_code %>
+  <%= tag.p(g.object.errors.messages_for(:residential_zip_code).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div class="input-field">
+  <%= g.label :residential_city, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.text_field :residential_city %>
+  <%= tag.p(g.object.errors.messages_for(:residential_city).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div class="input-field">
+  <%= g.label :residential_country, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.country_select :residential_country, prompt: t(".country_prompt") %>
+  <%= tag.p(g.object.errors.messages_for(:residential_country).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div>
+  <p class="text-sm font-medium text-gray-700 mt-6 mb-1"><%= t("activerecord.attributes.personal_info.document_type") %></p>
+  <% PersonalInfo.document_types.each do |type| %>
+    <p class="input-field">
+      <%= g.radio_button(:document_type, type.first, id: "kenshi_personal_info_attributes_document_type_#{type.first}") %>
+      <%=
+        g.label(:document_type, t("activerecord.models.personal_info.#{type.first}"), for: "kenshi_personal_info_attributes_document_type_#{type.first}", class: "text-sm font-medium text-gray-700 mt-6 mb-1")
+      %>
+    </p>
+  <% end %>
+  <%= tag.p(g.object.errors.messages_for(:document_type).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>
+
+<div class="input-field">
+  <%= g.label :document_number, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.text_field :document_number %>
+  <%= tag.p(g.object.errors.messages_for(:document_number).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+</div>

@@ -65,6 +65,8 @@ en:
       waiver:
         file_name: Liability waiver
         info: 'Juniors under the age of 18 who are participating in the Team category must present a liability waiver signed by a legal guardian. Please download and complete the following document and present it on the day of the competition:'
+      extra: Additional items
+      country_prompt: Select country
     helpers:
       destroy:
         confirm: Are you sure?

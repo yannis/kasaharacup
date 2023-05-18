@@ -3,7 +3,6 @@ fr:
   activerecord:
     attributes:
       personal_info:
-        personal_infos:
         residential_phone_number: Numéro de téléphone du domicile
         residential_address: Adresse du domicile
         residential_city: Ville de résidence
@@ -12,3 +11,12 @@ fr:
         origin_country: Pays d'origine
         document_type: Type de document d'identité
         document_number: Numéro du document d'identité
+    models:
+      personal_info:
+        passport: Passeport
+        id_card: Carte d'identité
+        one: Détail personnel
+        other: Détails personnels
+  personal_infos:
+    form_fields:
+      country_prompt: Sélectionner un pays

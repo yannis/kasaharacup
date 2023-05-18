@@ -6,7 +6,7 @@ class KenshisController < ApplicationController
     param_method: :my_sanitizer, parent: false, except: [:new]
 
   before_action :set_variables, only: [:new, :edit, :update, :create]
-  before_action :set_personal_info, only: %w[new edit]
+  before_action :set_personal_info, only: %w[edit]
   before_action :check_deadline, only: [:new, :edit, :update, :create, :destroy]
   before_action :prevent_page_caching, only: [:new, :create, :edit, :update]
   respond_to :html
@@ -70,6 +70,7 @@ class KenshisController < ApplicationController
       @kenshi = Kenshi.new(email: current_user.email, club: current_user.club)
       @title = t(".title")
     end
+    set_personal_info
     respond_with @kenshi
   end
 
