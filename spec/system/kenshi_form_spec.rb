@@ -8,7 +8,7 @@ describe("Show/hide additional info form", :js) do
   let!(:cup) { create(:cup) }
   let!(:user) { create(:user, email: email, password: password) }
   let!(:kenshi) { create(:kenshi, cup: cup, user: user) }
-  let!(:product) { create(:product, cup: cup, require_personal_details: true) }
+  let!(:product) { create(:product, cup: cup, require_personal_infos: true) }
 
   it do
     signin_and_visit(user, cup_user_path(cup))

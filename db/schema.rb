@@ -236,7 +236,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_120434) do
     t.integer "quota"
     t.integer "position"
     t.boolean "display", default: true, null: false
-    t.boolean "require_personal_details", default: false, null: false
+    t.boolean "require_personal_infos", default: false, null: false
     t.index ["cup_id", "name_en"], name: "index_products_on_cup_id_and_name_en", unique: true
     t.index ["cup_id", "name_fr"], name: "index_products_on_cup_id_and_name_fr", unique: true
     t.index ["cup_id"], name: "index_products_on_cup_id"

@@ -235,7 +235,7 @@
                                     disabled: cannot?(:destroy, purchase),
                                     class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded",
                                     data: {
-                                      require_personal_details: p.require_personal_details,
+                                      require_personal_infos: p.require_personal_infos,
                                       action: "change->kenshi-form#handleProductChange"
                                     }
                                   },
@@ -265,7 +265,7 @@
                                   disabled: !p.still_available?,
                                   class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded",
                                   data: {
-                                    require_personal_details: p.require_personal_details,
+                                    require_personal_infos: p.require_personal_infos,
                                     action: "change->kenshi-form#handleProductChange"
                                   }
                                 )

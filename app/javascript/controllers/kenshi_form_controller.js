@@ -6,24 +6,24 @@ export default class extends Controller {
   }
 
   connect() {
-    this.showOrHidePersonalDetailsForm();
+    this.showOrHidePersonalInfosForm();
   }
 
   handleProductChange() {
-    this.showOrHidePersonalDetailsForm();
+    this.showOrHidePersonalInfosForm();
   }
 
-  showOrHidePersonalDetailsForm() {
+  showOrHidePersonalInfosForm() {
     const checkboxes = this.element
       .querySelectorAll('input:checked[type=checkbox][data-require-personal-details=true]');
     if (checkboxes.length > 0) {
-      this.showPersonalDetailsForm();
+      this.showPersonalInfosForm();
     } else {
-      this.hidePersonalDetailsForm();
+      this.hidePersonalInfosForm();
     }
   }
 
-  showPersonalDetailsForm() {
+  showPersonalInfosForm() {
     this.detailsTarget.classList.remove('hidden');
     this.detailsTarget
       .querySelectorAll('input, select, checkbox, textarea')
@@ -34,7 +34,7 @@ export default class extends Controller {
       });
   }
 
-  hidePersonalDetailsForm() {
+  hidePersonalInfosForm() {
     this.detailsTarget.classList.add('hidden');
     this.detailsTarget
       .querySelectorAll('input, select, checkbox, textarea')
