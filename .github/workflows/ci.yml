@@ -26,6 +26,9 @@ jobs:
           echo "RAILS_ENV=test" >> .env.override
           echo "CI=true" >> .env.override
           echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}" >> .env.override
+          echo "ENCRYPTION_PRIMARY_KEY=${{ secrets.ENCRYPTION_PRIMARY_KEY }}" >> .env.override
+          echo "ENCRYPTION_DETERMINISTIC_KEY=${{ secrets.ENCRYPTION_DETERMINISTIC_KEY }}" >> .env.override
+          echo "ENCRYPTION_KEY_DERIVATION_SALT=${{ secrets.ENCRYPTION_KEY_DERIVATION_SALT }}" >> .env.override
 
       - name: Set the right tag/label name in Docker
         id: meta
