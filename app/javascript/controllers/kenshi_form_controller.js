@@ -15,7 +15,7 @@ export default class extends Controller {
 
   showOrHidePersonalInfosForm() {
     const checkboxes = this.element
-      .querySelectorAll('input:checked[type=checkbox][data-require-personal-details=true]');
+      .querySelectorAll('input:checked[type=checkbox][data-require-personal-infos=true]');
     if (checkboxes.length > 0) {
       this.showPersonalInfosForm();
     } else {
