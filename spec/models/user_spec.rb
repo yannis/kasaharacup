@@ -3,8 +3,14 @@
 require "rails_helper"
 
 RSpec.describe User do
-  it { is_expected.to belong_to :club }
-  it { is_expected.to have_many(:kenshis).dependent(:destroy) }
+  describe "Associations" do
+    let(:user) { build(:user) }
+
+    it do
+      expect(user).to belong_to :club
+      expect(user).to have_many(:kenshis).dependent(:destroy)
+    end
+  end
 
   it { is_expected.to respond_to :first_name }
   it { is_expected.to respond_to :last_name }

@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Product, as: "Product" do
   permit_params :name_en, :name_fr, :description_en, :description_fr, :cup_id, :event_id,
-    :fee_chf, :fee_eu, :quota, :position, :display
+    :fee_chf, :fee_eu, :quota, :position, :display, :require_personal_infos
 
   controller do
     def scoped_collection
@@ -31,6 +31,7 @@ ActiveAdmin.register Product, as: "Product" do
       best_in_place product, :position, as: :input, url: [:admin, product]
     end
     column :display
+    column :require_personal_infos
     actions
   end
 
@@ -49,6 +50,7 @@ ActiveAdmin.register Product, as: "Product" do
       row :fee_eu
       row :quota
       row :position
+      row :require_personal_infos
       row :display
     end
 
@@ -95,6 +97,7 @@ ActiveAdmin.register Product, as: "Product" do
       f.input :fee_eu
       f.input :quota, as: :number
       f.input :position, as: :number
+      f.input :require_personal_infos, as: :boolean
       f.input :display, as: :boolean
     end
     f.actions

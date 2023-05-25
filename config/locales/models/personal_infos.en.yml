@@ -1,0 +1,22 @@
+---
+en:
+  activerecord:
+    attributes:
+      personal_infos:
+        residential_phone_number: Home phone number
+        residential_address: Home address
+        residential_city: City of residence
+        residential_zip_code: Residential zip code
+        residential_country: Country of residence
+        origin_country: Country of origin
+        document_type: Identity document type
+        document_number: Identity document number
+    models:
+      personal_info:
+        passport: Passport
+        id_card: ID card
+        one: Personal detail
+        other: Personal details
+  personal_infos:
+    form_fields:
+      country_prompt: Select country

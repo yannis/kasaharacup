@@ -9,6 +9,7 @@ x-base: &base
     - .env.override
   environment:
     - POSTGRES_HOST=database
+    - SELENIUM_REMOTE_HOST=selenium-chrome
   volumes:
     - $PWD:/app:delegated
     - bundle_cache:/usr/local/bundle:cached
@@ -25,6 +26,7 @@ services:
     depends_on:
       - database
       - js
+      - selenium-chrome
 
   js:
     <<: *base
@@ -45,6 +47,19 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data:cached
       - db_dump:/app/db_dump:cached
+
+  selenium-chrome:
+    image: selenium/standalone-chrome-debug:latest
+    shm_size: 2G
+    logging:
+      driver: none
+    ports:
+      - 5900:5900
+    environment:
+      - SCREEN_WIDTH=1680
+      - SCREEN_HEIGHT=1050
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # To work on Linux
 
 volumes:
   db_data:

@@ -1,4 +1,13 @@
-<%= form_with model: [@user, @kenshi], url: polymorphic_path([@cup, @user, @kenshi]), html: { class: "kasa-form" } do |f| %>
+<%=
+  form_with(
+    model: [@user, @kenshi],
+    url: polymorphic_path([@cup, @user, @kenshi]),
+    html: {class: "kasa-form"},
+    data: {
+      controller: "kenshi-form"
+    }
+  ) do |f|
+%>
   <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
     <div class="text-base max-w-prose">
       <div>
@@ -6,7 +15,7 @@
         <h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"><%= form_title %></h3>
       </div>
     </div>
-    <%= render 'layouts/error_messages', target: f.object %>
+    <%= render "layouts/error_messages", target: f.object %>
     <div style="border: 0">
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="input-group">
@@ -41,8 +50,10 @@
                 @club_names,
                 {include_blank: true},
                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                data: { controller: "select2-single-tag",
-                locale: I18n.locale },
+                data: {
+                  controller: "select2-single-tag",
+                  locale: I18n.locale
+                },
                 style: "width: 20em;"
             %>
             <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
@@ -101,7 +112,7 @@
                                 c.teams.order(:name).pluck(:name),
                                 {include_blank: true},
                                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                                data: { controller: "select2-single-tag", locale: I18n.locale },
+                                data: {controller: "select2-single-tag", locale: I18n.locale},
                                 style: "width: 20em;"
                             %>
                             <p class="helper-text mt-2"><%= t(".team_info") %></p>
@@ -150,13 +161,15 @@
                             <%= g.hidden_field :category_id %>
                             <div class="flex items-center h-5">
                               <%=
-                                g.check_box :_destroy,
-                                {
-                                  checked: true,
-                                  class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
-                                },
-                                0, # checked_value
-                                1 # unchecked_value
+                                g.check_box(
+                                  :_destroy,
+                                  {
+                                    checked: true,
+                                    class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
+                                  },
+                                  0, # checked_value
+                                  1 # unchecked_value
+                                )
                               %>
                             </div>
                             <div class="ml-3 text-sm">
@@ -202,31 +215,38 @@
               <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
                 <div>
                   <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
-                    Extra
+                    <%= t(".extra") %>
                   </div>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:col-span-2">
                   <% products.each do |p| %>
-                    <% price = p.fee_chf == 0 ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
+                    <% price = (p.fee_chf == 0) ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" %>
                     <div class="max-w-lg mb-4">
-                      <% purchase = @kenshi.purchases.to_a.find { |purch| purch .product_id ==  p.id } %>
+                      <% purchase = @kenshi.purchases.to_a.find { |purch| purch.product_id == p.id } %>
                       <% if purchase.present? %>
                         <div class="relative flex items-start">
                           <%= f.fields_for :purchases, purchase do |g| %>
                             <div class="flex items-center h-5">
                               <%=
-                                g.check_box :_destroy,
-                                {
-                                  checked: true,
-                                  disabled: cannot?(:destroy, purchase),
-                                  class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded"
-                                },
-                                0, # checked_value
-                                1 # unchecked_value
+                                g.check_box(
+                                  :_destroy,
+                                  {
+                                    checked: true,
+                                    disabled: cannot?(:destroy, purchase),
+                                    class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded",
+                                    id: dom_id(g.object),
+                                    data: {
+                                      require_personal_infos: p.require_personal_infos,
+                                      action: "change->kenshi-form#handleProductChange"
+                                    }
+                                  },
+                                  0, # checked_value
+                                  1 # unchecked_value
+                                )
                               %>
                             </div>
                             <div class="ml-3 text-sm">
-                              <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium text-gray-700" %>
+                              <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium text-gray-700", for: dom_id(g.object) %>
                               <p class="helper-text">
                                 <%= p.description %>
                               </p>
@@ -238,7 +258,19 @@
                         <%= f.fields_for :purchases, purchase do |g| %>
                           <div class="relative flex items-start">
                             <div class="flex items-center h-5">
-                              <%= check_box_tag "#{g.object_name}[product_id]", p.id, nil, disabled: !p.still_available?, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded" %>
+                              <%=
+                                check_box_tag(
+                                  "#{g.object_name}[product_id]",
+                                  p.id,
+                                  nil,
+                                  disabled: !p.still_available?,
+                                  class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded",
+                                  data: {
+                                    require_personal_infos: p.require_personal_infos,
+                                    action: "change->kenshi-form#handleProductChange"
+                                  }
+                                )
+                              %>
                             </div>
                             <div class="ml-3 text-sm">
                               <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium #{p.still_available? ? "text-gray-700" : "text-gray-400"}" %>
@@ -250,7 +282,7 @@
                         <% end %>
                         <% unless p.still_available? %>
                           <p class="text-brand text-sm">
-                            <%= t('kenshis.form.not_available', product_name: p.name) %>
+                            <%= t("kenshis.form.not_available", product_name: p.name) %>
                           </p>
                         <% end %>
                       <% end %>
@@ -263,11 +295,39 @@
         </div>
       </div>
     <% end %>
+    <div data-kenshi-form-target="details">
+      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+        <div class="pt-6 sm:pt-5">
+          <div role="group" aria-labelledby="label-more-details">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+              <div>
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-more-details">
+                  <%= t(".more_details.title") %>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-0 sm:col-span-2">
+                <p>
+                  <%= t(".more_details.help") %>
+                </p>
+                <%= f.fields_for(:personal_info, f.object.personal_info) do |g| %>
+                  <%= render("personal_infos/form_fields", g: g) %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="py-5">
     <div class="flex justify-end">
-      <%= link_to(t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
-title: "Cancel #{f.object_name} form", class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500") %>
+      <%=
+        link_to(
+          t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
+          title: "Cancel #{f.object_name} form",
+          class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+        )
+      %>
       <%= f.submit(f.object.new_record? ? t(".button.create") : t(".button.update"), class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500") %>
     </div>
   </div>

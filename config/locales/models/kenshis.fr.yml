@@ -54,6 +54,9 @@ fr:
       dormitory: Dortoire
       explanation: Pour vous inscrire à la compétition, vous devez d'abord créez un compte. Ce compte vous permettra ensuite de vous inscrire vous et vos-coéquipiers à la compétition et de modifer ces inscriptions le cas échéant.
       individual_categories: Catégories individuelles
+      more_details:
+        title: Plus de détails
+        help: Si vous dormez au dortoir, nous devons communiquer certaines de vos informations au bureau d'administration du dortoir. En effet, en tant qu'hôtel, le bureau doit déclarer chaque résident à l'Etat de Genève.
       not_available: Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir  plus tard vérifier une disponibilité éventuelle.
       oldfashion: ou utilisez le formulaire ci-dessous
       ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
@@ -62,6 +65,7 @@ fr:
       waiver:
         file_name: Décharge de responsabilité
         info: 'Les juniors de moins de 18 ans qui participent à la catégorie Team doivent présenter une décharge de responsabilité signée par un responsable légal. Merci de télécharger et compléter le document suivant et de le présenter le jour de la compétition:'
+      extra: Autres produits
     helpers:
       destroy:
         confirm: Êtes vous sûr?

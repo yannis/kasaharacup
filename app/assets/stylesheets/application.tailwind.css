@@ -96,7 +96,7 @@
     @apply max-w-lg block focus:ring-red-500 focus:border-red-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md;
   }
 
-  input[type='text'], input[type='date'], input[type='email'], input[type='password'] {
+  input[type='text'], input[type='date'], input[type='email'], input[type='password'], textarea {
     @apply max-w-lg block w-full shadow-sm focus:ring-red-500 focus:border-red-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md;
   }
 
@@ -104,7 +104,6 @@
     @apply text-gray-500 text-sm;
   }
 }
-
 
 .select2-selection__rendered {
   line-height: 35px !important;

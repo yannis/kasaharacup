@@ -41,6 +41,10 @@ module Kasaharacup
     config.view_component.preview_paths << Rails.root.join("lib/component_previews")
     config.view_component.preview_route = "/styleguide/components"
 
+    config.active_record.encryption.primary_key = ENV.fetch("ENCRYPTION_PRIMARY_KEY")
+    config.active_record.encryption.deterministic_key = ENV.fetch("ENCRYPTION_DETERMINISTIC_KEY")
+    config.active_record.encryption.key_derivation_salt = ENV.fetch("ENCRYPTION_KEY_DERIVATION_SALT")
+
     Rails.application.routes.default_url_options = {
       protocol: ENV.fetch("APP_PROTOCOL", "http"),
       host: ENV.fetch("APP_HOST"),

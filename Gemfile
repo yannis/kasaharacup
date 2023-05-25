@@ -59,6 +59,10 @@ gem "image_processing", ">= 1.2"
 gem "view_component"
 gem "lookbook" # Need to be after the `view_component` gem
 
+# Countries
+gem "countries"
+gem "country_select"
+
 # Edit in place
 gem "best_in_place", git: "https://github.com/mmotherwell/best_in_place"
 
