@@ -1,0 +1,5 @@
+version: "3.9"
+
+services:
+  selenium-chrome:
+    image: seleniarm/standalone-chromium:latest

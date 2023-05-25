@@ -27,6 +27,9 @@
 
 /public/assets
 
+# Ignore override environment variables file
+.env.override
+
 # Ignore master key for decrypting credentials and more.
 .env.development.local
 .env.test.local

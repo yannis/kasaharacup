@@ -11,12 +11,8 @@ describe("Show/hide additional info form", :js) do
   let!(:product) { create(:product, cup: cup, require_personal_infos: true) }
 
   it do
+    skip("Unable to have Selenium run on Docker")
     signin_and_visit(user, cup_user_path(cup))
-    # visit new_user_session_path
-    # fill_in "Email", with: email
-    # fill_in "Password", with: password
-    # click_button "Log in"
-    # visit cup_user_path(cup)
     expect(page).to have_content("#{kenshi.first_name} #{kenshi.last_name}")
     within("ul[role=list] li") do
       click_link("Modifier")
