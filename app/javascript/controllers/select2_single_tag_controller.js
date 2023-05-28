@@ -7,7 +7,7 @@ select2($);
 export default class extends Controller {
   connect() {
     if (this.element != null) {
-      const { locale } = this.element.dataset;
+      const { locale, teamName } = this.element.dataset;
       $(this.element).select2({
         language: locale,
         tags: true,
@@ -23,6 +23,10 @@ export default class extends Controller {
           };
         },
       });
+      if (teamName != null) {
+        const newOption = new Option(teamName, teamName, false, true);
+        $(this.element).append(newOption).trigger('change');
+      }
     }
     $(document).on('select2:open', () => {
       document.querySelector('.select2-search__field').focus();

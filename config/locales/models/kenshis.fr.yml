@@ -7,7 +7,7 @@ fr:
         club_name: Club / Dojo / Association
         competition_fees: Frais de compétition
         dob: Date de naissance
-        female: Femme
+        female: Salutation
         first_name: Prénom
         gender: Sexe
         last_name: Nom
@@ -24,6 +24,8 @@ fr:
           attributes:
             dob:
               blank: requise pour les juniors
+            female:
+              inclusion: requise
   kenshi:
     deadline: 'Attention: le dernier délai pour vous inscrire est le %{deadline}!'
     link:
@@ -63,6 +65,7 @@ fr:
       saturday_night: Diner du samedi soir
       team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers. Si l'équipe n'existe pas encore créez-là en entrant son nom suivi de ↩︎ dans le champs de recherche.
       waiver:
+        title: Décharge de responsabilité
         file_name: Décharge de responsabilité
         info: 'Les juniors de moins de 18 ans qui participent à la catégorie Team doivent présenter une décharge de responsabilité signée par un responsable légal. Merci de télécharger et compléter le document suivant et de le présenter le jour de la compétition:'
       extra: Autres produits

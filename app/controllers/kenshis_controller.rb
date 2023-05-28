@@ -113,7 +113,6 @@ class KenshisController < ApplicationController
         @kenshi.club = current_user.club
         @title = t("kenshis.new.title")
       end
-      @kenshi.female = false if @kenshi.female.nil?
       respond_with @kenshi do |format|
         flash.now[:alert] = "Kenshi not registered"
         format.html { render :new, status: :unprocessable_entity }

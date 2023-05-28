@@ -19,27 +19,31 @@
     <div style="border: 0">
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="input-group">
-          <%= f.label :female, Kenshi.human_attribute_name(:salutations), class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+          <%= f.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]], prompt: true %>
+            <%= tag.p(f.object.errors.full_messages_for(:female).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
           </div>
         </div>
         <div class="input-group">
           <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.text_field :first_name, autocomplete: "given-name" %>
+            <%= tag.p(f.object.errors.full_messages_for(:first_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
           </div>
         </div>
         <div class="input-group">
           <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.text_field :last_name, autocomplete: "family-name" %>
+            <%= tag.p(f.object.errors.full_messages_for(:last_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
           </div>
         </div>
         <div class="input-group">
           <%= f.label :dob, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.date_field :dob %>
+            <%= tag.p(f.object.errors.full_messages_for(:dob).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
           </div>
         </div>
         <div class="input-group">
@@ -56,6 +60,7 @@
                 },
                 style: "width: 20em;"
             %>
+            <%= tag.p(f.object.errors.full_messages_for(:club_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
             <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
           </div>
         </div>
@@ -63,6 +68,7 @@
           <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
             <%= f.select :grade, Kenshi::GRADES %>
+            <%= tag.p(f.object.errors.full_messages_for(:grade).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
             <p class="helper-text mt-2">
               <%= t("cups.show.shinpans.info") %>
             </p>
@@ -112,7 +118,11 @@
                                 c.teams.order(:name).pluck(:name),
                                 {include_blank: true},
                                 class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                                data: {controller: "select2-single-tag", locale: I18n.locale},
+                                data: {
+                                  controller: "select2-single-tag",
+                                  team_name: participation.team_name,
+                                  locale: I18n.locale
+                                },
                                 style: "width: 20em;"
                             %>
                             <p class="helper-text mt-2"><%= t(".team_info") %></p>
@@ -120,12 +130,6 @@
                           </div>
                         </div>
                       </div>
-                      <% if c.min_age < 18 %>
-                        <p class="helper-text mt-2">
-                          <%= t(".waiver.info") %>
-                          <%= link_to(t(".waiver.file_name"), asset_path("waiver-2022.#{I18n.locale}.pdf"), class: "text-brand hover:underline", download: true) %>
-                        </p>
-                      <% end %>
                     </div>
                     <%= tag.p(participation.errors.messages_for(:category).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
                   </div>
@@ -207,6 +211,25 @@
         </div>
       </div>
     <% end %>
+    <div>
+      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+        <div class="pt-6 sm:pt-5">
+          <div role="group" aria-labelledby="label-email">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+              <div>
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                  <%= t(".waiver.title") %>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-0 sm:col-span-2">
+                <%= t(".waiver.info") %>
+                <%= link_to(t(".waiver.title"), asset_path("waiver-2022.#{I18n.locale}.pdf"), class: "text-brand hover:underline", download: true) %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <% if products.present? %>
       <div>
         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">

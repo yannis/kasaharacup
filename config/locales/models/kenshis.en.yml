@@ -23,6 +23,8 @@ en:
           attributes:
             dob:
               blank: Date of birth (DOB) is required for junior registrations
+            female:
+              inclusion: Salutation is required
   kenshi:
     button: Register
     deadline: 'The registration deadline is %{deadline}!'
@@ -63,7 +65,7 @@ en:
       saturday_night: Saturday night dinner
       team_info: Choose here the team you plan to participate in with your teammates. If the team does not exist yet create it by entering its name followed by ↩︎ in the search field.
       waiver:
-        file_name: Liability waiver
+        title: Liability waiver
         info: 'Juniors under the age of 18 who are participating in the Team category must present a liability waiver signed by a legal guardian. Please download and complete the following document and present it on the day of the competition:'
       extra: Additional items
       country_prompt: Select country
