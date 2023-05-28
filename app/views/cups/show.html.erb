@@ -120,15 +120,12 @@
           <%= t(".venue.title") %>
         </h2>
         <p>
-          <%= raw t(".venue.a", stade_du_bout_du_monde: link_to('Centre sportif du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')) %>
+          <%= raw t(".venue.a", stade_du_bout_du_monde: link_to("Centre sportif du Bout-du-Monde", "http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/")) %>
         </p>
         <h3>
           <%= t(".venue.address.title") %>
         </h3>
         <%= md_to_html(t(".venue.address.content")) %>
-        <p>
-          <%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: "google_map" %>
-        </p>
       </div>
       <div id="accomodation" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
         <h2 class="mt-10">

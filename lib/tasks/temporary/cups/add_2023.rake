@@ -14,8 +14,8 @@ namespace :temporary do
           start_on: "2023-09-23 09:30:00"
         },
         {
-          name_en: "Check-in and shinais check",
-          name_fr: "Accueil et contôle des shinais",
+          name_en: "Check-in and shinai check",
+          name_fr: "Accueil et contrôle des shinais",
           start_on: "2023-09-23 11:30:00"
         },
         {
@@ -29,14 +29,19 @@ namespace :temporary do
           start_on: "2023-09-23 18:00:00"
         },
         {
-          name_en: "Saturday dinner",
-          name_fr: "Dîner du samedi",
+          name_en: "Dinner",
+          name_fr: "Dîner",
           start_on: "2023-09-23 20:00:00"
         },
         {
-          name_en: "Breakfast for those who sleep at the dormitory",
+          name_en: "Breakfast for those sleeping in the dormitory",
           name_fr: "Petit-déjeuner pour ceux qui dorment au dortoir",
           start_on: "2023-09-24 07:15:00"
+        },
+        {
+          name_en: "Shinai check",
+          name_fr: "Contrôle des shinais",
+          start_on: "2023-09-24 07:30:00"
         },
         {
           name_en: "Individual competitions (open, ladies and juniors)",
@@ -67,8 +72,8 @@ namespace :temporary do
         {
           name_en: "Participation Adult (18 years old and older)",
           name_fr: "Participation Adult (18 ans et plus)",
-          fee_chf: 40,
-          fee_eu: 40,
+          fee_chf: 35,
+          fee_eu: 35,
           position: 2,
           display: false
         },
@@ -137,7 +142,7 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: nil,
           max_age: 12,
-          description_en: "For juniors of both sexes up to and including 12 years of age.
+          description_en: "For juniors of both genders up to and including 12 years of age.
           12 year old Kendoka may compete in both the U-12 and U-15 categories".squish,
           description_fr: "Pour les juniors des deux sexes jusqu'à l'âge de 12 ans inclus.
           Les kendoka de 12 ans peuvent concourir dans les catégories U-12 et U-15".squish
@@ -148,19 +153,10 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 12,
           max_age: 15,
-          description_en: "For juniors of both sexes between 12 and 15 years old.
+          description_en: "For juniors of both genders between 12 and 15 years old.
           15-year-old Kendoka may compete in both the U-15 and U-18 categories".squish,
           description_fr: "Pour les juniors des deux sexes âgés de 12 à 15 ans inclus.
           Les kendoka de 15 ans peuvent concourir dans les catégories U-15 et U-18".squish
-        },
-        {
-          name: "Junior U18",
-          pool_size: 3,
-          out_of_pool: 2,
-          min_age: 15,
-          max_age: 18,
-          description_en: "For juniors of both sexes between 15 and 18 years old",
-          description_fr: "Pour les juniors des deux sexes âgés de 15 à 18 ans"
         },
         {
           name: "Open",
@@ -168,7 +164,7 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 17,
           max_age: nil,
-          description_en: "For competitors of both sexes 16 years old or more.
+          description_en: "For competitors of both genders 16 years old or more.
           Participants less than 18 years old
           will be required to show a document signed by a legal representative".squish,
           description_fr: "Pour les compétiteurs des deux sexes âgés de 16 ans ou plus.
@@ -202,9 +198,11 @@ namespace :temporary do
           The minimum age for participation in the team competition is 16 years.
           Participants less than 18 years old
           will be required to show a document signed by a legal representative".squish,
-          description_fr: "Né(e) en #{2023 - 16} ou avant.
-          Les participants nés en #{2023 - 16}
-          et #{2023 - 17} devront présenter une décharge signée par un représentant légal".squish
+          description_fr: "Une équipe se compose de cinq combattants (au moins trois).
+          L'ordre des équipes peut être modifié avant chaque combat.
+          L'âge minimum pour participer à la compétition par équipe est de 16 ans.
+          Les participants âgés de moins de 18 ans
+          devront présenter un document signé par un représentant légal".squish
         }
       ]
 
@@ -223,6 +221,9 @@ namespace :temporary do
         team_categories_data.each do |team_category_data|
           cup.team_categories.create!(team_category_data)
         end
+        product_junior = cup.products.find_by(name_en: "Participation Junior (17 years old and younger)")
+        product_adult = cup.products.find_by(name_en: "Participation Adult (18 years old and older)")
+        cup.update!(product_junior: product_junior, product_adult: product_adult)
       end
     end
   end
