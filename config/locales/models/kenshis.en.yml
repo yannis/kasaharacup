@@ -25,7 +25,7 @@ en:
               blank: Date of birth (DOB) is required for junior registrations
   kenshi:
     button: Register
-    deadline: 'Warning: The registration deadline is %{deadline}!'
+    deadline: 'The registration deadline is %{deadline}!'
     link:
       registration: registration
       title: You already have

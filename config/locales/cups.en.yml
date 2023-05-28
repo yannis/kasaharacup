@@ -3,7 +3,7 @@ en:
   cups:
     show:
       accomodation:
-        dormitory: This year again the dorms will be located in the complex of the University Campus, for the night of September 24-25. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linens are provided and sleeping bags are not allowed. Please note that the number of beds is limited to 40! <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday.
+        dormitory: This year again the dorms will be located in the complex of the University Campus, for the night of September 22-25. It's located only one bus stop away from the competion hall or ten minutes by walk. Bed linens are provided and sleeping bags are not allowed. Please note that the number of beds is limited to 40! <br />By booking your night at the dorm, you will also receive a pass for Geneva's bus system (don't lose it!) for the days of Saturday and Sunday.
         hotels: If you prefer something more confortable you can chose from <a href='http://www.booking.com/region/ch/geneve-canton.fr.html?sid=7a2c0d77b1647e6dcf705c4dd663876d;dcid=1' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
         title: Accomodation
       categories:
@@ -61,6 +61,14 @@ en:
         title: Follow us on
       venue:
         a: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
-        address: Coordinates
+        address:
+          title: Coordinates
+          content: |
+            Stade du Bout-du-Monde<br />
+            Route de Vessy 12<br />
+            1206 Genève<br />
+            Switzerland<br />
+            _GPS: 46.180588,6.155893_<br />
+            <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map to the competition hall</a>
         map_link: Larger map
         title: Venue
