@@ -10,7 +10,7 @@ describe "temporary:cups:add_2023" do # rubocop:disable RSpec/DescribeClass
       .to change(Event, :count).by(9)
       .and(not_change(Cup, :count))
       .and(change(Product, :count).by(9))
-      .and(change(IndividualCategory, :count).by(5))
+      .and(change(IndividualCategory, :count).by(4))
       .and(change(TeamCategory, :count).by(1))
   end
 end
