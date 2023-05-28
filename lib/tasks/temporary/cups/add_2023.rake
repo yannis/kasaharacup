@@ -34,13 +34,13 @@ namespace :temporary do
           start_on: "2023-09-23 20:00:00"
         },
         {
-          name_en: "Breakfast",
-          name_fr: "Petit-déjeuner",
+          name_en: "Breakfast for those who sleep at the dormitory",
+          name_fr: "Petit-déjeuner pour ceux qui dorment au dortoir",
           start_on: "2023-09-24 07:15:00"
         },
         {
-          name_en: "Individual competition (open, ladies and juniors)",
-          name_fr: "Compétition en individuel (open, ladies et juniors)",
+          name_en: "Individual competitions (open, ladies and juniors)",
+          name_fr: "Compétitions individuelles (open, dames et juniors)",
           start_on: "2023-09-24 08:30:00"
         },
         {
@@ -57,83 +57,110 @@ namespace :temporary do
 
       products_data = [
         {
-          name_en: "Participation Junior (17-)",
-          name_fr: "Participation Junior (17-)",
+          name_en: "Participation Junior (17 years old and younger)",
+          name_fr: "Participation Junior (17 ans et moins)",
           fee_chf: 20,
-          fee_eu: 20
+          fee_eu: 20,
+          position: 1,
+          display: false
         },
         {
-          name_en: "Participation Adult (18+)",
-          name_fr: "Participation Adult (18+)",
-          fee_chf: 30,
-          fee_eu: 30
-        },
-        {
-          name_en: "2 Kyu examination",
-          name_fr: "Examen de 2 Kyu",
-          fee_chf: 20,
-          fee_eu: 20
-        },
-        {
-          name_en: "1 Kyu examination",
-          name_fr: "Examen de 1 Kyu",
-          fee_chf: 30,
-          fee_eu: 30
+          name_en: "Participation Adult (18 years old and older)",
+          name_fr: "Participation Adult (18 ans et plus)",
+          fee_chf: 40,
+          fee_eu: 40,
+          position: 2,
+          display: false
         },
         {
           name_en: "Saturday dinner",
           name_fr: "Dîner du samedi",
-          fee_chf: 30,
-          fee_eu: 30,
-          quota: 90
+          fee_chf: 25,
+          fee_eu: 25,
+          quota: 90,
+          position: 3
         },
         {
           name_en: "Sunday lunch - sandwich menu",
           name_fr: "Lunch du dimanche - menu sandwich",
-          fee_chf: 10,
-          fee_eu: 10
+          fee_chf: 15,
+          fee_eu: 15,
+          position: 4
         },
         {
           name_en: "Night at the dormitory (Friday)",
           name_fr: "Nuit au dortoir (Vendredi)",
           fee_chf: 25,
           fee_eu: 25,
-          quota: 50
+          quota: 40,
+          position: 5,
+          require_personal_infos: true
         },
         {
           name_en: "Night at the dormitory (Saturday)",
           name_fr: "Nuit au dortoir (Samedi)",
           fee_chf: 25,
           fee_eu: 25,
-          quota: 50
+          quota: 40,
+          position: 6,
+          require_personal_infos: true
         },
         {
           name_en: "Night at the dormitory (Sunday)",
           name_fr: "Nuit au dortoir (Dimanche)",
           fee_chf: 25,
           fee_eu: 25,
-          quota: 50
+          quota: 40,
+          position: 7,
+          require_personal_infos: true
+        },
+        {
+          name_en: "2 Kyu examination",
+          name_fr: "Examen de 2 Kyu",
+          fee_chf: 20,
+          fee_eu: 20,
+          position: 8
+        },
+        {
+          name_en: "1 Kyu examination",
+          name_fr: "Examen de 1 Kyu",
+          fee_chf: 30,
+          fee_eu: 30,
+          position: 9
         }
       ]
 
       individual_categories_data = [
         {
-          name: "Junior U15",
+          name: "Junior U-12",
+          pool_size: 3,
+          out_of_pool: 2,
+          min_age: nil,
+          max_age: 12,
+          description_en: "For juniors of both sexes up to and including 12 years of age.
+          12 year old Kendoka may compete in both the U-12 and U-15 categories".squish,
+          description_fr: "Pour les juniors des deux sexes jusqu'à l'âge de 12 ans inclus.
+          Les kendoka de 12 ans peuvent concourir dans les catégories U-12 et U-15".squish
+        },
+        {
+          name: "Junior U-15",
           pool_size: 3,
           out_of_pool: 2,
           min_age: 12,
-          max_age: 14,
-          description_en: "Born in #{2023 - 14}, #{2023 - 13} or #{2023 - 12}",
-          description_fr: "Né(e) en #{2023 - 14}, #{2023 - 13} ou #{2023 - 12}"
+          max_age: 15,
+          description_en: "For juniors of both sexes between 12 and 15 years old.
+          15-year-old Kendoka may compete in both the U-15 and U-18 categories".squish,
+          description_fr: "Pour les juniors des deux sexes âgés de 12 à 15 ans inclus.
+          Les kendoka de 15 ans peuvent concourir dans les catégories U-15 et U-18".squish
         },
         {
           name: "Junior U18",
           pool_size: 3,
           out_of_pool: 2,
           min_age: 15,
-          max_age: 17,
-          description_en: "Born in #{2023 - 17}, #{2023 - 16} or #{2023 - 15}",
-          description_fr: "Né(e) en #{2023 - 17}, #{2023 - 16} or #{2023 - 15}"
+          max_age: 18,
+          description_en: "For juniors of both sexes between 15 and 18 years old",
+          description_fr: "Pour les juniors des deux sexes âgés de 15 à 18 ans"
         },
         {
           name: "Open",
@@ -141,8 +168,12 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 17,
           max_age: nil,
-          description_en: "Born in #{2023 - 18} or before",
-          description_fr: "Né(e) en #{2023 - 18} ou avant"
+          description_en: "For competitors of both sexes 16 years old or more.
+          Participants less than 18 years old
+          will be required to show a document signed by a legal representative".squish,
+          description_fr: "Pour les compétiteurs des deux sexes âgés de 16 ans ou plus.
+          Les participants nés en #{2023 - 16}
+          et #{2023 - 17} devront présenter une décharge signée par un représentant légal".squish
         },
         {
           name: "Ladies",
@@ -150,8 +181,12 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 17,
           max_age: nil,
-          description_en: "Born in #{2023 - 18} or before",
-          description_fr: "Née en #{2023 - 18} ou avant"
+          description_en: "For ladies who are 16 years or older.
+          Participants less than 18 years old
+          will be required to show a document signed by a legal representative".squish,
+          description_fr: "Pour les femmes âgées de 16 ans et plus.
+          Les participants nés en #{2023 - 16}
+          et #{2023 - 17} devront présenter une décharge signée par un représentant légal".squish
         }
       ]
 
@@ -162,9 +197,11 @@ namespace :temporary do
           out_of_pool: nil,
           min_age: 17,
           max_age: nil,
-          description_en: "Born in #{2023 - 16} or before.
-          Participants born in #{2023 - 16}
-          and #{2023 - 17} will be required to show a document signed by a legal representative".squish,
+          description_en: "A team consists of five fighters (at least three).
+          The team order can be changed before each fight.
+          The minimum age for participation in the team competition is 16 years.
+          Participants less than 18 years old
+          will be required to show a document signed by a legal representative".squish,
           description_fr: "Né(e) en #{2023 - 16} ou avant.
           Les participants nés en #{2023 - 16}
           et #{2023 - 17} devront présenter une décharge signée par un représentant légal".squish

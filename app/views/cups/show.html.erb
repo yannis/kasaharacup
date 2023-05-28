@@ -16,9 +16,10 @@
           <%= render "headline", headline: @headlines.first %>
         </div>
       <% end %>
+      <%= md_to_html(@cup.description) %>
       <% if @cup.registerable? %>
         <h2 class="mt-10">
-          <%= t '.program.title' %>
+          <%= t(".program.title") %>
         </h2>
         <div class="lg:grid lg:grid-cols-2 lg:gap-8">
           <% @grouped_events.each do |date, events| %>
@@ -30,8 +31,8 @@
                 <tbody>
                   <% for event in events %>
                     <tr>
-                      <th  class="whitespace-nowrap align-text-top">
-                        <%= event.start_on.to_formatted_s(:time_only) %>
+                      <th class="whitespace-nowrap align-text-top">
+                        <%= event.start_on.to_fs(:time_only) %>
                       </th>
                       <td>
                         <%= event.name %>
@@ -44,13 +45,10 @@
           <% end %>
           <div id="categories" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">
-              <%= t '.categories.title' %>
+              <%= t(".categories.title") %>
             </h2>
             <p>
               <%= t(".shinpans.info") %>
-            </p>
-            <p>
-              <%= t(".categories.description") %>
             </p>
             <table class="table">
               <tbody>
@@ -63,7 +61,7 @@
                       <% if c.description.present? %>
                         <%= c.description %>
                       <% elsif c.min_age %>
-                        <%= c.max_age ? t("categories.from") : t("categories.from") %>
+                        <%= t("categories.from") %>
                         <%= c.min_age %>
                         <%= t("categories.yo") %>
                       <% elsif c.max_age %>
@@ -80,7 +78,7 @@
                       <%= c.name.capitalize %>
                     </th>
                     <td>
-                      <%= "#{c.description}" %>
+                      <%= c.description %>
                     </td>
                   </tr>
                 <% end %>
@@ -89,7 +87,7 @@
           </div>
           <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">
-              <%= t '.fees.title' %>
+              <%= t(".fees.title") %>
             </h2>
             <p>
               <%= t(".fees.description") %>
@@ -108,7 +106,7 @@
                       <% end %>
                     </th>
                     <td>
-                      <%= raw t '.fee', fee_chf: product.fee_chf, fee_eu: product.fee_eu %>
+                      <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
                     </td>
                   </tr>
                 <% end %>
@@ -117,7 +115,32 @@
           </div>
         </div>
       <% end %>
-      <%= md_to_html(@cup.description) %>
+      <div id="venue" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
+        <h2 class="mt-10">
+          <%= t(".venue.title") %>
+        </h2>
+        <p>
+          <%= raw t(".venue.a", stade_du_bout_du_monde: link_to('Centre sportif du Bout-du-Monde', 'http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/')) %>
+        </p>
+        <h3>
+          <%= t(".venue.address.title") %>
+        </h3>
+        <%= md_to_html(t(".venue.address.content")) %>
+        <p>
+          <%= link_to "Google map to the competition hall", "https://maps.google.ch/maps?hl=fr&ie=UTF8&q=centre+sportif+du+bout+du+monde&fb=1&gl=ch&hq=centre+sportif+du+bout+du+monde&cid=0,0,2906637816380334854&t=m&ll=46.182846,6.156163&spn=0.007131,0.013733&z=16", id: "google_map" %>
+        </p>
+      </div>
+      <div id="accomodation" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
+        <h2 class="mt-10">
+          <%= t ".accomodation.title" %>
+        </h2>
+        <p>
+          <%= raw t ".accomodation.dormitory" %>
+        </p>
+        <p>
+          <%= raw t ".accomodation.hotels" %>
+        </p>
+      </div>
     </div>
     <% if @cup.registerable? %>
       <div class="mt-10">
