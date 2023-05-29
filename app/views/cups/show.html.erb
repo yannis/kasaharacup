@@ -27,7 +27,7 @@
               <h3 class="mt-0">
                 <%= l date, format: :short %>
               </h3>
-              <table class="table">
+              <table class="table lg:mb-0">
                 <tbody>
                   <% for event in events %>
                     <tr>
@@ -50,7 +50,7 @@
             <p>
               <%= t(".shinpans.info") %>
             </p>
-            <table class="table">
+            <table class="table lg:mb-0">
               <tbody>
                 <% @cup.individual_categories.order(:name).each do |c| %>
                   <tr>
@@ -105,16 +105,8 @@
                         <span class="text-brand italic">(<%= t(".products.not_available") %>)</span>
                       <% end %>
                     </th>
-                    <td>
-<<<<<<< HEAD
-<<<<<<< HEAD
+                    <td class="text-right">
                       <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
-=======
-                      <%= raw t ".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu %>
->>>>>>> 74d90c7 (Add erb-lint and start to fix views)
-=======
-                      <%= t ".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu %>
->>>>>>> 3c10cef (Add erb-lint and start to fix offenses)
                     </td>
                   </tr>
                 <% end %>

@@ -1,9 +1,14 @@
 ---
 en:
   activerecord:
+    models:
+      participation:
+        one: Participation
+        other: Participations
     attributes:
       participation:
         team_name: Team name
+        category: Category
     errors:
       models:
         participation:

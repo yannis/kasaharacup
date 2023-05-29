@@ -2,7 +2,6 @@
 
 class Kenshi < ApplicationRecord
   include ActsAsFighter
-
   GRADES = %w[kyu 1Dan 2Dan 3Dan 4Dan 5Dan 6Dan 7Dan 8Dan]
 
   belongs_to :cup, inverse_of: :kenshis
@@ -16,8 +15,6 @@ class Kenshi < ApplicationRecord
   has_many :teams, through: :participations
   has_many :purchases, dependent: :destroy
   has_many :products, through: :purchases
-
-  validates_associated :participations
 
   validates :first_name, presence: true
   validates :last_name, presence: true

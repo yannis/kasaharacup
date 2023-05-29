@@ -24,10 +24,12 @@ linters:
       Style/FrozenStringLiteralComment:
         Enabled: false
       Lint/UselessAssignment:
-        Enabled: false
+        Enabled: true
       Rails/OutputSafety:
         Enabled: false
   HardCodedString:
     enabled: true
     exclude:
       - 'app/views/**/*'
+  ErbSafety:
+    enabled: false

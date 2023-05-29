@@ -18,6 +18,7 @@ fr:
         products_fees: Frais extra
         salutations: Salutations
         team: Équipe
+        category: Catégorie
     errors:
       models:
         kenshi:

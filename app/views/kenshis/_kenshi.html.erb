@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="mt-2 flex justify-end">
-      <% purchases = kenshi.purchases.includes(:product).order("products.position") %>
+      <% purchases = kenshi.purchases.includes(:product).order("products.position") # rubocop:disable Lint/UselessAssignment %>
       <table class="text-sm text-gray-500 mb-4">
         <tbody>
           <% purchases.each do |purchase| %>
