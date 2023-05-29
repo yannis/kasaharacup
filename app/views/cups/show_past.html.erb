@@ -1,10 +1,10 @@
 <%= render(BannerComponent.new) do %>
-  <%= raw t("cups.show.over") %>
+  <%= t("cups.show.over") %>
 <% end %>
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <%= render(HeroComponent.new(cup: @cup)) %>
   <h2 class="text-gray-900 text-3xl font-extrabold tracking-tight mt-8">
-    <%= t 'cups.show.results.title' %>
+    <%= t "cups.show.results.title" %>
   </h2>
   <% if @cup.team_categories.any? %>
     <h3 class="text-2xl font-bold mt-10"><%= t("activerecord.models.team_category.one") %></h3>

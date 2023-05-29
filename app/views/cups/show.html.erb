@@ -1,10 +1,10 @@
 <%= render(BannerComponent.new) do %>
   <% if Time.current > @cup.deadline %>
-    <%= raw t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long)) %>
+    <%= t(".deadline_passed", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% elsif @cup.not_yet_registerable? %>
-    <%= raw t(".registrations_opening_soon", deadline: I18n.l(@cup.deadline, format: :long)) %>
+    <%= t(".registrations_opening_soon", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% elsif @cup.registerable? %>
-    <%= raw t(".deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
+    <%= t(".deadline", deadline: I18n.l(@cup.deadline, format: :long)) %>
   <% end %>
 <% end %>
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
@@ -27,7 +27,7 @@
               <h3 class="mt-0">
                 <%= l date, format: :short %>
               </h3>
-              <table class="table">
+              <table class="table lg:mb-0">
                 <tbody>
                   <% for event in events %>
                     <tr>
@@ -50,7 +50,7 @@
             <p>
               <%= t(".shinpans.info") %>
             </p>
-            <table class="table">
+            <table class="table lg:mb-0">
               <tbody>
                 <% @cup.individual_categories.order(:name).each do |c| %>
                   <tr>
@@ -78,7 +78,7 @@
                       <%= c.name.capitalize %>
                     </th>
                     <td>
-                      <%= c.description %>
+                      <%= c.description.to_s %>
                     </td>
                   </tr>
                 <% end %>
@@ -105,7 +105,7 @@
                         <span class="text-brand italic">(<%= t(".products.not_available") %>)</span>
                       <% end %>
                     </th>
-                    <td>
+                    <td class="text-right">
                       <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
                     </td>
                   </tr>
@@ -141,7 +141,7 @@
     </div>
     <% if @cup.registerable? %>
       <div class="mt-10">
-        <%= render "current_user_resume" %>
+        <%= render "current_user_resume", cup: @cup %>
       </div>
     <% end %>
   </div>

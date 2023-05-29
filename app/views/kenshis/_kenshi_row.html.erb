@@ -4,7 +4,7 @@
       <div>
         <p class="text-lg font-medium text-gray-600 prose">
           <% if defined?(kenshi_counter) && defined?(kenshis_count) %>
-            <%= "#{(kenshis_count - kenshi_counter)})" if defined?(kenshi_counter) %>
+            <%= "#{kenshis_count - kenshi_counter})" if defined?(kenshi_counter) %>
           <% elsif defined?(kenshi_counter) %>
             <%= "#{kenshi_counter + 1})" if defined?(kenshi_counter) %>
           <% end %>

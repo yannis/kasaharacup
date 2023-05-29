@@ -26,7 +26,7 @@
             <div class="mt-2 sm:flex sm:justify-between">
               <div class="sm:flex">
                 <p class="flex items-center text-gray-500">
-                  <%=  safe_join(@ronins.map{|kenshi| link_to kenshi.full_name, cup_kenshi_path(@cup, kenshi) }, raw("<span class='px-2'>•</span>")) %>
+                  <%= safe_join(@ronins.map { |kenshi| link_to kenshi.full_name, cup_kenshi_path(@cup, kenshi) }, raw("<span class='px-2'>•</span>")) %>
                 </p>
               </div>
             </div>

@@ -16,8 +16,8 @@ en:
       contact:
         text: Contact us by email at
         title: Contact
-      deadline: "<strong>Warning:</strong> The deadline for registration is %{deadline}"
-      deadline_passed: "<strong>Warning:</strong> Registration is closed since %{deadline}"
+      deadline: "The deadline for registration is %{deadline}"
+      deadline_passed: "Registration is closed since %{deadline}"
       enrollments:
         all: See all %{number} registrations
       fee: "%{fee_chf} CHF or %{fee_eu} €"

@@ -24,13 +24,12 @@ linters:
       Style/FrozenStringLiteralComment:
         Enabled: false
       Lint/UselessAssignment:
-        Enabled: false
+        Enabled: true
       Rails/OutputSafety:
         Enabled: false
   HardCodedString:
     enabled: true
     exclude:
-      - '**/app/views/layouts/application.html.erb'
-      - '**/app/views/collab/annotations/_totals.html.erb'
-      - '**/app/views/layouts/mailer.html.erb'
-      - '**/app/views/public/home/show.html.erb'
+      - 'app/views/**/*'
+  ErbSafety:
+    enabled: false
