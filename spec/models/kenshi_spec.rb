@@ -101,6 +101,12 @@ RSpec.describe Kenshi do
     let(:kenshi) { create(:kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, cup: cup) }
     let(:individual_category) { create(:individual_category, cup: kenshi.cup) }
     let(:team_category) { create(:team_category, cup: kenshi.cup) }
+    let(:adult_product) { create(:product, cup: kenshi.cup, fee_chf: 33, fee_eu: 30) }
+    let(:junior_product) { create(:product, cup: kenshi.cup, fee_chf: 16, fee_eu: 15) }
+
+    before do
+      cup.update(product_junior: junior_product, product_adult: adult_product)
+    end
 
     context "when creating a team and an individual participations" do
       before {
@@ -123,14 +129,12 @@ RSpec.describe Kenshi do
 
       it { expect(kenshi.individual_categories.count).to be 1 }
       it { expect(kenshi.takes_part_to?(individual_category)).to be true }
-      it { expect(kenshi.competition_fee(:chf)).to be 30 }
-      it { expect(kenshi.competition_fee(:eur)).to be 25 }
       it { expect(kenshi).to be_adult }
-      it { expect(kenshi.fees(:chf)).to be 30 }
-      it { expect(kenshi.fees(:eur)).to be 25 }
+      it { expect(kenshi.fees(:chf)).to be 33 }
+      it { expect(kenshi.fees(:eur)).to be 30 }
 
       context "with a purchase" do
-        let(:product) { create(:product, cup: kenshi.cup) }
+        let(:product) { create(:product, cup: kenshi.cup, fee_chf: 33, fee_eu: 30) }
 
         before {
           kenshi.update product_ids: [product.id]
@@ -140,10 +144,8 @@ RSpec.describe Kenshi do
         it { expect(kenshi).to be_valid_verbose }
 
         it { expect(kenshi.products.count).to eq 1 }
-        it { expect(kenshi.products_fee(:chf)).to be 10 }
-        it { expect(kenshi.products_fee(:eur)).to be 8 }
-        it { expect(kenshi.fees(:chf)).to be 40 }
-        it { expect(kenshi.fees(:eur)).to be 33 }
+        it { expect(kenshi.fees(:chf)).to be 33 }
+        it { expect(kenshi.fees(:eur)).to be 30 }
         it { expect(kenshi.purchased?(product)).to be true }
       end
 

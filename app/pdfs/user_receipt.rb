@@ -38,7 +38,6 @@ class UserReceipt < Prawn::Document
       @user.enrollments.each do |enrollment|
         data << [
           enrollment.last_name.titleize,
-          "#{enrollment.competition_fee(:chf)} CHF / #{enrollment.competition_fee(:eur)} €",
           "#{enrollment.dinner_fee(:chf)} CHF / #{enrollment.dinner_fee(:eur)} €",
           "#{enrollment.dormitory_fee(:chf)} CHF / #{enrollment.dormitory_fee(:eur)} €",
           "<b>#{enrollment.bill(:chf)} CHF / #{enrollment.bill(:eur)} EUR</b>"

@@ -5,7 +5,6 @@ fr:
       kenshi:
         categories: Catégories
         club_name: Club / Dojo / Association
-        competition_fees: Frais de compétition
         dob: Date de naissance
         female: Salutation
         first_name: Prénom
@@ -15,7 +14,7 @@ fr:
         mr: M.
         ms: Mme
         name: Nom
-        products_fees: Frais extra
+        fees: Frais
         salutations: Salutations
         team: Équipe
         category: Catégorie
