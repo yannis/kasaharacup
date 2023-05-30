@@ -5,6 +5,7 @@ en:
       kenshi:
         categories: Categories
         club_name: Club / Dojo / Association
+        competition_fees: Competition fees
         dob: Date of birth
         female: Salutation
         first_name: First name
@@ -13,7 +14,7 @@ en:
         mr: Mr
         ms: Ms
         name: Name
-        fees: Fees
+        products_fees: Extra fees
         salutations: Salutations
         team: Team
     errors:

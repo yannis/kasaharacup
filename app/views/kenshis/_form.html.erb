@@ -21,7 +21,7 @@
         <div class="input-group">
           <%= f.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
           <div class="input-field">
-            <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
+            <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]], prompt: true %>
             <%= tag.p(f.object.errors.full_messages_for(:female).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
           </div>
         </div>
