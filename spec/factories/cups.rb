@@ -8,10 +8,6 @@ FactoryBot.define do
       start = Date.parse(c.start_on.to_s)
       start - 14.days
     }
-    adult_fees_chf { 30 }
-    adult_fees_eur { 25 }
-    junior_fees_chf { 16 }
-    junior_fees_eur { 14 }
 
     header_image do
       image_path = Rails.root.glob("spec/fixtures/images/*.jpg").sample

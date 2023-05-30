@@ -113,25 +113,8 @@ class Kenshi < ApplicationRecord
     products.include? product
   end
 
-  def competition_fee(currency = :chf)
-    if participations.present?
-      junior? ? cup.junior_fees(currency) : cup.adult_fees(currency)
-    else
-      0
-    end
-  end
-
-  def products_fee(currency = :chf)
-    products_fee = 0
-    products.each do |product|
-      products_fee += ((currency.to_sym == :chf) ? product.fee_chf : product.fee_eu)
-    end
-    products_fee
-  end
-
   def fees(currency = :chf)
-    currency = currency.to_sym
-    competition_fee(currency) + products_fee(currency)
+    products.sum { |product| (currency.to_sym == :chf) ? product.fee_chf : product.fee_eu }
   end
 
   def poster_name(category: nil)
