@@ -19,11 +19,4 @@ class TeamsController < ApplicationController
     @kenshis = @team.kenshis.includes(:user, :club, participations: [:category]).order(:last_name, :first_name)
     respond_with @team
   end
-
-  def destroy
-    @team.destroy ? flash[:notice] = t(".notice") : flash[:alert] = t(".notice")
-    redirect_to cup_teams_path(@cup)
-  rescue => e
-    redirect_to cup_team_path(@cup, @team), alert: e.message
-  end
 end
