@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+if ENV["COVERAGE"]
+  require "simplecov"
+  SimpleCov.start("rails") do
+    enable_coverage :branch
+    add_filter "lib/component_previews/"
+    add_filter "app/admin/"
+    add_filter "app/channels/application_cable/channel.rb"
+    add_filter "app/channels/application_cable/connection.rb"
+    add_filter "app/pdfs/"
+  end
+  puts "required simplecov"
+end
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require "spec_helper"
 # require "view_component/test_helpers"
