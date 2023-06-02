@@ -58,3 +58,4 @@ en:
       long: "%e %B %Y"
       day_only: "%d"
       month_only: "%B"
+      day_month_year: "%e %B %Y"

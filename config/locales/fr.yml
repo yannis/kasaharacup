@@ -51,3 +51,11 @@ fr:
         <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4ème Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
       b: "Le tournoi, organisé depuis plus de 20 ans à Genève par le section kendo du <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, réunit environ 150 participants de toute l'Europe. En 2019, la 33ème édition a rassemblé des kenshis français, italiens, japonais, anglais et bien entendu suisses. Après deux ans de Hiatus pour cause de COVID, la 34ème édition de la Coupe Kasahara aura lieu cette année les 24 et 25 septembre au stade du Bout-du-Monde, proche du centre ville."
   title: Title
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%e %b"
+      long: "%e %B %Y"
+      day_only: "%d"
+      month_only: "%B"
+      day_month_year: "%e %B %Y"

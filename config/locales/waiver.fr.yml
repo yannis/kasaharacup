@@ -1,0 +1,18 @@
+fr:
+  waiver:
+    title: Décharge de responsabilité pour junior de moins de 18 ans
+    undersigned: |
+      Je soussigné(e)
+      ............................................................................... (nom, prénom)
+    junior: |
+      en ma qualité de responsable légal, autorise
+      ............................................................................... (nom, prénom)
+    body: |
+      à participer à la Coupe Kasahara qui aura lieu les %{start} et %{end} à
+      Genève, dans une catégorie normalement réservée aux adultes de 18 ans et plus.
+      Ayant pris conscience des risques, je confirme que la personne mentionnée ci-dessus dispose d'une assurance accident et décharge l'association Shung Do Kwan Budo, située à Genève, de toute responsabilité en cas d'accident de quelque nature que ce soit durant toute la durée de la compétition.
+      Je confirme avoir lu attentivement la présente décharge et la signe en toute
+      connaissance de cause.
+    signature: |
+      ......................................................... (lieu, date)
+      Signature:

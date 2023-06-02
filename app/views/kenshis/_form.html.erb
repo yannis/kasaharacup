@@ -223,7 +223,7 @@
               </div>
               <div class="mt-4 sm:mt-0 sm:col-span-2">
                 <%= t(".waiver.info") %>
-                <%= link_to(t(".waiver.title"), asset_path("waiver-2022.#{I18n.locale}.pdf"), class: "text-brand hover:underline", download: true) %>
+                <%= link_to(t(".waiver.title"), cup_waiver_path(@cup), class: "text-brand hover:underline", download: true) %>
               </div>
             </div>
           </div>
