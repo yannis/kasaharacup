@@ -47,9 +47,6 @@
             <h2 class="mt-10">
               <%= t(".categories.title") %>
             </h2>
-            <p>
-              <%= t(".shinpans.info") %>
-            </p>
             <table class="table lg:mb-0">
               <tbody>
                 <% @cup.individual_categories.order(:name).each do |c| %>
@@ -84,6 +81,14 @@
                 <% end %>
               </tbody>
             </table>
+          </div>
+          <div id="shinpans" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
+            <h2 class="mt-10">
+              <%= t(".shinpans.title") %>
+            </h2>
+            <p>
+              <%= t(".shinpans.info") %>
+            </p>
           </div>
           <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
             <h2 class="mt-10">

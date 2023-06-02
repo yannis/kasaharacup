@@ -49,7 +49,9 @@ fr:
         team: Résultats de la catégorie Team
         title: Résultats
       shinpans:
-        info: Comme d'habitude, nous demanderons aux plus gradés de participer à l'arbitrage lorsqu'ils ne combattent pas.
+        title: Shinpan (arbitres)
+        info: |
+          Cette année, nous aurons quelques arbitres officiels invités, mais nous comptons toujours sur les plus gradés d'entre vous pour compléter l'effectif des arbitres lorsque vous ne combattez pas.
       social:
         title: Retrouvez-nous sur
       venue:
