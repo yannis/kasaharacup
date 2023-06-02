@@ -2,7 +2,7 @@
 en:
   activerecord:
     attributes:
-      personal_infos:
+      personal_info:
         residential_phone_number: Home phone number
         residential_address: Home address
         residential_city: City of residence

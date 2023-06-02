@@ -23,6 +23,7 @@ Rails.application.routes.draw do
           end
         end
       end
+      resource :waiver, only: %i[show]
     end
 
     resource :user, only: %i[show destroy]
