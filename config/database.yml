@@ -12,7 +12,7 @@ development:
 
 test:
   <<: *default
-  database: kasaharacup_test
+  database: kasaharacup_test<%= ENV["TEST_ENV_NUMBER"] %>
   host: <%= ENV.fetch('POSTGRES_HOST') { 'localhost' } %>
   user: postgres
 

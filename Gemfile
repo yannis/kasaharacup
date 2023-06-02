@@ -85,6 +85,7 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "faker"
   gem "libyear-bundler"
+  gem "parallel_tests"
   gem "rspec-rails", "~> 5.1.0"
   gem "rubocop-rails_config", require: false
   gem "rubocop-rspec", require: false
