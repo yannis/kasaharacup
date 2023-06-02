@@ -44,6 +44,24 @@ RSpec.describe(Ability) do
           end
         end
       end
+
+      describe "purchase" do
+        let!(:kenshi) { create(:kenshi, user: user) }
+
+        context "when purchase is not owned by user" do
+          let!(:purchase) { create(:purchase) }
+
+          it do
+            expect(ability).not_to be_able_to(:destroy, purchase)
+          end
+        end
+
+        context "when purchase is owned by user" do
+          let!(:purchase) { create(:purchase, kenshi: kenshi) }
+
+          it { expect(ability).to be_able_to(:destroy, purchase) }
+        end
+      end
     end
   end
 end

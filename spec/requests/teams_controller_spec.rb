@@ -20,11 +20,13 @@ RSpec.describe TeamsController do
           get(cup_teams_path(cup))
         end
 
-        it { expect(response).to have_http_status(:success) }
-        it { expect(assigns(:teams)).not_to be_nil }
-        it { expect(expect(response)).to render_template(:index) }
-        it { expect(assigns(:teams)).to contain_exactly(team1, team3) }
-        it { expect(flash).to be_empty }
+        it do
+          expect(response).to have_http_status(:success)
+          expect(assigns(:teams)).not_to be_nil
+          expect(expect(response)).to render_template(:index)
+          expect(assigns(:teams)).to contain_exactly(team1, team3)
+          expect(flash).to be_empty
+        end
       end
 
       describe "when GET to :show for team1.id," do
@@ -32,10 +34,12 @@ RSpec.describe TeamsController do
           get(cup_team_path(cup, team1))
         end
 
-        it { expect(response).to have_http_status(:success) }
-        it { expect(assigns(:team)).to eql team1 }
-        it { expect(response).to render_template(:show) }
-        it { expect(flash).to be_empty }
+        it do
+          expect(response).to have_http_status(:success)
+          expect(assigns(:team)).to eql team1
+          expect(response).to render_template(:show)
+          expect(flash).to be_empty
+        end
       end
     end
 
@@ -49,11 +53,13 @@ RSpec.describe TeamsController do
           get(cup_teams_path(cup))
         end
 
-        it { expect(basic_user).to be_valid_verbose }
-        it { expect(assigns(:teams)).not_to be_nil }
-        it { expect(response).to render_template(:index) }
-        it { expect(assigns(:teams)).to contain_exactly(team1, team3) }
-        it { expect(flash).to be_empty }
+        it do
+          expect(basic_user).to be_valid_verbose
+          expect(assigns(:teams)).not_to be_nil
+          expect(response).to render_template(:index)
+          expect(assigns(:teams)).to contain_exactly(team1, team3)
+          expect(flash).to be_empty
+        end
       end
 
       describe "when GET to :show for team1.id," do
@@ -61,11 +67,13 @@ RSpec.describe TeamsController do
           get(cup_team_path(cup, team1))
         end
 
-        it { expect(response).to have_http_status(:success) }
-        it { expect(assigns(:team)).not_to be_nil }
-        it { expect(response).to render_template(:show) }
-        it { expect(flash).to be_empty }
-        it { expect(assigns(:team)).to eql team1 }
+        it do
+          expect(response).to have_http_status(:success)
+          expect(assigns(:team)).not_to be_nil
+          expect(response).to render_template(:show)
+          expect(flash).to be_empty
+          expect(assigns(:team)).to eql team1
+        end
       end
     end
   end
