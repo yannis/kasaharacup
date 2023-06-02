@@ -10,7 +10,7 @@ namespace :temporary do
       events_data = [
         {
           name_en: "Kyu gradings (only for members of Swiss Kendo Federation)",
-          name_fr: "Examens de Kyu (seulement pour les membres de la fédération Suisse de Kendo)",
+          name_fr: "Examens de Kyu (seulement pour les membres de la Fédération Suisse de Kendo)",
           start_on: "2023-09-23 09:30:00"
         },
         {
