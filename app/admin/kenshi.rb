@@ -84,6 +84,20 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       row :user
       row :remarks
     end
+    if kenshi.personal_info.present?
+      panel "Personal info" do
+        attributes_table_for kenshi.personal_info do
+          row :residential_address
+          row :residential_zip_code
+          row :residential_city
+          row :residential_country
+          row :residential_phone_number
+          row :origin_country
+          row :document_type
+          row :document_number
+        end
+      end
+    end
     if kenshi.participations.present?
       panel "Participations" do
         table_for kenshi.participations.order(:category_type, :category_id) do |participation|
@@ -106,7 +120,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       end
     end
     if kenshi.purchases.present?
-      panel "Participations" do
+      panel "Purchase" do
         table_for kenshi.purchases do |purchase|
           column :product
           column :admin_links do |purchase|
