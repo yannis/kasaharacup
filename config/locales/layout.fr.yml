@@ -12,3 +12,5 @@ fr:
       title_em: Genève, Suisse
     description: |
       La Coupe Kasahara est un tournoi international de kendo organisé par le Club de Kendo de Genève. Il aura lieu les %{start_on} et %{end_on} à Genève, Suisse.
+    description_short: |
+      La Coupe Kasahara est un tournoi international de kendo organisé chaque année par le Club de Kendo de Genève.

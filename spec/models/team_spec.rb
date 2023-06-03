@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Team do
-  let!(:cup) { create(:cup, start_on: 1.year.since) }
+  let!(:cup) { create(:cup, start_on: 1.year.from_now) }
   let(:team_category) { create(:team_category, name: "team_cat", cup: cup) }
   let(:team) { create(:team, name: "SDK", team_category: team_category, participations: []) }
 
@@ -39,7 +39,7 @@ RSpec.describe Team do
       it { expect(described_class.incomplete.all).to include(team) }
       it { expect(described_class.incomplete).to eq [team] }
       it { expect(team.participations.count).to eq 1 }
-      it { expect(team.fitness).to eq 0.15 }
+      it { expect(team.fitness).to eq 0.1364 }
       it { expect(described_class.empty.to_a).not_to include(team) }
     end
 

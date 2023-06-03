@@ -1,8 +1,15 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
+  sequence(:year) { |n| Date.current.year + n }
   factory :cup do
-    start_on { rand(Date.civil(Date.current.year + 1, 1, 1)..Date.civil(Date.current.year + 10, 12, 31)) }
+    start_on {
+      if (max_start_on = Cup.maximum(:start_on))
+        max_start_on + 1.year
+      else
+        generate(:year).to_s + "-11-29"
+      end
+    }
     deadline { |c|
       return nil if c.start_on.blank?
       start = Date.parse(c.start_on.to_s)

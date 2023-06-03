@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :kenshi do
-    association :cup, start_on: "#{Date.current.year}-11-30"
+    cup
     user
     club
     female { false }

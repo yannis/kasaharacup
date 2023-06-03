@@ -29,8 +29,11 @@ RSpec.describe Cup do
     let(:cup) { create(:cup) }
 
     it do
-      expect(cup).to validate_presence_of :start_on
-      expect(cup).to validate_uniqueness_of :start_on
+      expect(cup).to validate_presence_of(:start_on)
+      expect(cup).to validate_uniqueness_of(:start_on)
+      expect(cup).to validate_presence_of(:deadline)
+      expect(cup).to validate_presence_of(:year)
+      expect(cup).to validate_uniqueness_of(:year).allow_blank
     end
 
     describe "#header_image_is_image" do
