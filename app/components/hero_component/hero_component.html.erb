@@ -16,7 +16,7 @@
     </h1>
     <p class="mt-6 max-w-lg mx-auto text-center text-xl text-white sm:max-w-3xl">
       <% if @cup.end_on %>
-        <%= "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :long)}," %>
+        <%= "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :day_month_year)}," %>
       <% else %>
         <%= "#{l(@cup.start_on, format: :long)}," %>
       <% end %>

@@ -10,3 +10,7 @@ en:
     header:
       title: Kasahara Cup
       title_em: Geneva, Switzerland
+    description: |
+      The Kasahara Cup is an international kendo tournament organized by the Geneva Kendo Club. It will take place on the %{start_on} and %{end_on} in Geneva, Switzerland.
+    description_short: |
+      The Kasahara Cup is an international kendo tournament organized every year by the Geneva Kendo Club.

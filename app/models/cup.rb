@@ -15,9 +15,9 @@ class Cup < ApplicationRecord
 
   translate :description
 
-  validates :start_on, presence: true
   validates :deadline, presence: true
-  validates :start_on, uniqueness: true
+  validates :start_on, presence: true, uniqueness: {allow_blank: true}
+  validates :year, presence: true, uniqueness: {allow_blank: true}
 
   before_validation :set_deadline, :set_year
 
@@ -69,9 +69,9 @@ class Cup < ApplicationRecord
   end
 
   private def set_year
-    if year.blank?
-      self.year = start_on.try(:year)
-    end
+    return if year.present?
+
+    self.year = start_on.try(:year)
   end
 
   private def header_image_is_image

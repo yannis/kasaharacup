@@ -13,7 +13,7 @@ RSpec.describe KenshisController do
   }
 
   describe "with 3 kenshis in the database," do
-    let!(:cup) { create(:cup, start_on: "#{Date.current.year}-11-30") }
+    let!(:cup) { create(:cup, start_on: Date.parse("#{Date.current.year}-11-30")) }
     let(:user) { create(:user) }
     let(:user2) { create(:user, admin: true) }
     let!(:kenshi1) { create(:kenshi, last_name: "kenshi1", user_id: user.to_param, cup: cup) }

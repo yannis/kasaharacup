@@ -10,6 +10,18 @@ module ApplicationHelper
     content_for(:header_title) { content_tag(:header, content_tag(:h1, content)) } if options[:meta_title]
   end
 
+  def cup_description(cup)
+    if @current_cup.end_on
+      t(
+        "layout.description",
+        start_on: l(@current_cup.start_on, format: :day_only),
+        end_on: l(@current_cup.end_on, format: :day_month_year)
+      )
+    else
+      t("layout.description_short")
+    end
+  end
+
   def submit_or_cancel_form(f, text = nil)
     link = [f.submit(text, class: "btn btn-success")]
     link << t("form.or")

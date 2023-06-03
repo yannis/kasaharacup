@@ -153,11 +153,11 @@ RSpec.describe Participation do
   end
 
   describe "#product" do
-    let(:product_junior) { build(:product) }
-    let(:product_adult) { build(:product) }
-    let(:cup) { create(:cup, product_junior: product_junior, product_adult: product_adult) }
-    let(:kenshi) { create(:kenshi, cup: cup) }
-    let(:participation) { create(:participation, kenshi: kenshi) }
+    let!(:product_junior) { build(:product) }
+    let!(:product_adult) { build(:product) }
+    let!(:cup) { create(:cup, product_junior: product_junior, product_adult: product_adult) }
+    let!(:kenshi) { create(:kenshi, cup: cup) }
+    let!(:participation) { create(:participation, kenshi: kenshi) }
 
     context "when kenshi is junior" do
       before { allow(kenshi).to receive(:junior?).and_return(true) }
