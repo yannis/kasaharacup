@@ -50,7 +50,7 @@ class KenshisController < ApplicationController
       existing_kenshis = current_user.kenshis.where(first_name: current_user
         .first_name, last_name: current_user.last_name, cup: @current_cup)
       if existing_kenshis.present?
-        redirect_to cup_kenshi_path(@current_cup, existing_kenshis.first, locale: I18n.locale),
+        redirect_to cup_kenshi_path(@current_cup, existing_kenshis.first),
           notice: t("kenshis.self.exist")
         return
       else
@@ -88,13 +88,13 @@ class KenshisController < ApplicationController
     @kenshi.cup = @cup
     if @kenshi.save
       notice = t("kenshis.create.flash.notice")
-      redirect_to cup_user_path(@cup, locale: I18n.locale), notice: notice
+      redirect_to cup_user_path(@cup), notice: notice
     else
       if params[:self] == "true"
         existing_kenshis = current_user.kenshis.where(first_name: current_user
           .first_name, last_name: current_user.last_name)
         if existing_kenshis.present?
-          redirect_to(cup_kenshi_path(@cup, existing_kenshis.first, locale: I18n.locale),
+          redirect_to(cup_kenshi_path(@cup, existing_kenshis.first),
             notice: t("kenshis.self.exist"), status: :unprocessable_entity)
         else
           @kenshi = Kenshi.from(current_user)
@@ -123,7 +123,7 @@ class KenshisController < ApplicationController
   def update
     if @kenshi.update(my_sanitizer)
       notice = t("kenshis.update.flash.notice")
-      redirect_to cup_user_path(@current_cup, locale: I18n.locale), notice: notice
+      redirect_to cup_user_path(@current_cup), notice: notice
     else
       @title = t("kenshis.edit.title", full_name: @kenshi.full_name)
       @kenshi.valid?
@@ -134,9 +134,9 @@ class KenshisController < ApplicationController
   def destroy
     @kenshi.destroy
     flash[:notice] = t(".notice")
-    redirect_to cup_user_path(@current_cup, locale: I18n.locale)
+    redirect_to cup_user_path(@current_cup)
   rescue => e
-    redirect_to cup_kenshi_path(@current_cup, @kenshi, locale: I18n.locale), alert: e.message
+    redirect_to cup_kenshi_path(@current_cup, @kenshi), alert: e.message
   end
 
   private def set_variables

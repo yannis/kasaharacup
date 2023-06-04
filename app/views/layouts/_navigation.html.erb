@@ -81,7 +81,7 @@
         <% if user_signed_in? %>
           <%=
             links = [
-              {text: t(".account"), url: cup_user_path(current_cup, locale: I18n.locale)},
+              {text: t(".account"), url: cup_user_path(current_cup)},
               {text: "Log out", url: log_out_path}
             ]
             links.unshift({text: "Admin", url: "/admin"}) if current_user.admin?

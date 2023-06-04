@@ -12,7 +12,7 @@ module KenshisHelper
     if can?(:destroy, kenshi)
       links << link_to(
         t("kenshis.helpers.destroy.text"),
-        cup_kenshi_path(@current_cup, kenshi, locale: I18n.locale),
+        cup_kenshi_path(@current_cup, kenshi),
         data: {turbo_method: :delete, turbo_confirm: t("kenshis.helpers.destroy.confirm")},
         class: "btn btn-sm btn-secondary ml-2"
       )
