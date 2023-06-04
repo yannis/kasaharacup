@@ -14,22 +14,54 @@ RSpec.describe Purchase do
 
   describe "Validations" do
     describe "#in_quota" do
-      let!(:product) { create(:product, quota: 3, cup: create(:cup)) }
-      let(:purchase) { build(:purchase, product: product) }
+      context "when product require_personal_infos" do
+        let(:cup) { create(:cup) }
+        let!(:product_1) { create(:product, cup: cup, quota: 3, require_personal_infos: true) }
+        let!(:product_2) { create(:product, cup: cup, quota: 3, require_personal_infos: true) }
+        let(:purchase) { build(:purchase, product: product_1) }
 
-      context "when purchase quota is not reached" do
-        before { create_list(:purchase, 2, product: product) }
+        before do
+          ENV["DORMITORY_QUOTA"] = "4"
+          create_list(:purchase, 2, product: product_1)
+        end
 
-        it { expect(purchase).to be_valid }
+        after { ENV["DORMITORY_QUOTA"] = nil }
+
+        context "when purchase quota is not reached" do
+          before { create_list(:purchase, 1, product: product_2) }
+
+          it { expect(purchase).to be_valid }
+        end
+
+        context "when purchase quota is reached" do
+          before { create_list(:purchase, 2, product: product_2) }
+
+          it do
+            expect(purchase).not_to be_valid
+            expect(purchase.errors.full_messages)
+              .to contain_exactly("Product ce produit n'est malheureusement plus disponible")
+          end
+        end
       end
 
-      context "when purchase quota is reached" do
-        before { create_list(:purchase, 3, product: product) }
+      context "when product doesn't require_personal_infos" do
+        let!(:product) { create(:product, quota: 3, cup: create(:cup)) }
+        let(:purchase) { build(:purchase, product: product) }
 
-        it do
-          expect(purchase).not_to be_valid
-          expect(purchase.errors.full_messages)
-            .to contain_exactly("Product ce produit n'est malheureusement plus disponible")
+        context "when purchase quota is not reached" do
+          before { create_list(:purchase, 2, product: product) }
+
+          it { expect(purchase).to be_valid }
+        end
+
+        context "when purchase quota is reached" do
+          before { create_list(:purchase, 3, product: product) }
+
+          it do
+            expect(purchase).not_to be_valid
+            expect(purchase.errors.full_messages)
+              .to contain_exactly("Product ce produit n'est malheureusement plus disponible")
+          end
         end
       end
     end
