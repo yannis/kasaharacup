@@ -18,11 +18,13 @@ RSpec.describe Purchase do
         let(:cup) { create(:cup) }
         let!(:product_1) { create(:product, cup: cup, quota: 3, require_personal_infos: true) }
         let!(:product_2) { create(:product, cup: cup, quota: 3, require_personal_infos: true) }
+        let!(:kenshi) { create(:kenshi) }
         let(:purchase) { build(:purchase, product: product_1) }
 
         before do
           ENV["DORMITORY_QUOTA"] = "4"
-          create_list(:purchase, 2, product: product_1)
+          create(:purchase, product: product_1, kenshi: kenshi)
+          create(:purchase, product: product_1)
         end
 
         after { ENV["DORMITORY_QUOTA"] = nil }
@@ -34,12 +36,23 @@ RSpec.describe Purchase do
         end
 
         context "when purchase quota is reached" do
-          before { create_list(:purchase, 2, product: product_2) }
+          context "when different kenshis bought the products" do
+            before { create_list(:purchase, 2, product: product_2) }
 
-          it do
-            expect(purchase).not_to be_valid
-            expect(purchase.errors.full_messages)
-              .to contain_exactly("Product ce produit n'est malheureusement plus disponible")
+            it do
+              expect(purchase).not_to be_valid
+              expect(purchase.errors.full_messages)
+                .to contain_exactly("Product ce produit n'est malheureusement plus disponible")
+            end
+          end
+
+          context "when same kenshi bought 2 different product" do
+            before do
+              create(:purchase, product: product_2, kenshi: kenshi)
+              create(:purchase, product: product_2)
+            end
+
+            it { expect(purchase).to be_valid }
           end
         end
       end

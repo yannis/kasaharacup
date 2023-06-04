@@ -19,12 +19,13 @@ class Purchase < ApplicationRecord
   end
 
   private def dormitory_quota_validation
-    return if product.blank?
-
-    all_dormitory_purchases_for_cup = Purchase
-      .joins(:product)
-      .where(products: {cup_id: product.cup_id, require_personal_infos: true})
-    return if all_dormitory_purchases_for_cup.count < ENV.fetch("DORMITORY_QUOTA", 50).to_i
+    # We need this validation as in our dormitory, a kenshi cannot reuse the bed
+    # of another kenshi another night.
+    kenshis_in_dormitory_for_cup = Kenshi
+      .joins(purchases: :product)
+      .merge(Product.where(cup_id: product.cup_id, require_personal_infos: true))
+      .distinct
+    return if kenshis_in_dormitory_for_cup.count < ENV.fetch("DORMITORY_QUOTA", 50).to_i
 
     errors.add(:product_id, :quota_reached)
   end
