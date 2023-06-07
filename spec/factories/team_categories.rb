@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :team_category do
-    association :cup
+    cup
     name { "#{Faker::Adjective.positive} #{Faker::Adjective.positive} #{Faker::Ancient.primordial}" }
   end
 end
