@@ -183,6 +183,9 @@ RSpec/MessageChain:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/IndexedLet:
+  Enabled: false
+
 RSpec/NestedGroups:
   Max: 10
 
