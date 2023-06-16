@@ -3,9 +3,9 @@
 require "rails_helper"
 
 RSpec.describe CupsController do
-  let!(:cup1) { create(:cup, start_on: Date.current + 1.month, events: create_list(:event, 1)) }
-  let!(:cup2) { create(:cup, start_on: Date.current - 2.years) }
-  let!(:cup3) { create(:cup, start_on: Date.current + 2.years) }
+  let!(:cup1) { create(:cup, events: create_list(:event, 1)) }
+  let!(:cup2) { create(:cup) }
+  let!(:cup3) { create(:cup) }
 
   context "when not logged in" do
     describe "when GET to :show for cup1" do
