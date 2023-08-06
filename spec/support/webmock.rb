@@ -10,6 +10,8 @@ RSpec.configure do |config|
       allow_localhost: true,
       allow: [
         "chromedriver.storage.googleapis.com",
+        "googlechromelabs.github.io",
+        "edgedl.me.gvt1.com",
         ENV["SELENIUM_REMOTE_HOST"]
       ].compact
     )
