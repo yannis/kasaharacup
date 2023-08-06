@@ -58,8 +58,6 @@ services:
     environment:
       - SCREEN_WIDTH=1680
       - SCREEN_HEIGHT=1050
-    extra_hosts:
-      - "host.docker.internal:host-gateway" # To work on Linux
 
 volumes:
   db_data:
