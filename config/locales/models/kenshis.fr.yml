@@ -36,6 +36,7 @@ fr:
   kenshis:
     create:
       flash:
+        alert: Erreur lors de l'inscription du kenshi
         notice: Kenshi inscrit avec succès
     deadline_passed: Date limite d'inscription dépassée. Merci de contacter %{email}.
     destroy:

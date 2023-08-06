@@ -35,6 +35,7 @@ en:
   kenshis:
     create:
       flash:
+        alert: Kenshi not registered
         notice: Kenshi successfully registered
     deadline_passed: The registration deadline is overpassed. Please contact %{email}.
     destroy:
