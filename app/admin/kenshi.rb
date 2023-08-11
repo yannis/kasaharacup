@@ -2,7 +2,7 @@
 
 ActiveAdmin.register Kenshi, as: "Kenshi" do
   permit_params :id, :user, :cup_id, :last_name, :first_name, :female, :email,
-    :dob, :email, :grade, :club_id, :user_id, :remarks,
+    :dob, :email, :grade, :club_id, :user_id, :remarks, :shinpan,
     purchases_attributes: [:_destroy, :product_id, :id],
     participations_attributes: [:id, :category_individual, :category_team, :_destroy]
 
@@ -18,6 +18,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     column :first_name
     column :email
     column :grade
+    column :shinpan
     column :individual_categories do |kenshi|
       kenshi.individual_categories.map(&:name).join(", ")
     end
@@ -38,6 +39,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
   filter :last_name
   filter :email
   filter :grade
+  filter :shinpan
   filter :products, as: :check_boxes, collection: proc {
                                                     Product.all.map { |p|
                                                       ["#{p.name} (#{p.year})", p.id]
@@ -53,6 +55,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     column :first_name
     column :email
     column :grade
+    column :shinpan
     column :individual_categories do |kenshi|
       kenshi.individual_categories.map { |c| link_to(c.name, admin_individual_category_path(c)) }.join(", ").html_safe
     end
@@ -79,6 +82,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       row :female
       row :dob
       row :grade
+      row :shinpan
       row :email
       row :club
       row :user
@@ -142,12 +146,13 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       f.input :cup
       f.input :user
       f.input :club
-      f.input :female
+      f.input :female, as: :radio, collection: {Ms: true, "M.": false}
       f.input :first_name
       f.input :last_name
       f.input :email
       f.input :dob, as: :datepicker
       f.input :grade, collection: Kenshi::GRADES
+      f.input :shinpan, as: :radio, collection: {Yes: true, No: false}
       f.input :remarks
     end
     f.inputs "Participations" do
