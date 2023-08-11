@@ -114,7 +114,7 @@ class KenshisController < ApplicationController
         @title = t("kenshis.new.title")
       end
       respond_with @kenshi do |format|
-        flash.now[:alert] = "Kenshi not registered"
+        flash.now[:alert] = t("kenshis.create.flash.alert")
         format.html { render :new, status: :unprocessable_entity }
       end
     end

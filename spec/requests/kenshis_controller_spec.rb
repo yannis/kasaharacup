@@ -129,7 +129,7 @@ RSpec.describe KenshisController do
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
         it { expect(assigns(:kenshi)).not_to be_valid_verbose }
         it { expect(response).to render_template(:new) }
-        it { expect(flash.now[:alert]).to match(/Kenshi not registered/) }
+        it { expect(flash.now[:alert]).to match(/Erreur lors de l'inscription du kenshi/) }
       end
 
       describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
