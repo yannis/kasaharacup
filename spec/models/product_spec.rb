@@ -47,29 +47,83 @@ RSpec.describe Product do
   end
 
   describe "#still_available?" do
-    let(:cup) { create(:cup) }
-    let!(:product) { create(:product, cup: cup, quota: quota) }
+    context "when product require_personal_infos" do
+      let(:cup) { create(:cup) }
+      let!(:product_1) { create(:product, cup: cup, quota: 3, require_personal_infos: true) }
+      let!(:product_2) { create(:product, cup: cup, quota: 3, require_personal_infos: true) }
+      let!(:product_3) { create(:product, cup: cup, quota: 3, require_personal_infos: false) }
+      let!(:kenshi) { create(:kenshi) }
+      let(:purchase) { build(:purchase, product: product_1) }
 
-    before do
-      create_list(:purchase, 2, product: product)
+      before do
+        ENV["DORMITORY_QUOTA"] = "4"
+        create(:purchase, product: product_1, kenshi: kenshi)
+        create(:purchase, product: product_1)
+      end
+
+      after { ENV["DORMITORY_QUOTA"] = nil }
+
+      context "when product quota is not reached" do
+        before { create_list(:purchase, 1, product: product_2) }
+
+        it do
+          expect(product_1).to be_still_available
+          expect(product_2).to be_still_available
+          expect(product_3).to be_still_available
+        end
+      end
+
+      context "when product quota is reached" do
+        context "when different kenshis bought the products" do
+          before { create_list(:purchase, 2, product: product_2) }
+
+          it do
+            expect(product_1).not_to be_still_available
+            expect(product_2).not_to be_still_available
+            expect(product_3).to be_still_available
+          end
+        end
+
+        context "when same kenshi bought 2 different product" do
+          before do
+            create(:purchase, product: product_2, kenshi: kenshi)
+            create(:purchase, product: product_2)
+          end
+
+          it do
+            expect(product_1).to be_still_available
+            expect(product_2).to be_still_available
+            expect(product_3).to be_still_available
+          end
+        end
+      end
     end
 
-    context "without quota" do
-      let(:quota) { nil }
+    context "when product doesn't require_personal_infos" do
+      let(:cup) { create(:cup) }
+      let!(:product) { create(:product, cup: cup, quota: quota) }
 
-      it { expect(product).to be_still_available }
-    end
+      before do
+        create_list(:purchase, 2, product: product)
+      end
 
-    context "with purchases count < quota" do
-      let(:quota) { 3 }
+      context "without quota" do
+        let(:quota) { nil }
 
-      it { expect(product).to be_still_available }
-    end
+        it { expect(product).to be_still_available }
+      end
 
-    context "with purchases count == quota" do
-      let(:quota) { 2 }
+      context "with purchases count < quota" do
+        let(:quota) { 3 }
 
-      it { expect(product).not_to be_still_available }
+        it { expect(product).to be_still_available }
+      end
+
+      context "with purchases count == quota" do
+        let(:quota) { 2 }
+
+        it { expect(product).not_to be_still_available }
+      end
     end
   end
 end
