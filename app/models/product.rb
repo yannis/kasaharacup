@@ -32,6 +32,7 @@ class Product < ApplicationRecord
       .joins(purchases: :product)
       .merge(Product.where(cup_id: cup_id, require_personal_infos: true))
       .distinct
-    kenshis_in_dormitory_for_cup.count < ENV.fetch("DORMITORY_QUOTA", 50).to_i
+    kenshis_in_dormitory_for_cup.count < ENV.fetch("DORMITORY_QUOTA", 50).to_i &&
+      (quota.nil? || purchases.count < quota)
   end
 end
