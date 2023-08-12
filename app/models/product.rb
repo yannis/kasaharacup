@@ -18,6 +18,20 @@ class Product < ApplicationRecord
   delegate :year, to: :cup
 
   def still_available?
-    quota.nil? || purchases.count < quota
+    if require_personal_infos
+      dormitory_still_available
+    else
+      quota.nil? || purchases.count < quota
+    end
+  end
+
+  def dormitory_still_available
+    # We need this validation as in our dormitory, a kenshi cannot reuse the bed
+    # of another kenshi another night.
+    kenshis_in_dormitory_for_cup = Kenshi
+      .joins(purchases: :product)
+      .merge(Product.where(cup_id: cup_id, require_personal_infos: true))
+      .distinct
+    kenshis_in_dormitory_for_cup.count < ENV.fetch("DORMITORY_QUOTA", 50).to_i
   end
 end

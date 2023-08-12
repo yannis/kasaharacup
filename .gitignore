@@ -44,4 +44,5 @@
 /node_modules
 /vendor/bundle/*
 
+spec/support/capybara.dev.rb
 spec/examples.txt
