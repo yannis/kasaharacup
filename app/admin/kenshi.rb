@@ -178,6 +178,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
 
   action_item :pdf_index, only: :index do
     link_to("PDF", pdfs_admin_kenshis_path)
+    link_to("Dormitory CSV", dormitory_csv_admin_kenshis_path)
   end
 
   member_action :pdf do
@@ -203,5 +204,57 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       type: "application/pdf",
       disposition: "inline",
       page_size: "A4"
+  end
+
+  collection_action :dormitory_csv do
+    cup = Cup.last
+    products = cup.products.where(require_personal_infos: true)
+    purchases = Purchase.where(product: products)
+    kenshis = Kenshi.order(:last_name, :first_name).joins(:purchases).merge(purchases).distinct
+    csv = CSV.generate do |csv|
+      csv_header = [
+        "Last name",
+        "First name",
+        "Sex",
+        "Birth date",
+        "Email",
+        "Residential address",
+        "Residential zip code",
+        "Residential city",
+        "Residential country",
+        "Residential phone number",
+        "Origin country",
+        "Document type",
+        "Document number"
+      ]
+      products.each do |product|
+        csv_header << product.name
+      end
+      csv << csv_header
+      kenshis.each do |kenshi|
+        csv_kenshi = [
+          kenshi.last_name,
+          kenshi.first_name,
+          kenshi.female ? "F" : "M",
+          kenshi.dob,
+          (kenshi.email.presence || kenshi.user.email),
+          kenshi.personal_info.residential_address,
+          kenshi.personal_info.residential_zip_code,
+          kenshi.personal_info.residential_city,
+          kenshi.personal_info.residential_country,
+          kenshi.personal_info.residential_phone_number,
+          kenshi.personal_info.origin_country,
+          kenshi.personal_info.document_type,
+          kenshi.personal_info.document_number
+        ]
+        products.each do |product|
+          csv_kenshi << (kenshi.purchases.pluck(:product_id).include?(product.id) ? "Yes" : "")
+        end
+        csv << csv_kenshi
+      end
+    end
+    send_data csv, filename: "kenshis_dormitory_#{cup.year}.csv",
+      type: "text/csv",
+      disposition: "inline"
   end
 end
