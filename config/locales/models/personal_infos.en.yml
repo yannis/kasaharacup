@@ -3,6 +3,7 @@ en:
   activerecord:
     attributes:
       personal_info:
+        email: Personal email address
         residential_phone_number: Home phone number
         residential_address: Home address
         residential_city: City of residence
@@ -20,3 +21,4 @@ en:
   personal_infos:
     form_fields:
       country_prompt: Select country
+      email_helper: A personal email address is required to receive the pass for Geneva's bus system

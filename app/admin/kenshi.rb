@@ -65,6 +65,9 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     column :products do |kenshi|
       kenshi.products.map { |c| link_to(c.name, admin_product_path(c)) }.join(", ").html_safe
     end
+    column :personal_info do |kenshi|
+      kenshi.personal_info.present?
+    end
     column :user do |kenshi|
       "#{kenshi.user.full_name} (#{kenshi.user.email})"
     end
@@ -91,6 +94,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     if kenshi.personal_info.present?
       panel "Personal info" do
         attributes_table_for kenshi.personal_info do
+          row :email
           row :residential_address
           row :residential_zip_code
           row :residential_city

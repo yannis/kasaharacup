@@ -20,7 +20,8 @@ describe(PersonalInfo) do
   end
 
   describe "Validations" do
-    let(:personal_info) { build(:personal_info) }
+    let(:personal_info) { build(:personal_info, email: email) }
+    let(:email) { Faker::Internet.email }
 
     describe "residential_phone_number" do
       it { expect(personal_info).to validate_presence_of(:residential_phone_number) }
@@ -63,6 +64,27 @@ describe(PersonalInfo) do
 
     describe "document_number" do
       it { expect(personal_info).to validate_presence_of(:document_number) }
+    end
+
+    describe "email" do
+      it { expect(personal_info).to validate_presence_of(:email) }
+
+      context "when email is valid" do
+        let(:email) { Faker::Internet.email }
+
+        it do
+          expect(personal_info).to be_valid
+        end
+      end
+
+      context "when email is invalid" do
+        let(:email) { "invalid_email" }
+
+        it do
+          expect(personal_info).not_to be_valid
+          expect(personal_info.errors[:email]).to include("n'est pas valide")
+        end
+      end
     end
   end
 end

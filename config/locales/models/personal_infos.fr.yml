@@ -3,6 +3,7 @@ fr:
   activerecord:
     attributes:
       personal_info:
+        email: Adresse email personnelle
         residential_phone_number: Numéro de téléphone du domicile
         residential_address: Adresse du domicile
         residential_city: Ville de résidence
@@ -20,3 +21,4 @@ fr:
   personal_infos:
     form_fields:
       country_prompt: Sélectionner un pays
+      email_helper: Une adresse email personnelle est requise pour recevoir le pass pour les transports publics genevois

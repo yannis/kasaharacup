@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_11_134921) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_13_075513) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -214,6 +214,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_11_134921) do
     t.string "origin_country", null: false
     t.enum "document_type", null: false, enum_type: "document_type"
     t.string "document_number", null: false
+    t.string "email", null: false
     t.index ["kenshi_id"], name: "index_personal_infos_on_kenshi_id"
   end
 
