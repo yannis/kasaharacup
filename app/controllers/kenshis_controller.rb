@@ -160,6 +160,7 @@ class KenshisController < ApplicationController
       participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy],
       product_ids: [],
       personal_info_attributes: %i[
+        email
         residential_address
         residential_zip_code
         residential_city

@@ -1,4 +1,13 @@
 <div class="input-field">
+  <%= g.label :email, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
+  <%= g.email_field :email %>
+  <%= tag.p(g.object.errors.messages_for(:email).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+  <p class="helper-text">
+    <%= t(".email_helper") %>
+  </p>
+</div>
+
+<div class="input-field">
   <%= g.label :origin_country, class: "block text-sm font-medium text-gray-700 mt-6 mb-1" %>
   <%= g.country_select :origin_country, prompt: t(".country_prompt") %>
   <%= tag.p(g.object.errors.messages_for(:origin_country).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
