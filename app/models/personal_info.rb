@@ -4,7 +4,7 @@ class PersonalInfo < ApplicationRecord
   enum document_type: {passport: "passport", id_card: "id_card"}
 
   encrypts :residential_address, :residential_zip_code, :residential_city,
-    :residential_phone_number, :document_number
+    :residential_phone_number, :document_number, :email
 
   belongs_to :kenshi, inverse_of: :personal_info
 
