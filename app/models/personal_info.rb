@@ -16,4 +16,5 @@ class PersonalInfo < ApplicationRecord
   validates :origin_country, presence: true, inclusion: {in: ISO3166::Country.all.map(&:alpha2), allow_blank: true}
   validates :document_type, presence: true, inclusion: {in: document_types.keys, allow_blank: true}
   validates :document_number, presence: true
+  validates :email, presence: true, format: {with: Devise.email_regexp, allow_blank: true}
 end
