@@ -12,7 +12,8 @@ FactoryBot.define do
     }
     deadline { |c|
       return nil if c.start_on.blank?
-      start = Date.parse(c.start_on.to_s)
+
+      start = c.start_on.is_a?(String) ? Date.parse(c.start_on) : c.start_on
       start - 14.days
     }
 
