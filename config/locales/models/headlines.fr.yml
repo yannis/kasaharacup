@@ -1,5 +1,9 @@
 ---
 fr:
+  activerecord:
+    attributes:
+      headline:
+        created_at: Publié
   headlines:
     index:
       no_news: Pas de nouvelles pour l'instant…

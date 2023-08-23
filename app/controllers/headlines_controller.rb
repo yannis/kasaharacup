@@ -7,7 +7,7 @@ class HeadlinesController < ApplicationController
   respond_to :html
 
   def index
-    respond_with @headlines.order(created_at: :desc)
+    @headlines = @headlines.order(created_at: :desc)
   end
 
   def show

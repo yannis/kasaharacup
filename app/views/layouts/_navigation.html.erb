@@ -74,7 +74,7 @@
           render(NavigationDropdownComponent.new(
             name: "locale",
             text: I18n.locale.to_s.upcase,
-            css_class: "hidden lg:block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
+            css_class: "hidden sm:block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
             links: I18n.available_locales.map { |locale| {text: locale.to_s.upcase, url: {locale: locale}} }
           ))
         %>

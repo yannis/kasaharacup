@@ -11,12 +11,12 @@
         </div>
       </div>
     </div>
-    <ul role="list" class="divide-y divide-gray-200">
+    <div role="list" class="divide-y divide-gray-200">
       <% if @headlines.length.positive? %>
         <%= render @headlines %>
       <% else %>
         <%= t(".no_news") %>
       <% end %>
-    </ul>
+    </div>
   </div>
 </div>
