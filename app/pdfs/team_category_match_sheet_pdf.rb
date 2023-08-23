@@ -49,6 +49,7 @@ class TeamCategoryMatchSheetPdf < Prawn::Document
         column(3).border_width = 1
 
         row(0).padding = 3
+        cells[0, 1].background_color = "F5F3F1"
         cells[0, 1].borders = [:top, :bottom, :left, :right]
 
         cells[0, 3].background_color = "ff0000"
@@ -56,21 +57,29 @@ class TeamCategoryMatchSheetPdf < Prawn::Document
       end
     end
 
-    bounding_box [bounds.left + 150, bounds.top - 550], width: 200, align: :center do
-      data = []
-      data << ["1.", nil]
-      data << ["2.", nil]
-      table(data, cell_style: {inline_format: true, size: 12}) do
-        cells.padding = 5
-        cells.padding_top = 40
-        cells.borders = []
-        column(0).font_style = :bold
+    move_down 100
 
-        column(0).width = 35
-        column(1).width = 140
+    data = [["Team", "Rank", "Wins", "Pts scored"]]
+    2.times do |i|
+      data << [nil, nil, nil, nil]
+    end
+    table(data, cell_style: {inline_format: true}, position: :center) do
+      cells.padding = 5
+      column(0).width = 140
+      column(0).borders = []
 
-        column(1).borders = [:bottom]
-      end
+      column(1..3).width = 72
+
+      column(1).font_style = :bold
+
+      row(0).style(align: :center)
+      row(0).borders = []
+      row(0).style(valign: :bottom)
+
+      row(1..2).padding = 10
+
+      row(1).column(0).background_color = "ff0000"
+      row(2).column(0).background_color = "F5F3F1"
     end
   end
 end
