@@ -12,7 +12,7 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
         start_new_page layout: :portrait
       end
 
-      bounding_box [bounds.left, bounds.top + 20], width: 400 do
+      bounding_box [bounds.left, bounds.top + 20], width: 580 do
         fill_color "000000"
         font_size 48
         text individual_category.name.upcase
@@ -78,21 +78,24 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
         end
       end
 
-      bounding_box [bounds.left + 150, bounds.top - 450], width: 200, align: :center do
-        data = []
+      bounding_box [bounds.left, bounds.top - 500], width: 580, align: :center do
+        data = [[nil, "Rank", "Wins", "Losses", "Hikiwake", "Pts scored", "Pts conceded"]]
         kenshis.each_with_index do |kenshi, i|
-          data << ["#{i + 1}.", nil]
+          data << [kenshi.poster_name, nil, nil, nil, nil, nil, nil]
         end
-        table(data, cell_style: {inline_format: true, size: 12}) do
+        table(data, cell_style: {inline_format: true}) do
           cells.padding = 5
-          cells.padding_top = 40
-          cells.borders = []
-          column(0).font_style = :bold
+          # cells.borders = [1, 1, 1, 1]
+          column(0..1).font_style = :bold
+          column(0).width = 140
+          column(0).borders = []
+          column(0).style(align: :right)
 
-          column(0).width = 35
-          column(1).width = 140
+          column(1..6).width = 62
+          column(1..6).style(align: :center)
 
-          column(1).borders = [:bottom]
+          row(0).borders = []
+          row(0).style(valign: :bottom)
         end
       end
     end
