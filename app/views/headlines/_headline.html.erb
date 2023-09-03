@@ -1,21 +1,14 @@
-<li>
-  <div class="py-4 px-3 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-lg font-medium text-gray-600 prose">
-          <%= link_to(cup_headline_path(@current_cup, headline)) do %>
-            <%= headline.title %>
-          <% end %>
-        </p>
-        <p class="text-sm font-medium text-gray-400 truncate">
-          <em><%= headline.created_at.to_fs :day_month_year %></em>
-        </p>
-      </div>
-    </div>
-    <div class="mt-6 sm:flex sm:justify-between">
-      <div class="sm:flex">
-        <%= md_to_html(headline.content) %>
-      </div>
+<div class="w-full bg-white shadow">
+  <div class="px-4 py-5 sm:p-6 prose prose-red-900 prose-lg">
+    <p class="mt-1 text-xs text-gray-500 mb-0 italic">
+      <%= Headline.human_attribute_name(:created_at) %>
+      <%= l(headline.created_at.to_date, format: :day_month_year) %>
+    </p>
+    <h3 class="text-lg mt-1 font-medium text-gray-900">
+      <%= headline.title %>
+    </h3>
+    <div class="mt-2 max-w-xl text-sm text-gray-500">
+      <%= md_to_html(headline.content) %>
     </div>
   </div>
-</li>
+</div>

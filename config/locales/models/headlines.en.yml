@@ -1,5 +1,9 @@
 ---
 en:
+  activerecord:
+    attributes:
+      headline:
+        created_at: Published
   headlines:
     index:
       no_news: No headlines yet…
