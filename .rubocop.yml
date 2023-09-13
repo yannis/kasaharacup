@@ -201,10 +201,6 @@ RSpec/DescribeClass:
     - "spec/abilities/**/*"
     - "spec/features/**/*"
 
-RSpec/FilePath:
-  Exclude:
-    - "spec/routing/**/*"
-
 # Layout
 # --------------
 
