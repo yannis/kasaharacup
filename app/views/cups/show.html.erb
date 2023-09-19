@@ -17,7 +17,7 @@
         </div>
       <% end %>
       <%= md_to_html(@cup.description) %>
-      <% if @cup.registerable? %>
+      <% if @cup.start_on > Date.today.end_of_day + 2.days %>
         <h2 class="mt-10">
           <%= t(".program.title") %>
         </h2>
