@@ -169,6 +169,8 @@ ActiveAdmin.register Cup do
       [@cup.team_categories, @cup.individual_categories, @cup.products].flatten.each do |tc|
         header << tc.name
       end
+      header << "Fees CHF"
+      header << "Fees €"
       csv << header.flatten
       kenshis.each do |kenshi|
         user = kenshi.user
@@ -185,6 +187,8 @@ ActiveAdmin.register Cup do
         @cup.products.each do |p|
           kcsv << (kenshi.consume?(p) ? p.name : nil)
         end
+        kcsv << kenshi.fees(:chf)
+        kcsv << kenshi.fees(:eu)
         csv << kcsv.flatten
       end
     end
