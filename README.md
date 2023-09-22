@@ -30,7 +30,7 @@ shinpans = Kenshi.joins(:participations).merge(category.participations).where(gr
 
 shinpans.map { |s| [s.full_name, s.grade, s.participations.find { |p| p.category == category }.pool_number] }
 
-CSV.open("~/Dropbox/kendo/kasaharacup/2022/TABLEAUX MATCH/SHINPANS/open.csv", "wb") do |csv|
+CSV.open("~/Dropbox/kendo/kasaharacup/2023/TABLEAUX MATCH/SHINPANS/open.csv", "wb") do |csv|
   csv << ["Name", "Grade", "Team"]
   shinpans.each do |shinpan|
     csv << [shinpan.full_name, shinpan.grade, shinpan.participations.find { |p| p.category == category }.team.name]
@@ -42,7 +42,7 @@ category = TeamCategory.find 8
 
 shinpans.map { |s| [s.full_name, s.grade, s.participations.find { |p| p.category == category }.team.name] }
 
-CSV.open("/Users/yannis/Dropbox/kendo/kasaharacup/2022/TABLEAUX MATCH/SHINPANS/teams.csv", "wb") do |csv|
+CSV.open("/Users/yannis/Dropbox/kendo/kasaharacup/2023/TABLEAUX MATCH/SHINPANS/teams.csv", "wb") do |csv|
   csv << ["Name", "Grade", "Team"]
   shinpans.each do |shinpan|
     csv << [shinpan.full_name, shinpan.grade, shinpan.participations.find { |p| p.category == category }.team.name]
