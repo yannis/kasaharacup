@@ -23,29 +23,20 @@ clubs = Club.where.missing(:kenshis, :users)
 ### Find shinpans in a category
 
 ```ruby
-# Show shinpans with grade and pool number (for Individual Category)
-category = IndividualCategory.find 31
+# Show shinpans with grade and team name or pool number (for Individual Category)
+cup = Cup.last
+individual_categories = cup.individual_categories
+team_categories = cup.team_categories
 
-shinpans = Kenshi.joins(:participations).merge(category.participations).where(grade: %w[5Dan 6Dan 7Dan])
+(individual_categories + team_categories).each do |category|
+  shinpans = Kenshi.joins(:participations).merge(category.participations).where(grade: %w[5Dan 6Dan 7Dan])
 
-shinpans.map { |s| [s.full_name, s.grade, s.participations.find { |p| p.category == category }.pool_number] }
-
-CSV.open("~/Dropbox/kendo/kasaharacup/2023/TABLEAUX MATCH/SHINPANS/open.csv", "wb") do |csv|
-  csv << ["Name", "Grade", "Team"]
-  shinpans.each do |shinpan|
-    csv << [shinpan.full_name, shinpan.grade, shinpan.participations.find { |p| p.category == category }.team.name]
-  end
-end
-
-# Show shinpans with grade and team name (for Team Category)
-category = TeamCategory.find 8
-
-shinpans.map { |s| [s.full_name, s.grade, s.participations.find { |p| p.category == category }.team.name] }
-
-CSV.open("/Users/yannis/Dropbox/kendo/kasaharacup/2023/TABLEAUX MATCH/SHINPANS/teams.csv", "wb") do |csv|
-  csv << ["Name", "Grade", "Team"]
-  shinpans.each do |shinpan|
-    csv << [shinpan.full_name, shinpan.grade, shinpan.participations.find { |p| p.category == category }.team.name]
+  CSV.open("/Users/yannis/Dropbox/kendo/kasaharacup/2023/Shinpans/#{category.name.parameterize}.csv", "wb") do |csv|
+    csv << ["Name", "Grade", "Team"]
+    shinpans.each do |shinpan|
+      participation = shinpan.participations.find { |p| p.category == category }
+      csv << [shinpan.full_name, shinpan.grade, participation.team&.name.presence || participation.pool_number.presence]
+    end
   end
 end
 ```
