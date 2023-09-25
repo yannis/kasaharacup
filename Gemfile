@@ -11,7 +11,7 @@ gem "rails", "~> 7.0.8"
 gem "pg", "~> 1.5"
 
 # Server
-gem "puma", "~> 6.3"
+gem "puma", "~> 6.4"
 
 # Authentication and Authorization
 gem "devise"
