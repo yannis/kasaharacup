@@ -86,7 +86,7 @@
                   <%= Kenshi.human_attribute_name(:team) %>
                 </div>
               </div>
-              <% cup.team_categories.all.each do |c| %>
+              <% cup.team_categories.find_each do |c| %>
                 <% participation = f.object.participations.detect { |p| p.category == c }.presence || Participation.new(category: c) # rubocop:disable Lint/UselessAssignment %>
                 <%= f.fields_for :participations, participation do |g| %>
                   <% if participation.persisted? %>
@@ -152,7 +152,7 @@
                   </div>
                 </div>
                 <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% cup.individual_categories.all.each do |individual_category| %>
+                  <% cup.individual_categories.find_each do |individual_category| %>
                     <div class="max-w-full space-y-4">
                       <div class="relative flex items-start mb-4">
                         <% participation = kenshi.participations.to_a.find { |p| p.category == individual_category } # rubocop:disable Lint/UselessAssignment %>
