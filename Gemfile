@@ -49,7 +49,7 @@ gem "rack-cors"
 # gem "image_processing", "~> 1.2"
 
 # activeadmin
-gem "activeadmin", "~> 2.14"
+gem "activeadmin", "~> 3.1"
 
 # ActiveStorage and Image processing
 gem "aws-sdk-s3"
