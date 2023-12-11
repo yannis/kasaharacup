@@ -134,7 +134,7 @@ GEM
       xpath (~> 3.2)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
-    countries (5.7.0)
+    countries (5.7.1)
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
