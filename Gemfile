@@ -53,7 +53,7 @@ gem "activeadmin"
 
 # ActiveStorage and Image processing
 gem "aws-sdk-s3"
-gem "image_processing", ">= 1.2"
+gem "image_processing"
 
 # ViewComponent
 gem "view_component"
@@ -86,7 +86,7 @@ group :development, :test do
   gem "faker"
   gem "libyear-bundler"
   gem "parallel_tests"
-  gem "rspec-rails", "~> 6.1.0"
+  gem "rspec-rails"
   gem "rubocop-rails_config", require: false
   gem "rubocop-rspec", require: false
   gem "standard"
@@ -96,7 +96,7 @@ group :development do
   gem "active_record_doctor"
   gem "brakeman"
   gem "i18n-tasks"
-  gem "letter_opener_web", "~> 2.0"
+  gem "letter_opener_web"
   gem "solargraph"
   gem "rack-mini-profiler"
   gem "ruby-lsp"
@@ -105,7 +105,7 @@ end
 
 group :test do
   gem "capybara"
-  gem "rails-controller-testing", "~> 1.0"
+  gem "rails-controller-testing"
   gem "selenium-webdriver"
   gem "shoulda-matchers"
   gem "simplecov", require: false
