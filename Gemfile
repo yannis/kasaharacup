@@ -49,7 +49,7 @@ gem "rack-cors"
 # gem "image_processing", "~> 1.2"
 
 # activeadmin
-gem "activeadmin", "~> 2.14"
+gem "activeadmin", "~> 3.2"
 
 # ActiveStorage and Image processing
 gem "aws-sdk-s3"
@@ -86,7 +86,7 @@ group :development, :test do
   gem "faker"
   gem "libyear-bundler"
   gem "parallel_tests"
-  gem "rspec-rails", "~> 5.1.0"
+  gem "rspec-rails", "~> 6.1.0"
   gem "rubocop-rails_config", require: false
   gem "rubocop-rspec", require: false
   gem "standard"
@@ -108,6 +108,5 @@ group :test do
   gem "selenium-webdriver"
   gem "shoulda-matchers"
   gem "simplecov", require: false
-  gem "webdrivers"
   gem "webmock"
 end
