@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.1.4"
 
-gem "rails", "~> 7.0.8"
+gem "rails", "~> 7.1.0"
 
 # Database
 gem "pg", "~> 1.5"
@@ -49,7 +49,7 @@ gem "rack-cors"
 # gem "image_processing", "~> 1.2"
 
 # activeadmin
-gem "activeadmin", "~> 3.2"
+gem "activeadmin"
 
 # ActiveStorage and Image processing
 gem "aws-sdk-s3"
@@ -99,6 +99,7 @@ group :development do
   gem "letter_opener_web", "~> 2.0"
   gem "solargraph"
   gem "rack-mini-profiler"
+  gem "ruby-lsp"
   gem "web-console"
 end
 
