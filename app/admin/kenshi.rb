@@ -241,7 +241,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
           kenshi.first_name,
           kenshi.female ? "F" : "M",
           kenshi.dob,
-          (kenshi.email.presence || kenshi.user.email),
+          kenshi.email.presence || kenshi.user.email,
           kenshi.personal_info.residential_address,
           kenshi.personal_info.residential_zip_code,
           kenshi.personal_info.residential_city,
