@@ -89,6 +89,7 @@ group :development, :test do
   gem "rspec-rails", "~> 6.1.0"
   gem "rubocop-rails_config", require: false
   gem "rubocop-rspec", require: false
+  gem "ruby-lsp"
   gem "standard"
 end
 

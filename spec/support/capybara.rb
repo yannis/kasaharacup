@@ -34,7 +34,7 @@ RSpec.configure do |config|
       port = 4000 + ENV["TEST_ENV_NUMBER"].to_i
       Capybara.server_host = "0.0.0.0"
       Capybara.server_port = port
-      Capybara.app_host = "https://host.docker.internal:#{port}"
+      Capybara.app_host = "http://localhost:#{port}"
     else
       # `selenium_chrome_headless` and `selenium_chrome` are defined in
       # the Capybara gem: /lib/capybara/registrations/drivers.rb

@@ -49,7 +49,7 @@ services:
       - db_dump:/app/db_dump:cached
 
   selenium-chrome:
-    image: selenium/standalone-chrome-debug:latest
+    image: selenium/standalone-chrome:latest
     shm_size: 2G
     logging:
       driver: none

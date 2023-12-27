@@ -46,9 +46,8 @@ module Kasaharacup
     config.active_record.encryption.key_derivation_salt = ENV.fetch("ENCRYPTION_KEY_DERIVATION_SALT")
 
     Rails.application.routes.default_url_options = {
-      protocol: ENV.fetch("APP_PROTOCOL", "http"),
-      host: ENV.fetch("APP_HOST"),
-      port: ENV.fetch("APP_PORT", 80)
+      protocol: "http",
+      host: "localhost"
     }
 
     # Don't generate system test files.
