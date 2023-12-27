@@ -120,7 +120,7 @@ class Kenshi < ApplicationRecord
   def poster_name(category: nil)
     poster_name = [last_name]
 
-    if Kenshi.includes(:cup).where(last_name: last_name, cups: category&.cup.presence || Cup.last).size > 1
+    if Kenshi.includes(:cup).where(last_name: last_name, cup: category&.cup.presence || Cup.last).size > 1
       poster_name << first_name.split(/[\s|-]/).map { |s|
         s.first + "."
       }.join
