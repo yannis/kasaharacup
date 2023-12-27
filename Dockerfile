@@ -1,4 +1,4 @@
-FROM ruby:3.1.4-alpine
+FROM ruby:3.3.0-alpine
 LABEL mainainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
 
