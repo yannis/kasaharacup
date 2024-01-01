@@ -2,7 +2,15 @@
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <div class="bg-white overflow-hidden">
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <%= render "form", form_title: @title, products: @products, cup: @cup, user: @user, kenshi: @kenshi %>
+      <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+        <div class="text-base max-w-prose">
+          <div>
+            <h2 class="text-base text-red-600 font-semibold tracking-wide uppercase"><%= "#{t("layout.header.title")} #{@cup.year}" %></h2>
+            <h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"><%= @title %></h3>
+          </div>
+        </div>
+      </div>
+      <%= render "form", cup: @cup, kenshi_form: @kenshi_form, club_names: @club_names, team_categories: @team_categories, individual_categories: @individual_categories, products: @products %>
     </div>
   </div>
 </div>

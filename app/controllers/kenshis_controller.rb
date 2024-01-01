@@ -2,8 +2,8 @@
 
 class KenshisController < ApplicationController
   load_and_authorize_resource :cup, find_by: :year, class: "Cup"
-  load_and_authorize_resource :kenshi, find_by: :id, class: "Kenshi", shallow: true, through: [:cup],
-    param_method: :my_sanitizer, parent: false, except: [:new]
+  load_and_authorize_resource :kenshi, find_by: :id, class: "Kenshi", shallow: true,
+    through: [:cup], parent: false, except: [:new]
 
   before_action :set_variables, only: [:new, :edit, :update, :create]
   before_action :set_personal_info, only: %w[edit]
@@ -71,12 +71,12 @@ class KenshisController < ApplicationController
       @title = t(".title")
     end
     set_personal_info
-    respond_with @kenshi
+    @kenshi_form = KenshiForm.new(cup: @cup, user: current_user, kenshi: Kenshi.new)
   end
 
   def edit
     @title = t(".title", full_name: @kenshi.full_name)
-    respond_with @kenshi
+    @kenshi_form = KenshiForm.new(cup: @cup, user: current_user, kenshi: @kenshi)
   end
 
   def create
@@ -86,7 +86,8 @@ class KenshisController < ApplicationController
       return
     end
     @kenshi.cup = @cup
-    if @kenshi.save
+    @kenshi_form = KenshiForm.new(cup: @cup, user: current_user, kenshi: @kenshi)
+    if @kenshi_form.save(my_sanitizer)
       notice = t("kenshis.create.flash.notice")
       redirect_to cup_user_path(@cup), notice: notice
     else
@@ -113,15 +114,15 @@ class KenshisController < ApplicationController
         @kenshi.club = current_user.club
         @title = t("kenshis.new.title")
       end
-      respond_with @kenshi do |format|
-        flash.now[:alert] = t("kenshis.create.flash.alert")
-        format.html { render :new, status: :unprocessable_entity }
-      end
+      @kenshi_form = KenshiForm.new(cup: @cup, user: current_user, kenshi: @kenshi)
+      flash.now[:alert] = t("kenshis.create.flash.alert")
+      render :new, status: :unprocessable_entity
     end
   end
 
   def update
-    if @kenshi.update(my_sanitizer)
+    @kenshi_form = KenshiForm.new(cup: @cup, user: current_user, kenshi: @kenshi)
+    if @kenshi_form.save(my_sanitizer)
       notice = t("kenshis.update.flash.notice")
       redirect_to cup_user_path(@current_cup), notice: notice
     else
@@ -140,6 +141,8 @@ class KenshisController < ApplicationController
   end
 
   private def set_variables
+    @team_categories = @cup.team_categories.order(:name)
+    @individual_categories = @cup.individual_categories.order(:name)
     @teams = @cup.teams.incomplete.order(:name) + @current_cup.teams.complete.order(:name)
     @club_names = Club.order(:name).pluck(:name).map { |club| club.strip }.uniq
     @products = @cup.products.where(display: true).order(:position)
@@ -150,16 +153,14 @@ class KenshisController < ApplicationController
   end
 
   private def my_sanitizer
-    params[:kenshi][:participations_attributes]&.reject! { |k, v|
+    params[:kenshi_form][:kenshi][:participations]&.reject! { |k, v|
       v["category_type"] == "IndividualCategory" && v["category_id"].blank?
     }
-    params.require(:kenshi).permit(
-      :first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade, :club_name,
-      purchases_attributes: [:id, :product_id, :_destroy],
-      individual_category_ids: [],
-      participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy],
-      product_ids: [],
-      personal_info_attributes: %i[
+    params.require(:kenshi_form).permit(
+      kenshi: %i[first_name last_name email dob female club_id club_name grade club_name],
+      purchases: {},
+      participations: {},
+      personal_info: %i[
         email
         residential_address
         residential_zip_code

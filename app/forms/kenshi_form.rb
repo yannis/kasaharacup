@@ -11,7 +11,7 @@ class KenshiForm < ApplicationForm
     @cup = cup
     @user = user
     @kenshi = kenshi || @cup.kenshis.new(user: @user)
-    @personal_info = kenshi.personal_info || @kenshi.build_personal_info
+    @personal_info = kenshi.personal_info
     @participations = kenshi.participations
     @purchases = kenshi.purchases
   end
@@ -30,11 +30,14 @@ class KenshiForm < ApplicationForm
   private def build_kenshi(params)
     return unless params
 
+    params[:user] = @user
+    params[:cup] = @cup
     @kenshi.assign_attributes(params)
   end
 
   private def build_personal_info(params)
     if params
+      @personal_info ||= @kenshi.build_personal_info
       @personal_info.assign_attributes(params)
     else
       @personal_info = nil

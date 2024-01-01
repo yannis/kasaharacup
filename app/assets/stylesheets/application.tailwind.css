@@ -76,10 +76,6 @@
     @apply space-y-8 divide-y divide-gray-200 border-t-0;
   }
 
-  .kasa-form > :not([hidden]) ~ :not([hidden]) {
-    @apply border-t-0;
-  }
-
   .input-group {
     @apply sm:grid sm:grid-cols-6 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5;
   }

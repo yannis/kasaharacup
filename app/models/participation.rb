@@ -16,7 +16,6 @@ class Participation < ApplicationRecord
   validate :category_age
 
   before_validation :assign_category
-  after_commit :update_purchase
 
   delegate :full_name, to: "kenshi", allow_nil: true
   delegate :grade, to: "kenshi", allow_nil: true
@@ -50,10 +49,6 @@ class Participation < ApplicationRecord
     elsif category.is_a?(IndividualCategory)
       kenshi.junior? ? product_junior : product_adult
     end
-  end
-
-  def purchase
-    kenshi.purchases.find_by(product: product)
   end
 
   def team_name
@@ -94,14 +89,6 @@ class Participation < ApplicationRecord
     return unless @category_individual.present? && @category_team.present?
 
     errors.add(:category, "can't have both an individual and a team category")
-  end
-
-  private def update_purchase
-    if destroyed?
-      purchase&.destroy!
-    elsif purchase.nil? && product.present?
-      kenshi.purchases.create!(product: product)
-    end
   end
 
   private def category_age

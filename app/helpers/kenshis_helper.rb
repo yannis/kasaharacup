@@ -5,7 +5,7 @@ module KenshisHelper
     links = []
 
     if can?(:update, kenshi)
-      links << link_to(t("kenshis.helpers.edit.text"), edit_cup_kenshi_form_path(@current_cup, kenshi),
+      links << link_to(t("kenshis.helpers.edit.text"), edit_cup_kenshi_path(@current_cup, kenshi),
         class: "btn btn-sm btn-secondary ml-2")
     end
 
@@ -20,7 +20,7 @@ module KenshisHelper
 
     if can?(:create, Kenshi) && current_user_admin_or_owner?(kenshi)
       links << link_to(t("kenshis.helpers.duplicate.text"),
-        duplicate_cup_user_kenshi_form_path(@current_cup, kenshi), class: "btn btn-sm btn-secondary ml-2")
+        duplicate_cup_user_kenshi_path(@current_cup, kenshi), class: "btn btn-sm btn-secondary ml-2")
     end
 
     classes = options.fetch(:class, "")

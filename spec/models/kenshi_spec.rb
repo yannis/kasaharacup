@@ -76,9 +76,7 @@ RSpec.describe Kenshi do
     it { expect(kenshi.poster_name).to eq "JAQUET" }
 
     context "when updated as junior" do
-      before {
-        kenshi.update dob: 12.years.ago
-      }
+      before { kenshi.update dob: 12.years.ago }
 
       it { expect(kenshi).to be_junior }
       it { expect(kenshi.age_at_cup).to eq 12 }
@@ -95,69 +93,6 @@ RSpec.describe Kenshi do
     it { expect(kenshi.norm_first_name).to eq "First-J.-Sébastien Mühlebäch" }
     it { expect(kenshi.full_name).to eq "First-J.-Sébastien Mühlebäch Last-J.-Name Name" }
     it { expect(kenshi.reload.email).to eq "stupidly.foramatted@email.com" }
-  end
-
-  describe "Updating a kenshi with participations data" do
-    let(:kenshi) { create(:kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, cup: cup) }
-    let(:individual_category) { create(:individual_category, cup: kenshi.cup) }
-    let(:team_category) { create(:team_category, cup: kenshi.cup) }
-    let(:adult_product) { create(:product, cup: kenshi.cup, fee_chf: 33, fee_eu: 30) }
-    let(:junior_product) { create(:product, cup: kenshi.cup, fee_chf: 16, fee_eu: 15) }
-
-    before do
-      cup.update(product_junior: junior_product, product_adult: adult_product)
-    end
-
-    context "when creating a team and an individual participations" do
-      before {
-        kenshi.update individual_category_ids: [individual_category.id],
-          participations_attributes: {"0" => {category_type: "TeamCategory", category_id: team_category.id,
-                                              team_name: "sdk1"}}
-      }
-
-      it do
-        kenshi.participations.all { |participation| expect(participation).to be_valid_verbose }
-      end
-
-      it { expect(kenshi.participations.count).to be 2 }
-
-      it {
-        expect(kenshi.participations.map { |p|
-                 p.category.name
-               }).to contain_exactly(individual_category.name, team_category.name)
-      }
-
-      it { expect(kenshi.individual_categories.count).to be 1 }
-      it { expect(kenshi.takes_part_to?(individual_category)).to be true }
-      it { expect(kenshi).to be_adult }
-      it { expect(kenshi.fees(:chf)).to be 33 }
-      it { expect(kenshi.fees(:eur)).to be 30 }
-
-      context "with a purchase" do
-        let(:product) { create(:product, cup: kenshi.cup, fee_chf: 33, fee_eu: 30) }
-
-        before {
-          kenshi.update product_ids: [product.id]
-          # kenshi.reload
-        }
-
-        it { expect(kenshi).to be_valid_verbose }
-
-        it { expect(kenshi.products.count).to eq 1 }
-        it { expect(kenshi.fees(:chf)).to be 33 }
-        it { expect(kenshi.fees(:eur)).to be 30 }
-        it { expect(kenshi.purchased?(product)).to be true }
-      end
-
-      context "when deleting the team participation" do
-        before {
-          kenshi.update participations_attributes: {"0" => {id: kenshi.participations.first.id,
-                                                            _destroy: 1}}
-        }
-
-        it { expect(kenshi.participations.count).to eq 1 }
-      end
-    end
   end
 
   describe "fitness" do

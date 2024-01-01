@@ -8,9 +8,7 @@ RSpec.describe KenshisController do
      dob: 20.years.ago}
   end
 
-  before {
-    travel_to(cup.deadline - 5.days)
-  }
+  before { travel_to(cup.deadline - 5.days) }
 
   describe "with 3 kenshis in the database," do
     let!(:cup) { create(:cup, start_on: Date.parse("#{Date.current.year}-11-30")) }
@@ -42,25 +40,25 @@ RSpec.describe KenshisController do
         it { expect(flash).to be_empty }
       end
 
-      describe "on get(new_cup_kenshi_form_path(cup))" do
+      describe "on get(new_cup_kenshi_path(cup))" do
         before do
-          get(new_cup_kenshi_form_path(cup))
+          get(new_cup_kenshi_path(cup))
         end
 
         it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
 
-      describe "on post(cup_kenshis_path(cup), params: {kenshi: {last_name: 'just created kenshi'}})" do
+      describe "on post(cup_kenshis_path(cup)" do
         before do
-          post(cup_kenshis_path(cup), params: {kenshi: {last_name: "just created kenshi"}})
+          post(cup_kenshis_path(cup), params: {kenshi_form: {kenshi: {last_name: "just created kenshi"}}})
         end
 
         it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
       end
 
-      describe "on put(cup_kenshi_path(cup, kenshi1), params: {kenshi: {last_name: 'just updated kenshi'}})" do
+      describe "on put(cup_kenshi_path(cup, kenshi1)" do
         before do
-          put(cup_kenshi_path(cup, kenshi1), params: {kenshi: {last_name: "just updated kenshi"}})
+          put(cup_kenshi_path(cup, kenshi1), params: {kenshi_form: {kenshi: {last_name: "just updated kenshi"}}})
         end
 
         it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
@@ -103,7 +101,7 @@ RSpec.describe KenshisController do
       end
 
       describe "when GET to :new with user_id: basic_user.to_param," do
-        before { get(new_cup_user_kenshi_form_path(cup)) }
+        before { get(new_cup_user_kenshi_path(cup)) }
 
         it { expect(assigns(:current_user)).to eql basic_user }
         it { expect(response).to have_http_status(:success) }
@@ -113,7 +111,7 @@ RSpec.describe KenshisController do
       end
 
       describe "when POST to :create with valid data," do
-        before { post(cup_user_kenshis_path(cup), params: {kenshi: valid_params}) }
+        before { post(cup_user_kenshis_path(cup), params: {kenshi_form: {kenshi: valid_params}}) }
 
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
         it { expect(assigns(:kenshi)).to be_valid_verbose }
@@ -123,7 +121,7 @@ RSpec.describe KenshisController do
       end
 
       describe "when POST to :create with invalid data," do
-        before { post(cup_user_kenshis_path(cup), params: {kenshi: {last_name: ""}}) }
+        before { post(cup_user_kenshis_path(cup), params: {kenshi_form: {kenshi: {last_name: ""}}}) }
 
         it { expect(assigns(:kenshi)).not_to be_nil }
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
@@ -132,40 +130,46 @@ RSpec.describe KenshisController do
         it { expect(flash.now[:alert]).to match(/Erreur lors de l'inscription du kenshi/) }
       end
 
-      describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
-        before { get(edit_cup_kenshi_form_path(cup, basic_user_kenshi)) }
+      describe "on GET to :edit" do
+        context "with :id = basic_user_kenshi.to_param," do
+          before { get(edit_cup_kenshi_path(cup, basic_user_kenshi)) }
 
-        it { expect(response).to have_http_status(:success) }
-        it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
-        it { expect(response).to render_template(:edit) }
+          it { expect(response).to have_http_status(:success) }
+          it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
+          it { expect(response).to render_template(:edit) }
+        end
+
+        context "with :id = kenshi1.to_param," do
+          before { get(edit_cup_kenshi_path(cup, kenshi1)) }
+
+          it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
+        end
       end
 
-      describe "on GET to :edit with :id = kenshi1.to_param," do
-        before { get(edit_cup_kenshi_form_path(cup, kenshi1)) }
+      describe "on PUT to :update" do
+        context "with :id = basic_user_kenshi.to_param and valid data" do
+          before do
+            put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi_form: {kenshi: {last_name: "alaNma2"}}})
+          end
 
-        it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
-      end
+          it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
+          it { expect(response).to redirect_to(cup_user_path(cup)) }
+          it { expect(flash[:notice]).to match(/Inscription modifiée avec succès/) }
+          it { expect(basic_user_kenshi.reload.last_name).to eql "Alanma2" }
+        end
 
-      describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data" do
-        before { put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi: {last_name: "alaNma2"}}) }
+        context "with :id = basic_user_kenshi.to_param and invalid data," do
+          before { put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi_form: {kenshi: {last_name: ""}}}) }
 
-        it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
-        it { expect(response).to redirect_to(cup_user_path(cup)) }
-        it { expect(flash[:notice]).to match(/Inscription modifiée avec succès/) }
-        it { expect(basic_user_kenshi.reload.last_name).to eql "Alanma2" }
-      end
+          it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
+          it { expect(response).to render_template(:edit) }
+        end
 
-      describe "on PUT to :update with :id = basic_user_kenshi.to_param and invalid data," do
-        before { put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi: {last_name: ""}}) }
+        context "with :id = kenshi1.to_param and valid data," do
+          before { put(cup_kenshi_path(cup, kenshi1), params: {kenshi_form: {kenshi: {last_name: "alaNma2"}}}) }
 
-        it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
-        it { expect(response).to render_template(:edit) }
-      end
-
-      describe "on PUT to :update with :id = kenshi1.to_param and valid data," do
-        before { put cup_kenshi_path(cup, kenshi1), params: {kenshi: {last_name: "alaNma2"}} }
-
-        it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
+          it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
+        end
       end
 
       describe "on DELETE to :destroy with :id = basic_user_kenshi.to_param," do
@@ -194,25 +198,27 @@ RSpec.describe KenshisController do
         }
 
         describe "when GET to :new with user_id: basic_user.to_param," do
-          before { get(new_cup_user_kenshi_form_path(cup)) }
+          before { get(new_cup_user_kenshi_path(cup)) }
 
           it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
-          before { get(edit_cup_kenshi_form_path(cup, basic_user_kenshi)) }
+          before { get(edit_cup_kenshi_path(cup, basic_user_kenshi)) }
 
           it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "on PUT to :update with :id = basic_user_kenshi.to_param and valid data," do
-          before { put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi: {last_name: "AlaNma2"}}) }
+          before {
+            put(cup_kenshi_path(cup, basic_user_kenshi), params: {kenshi_form: {kenshi: {last_name: "AlaNma2"}}})
+          }
 
           it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "when POST to :create with valid data," do
-          before { post(cup_kenshis_path(cup), params: {kenshi: valid_params}) }
+          before { post(cup_kenshis_path(cup), params: {kenshi_form: {kenshi: valid_params}}) }
 
           it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end

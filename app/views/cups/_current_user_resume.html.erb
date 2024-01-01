@@ -34,12 +34,12 @@
         <% if can?(:register, cup) %>
           <p>
             <%=
-              link_to(t("users.show.register_yourself"), new_cup_user_kenshi_form_path(cup, self: true), class: "font-medium text-red-600 hover:text-red-500")
+              link_to(t("users.show.register_yourself"), new_cup_user_kenshi_path(cup, self: true), class: "font-medium text-red-600 hover:text-red-500")
             %>
           </p>
           <p>
             <%=
-              link_to(t("users.show.register_someone_else"), new_cup_user_kenshi_form_path(cup), class: "font-medium text-red-600 hover:text-red-500") if can?(:register, cup)
+              link_to(t("users.show.register_someone_else"), new_cup_user_kenshi_path(cup), class: "font-medium text-red-600 hover:text-red-500") if can?(:register, cup)
             %>
           </p>
         <% end %>

@@ -13,7 +13,7 @@ module Users
       @user = User.new(my_sanitizer)
       if verify_recaptcha(model: @user) && @user.save
         sign_in @user
-        redirect_to new_cup_user_kenshi_form_path(@current_cup, self: true)
+        redirect_to new_cup_user_kenshi_path(@current_cup, self: true)
       else
         render action: :new, status: :unprocessable_entity
       end

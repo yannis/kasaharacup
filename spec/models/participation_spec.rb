@@ -76,31 +76,6 @@ RSpec.describe Participation do
         end
       end
     end
-
-    describe "after_commit" do
-      describe "#update_purchase" do
-        let!(:cup) { create(:cup, product_junior: create(:product), product_adult: create(:product)) }
-        let!(:team_category) { build(:team_category, cup: cup) }
-        let!(:individual_category) { create(:individual_category, cup: cup) }
-        let!(:kenshi) { create(:kenshi, cup: cup) }
-
-        context "when participation is destroyed" do
-          let!(:participation) { create(:participation, kenshi: kenshi, category: team_category) }
-
-          it do
-            expect { participation.destroy }
-              .to change { kenshi.purchases.count }.by(-1)
-          end
-        end
-
-        context "when participation is created" do
-          it do
-            expect { create(:participation, kenshi: kenshi, category: team_category) }
-              .to change { kenshi.purchases.count }.by(1)
-          end
-        end
-      end
-    end
   end
 
   describe "Validations" do
@@ -169,18 +144,6 @@ RSpec.describe Participation do
       before { allow(kenshi).to receive(:junior?).and_return(false) }
 
       it { expect(participation.product).to eq(product_adult) }
-    end
-  end
-
-  describe "#purchase" do
-    let(:product_adult) { create(:product) }
-    let(:cup) { create(:cup, product_adult: product_adult) }
-    let(:kenshi) { create(:kenshi, cup: cup) }
-    let(:participation) { create(:participation, kenshi: kenshi) }
-
-    it do
-      expect(participation.purchase).to be_a(Purchase)
-      expect(participation.purchase.product).to eq(product_adult)
     end
   end
 end
