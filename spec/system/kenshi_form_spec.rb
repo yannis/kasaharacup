@@ -19,7 +19,7 @@ describe("Show/hide additional info form", :js) do
     within("ul[role=list] li") do
       click_link("Modifier")
     end
-    expect(page).to have_current_path(edit_cup_kenshi_path(cup, kenshi))
+    expect(page).to have_current_path(edit_cup_kenshi_form_path(cup, kenshi))
     expect(page).to have_content("Modifiez l'inscription de #{kenshi.first_name} #{kenshi.last_name}")
   end
 end

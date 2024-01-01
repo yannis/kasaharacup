@@ -12,14 +12,16 @@ Rails.application.routes.draw do
       resources :kenshis do
         get :autocomplete_kenshi_club, on: :collection
       end
+      resources :kenshi_forms, only: %i[new edit create update]
 
       resources :participations, only: [:destroy]
       resources :purchases, only: [:destroy]
       resources :teams, only: [:index, :show]
       resource :user, only: %i[show destroy] do
-        resources :kenshis do
+        resources :kenshis, only: :destroy
+        resources :kenshi_forms, only: %i[new edit create update] do
           member do
-            get :duplicate, to: "kenshis#new"
+            get :duplicate, to: "kenshi_forms#new"
           end
         end
       end

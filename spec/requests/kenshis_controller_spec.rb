@@ -42,9 +42,9 @@ RSpec.describe KenshisController do
         it { expect(flash).to be_empty }
       end
 
-      describe "on get(new_cup_kenshi_path(cup))" do
+      describe "on get(new_cup_kenshi_form_path(cup))" do
         before do
-          get(new_cup_kenshi_path(cup))
+          get(new_cup_kenshi_form_path(cup))
         end
 
         it { should_be_asked_to_sign_in } # rubocop:disable RSpec/NoExpectationExample
@@ -103,7 +103,7 @@ RSpec.describe KenshisController do
       end
 
       describe "when GET to :new with user_id: basic_user.to_param," do
-        before { get(new_cup_user_kenshi_path(cup)) }
+        before { get(new_cup_user_kenshi_form_path(cup)) }
 
         it { expect(assigns(:current_user)).to eql basic_user }
         it { expect(response).to have_http_status(:success) }
@@ -133,7 +133,7 @@ RSpec.describe KenshisController do
       end
 
       describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
-        before { get(edit_cup_kenshi_path(cup, basic_user_kenshi)) }
+        before { get(edit_cup_kenshi_form_path(cup, basic_user_kenshi)) }
 
         it { expect(response).to have_http_status(:success) }
         it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
@@ -141,7 +141,7 @@ RSpec.describe KenshisController do
       end
 
       describe "on GET to :edit with :id = kenshi1.to_param," do
-        before { get(edit_cup_kenshi_path(cup, kenshi1)) }
+        before { get(edit_cup_kenshi_form_path(cup, kenshi1)) }
 
         it { should_not_be_authorized } # rubocop:disable RSpec/NoExpectationExample
       end
@@ -194,13 +194,13 @@ RSpec.describe KenshisController do
         }
 
         describe "when GET to :new with user_id: basic_user.to_param," do
-          before { get(new_cup_user_kenshi_path(cup)) }
+          before { get(new_cup_user_kenshi_form_path(cup)) }
 
           it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end
 
         describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
-          before { get(edit_cup_kenshi_path(cup, basic_user_kenshi)) }
+          before { get(edit_cup_kenshi_form_path(cup, basic_user_kenshi)) }
 
           it { has_passed_deadline } # rubocop:disable RSpec/NoExpectationExample
         end

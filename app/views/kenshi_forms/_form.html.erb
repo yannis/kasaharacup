@@ -1,0 +1,283 @@
+<%=
+  form_with(
+    model: [cup, kenshi_form],
+    method: kenshi_form.kenshi.persisted? ? :patch : :post,
+    html: {class: "kasa-form"},
+    data: {
+      controller: "kenshi-form"
+    }
+  ) do |f|
+%>
+  <%= f.fields_for(f.object.kenshi)do |g| %>
+    <div class="input-group">
+      <%= g.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+      <div class="input-field">
+        <%= g.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
+        <%= tag.p(g.object.errors.full_messages_for(:female).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+      </div>
+    </div>
+    <div class="input-group">
+      <%= g.label :first_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+      <div class="input-field">
+        <%= g.text_field :first_name, autocomplete: "given-name" %>
+        <%= tag.p(g.object.errors.full_messages_for(:first_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+      </div>
+    </div>
+    <div class="input-group">
+      <%= g.label :last_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+      <div class="input-field">
+        <%= g.text_field :last_name, autocomplete: "family-name" %>
+        <%= tag.p(g.object.errors.full_messages_for(:last_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+      </div>
+    </div>
+    <div class="input-group">
+      <%= g.label :dob, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+      <div class="input-field">
+        <%= g.date_field :dob %>
+        <%= tag.p(g.object.errors.full_messages_for(:dob).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+      </div>
+    </div>
+    <div class="input-group">
+      <%= g.label :club_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+      <div class="input-field">
+        <%=
+          g.select :club_name,
+            club_names,
+            {include_blank: true},
+            class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
+            data: {
+              controller: "select2-single-tag",
+              locale: I18n.locale
+            },
+            style: "width: 20em;"
+        %>
+        <%= tag.p(g.object.errors.full_messages_for(:club_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+        <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
+      </div>
+    </div>
+    <div class="input-group">
+      <%= g.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+      <div class="input-field">
+        <%= g.select :grade, Kenshi::GRADES %>
+        <%= tag.p(g.object.errors.full_messages_for(:grade).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+        <p class="helper-text mt-2">
+          <%= t("cups.show.shinpans.info") %>
+        </p>
+      </div>
+    </div>
+  <% end %>
+  <div>
+    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+      <div class="pt-6 sm:pt-5">
+        <div role="group" aria-labelledby="label-email">
+          <div class="sm:grid sm:grid-cols-6 sm:gap-4 sm:items-baseline">
+            <div>
+              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                <%= Kenshi.human_attribute_name(:team) %>
+              </div>
+            </div>
+            <% team_categories.find_each do |team_category| %>
+              <% participation = f.object.participations.detect { |p| p.category == team_category }.presence || Participation.new(category: team_category) # rubocop:disable Lint/UselessAssignment %>
+              <%= f.fields_for :participations, participation, index: "team_category_#{team_category.id}" do |g| %>
+                <% if participation.persisted? %>
+                  <%= g.hidden_field :id %>
+                <% end %>
+                <%= g.hidden_field :category_type %>
+                <%= g.hidden_field :category_id %>
+                <div class="mt-4 sm:mt-0 sm:col-span-4">
+                  <div class="max-w-full space-y-4">
+                    <div class="relative flex items-start">
+                      <div class="flex items-center h-5">
+                        <%= g.check_box :ronin, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded" %>
+                      </div>
+                      <div class="ml-3 text-sm">
+                        <%= g.label :ronin, class: "font-medium text-gray-700" %>
+                        <p class="helper-text">
+                          <%= t ".ronin_info", category_name: team_category.name %>
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="relative">
+                        <div class="mb-1 text-sm">
+                          <%= g.label :team_name, class: "font-medium text-gray-700" %>
+                        </div>
+                        <div class="">
+                          <%=
+                            g.select :team_name,
+                              team_category.teams.order(:name).pluck(:name),
+                              {include_blank: true},
+                              class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm",
+                              data: {
+                                controller: "select2-single-tag",
+                                team_name: participation.team_name,
+                                locale: I18n.locale
+                              },
+                              style: "width: 20em;"
+                          %>
+                          <p class="helper-text mt-2"><%= t(".team_info") %></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if individual_categories.present? %>
+    <div>
+      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+        <div class="pt-6 sm:pt-5">
+          <div role="group" aria-labelledby="label-email">
+            <div class="sm:grid sm:grid-cols-6 sm:gap-4 sm:items-baseline">
+              <div>
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                  <%= t("kenshis.form.individual_categories") %>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-0 sm:col-span-4">
+                <% individual_categories.find_each do |individual_category| %>
+                  <div class="max-w-full space-y-4">
+                    <div class="relative flex items-start mb-4">
+                      <% f.object.kenshi.participations.find_or_initialize_by(category: individual_category) %>
+                      <%= f.fields_for :participations, participation, index: "individual_category_#{individual_category.id}" do |g| %>
+                        <%= g.hidden_field :category_type %>
+                        <%= g.hidden_field :category_id %>
+                        <div class="flex items-center h-5">
+                          <%= g.check_box :save, {class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded", checked: participation.persisted?} %>
+                        </div>
+                        <div class="ml-3 text-sm">
+                          <%= g.label :save, individual_category.name, class: "font-medium text-gray-700" %>
+                          <p class="helper-text">
+                            <%= individual_category.description %>
+                          </p>
+                          <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <div>
+              <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                <div class="pt-6 sm:pt-5">
+                  <div role="group" aria-labelledby="label-email">
+                    <div class="sm:grid sm:grid-cols-6 sm:gap-4 sm:items-baseline">
+                      <div>
+                        <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                          <%= t(".waiver.title") %>
+                        </div>
+                      </div>
+                      <div class="mt-4 sm:mt-0 sm:col-span-4">
+                        <%= t(".waiver.info") %>
+                        <%= link_to(t(".waiver.title"), cup_waiver_path(cup), class: "text-brand hover:underline", download: true) %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% if @products.any? %>
+              <div>
+                <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                  <div class="pt-6 sm:pt-5">
+                    <div role="group" aria-labelledby="label-email">
+                      <div class="sm:grid sm:grid-cols-6 sm:gap-4 sm:items-baseline">
+                        <div>
+                          <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                            <%= t(".extra") %>
+                          </div>
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:col-span-4">
+                          <% @products.each do |product| %>
+                            <% f.object.kenshi.purchases.find_or_initialize_by(product: product) %>
+                            <% (product.fee_chf == 0) ? t("cups.show.fees.variable") : "#{product.fee_chf} CHF/#{product.fee_eu} €" %>
+                            <%= f.fields_for(:purchases, purchase, index: "product_#{product.id}") do |g| %>
+                              <%= g.hidden_field :product_id %>
+                              <div class="max-w-lg mb-4">
+                                <div class="relative flex items-start">
+                                  <div class="flex items-center h-5">
+                                    <%=
+                                      g.check_box(
+                                        :save,
+                                        {
+                                          class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded",
+                                          checked: purchase.persisted?,
+                                          disabled: !product.still_available?,
+                                          data: {
+                                            require_personal_infos: product.require_personal_infos,
+                                            action: "change->kenshi-form#handleProductChange"
+                                          }
+                                        }
+                                      )
+                                    %>
+                                  </div>
+                                  <div class="ml-3 text-sm">
+                                    <%= g.label :save, "#{product.name} (#{price})", class: "font-medium #{product.still_available? ? "text-gray-700" : "text-gray-400"}" %>
+                                    <p class="helper-text">
+                                      <%= product.description %>
+                                    </p>
+                                  </div>
+                                </div>
+                                <% unless product.still_available? %>
+                                  <p class="text-brand text-sm">
+                                    <%= t("kenshis.form.not_available", product_name: product.name) %>
+                                  </p>
+                                <% end %>
+                              <% end %>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+            <div data-kenshi-form-target="details">
+              <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                <div class="pt-6 sm:pt-5">
+                  <div role="group" aria-labelledby="label-more-details">
+                    <div class="sm:grid sm:grid-cols-6 sm:gap-4 sm:items-baseline">
+                      <div>
+                        <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-more-details">
+                          <%= t(".more_details.title") %>
+                        </div>
+                      </div>
+                      <div class="mt-4 sm:mt-0 sm:col-span-4">
+                        <p>
+                          <%= t(".more_details.help") %>
+                        </p>
+                        <%= f.fields_for(:personal_info, f.object.personal_info.presence || PersonalInfo.new) do |g| %>
+                          <%= render("personal_infos/form_fields", g: g) %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="py-5">
+            <div class="flex justify-end">
+              <%=
+                link_to(
+                  t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
+                  title: "Cancel #{f.object_name} form",
+                  class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                )
+              %>
+              <%= f.submit(f.object.kenshi.new_record? ? t(".button.create") : t(".button.update"), class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500") %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

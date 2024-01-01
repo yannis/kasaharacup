@@ -1,0 +1,19 @@
+fr:
+  activemodel:
+    attributes:
+      kenshi_form:
+        categories: Catégories
+        club_name: Club / Dojo / Association
+        dob: Date de naissance
+        female: Salutation
+        first_name: Prénom
+        gender: Sexe
+        last_name: Nom
+        male: Homme
+        mr: M.
+        ms: Mme
+        name: Nom
+        fees: Frais
+        salutations: Salutations
+        team: Équipe
+        category: Catégorie

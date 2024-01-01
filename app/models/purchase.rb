@@ -4,6 +4,7 @@ class Purchase < ApplicationRecord
   belongs_to :kenshi, inverse_of: :purchases
   belongs_to :product, inverse_of: :purchases
 
+  validates :product_id, uniqueness: {scope: :kenshi_id}
   validate :in_quota
 
   def descriptive_name

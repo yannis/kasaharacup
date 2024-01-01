@@ -13,6 +13,12 @@ RSpec.describe Purchase do
   end
 
   describe "Validations" do
+    describe "#product_id" do
+      let(:purchase) { build(:purchase) }
+
+      it { expect(purchase).to validate_uniqueness_of(:product_id).scoped_to(:kenshi_id) }
+    end
+
     describe "#in_quota" do
       context "when product require_personal_infos" do
         let(:cup) { create(:cup) }
