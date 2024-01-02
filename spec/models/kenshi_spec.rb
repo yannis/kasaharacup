@@ -105,7 +105,7 @@ RSpec.describe Kenshi do
     let(:junior_product) { create(:product, cup: kenshi.cup, fee_chf: 16, fee_eu: 15) }
 
     before do
-      cup.update(product_junior: junior_product, product_adult: adult_product)
+      cup.update(product_individual_junior: junior_product, product_individual_adult: adult_product)
     end
 
     context "when creating a team and an individual participations" do

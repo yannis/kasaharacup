@@ -4,7 +4,7 @@ ActiveAdmin.register Cup do
   menu priority: 1
 
   permit_params :year, :start_on, :end_on, :deadline, :canceled_at, :registerable_at, :description_en, :description_fr,
-    :header_image, :product_junior_id, :product_adult_id
+    :header_image, :product_individual_junior_id, :product_individual_adult_id
 
   controller do
     def find_resource
@@ -21,7 +21,7 @@ ActiveAdmin.register Cup do
       f.input :canceled_at, as: :datepicker
       f.input :registerable_at, as: :datepicker
       f.input(
-        :product_junior_id,
+        :product_individual_junior_id,
         as: :select,
         collection: f.object.products
           .order(:position)
@@ -29,7 +29,7 @@ ActiveAdmin.register Cup do
           .map { |p| [p.name, p.id] }
       )
       f.input(
-        :product_adult_id,
+        :product_individual_adult_id,
         as: :select,
         collection: f.object.products
           .order(:position)
@@ -51,8 +51,8 @@ ActiveAdmin.register Cup do
     column :end_on
     column :deadline
     column :canceled?
-    column :product_junior do |cup|
-      cup.product_junior&.name
+    column :product_individual_junior do |cup|
+      cup.product_individual_junior&.name
     end
     column :product_adult do |cup|
       cup.product_adult&.name
@@ -79,8 +79,11 @@ ActiveAdmin.register Cup do
       row :deadline
       row :canceled?
       row :registerable_at
-      row :product_junior do |cup|
-        link_to cup.product_junior&.name, [:admin, cup.product_junior] if cup.product_junior
+      row :product_individual_junior do |cup|
+        if cup.product_individual_junior
+          link_to cup.product_individual_junior&.name,
+            [:admin, cup.product_individual_junior]
+        end
       end
       row :product_adult do |cup|
         link_to cup.product_adult&.name, [:admin, cup.product_adult] if cup.product_adult

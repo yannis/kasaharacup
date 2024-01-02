@@ -22,7 +22,7 @@ class Participation < ApplicationRecord
   delegate :grade, to: "kenshi", allow_nil: true
   delegate :club, to: "kenshi", allow_nil: true
   delegate :cup, to: "kenshi", allow_nil: true
-  delegate :product_junior, :product_adult, to: :cup
+  delegate :product_individual_junior, :product_individual_adult, to: :cup
 
   def self.no_pool
     where(pool_number: nil)
@@ -45,7 +45,7 @@ class Participation < ApplicationRecord
   end
 
   def product
-    kenshi.junior? ? product_junior : product_adult
+    kenshi.junior? ? product_individual_junior : product_individual_adult
   end
 
   def purchase

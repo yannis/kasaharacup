@@ -246,9 +246,10 @@ namespace :temporary do
         team_categories_data.each do |team_category_data|
           cup.team_categories.create!(team_category_data)
         end
-        product_junior = cup.products.find_by(name_en: "Participation Junior (17 years old and younger)")
-        product_adult = cup.products.find_by(name_en: "Participation Adult (18 years old and older)")
-        cup.update!(product_junior: product_junior, product_adult: product_adult)
+        product_individual_junior = cup.products.find_by(name_en: "Participation Junior (17 years old and younger)")
+        product_individual_adult = cup.products.find_by(name_en: "Participation Adult (18 years old and older)")
+        cup.update!(product_individual_junior: product_individual_junior,
+          product_individual_adult: product_individual_adult)
       end
     end
   end

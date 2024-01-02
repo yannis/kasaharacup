@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_17_160958) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_02_133729) do
   create_schema "heroku_ext"
 
   # These are extensions that must be enabled in order to support this database
@@ -82,10 +82,18 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_17_160958) do
     t.datetime "registerable_at"
     t.text "description_en"
     t.text "description_fr"
-    t.bigint "product_junior_id"
-    t.bigint "product_adult_id"
-    t.index ["product_adult_id"], name: "index_cups_on_product_adult_id"
-    t.index ["product_junior_id"], name: "index_cups_on_product_junior_id"
+    t.bigint "product_individual_junior_id"
+    t.bigint "product_individual_adult_id"
+    t.bigint "product_team_junior_id"
+    t.bigint "product_team_adult_id"
+    t.bigint "product_full_junior_id"
+    t.bigint "product_full_adult_id"
+    t.index ["product_full_adult_id"], name: "index_cups_on_product_full_adult_id"
+    t.index ["product_full_junior_id"], name: "index_cups_on_product_full_junior_id"
+    t.index ["product_individual_adult_id"], name: "index_cups_on_product_individual_adult_id"
+    t.index ["product_individual_junior_id"], name: "index_cups_on_product_individual_junior_id"
+    t.index ["product_team_adult_id"], name: "index_cups_on_product_team_adult_id"
+    t.index ["product_team_junior_id"], name: "index_cups_on_product_team_junior_id"
     t.index ["start_on"], name: "index_cups_on_start_on", unique: true
   end
 
@@ -325,8 +333,12 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_17_160958) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "cups", "products", column: "product_adult_id"
-  add_foreign_key "cups", "products", column: "product_junior_id"
+  add_foreign_key "cups", "products", column: "product_full_adult_id"
+  add_foreign_key "cups", "products", column: "product_full_junior_id"
+  add_foreign_key "cups", "products", column: "product_individual_adult_id"
+  add_foreign_key "cups", "products", column: "product_individual_junior_id"
+  add_foreign_key "cups", "products", column: "product_team_adult_id"
+  add_foreign_key "cups", "products", column: "product_team_junior_id"
   add_foreign_key "events", "cups"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"

@@ -2,8 +2,8 @@
 
 require "translate"
 class Cup < ApplicationRecord
-  belongs_to :product_junior, class_name: "Product", optional: true
-  belongs_to :product_adult, class_name: "Product", optional: true
+  belongs_to :product_individual_junior, class_name: "Product", optional: true
+  belongs_to :product_individual_adult, class_name: "Product", optional: true
   has_many :kenshis, inverse_of: :cup, dependent: :destroy
   has_many :participations, through: :kenshis
   has_many :individual_categories, inverse_of: :cup, dependent: :destroy

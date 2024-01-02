@@ -7,8 +7,8 @@ RSpec.describe Cup do
     let(:cup) { build(:cup) }
 
     it do
-      expect(cup).to belong_to(:product_junior).class_name("Product").optional
-      expect(cup).to belong_to(:product_adult).class_name("Product").optional
+      expect(cup).to belong_to(:product_individual_junior).class_name("Product").optional
+      expect(cup).to belong_to(:product_individual_adult).class_name("Product").optional
       expect(cup).to have_many(:individual_categories).dependent(:destroy)
       expect(cup).to have_many(:team_categories).dependent(:destroy)
       expect(cup).to have_many(:events).dependent :destroy
