@@ -127,7 +127,6 @@ class KenshisController < ApplicationController
       redirect_to cup_user_path(@current_cup), notice: notice
     else
       @title = t("kenshis.edit.title", full_name: @kenshi.full_name)
-      @kenshi.valid?
       render :edit, status: :unprocessable_entity
     end
   end

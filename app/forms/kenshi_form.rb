@@ -60,13 +60,11 @@ class KenshiForm < ApplicationForm
   private def build_team_participation(params)
     category = TeamCategory.find(params[:category_id])
     if params[:ronin] == "0" && params[:team_name].blank?
-      participations = @participations.to_a.select { |p| p.category == category }
-      return if participations.empty?
-
-      participations.each(&:mark_for_destruction)
-      @participations += participations
+      @participations.find_each do |p|
+        p.mark_for_destruction if p.category == category
+      end
     else
-      participation = Participation.find_or_initialize_by(category: category, kenshi: @kenshi)
+      participation = @participations.find_or_initialize_by(category: category, kenshi: @kenshi)
       participation.assign_attributes(
         ronin: params[:ronin] == "1",
         team_name: params[:team_name]
@@ -78,14 +76,11 @@ class KenshiForm < ApplicationForm
   private def build_individual_participation(params)
     category = IndividualCategory.find(params[:category_id])
     if params[:save] == "0"
-      participations = @participations.to_a.select { |p| p.category == category }
-      return if participations.empty?
-
-      participations.each(&:mark_for_destruction)
-      @participations += participations
+      @participations.find_each do |p|
+        p.mark_for_destruction if p.category == category
+      end
     else
-      participation = Participation.find_or_initialize_by(category: category, kenshi: @kenshi)
-      @participations << participation
+      @participations.find_or_initialize_by(category: category, kenshi: @kenshi)
     end
   end
 
@@ -95,17 +90,13 @@ class KenshiForm < ApplicationForm
     params.each do |_, purchase_params|
       product = Product.find(purchase_params[:product_id])
       if purchase_params[:save] == "0"
-        purchases = @purchases.to_a.select { |p| p.product == product }
-        next if purchases.empty?
-
-        purchases.each(&:mark_for_destruction)
-        @purchases += purchases
+        @purchases.find_each do |p|
+          p.mark_for_destruction if p.product == product
+        end
       else
-        purchase = Purchase.find_or_initialize_by(product: product, kenshi: @kenshi)
-        @purchases << purchase
+        @purchases.find_or_initialize_by(product: product, kenshi: @kenshi)
       end
     end
-    @purchases = @purchases.uniq
   end
 
   private def validate_kenshi
