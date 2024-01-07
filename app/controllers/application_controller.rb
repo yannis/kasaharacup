@@ -6,6 +6,16 @@ class ApplicationController < ActionController::Base
   include ActiveStorage::SetCurrent
 
   before_action :set_current_cup
+  if Rails.env.development?
+    around_action :n_plus_one_detection
+
+    private def n_plus_one_detection
+      Prosopite.scan
+      yield
+    ensure
+      Prosopite.finish
+    end
+  end
 
   rescue_from CanCan::AccessDenied do |exception|
     if current_user.present?

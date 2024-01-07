@@ -97,6 +97,8 @@ group :development do
   gem "brakeman"
   gem "i18n-tasks"
   gem "letter_opener_web"
+  gem "pg_query"
+  gem "prosopite"
   gem "solargraph"
   gem "rack-mini-profiler"
   gem "ruby-lsp"

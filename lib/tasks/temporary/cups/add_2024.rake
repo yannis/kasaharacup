@@ -232,7 +232,8 @@ namespace :temporary do
       ]
 
       ActiveRecord::Base.transaction do
-        cup = Cup.find_by(start_on: "2024-09-28")
+        cup = Cup.find_or_create_by(start_on: "2024-09-28", end_on: "2024-09-29", year: 2024,
+          deadline: "2024-15-01", registerable_at: "2024-05-01 00:00:00")
         create_header_image(cup: cup, image: "kasa-2024.jpeg")
         events_data.each do |event_data|
           cup.events.create!(event_data)
@@ -246,10 +247,22 @@ namespace :temporary do
         team_categories_data.each do |team_category_data|
           cup.team_categories.create!(team_category_data)
         end
-        product_individual_junior = cup.products.find_by(name_en: "Participation Junior (17 years old and younger)")
-        product_individual_adult = cup.products.find_by(name_en: "Participation Adult (18 years old and older)")
-        cup.update!(product_individual_junior: product_individual_junior,
-          product_individual_adult: product_individual_adult)
+        product_team = cup.products.find_by!(name_en: "Participation Team")
+        product_individual_junior = cup.products
+          .find_by!(name_en: "Participation Individuals Junior (17 years old and younger)")
+        product_individual_adult = cup.products
+          .find_by!(name_en: "Participation Individuals Adult (18 years old and older)")
+        product_full_junior = cup.products
+          .find_by!(name_en: "Participation 2 Days Junior (17 years old and younger)")
+        product_full_adult = cup
+          .products.find_by!(name_en: "Participation 2 Days Adult (18 years old and older)")
+        cup.update!(
+          product_individual_junior: product_individual_junior,
+          product_individual_adult: product_individual_adult,
+          product_team: product_team,
+          product_full_junior: product_full_junior,
+          product_full_adult: product_full_adult
+        )
       end
     end
   end

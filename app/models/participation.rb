@@ -5,7 +5,7 @@ class Participation < ApplicationRecord
 
   attr_writer :category_individual, :category_team
   belongs_to :category, polymorphic: true, autosave: true
-  belongs_to :kenshi, inverse_of: :participations
+  belongs_to :kenshi, inverse_of: :participations, touch: true
   belongs_to :team, optional: true
 
   validates :pool_position, presence: {if: lambda { |p| p.pool_number.present? }}
@@ -16,7 +16,6 @@ class Participation < ApplicationRecord
   validate :category_age
 
   before_validation :assign_category
-  after_commit :update_purchase
 
   delegate :full_name, to: "kenshi", allow_nil: true
   delegate :grade, to: "kenshi", allow_nil: true
@@ -90,14 +89,6 @@ class Participation < ApplicationRecord
     return unless @category_individual.present? && @category_team.present?
 
     errors.add(:category, "can't have both an individual and a team category")
-  end
-
-  private def update_purchase
-    if destroyed?
-      purchase&.destroy!
-    elsif purchase.nil? && product.present?
-      kenshi.purchases.create!(product: product)
-    end
   end
 
   private def category_age

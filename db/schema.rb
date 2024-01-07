@@ -84,16 +84,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_02_133729) do
     t.text "description_fr"
     t.bigint "product_individual_junior_id"
     t.bigint "product_individual_adult_id"
-    t.bigint "product_team_junior_id"
-    t.bigint "product_team_adult_id"
+    t.bigint "product_team_id"
     t.bigint "product_full_junior_id"
     t.bigint "product_full_adult_id"
     t.index ["product_full_adult_id"], name: "index_cups_on_product_full_adult_id"
     t.index ["product_full_junior_id"], name: "index_cups_on_product_full_junior_id"
     t.index ["product_individual_adult_id"], name: "index_cups_on_product_individual_adult_id"
     t.index ["product_individual_junior_id"], name: "index_cups_on_product_individual_junior_id"
-    t.index ["product_team_adult_id"], name: "index_cups_on_product_team_adult_id"
-    t.index ["product_team_junior_id"], name: "index_cups_on_product_team_junior_id"
+    t.index ["product_team_id"], name: "index_cups_on_product_team_id"
     t.index ["start_on"], name: "index_cups_on_start_on", unique: true
   end
 
@@ -337,8 +335,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_02_133729) do
   add_foreign_key "cups", "products", column: "product_full_junior_id"
   add_foreign_key "cups", "products", column: "product_individual_adult_id"
   add_foreign_key "cups", "products", column: "product_individual_junior_id"
-  add_foreign_key "cups", "products", column: "product_team_adult_id"
-  add_foreign_key "cups", "products", column: "product_team_junior_id"
+  add_foreign_key "cups", "products", column: "product_team_id"
   add_foreign_key "events", "cups"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"

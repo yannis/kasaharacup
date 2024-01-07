@@ -9,6 +9,9 @@ RSpec.describe Cup do
     it do
       expect(cup).to belong_to(:product_individual_junior).class_name("Product").optional
       expect(cup).to belong_to(:product_individual_adult).class_name("Product").optional
+      expect(cup).to belong_to(:product_team).class_name("Product").optional
+      expect(cup).to belong_to(:product_full_junior).class_name("Product").optional
+      expect(cup).to belong_to(:product_full_adult).class_name("Product").optional
       expect(cup).to have_many(:individual_categories).dependent(:destroy)
       expect(cup).to have_many(:team_categories).dependent(:destroy)
       expect(cup).to have_many(:events).dependent :destroy

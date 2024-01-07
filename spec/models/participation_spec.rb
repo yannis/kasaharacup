@@ -17,9 +17,11 @@ RSpec.describe Participation do
   describe "Associations" do
     let(:participation) { build(:participation) }
 
-    it { expect(participation).to belong_to :category }
-    it { expect(participation).to belong_to :kenshi }
-    it { expect(participation).to belong_to(:team).optional }
+    it do
+      expect(participation).to belong_to(:category)
+      expect(participation).to belong_to(:kenshi).inverse_of(:participations).touch(true)
+      expect(participation).to belong_to(:team).optional
+    end
   end
 
   describe "Delegations" do
@@ -72,33 +74,6 @@ RSpec.describe Participation do
           it do
             expect(participation).to be_valid
             expect(participation.category).to eq(team_category)
-          end
-        end
-      end
-    end
-
-    describe "after_commit" do
-      describe "#update_purchase" do
-        let!(:cup) {
-          create(:cup, product_individual_junior: create(:product), product_individual_adult: create(:product))
-        }
-        let!(:team_category) { build(:team_category, cup: cup) }
-        let!(:individual_category) { create(:individual_category, cup: cup) }
-        let!(:kenshi) { create(:kenshi, cup: cup) }
-
-        context "when participation is destroyed" do
-          let!(:participation) { create(:participation, kenshi: kenshi, category: team_category) }
-
-          it do
-            expect { participation.destroy }
-              .to change { kenshi.purchases.count }.by(-1)
-          end
-        end
-
-        context "when participation is created" do
-          it do
-            expect { create(:participation, kenshi: kenshi, category: team_category) }
-              .to change { kenshi.purchases.count }.by(1)
           end
         end
       end

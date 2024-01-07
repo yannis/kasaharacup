@@ -2,8 +2,7 @@
 
 class AddAndRenameProductReferencesToCups < ActiveRecord::Migration[7.1]
   def change
-    add_reference :cups, :product_team_junior, foreign_key: { to_table: :products }, null: true
-    add_reference :cups, :product_team_adult, foreign_key: { to_table: :products }, null: true
+    add_reference :cups, :product_team, foreign_key: { to_table: :products }, null: true
     add_reference :cups, :product_full_junior, foreign_key: { to_table: :products }, null: true
     add_reference :cups, :product_full_adult, foreign_key: { to_table: :products }, null: true
 

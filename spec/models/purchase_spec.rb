@@ -7,8 +7,8 @@ RSpec.describe Purchase do
     let(:purchase) { build(:purchase) }
 
     it do
-      expect(purchase).to belong_to :kenshi
-      expect(purchase).to belong_to :product
+      expect(purchase).to belong_to(:kenshi)
+      expect(purchase).to belong_to(:product)
     end
   end
 

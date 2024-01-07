@@ -54,8 +54,8 @@ ActiveAdmin.register Cup do
     column :product_individual_junior do |cup|
       cup.product_individual_junior&.name
     end
-    column :product_adult do |cup|
-      cup.product_adult&.name
+    column :product_individual_adult do |cup|
+      cup.product_individual_adult&.name
     end
     column :description do |cup|
       md_to_html(cup.description)
@@ -85,8 +85,11 @@ ActiveAdmin.register Cup do
             [:admin, cup.product_individual_junior]
         end
       end
-      row :product_adult do |cup|
-        link_to cup.product_adult&.name, [:admin, cup.product_adult] if cup.product_adult
+      row :product_individual_adult do |cup|
+        if cup.product_individual_adult
+          link_to cup.product_individual_adult&.name,
+            [:admin, cup.product_individual_adult]
+        end
       end
       row :description_en
       row :description_fr
