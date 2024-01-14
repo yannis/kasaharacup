@@ -22,9 +22,8 @@ RSpec.configure do |config|
       # current_path == '/users/sign_in'
       fill_in "user_email", with: user.email
       fill_in "user_password", with: user.password
-      click_button :user_submit
+      click_on(:user_submit)
     end
-    # page.should have_content('Logged in successfully.')
   end
 
   def flash_is(message)
@@ -43,13 +42,6 @@ RSpec.configure do |config|
   def signin_and_visit(user, url)
     login_as user, scope: :user
     visit url
-    # visit url
-    # if page.has_selector?("form#new_user[action='/users/sign_in']")
-    #   fill_in "user_email", :with => user.email
-    #   fill_in "user_password", :with => user.password
-    #   click_button :user_submit
-    #   visit url
-    # end
   end
 
   def flash_should_contain(text)
@@ -64,12 +56,6 @@ RSpec.configure do |config|
   def signout
     reset_sessions!
   end
-
-  # def fill_registration_abstract(text)
-  #   #js must be enabled
-  #   page.execute_script  "bio14.registration.editor.setValue('#{text}')"
-  #   # page.execute_script("editor.setValue('#{text}')")
-  # end
 
   def has_passed_deadline
     expect(response).to redirect_to root_path(locale: I18n.locale)
