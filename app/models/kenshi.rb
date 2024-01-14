@@ -31,6 +31,7 @@ class Kenshi < ApplicationRecord
   before_validation :format
   after_validation :logs
   after_create_commit :notify_slack
+  after_commit :update_purchase
 
   def self.from(user)
     new(
@@ -146,5 +147,9 @@ class Kenshi < ApplicationRecord
   private def notify_slack
     notification = Slack::Notifications::Registration.new(self)
     Slack::NotificationService.new.call(notification: notification)
+  end
+
+  private def update_purchase
+    Kenshis::CalculatePurchasesService.new(kenshi: self).call
   end
 end

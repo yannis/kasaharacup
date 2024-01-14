@@ -21,5 +21,13 @@ FactoryBot.define do
       image_path = Rails.root.glob("spec/fixtures/images/*.jpg").sample
       Rack::Test::UploadedFile.new(image_path)
     end
+
+    trait :with_cup_products do
+      product_individual_junior { association(:product) }
+      product_individual_adult { association(:product) }
+      product_team { association(:product) }
+      product_full_junior { association(:product) }
+      product_full_adult { association(:product) }
+    end
   end
 end

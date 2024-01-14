@@ -1,77 +1,102 @@
 # frozen_string_literal: true
 
 require_relative "../results/add_results"
+
 namespace :temporary do
   namespace :cups do
-    desc "Add 2023"
-    task add_2023: :environment do
+    desc "Add 2024"
+    task add_2024: :environment do
       include AddResults
 
       events_data = [
         {
           name_en: "Kyu gradings (only for members of Swiss Kendo Federation)",
           name_fr: "Examens de Kyu (seulement pour les membres de la Fédération Suisse de Kendo)",
-          start_on: "2023-09-23 09:30:00"
+          start_on: "2024-09-28 09:30:00"
         },
         {
           name_en: "Check-in and shinai check",
           name_fr: "Accueil et contrôle des shinais",
-          start_on: "2023-09-23 11:30:00"
+          start_on: "2024-09-28 11:30:00"
         },
         {
           name_en: "Team competition",
           name_fr: "Compétition par équipe",
-          start_on: "2023-09-23 13:00"
+          start_on: "2024-09-28 13:00"
         },
         {
           name_en: "Free jigeiko",
           name_fr: "Jigeiko libre",
-          start_on: "2023-09-23 18:00:00"
+          start_on: "2024-09-28 18:00:00"
         },
         {
           name_en: "Dinner",
           name_fr: "Dîner",
-          start_on: "2023-09-23 20:00:00"
+          start_on: "2024-09-28 20:00:00"
         },
         {
           name_en: "Breakfast for those sleeping in the dormitory",
           name_fr: "Petit-déjeuner pour ceux qui dorment au dortoir",
-          start_on: "2023-09-24 07:15:00"
+          start_on: "2024-09-29 07:15:00"
         },
         {
           name_en: "Shinai check",
           name_fr: "Contrôle des shinais",
-          start_on: "2023-09-24 07:30:00"
+          start_on: "2024-09-29 07:30:00"
         },
         {
           name_en: "Individual competitions (open, ladies and juniors)",
           name_fr: "Compétitions individuelles (open, dames et juniors)",
-          start_on: "2023-09-24 08:30:00"
+          start_on: "2024-09-29 08:30:00"
         },
         {
           name_en: "Lunch break",
           name_fr: "Pause déjeuner",
-          start_on: "2023-09-24 12:00:00"
+          start_on: "2024-09-29 12:00:00"
         },
         {
           name_en: "Finals and ending",
           name_fr: "Finales et clôture",
-          start_on: "2023-09-24 16:30:00"
+          start_on: "2024-09-29 16:30:00"
         }
       ]
 
       products_data = [
         {
-          name_en: "Participation Junior (17 years old and younger)",
-          name_fr: "Participation Junior (17 ans et moins)",
+          name_en: "Participation Team",
+          name_fr: "Participation Team",
           fee_chf: 20,
           fee_eu: 20,
           position: 1,
           display: false
         },
         {
-          name_en: "Participation Adult (18 years old and older)",
-          name_fr: "Participation Adult (18 ans et plus)",
+          name_en: "Participation Individuals Junior (17 years old and younger)",
+          name_fr: "Participation Individuels Junior (17 ans et moins)",
+          fee_chf: 10,
+          fee_eu: 10,
+          position: 1,
+          display: false
+        },
+        {
+          name_en: "Participation Individuals Adult (18 years old and older)",
+          name_fr: "Participation Individuels Adulte (18 ans et plus)",
+          fee_chf: 20,
+          fee_eu: 20,
+          position: 2,
+          display: false
+        },
+        {
+          name_en: "Participation 2 Days Junior (17 years old and younger)",
+          name_fr: "Participation 2 Jours Junior (17 ans et moins)",
+          fee_chf: 25,
+          fee_eu: 25,
+          position: 2,
+          display: false
+        },
+        {
+          name_en: "Participation 2 Days Adult (18 years old and older)",
+          name_fr: "Participation 2 Jours Adulte (18 ans et plus)",
           fee_chf: 35,
           fee_eu: 35,
           position: 2,
@@ -168,8 +193,8 @@ namespace :temporary do
           Participants less than 18 years old
           will be required to show a document signed by a legal representative".squish,
           description_fr: "Pour les compétiteurs des deux sexes âgés de 16 ans ou plus.
-          Les participants nés en #{2023 - 16}
-          et #{2023 - 17} devront présenter une décharge signée par un représentant légal".squish
+          Les participants nés en #{2024 - 16}
+          et #{2024 - 17} devront présenter une décharge signée par un représentant légal".squish
         },
         {
           name: "Ladies",
@@ -181,8 +206,8 @@ namespace :temporary do
           Participants less than 18 years old
           will be required to show a document signed by a legal representative".squish,
           description_fr: "Pour les femmes âgées de 16 ans et plus.
-          Les participants nés en #{2023 - 16}
-          et #{2023 - 17} devront présenter une décharge signée par un représentant légal".squish
+          Les participants nés en #{2024 - 16}
+          et #{2024 - 17} devront présenter une décharge signée par un représentant légal".squish
         }
       ]
 
@@ -207,8 +232,9 @@ namespace :temporary do
       ]
 
       ActiveRecord::Base.transaction do
-        cup = Cup.find_by(start_on: "2023-09-23")
-        create_header_image(cup: cup, image: "kasa-2023.jpeg")
+        cup = Cup.find_or_create_by(start_on: "2024-09-28", end_on: "2024-09-29", year: 2024,
+          deadline: "2024-15-01", registerable_at: "2024-05-01 00:00:00")
+        create_header_image(cup: cup, image: "kasa-2024.jpeg")
         events_data.each do |event_data|
           cup.events.create!(event_data)
         end
@@ -221,10 +247,22 @@ namespace :temporary do
         team_categories_data.each do |team_category_data|
           cup.team_categories.create!(team_category_data)
         end
-        product_individual_junior = cup.products.find_by(name_en: "Participation Junior (17 years old and younger)")
-        product_individual_adult = cup.products.find_by(name_en: "Participation Adult (18 years old and older)")
-        cup.update!(product_individual_junior: product_individual_junior,
-          product_individual_adult: product_individual_adult)
+        product_team = cup.products.find_by!(name_en: "Participation Team")
+        product_individual_junior = cup.products
+          .find_by!(name_en: "Participation Individuals Junior (17 years old and younger)")
+        product_individual_adult = cup.products
+          .find_by!(name_en: "Participation Individuals Adult (18 years old and older)")
+        product_full_junior = cup.products
+          .find_by!(name_en: "Participation 2 Days Junior (17 years old and younger)")
+        product_full_adult = cup
+          .products.find_by!(name_en: "Participation 2 Days Adult (18 years old and older)")
+        cup.update!(
+          product_individual_junior: product_individual_junior,
+          product_individual_adult: product_individual_adult,
+          product_team: product_team,
+          product_full_junior: product_full_junior,
+          product_full_adult: product_full_adult
+        )
       end
     end
   end

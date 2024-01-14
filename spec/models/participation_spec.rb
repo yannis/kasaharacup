@@ -17,17 +17,19 @@ RSpec.describe Participation do
   describe "Associations" do
     let(:participation) { build(:participation) }
 
-    it { expect(participation).to belong_to :category }
-    it { expect(participation).to belong_to :kenshi }
-    it { expect(participation).to belong_to(:team).optional }
+    it do
+      expect(participation).to belong_to(:category)
+      expect(participation).to belong_to(:kenshi).inverse_of(:participations).touch(true)
+      expect(participation).to belong_to(:team).optional
+    end
   end
 
   describe "Delegations" do
     let(:participation) { build(:participation) }
 
     it do
-      expect(participation).to delegate_method(:product_junior).to(:cup)
-      expect(participation).to delegate_method(:product_adult).to(:cup)
+      expect(participation).to delegate_method(:product_individual_junior).to(:cup)
+      expect(participation).to delegate_method(:product_individual_adult).to(:cup)
       expect(participation).to delegate_method(:full_name).to(:kenshi).allow_nil
       expect(participation).to delegate_method(:grade).to(:kenshi).allow_nil
       expect(participation).to delegate_method(:club).to(:kenshi).allow_nil
@@ -72,31 +74,6 @@ RSpec.describe Participation do
           it do
             expect(participation).to be_valid
             expect(participation.category).to eq(team_category)
-          end
-        end
-      end
-    end
-
-    describe "after_commit" do
-      describe "#update_purchase" do
-        let!(:cup) { create(:cup, product_junior: create(:product), product_adult: create(:product)) }
-        let!(:team_category) { build(:team_category, cup: cup) }
-        let!(:individual_category) { create(:individual_category, cup: cup) }
-        let!(:kenshi) { create(:kenshi, cup: cup) }
-
-        context "when participation is destroyed" do
-          let!(:participation) { create(:participation, kenshi: kenshi, category: team_category) }
-
-          it do
-            expect { participation.destroy }
-              .to change { kenshi.purchases.count }.by(-1)
-          end
-        end
-
-        context "when participation is created" do
-          it do
-            expect { create(:participation, kenshi: kenshi, category: team_category) }
-              .to change { kenshi.purchases.count }.by(1)
           end
         end
       end
@@ -153,34 +130,37 @@ RSpec.describe Participation do
   end
 
   describe "#product" do
-    let!(:product_junior) { build(:product) }
-    let!(:product_adult) { build(:product) }
-    let!(:cup) { create(:cup, product_junior: product_junior, product_adult: product_adult) }
+    let!(:product_individual_junior) { build(:product) }
+    let!(:product_individual_adult) { build(:product) }
+    let!(:cup) {
+      create(:cup, product_individual_junior: product_individual_junior,
+        product_individual_adult: product_individual_adult)
+    }
     let!(:kenshi) { create(:kenshi, cup: cup) }
     let!(:participation) { create(:participation, kenshi: kenshi) }
 
     context "when kenshi is junior" do
       before { allow(kenshi).to receive(:junior?).and_return(true) }
 
-      it { expect(participation.product).to eq(product_junior) }
+      it { expect(participation.product).to eq(product_individual_junior) }
     end
 
     context "when kenshi is adult" do
       before { allow(kenshi).to receive(:junior?).and_return(false) }
 
-      it { expect(participation.product).to eq(product_adult) }
+      it { expect(participation.product).to eq(product_individual_adult) }
     end
   end
 
   describe "#purchase" do
-    let(:product_adult) { create(:product) }
-    let(:cup) { create(:cup, product_adult: product_adult) }
+    let(:product_individual_adult) { create(:product) }
+    let(:cup) { create(:cup, product_individual_adult: product_individual_adult) }
     let(:kenshi) { create(:kenshi, cup: cup) }
     let(:participation) { create(:participation, kenshi: kenshi) }
 
     it do
       expect(participation.purchase).to be_a(Purchase)
-      expect(participation.purchase.product).to eq(product_adult)
+      expect(participation.purchase.product).to eq(product_individual_adult)
     end
   end
 end
