@@ -6,6 +6,7 @@ en:
         categories: Categories
         club_name: Club / Dojo / Association
         dob: Date of birth
+        fees: Fees
         female: Salutation
         first_name: First name
         gender: Sexe
@@ -13,7 +14,6 @@ en:
         mr: Mr
         ms: Ms
         name: Name
-        fees: Fees
         salutations: Salutations
         team: Team
     errors:
@@ -26,7 +26,7 @@ en:
               inclusion: Salutation is required
   kenshi:
     button: Register
-    deadline: 'The registration deadline is %{deadline}!'
+    deadline: The registration deadline is %{deadline}!
     link:
       registration: registration
       title: You already have
@@ -52,23 +52,23 @@ en:
       button_info: You'll be able to modify this registration until %{deadline}.
       categories: Categories
       chose_team: Chose an existing team
+      country_prompt: Select country
       create_team: or create a new one
       dormitory: Dormitory
       explanation: First create an account that will allow you to register you and your team mates to the competition.
+      extra: Additional items
       individual_categories: Individual categories
       more_details:
-        title: More details
         help: If you sleep at the dormitory, we need to communicate some of your information to the dormitory administration office. Indeed, as an hotel, the office as to declare each residents to the state of Geneva.
+        title: More details
       not_available: Sorry, “%{product_name}“ is not available for the time being. Please come back later to check for any availability.
       oldfashion: or do it the oldfashioned way
       ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
       saturday_night: Saturday night dinner
       team_info: Choose here the team you plan to participate in with your teammates. If the team does not exist yet create it by entering its name followed by ↩︎ in the search field.
       waiver:
-        title: Liability waiver
         info: 'Juniors under the age of 18 who are participating in the Team category must present a liability waiver signed by a legal guardian. Please download and complete the following document and present it on the day of the competition:'
-      extra: Additional items
-      country_prompt: Select country
+        title: Liability waiver
     helpers:
       destroy:
         confirm: Are you sure?

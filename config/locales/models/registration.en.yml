@@ -20,7 +20,7 @@ en:
     title: Latest registrations
   registration:
     button: Register
-    deadline: 'The registration deadline is %{deadline}!'
+    deadline: The registration deadline is %{deadline}!
     link:
       registration: registration
       title: You already have

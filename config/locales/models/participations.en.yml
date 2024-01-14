@@ -1,14 +1,10 @@
 ---
 en:
   activerecord:
-    models:
-      participation:
-        one: Participation
-        other: Participations
     attributes:
       participation:
-        team_name: Team name
         category: Category
+        team_name: Team name
     errors:
       models:
         participation:
@@ -16,6 +12,10 @@ en:
             category:
               too_old: 'not valid: You''re too old to participate to the %{name} category!'
               too_young: 'not valid: You''re too young to participate to the %{name} category!'
+    models:
+      participation:
+        one: Participation
+        other: Participations
   participations:
     destroy:
       alert: Unable to destroy participation

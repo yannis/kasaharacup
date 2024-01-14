@@ -3,21 +3,21 @@ fr:
   activerecord:
     attributes:
       personal_info:
+        document_number: Numéro du document d'identité
+        document_type: Type de document d'identité
         email: Adresse email personnelle
-        residential_phone_number: Numéro de téléphone du domicile
+        origin_country: Pays d'origine
         residential_address: Adresse du domicile
         residential_city: Ville de résidence
-        residential_zip_code: Code postal de résidence
         residential_country: Pays de résidence
-        origin_country: Pays d'origine
-        document_type: Type de document d'identité
-        document_number: Numéro du document d'identité
+        residential_phone_number: Numéro de téléphone du domicile
+        residential_zip_code: Code postal de résidence
     models:
       personal_info:
-        passport: Passeport
         id_card: Carte d'identité
         one: Détail personnel
         other: Détails personnels
+        passport: Passeport
   personal_infos:
     form_fields:
       country_prompt: Sélectionner un pays

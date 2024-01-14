@@ -2,9 +2,9 @@
 fr:
   date:
     formats:
+      day_month_year: "%d %B %Y"
       day_only: "%d"
       month_only: "%B"
-      day_month_year: "%d %B %Y"
   time:
     formats:
       day_only: "%d"

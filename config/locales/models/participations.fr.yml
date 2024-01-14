@@ -1,14 +1,10 @@
 ---
 fr:
   activerecord:
-    models:
-      participation:
-        one: Participation
-        other: Participations
     attributes:
       participation:
-        team_name: Nom de l'équipe
         category: Catégorie
+        team_name: Nom de l'équipe
     errors:
       models:
         participation:
@@ -16,6 +12,10 @@ fr:
             category:
               too_old: Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!
               too_young: Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!
+    models:
+      participation:
+        one: Participation
+        other: Participations
   participations:
     destroy:
       alert: Erreur lors de la destruction de l'inscription

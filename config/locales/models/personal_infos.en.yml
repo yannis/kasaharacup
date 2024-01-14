@@ -3,21 +3,21 @@ en:
   activerecord:
     attributes:
       personal_info:
+        document_number: Identity document number
+        document_type: Identity document type
         email: Personal email address
-        residential_phone_number: Home phone number
+        origin_country: Country of origin
         residential_address: Home address
         residential_city: City of residence
-        residential_zip_code: Residential zip code
         residential_country: Country of residence
-        origin_country: Country of origin
-        document_type: Identity document type
-        document_number: Identity document number
+        residential_phone_number: Home phone number
+        residential_zip_code: Residential zip code
     models:
       personal_info:
-        passport: Passport
         id_card: ID card
         one: Personal detail
         other: Personal details
+        passport: Passport
   personal_infos:
     form_fields:
       country_prompt: Select country

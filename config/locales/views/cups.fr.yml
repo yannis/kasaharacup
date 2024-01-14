@@ -9,8 +9,8 @@ fr:
       categories:
         description: Les catégories Juniors sont susceptibles à changement en fonction des inscriptions
         title: Les catégories
-      deadline: "Le délai pour les inscriptions est fixé au %{deadline}"
-      deadline_passed: "Les inscriptions sont fermée depuis le %{deadline}"
+      deadline: Le délai pour les inscriptions est fixé au %{deadline}
+      deadline_passed: Les inscriptions sont fermée depuis le %{deadline}
       enrollments:
         all: Voir les %{number} inscriptions
       fee: "%{fee_chf} CHF ou %{fee_eu} €"
@@ -39,7 +39,7 @@ fr:
         not_available: Malheureusement plus disponible
       program:
         title: Programme
-      registrations_opening_soon: "Les inscriptions vont ouvrir bientôt"
+      registrations_opening_soon: Les inscriptions vont ouvrir bientôt
       results:
         coming_soon: Les résultats complets arrivent bientôt…
         downloads: Téléchargements
@@ -49,15 +49,15 @@ fr:
         team: Résultats de la catégorie Team
         title: Résultats
       shinpans:
+        info: 'Cette année, nous aurons quelques arbitres officiels invités, mais nous comptons toujours sur les plus gradés d''entre vous pour compléter l''effectif des arbitres lorsque vous ne combattez pas.
+
+          '
         title: Shinpan (arbitres)
-        info: |
-          Cette année, nous aurons quelques arbitres officiels invités, mais nous comptons toujours sur les plus gradés d'entre vous pour compléter l'effectif des arbitres lorsque vous ne combattez pas.
       social:
         title: Retrouvez-nous sur
       venue:
         a: Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}.
         address:
-          title: Coordonnées
           content: |
             Stade du Bout-du-Monde<br />
             Route de Vessy 12<br />
@@ -65,5 +65,6 @@ fr:
             Switzerland<br />
             _GPS: 46.180588,6.155893_<br />
             <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map vers la salle de compétition</a>
+          title: Coordonnées
         map_link: Agrandir le plan
         title: Où est-ce que ça se passe?

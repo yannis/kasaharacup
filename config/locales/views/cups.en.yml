@@ -16,8 +16,8 @@ en:
       contact:
         text: Contact us by email at
         title: Contact
-      deadline: "The deadline for registration is %{deadline}"
-      deadline_passed: "Registration is closed since %{deadline}"
+      deadline: The deadline for registration is %{deadline}
+      deadline_passed: Registration is closed since %{deadline}
       enrollments:
         all: See all %{number} registrations
       fee: "%{fee_chf} CHF or %{fee_eu} €"
@@ -55,15 +55,15 @@ en:
         team: Team results
         title: Results
       shinpans:
+        info: 'This year, we will have a few invited official referees, but we still rely on the most senior among you to supplement the referee team when you are not competing.
+
+          '
         title: Shinpan (referees)
-        info: |
-          This year, we will have a few invited official referees, but we still rely on the most senior among you to supplement the referee team when you are not competing.
       social:
         title: Follow us on
       venue:
         a: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
         address:
-          title: Coordinates
           content: |
             Stade du Bout-du-Monde<br />
             Route de Vessy 12<br />
@@ -71,5 +71,6 @@ en:
             Switzerland<br />
             _GPS: 46.180588,6.155893_<br />
             <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map to the competition hall</a>
+          title: Coordinates
         map_link: Larger map
         title: Venue
