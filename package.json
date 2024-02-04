@@ -7,7 +7,7 @@
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "autoprefixer": "^10.4.17",
-    "esbuild": "^0.19.11",
+    "esbuild": "^0.20.0",
     "jquery": "^3.7.1",
     "postcss": "^8.4.33",
     "select2": "^4.1.0-rc.0",
