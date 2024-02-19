@@ -203,7 +203,7 @@ GEM
       activesupport (>= 5.2)
     hashdiff (1.1.0)
     highline (2.1.0)
-    honeybadger (5.4.1)
+    honeybadger (5.5.0)
     htmlbeautifier (1.4.2)
     htmlentities (4.3.4)
     httparty (0.21.0)
