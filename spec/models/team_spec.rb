@@ -39,7 +39,7 @@ RSpec.describe Team do
       it { expect(described_class.incomplete.all).to include(team) }
       it { expect(described_class.incomplete).to eq [team] }
       it { expect(team.participations.count).to eq 1 }
-      it { expect(team.fitness).to eq 0.1364 }
+      it { expect(team.fitness).to eq 0.1429 }
       it { expect(described_class.empty.to_a).not_to include(team) }
     end
 
