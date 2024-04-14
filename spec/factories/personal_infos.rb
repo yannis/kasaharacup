@@ -10,7 +10,7 @@ FactoryBot.define do
     residential_country { ISO3166::Country.all.map(&:alpha2).sample }
     origin_country { ISO3166::Country.all.map(&:alpha2).sample }
     document_type { %w[passport id_card].sample }
-    document_number { Faker::IDNumber.valid }
+    document_number { Faker::IdNumber.valid }
     email { Faker::Internet.email }
   end
 end
