@@ -20,9 +20,14 @@ namespace :temporary do
           start_on: "2024-09-28 11:30:00"
         },
         {
+          name_en: "Opening ceremony",
+          name_fr: "Cérémonie d'ouverture",
+          start_on: "2024-09-28 13:00"
+        },
+        {
           name_en: "Team competition",
           name_fr: "Compétition par équipe",
-          start_on: "2024-09-28 13:00"
+          start_on: "2024-09-28 13:15"
         },
         {
           name_en: "Free jigeiko",
@@ -43,6 +48,11 @@ namespace :temporary do
           name_en: "Shinai check",
           name_fr: "Contrôle des shinais",
           start_on: "2024-09-29 07:30:00"
+        },
+        {
+          name_en: "Opening ceremony",
+          name_fr: "Cérémonie d'ouverture",
+          start_on: "2024-09-29 08:15:00"
         },
         {
           name_en: "Individual competitions (open, ladies and juniors)",
@@ -73,16 +83,16 @@ namespace :temporary do
         {
           name_en: "Participation Individuals Junior (17 years old and younger)",
           name_fr: "Participation Individuels Junior (17 ans et moins)",
-          fee_chf: 10,
-          fee_eu: 10,
+          fee_chf: 15,
+          fee_eu: 15,
           position: 1,
           display: false
         },
         {
           name_en: "Participation Individuals Adult (18 years old and older)",
           name_fr: "Participation Individuels Adulte (18 ans et plus)",
-          fee_chf: 20,
-          fee_eu: 20,
+          fee_chf: 25,
+          fee_eu: 25,
           position: 2,
           display: false
         },
@@ -97,8 +107,8 @@ namespace :temporary do
         {
           name_en: "Participation 2 Days Adult (18 years old and older)",
           name_fr: "Participation 2 Jours Adulte (18 ans et plus)",
-          fee_chf: 35,
-          fee_eu: 35,
+          fee_chf: 40,
+          fee_eu: 40,
           position: 2,
           display: false
         },
@@ -120,8 +130,8 @@ namespace :temporary do
         {
           name_en: "Night at the dormitory (Friday)",
           name_fr: "Nuit au dortoir (Vendredi)",
-          fee_chf: 25,
-          fee_eu: 25,
+          fee_chf: 27,
+          fee_eu: 27,
           quota: 40,
           position: 5,
           require_personal_infos: true
@@ -129,8 +139,8 @@ namespace :temporary do
         {
           name_en: "Night at the dormitory (Saturday)",
           name_fr: "Nuit au dortoir (Samedi)",
-          fee_chf: 25,
-          fee_eu: 25,
+          fee_chf: 27,
+          fee_eu: 27,
           quota: 40,
           position: 6,
           require_personal_infos: true
@@ -138,8 +148,8 @@ namespace :temporary do
         {
           name_en: "Night at the dormitory (Sunday)",
           name_fr: "Nuit au dortoir (Dimanche)",
-          fee_chf: 25,
-          fee_eu: 25,
+          fee_chf: 27,
+          fee_eu: 27,
           quota: 40,
           position: 7,
           require_personal_infos: true
@@ -178,10 +188,8 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 12,
           max_age: 15,
-          description_en: "For juniors of both genders between 12 and 15 years old.
-          15-year-old Kendoka may compete in both the U-15 and U-18 categories".squish,
-          description_fr: "Pour les juniors des deux sexes âgés de 12 à 15 ans inclus.
-          Les kendoka de 15 ans peuvent concourir dans les catégories U-15 et U-18".squish
+          description_en: "For juniors of both genders between 12 and 15 years old.".squish,
+          description_fr: "Pour les juniors des deux sexes âgés de 12 à 15 ans inclus.".squish
         },
         {
           name: "Open",
@@ -232,8 +240,7 @@ namespace :temporary do
       ]
 
       ActiveRecord::Base.transaction do
-        cup = Cup.find_or_create_by(start_on: "2024-09-28", end_on: "2024-09-29", year: 2024,
-          deadline: "2024-15-01", registerable_at: "2024-05-01 00:00:00")
+        cup = Cup.find_or_create_by(start_on: "2024-09-28", end_on: "2024-09-29", year: 2024)
         create_header_image(cup: cup, image: "kasa-2024.jpeg")
         events_data.each do |event_data|
           cup.events.create!(event_data)
@@ -261,7 +268,11 @@ namespace :temporary do
           product_individual_adult: product_individual_adult,
           product_team: product_team,
           product_full_junior: product_full_junior,
-          product_full_adult: product_full_adult
+          product_full_adult: product_full_adult,
+          deadline: "2024-09-15",
+          registerable_at: "2024-05-01 00:00:00",
+          description_en: nil,
+          description_fr: nil
         )
       end
     end
