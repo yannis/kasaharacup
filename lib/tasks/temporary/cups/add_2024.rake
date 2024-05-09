@@ -75,8 +75,8 @@ namespace :temporary do
         {
           name_en: "Participation Team",
           name_fr: "Participation Team",
-          fee_chf: 20,
-          fee_eu: 20,
+          fee_chf: 15,
+          fee_eu: 15,
           position: 1,
           display: false
         },
@@ -107,8 +107,8 @@ namespace :temporary do
         {
           name_en: "Participation 2 Days Adult (18 years old and older)",
           name_fr: "Participation 2 Jours Adulte (18 ans et plus)",
-          fee_chf: 40,
-          fee_eu: 40,
+          fee_chf: 35,
+          fee_eu: 35,
           position: 2,
           display: false
         },
