@@ -279,7 +279,7 @@ GEM
       letter_opener (~> 1.7)
       railties (>= 5.2)
       rexml
-    libyear-bundler (0.6.1)
+    libyear-bundler (0.7.0)
       bundler (>= 1.14, < 3)
     lint_roller (1.1.0)
     loofah (2.22.0)
