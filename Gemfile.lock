@@ -148,7 +148,7 @@ GEM
     childprocess (5.0.0)
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
-    countries (6.0.0)
+    countries (6.0.1)
       unaccent (~> 0.3)
     country_select (9.0.0)
       countries (> 5.0, < 7.0)
