@@ -27,6 +27,7 @@ ENV PATH ./bin:$PATH
 COPY Gemfile Gemfile.lock package.json yarn.lock ./
 
 RUN gem update --system
+RUN bundle config set --local force_ruby_platform true
 RUN bundle install -j $(nproc)
 RUN yarn install --frozen-lockfile --non-interactive
 
