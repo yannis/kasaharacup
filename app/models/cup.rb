@@ -33,11 +33,11 @@ class Cup < ApplicationRecord
   validate :header_image_is_image
 
   def self.past
-    where("cups.start_on < ?", Date.current)
+    where(cups: {start_on: ...Date.current})
   end
 
   def self.future
-    where("cups.start_on >= ?", Date.current)
+    where(cups: {start_on: Date.current..})
   end
 
   def to_param

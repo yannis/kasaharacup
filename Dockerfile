@@ -1,4 +1,4 @@
-FROM ruby:3.3.0-alpine
+FROM ruby:3.3.2-alpine
 LABEL mainainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
 
@@ -22,11 +22,12 @@ WORKDIR /app
 
 RUN echo 'gem: --no-rdoc --no-ri >> "$HOME/.gemrc"'
 
-ENV PATH ./bin:$PATH
+ENV PATH="./bin:$PATH"
 
 COPY Gemfile Gemfile.lock package.json yarn.lock ./
 
 RUN gem update --system
+RUN bundle config set --local force_ruby_platform true
 RUN bundle install -j $(nproc)
 RUN yarn install --frozen-lockfile --non-interactive
 
