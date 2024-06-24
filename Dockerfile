@@ -1,4 +1,4 @@
-FROM ruby:3.3.1-alpine
+FROM ruby:3.3.2-alpine
 LABEL mainainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
 
@@ -22,7 +22,7 @@ WORKDIR /app
 
 RUN echo 'gem: --no-rdoc --no-ri >> "$HOME/.gemrc"'
 
-ENV PATH ./bin:$PATH
+ENV PATH="./bin:$PATH"
 
 COPY Gemfile Gemfile.lock package.json yarn.lock ./
 
