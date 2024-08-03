@@ -96,6 +96,34 @@
               <p>
                 <%= t(".shinpans.info") %>
               </p>
+              <% if @shinpans.any? %>
+                <h3 class="mt-10">
+                  <%= t(".shinpans.invited.title") %>
+                </h3>
+                <table class="table">
+                  <tbody>
+                    <% @shinpans.each.with_index do |shinpan, index| %>
+                      <tr>
+                        <td class="text-right">
+                          <%= index + 1 %>.
+                        </td>
+                        <td class="text-right">
+                          <%= shinpan.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %>
+                        </td>
+                        <th class="lg:whitespace-nowrap text-left">
+                          <%= shinpan.full_name %>
+                        </th>
+                        <td class="text-left">
+                          <em><%= shinpan.grade %></em>
+                        </td>
+                        <td class="text-right">
+                          <%= shinpan.club.name %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              <% end %>
             </div>
             <% if @cup.products.any? %>
               <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">

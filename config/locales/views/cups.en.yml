@@ -58,6 +58,8 @@ en:
         title: Shinpan (referees)
         info: |
           This year, we will have a few invited official referees, but we still rely on the most senior among you to supplement the referee team when you are not competing.
+        invited:
+          title: Invited referees
       social:
         title: Follow us on
       venue:
