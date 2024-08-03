@@ -49,6 +49,21 @@ RSpec.describe Kenshi do
     end
   end
 
+  describe "Scopes" do
+    describe ".shinpans, .not_shinpans" do
+      let(:cup) { create(:cup) }
+      let!(:shinpan) { create(:kenshi, shinpan: true, cup: cup) }
+      let!(:kenshi) { create(:kenshi, cup: cup) }
+      let!(:shinpan_with_participation) { create(:kenshi, shinpan: true, cup: cup) }
+      let!(:participation) { create(:participation, kenshi: shinpan_with_participation) }
+
+      it do
+        expect(described_class.shinpans).to eq [shinpan]
+        expect(described_class.not_shinpans).to contain_exactly(kenshi, shinpan_with_participation)
+      end
+    end
+  end
+
   describe "Callbacks" do
     describe "after_create_commit" do
       let(:kenshi) { build(:kenshi) }
