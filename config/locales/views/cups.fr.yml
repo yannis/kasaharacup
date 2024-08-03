@@ -52,6 +52,8 @@ fr:
         title: Shinpan (arbitres)
         info: |
           Cette année, nous aurons quelques arbitres officiels invités, mais nous comptons toujours sur les plus gradés d'entre vous pour compléter l'effectif des arbitres lorsque vous ne combattez pas.
+        invited:
+          title: Arbitres invités
       social:
         title: Retrouvez-nous sur
       venue:
