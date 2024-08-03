@@ -17,12 +17,25 @@ class Product < ApplicationRecord
 
   delegate :year, to: :cup
 
-  def still_available?
+  def remaining_spots
+    return if quota.nil? && !require_personal_infos
+
     if require_personal_infos
-      dormitory_still_available
+      kenshis_in_dormitory_for_cup = Kenshi
+        .joins(purchases: :product)
+        .merge(Product.where(cup_id: cup_id, require_personal_infos: true))
+        .distinct
+
+      ENV.fetch("DORMITORY_QUOTA", 50).to_i - kenshis_in_dormitory_for_cup.count
     else
-      quota.nil? || purchases.count < quota
+      quota - purchases.count
     end
+  end
+
+  def still_available?
+    return true if remaining_spots.nil?
+
+    remaining_spots.positive?
   end
 
   def dormitory_still_available

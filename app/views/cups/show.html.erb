@@ -114,7 +114,12 @@
                           <% if product.description.present? %>
                               <em class="text-gray-500 ">(<%= product.description %>)</em>
                           <% end %>
-                          <% if !product.still_available? %>
+
+                          <% if product.still_available? %>
+                            <% if product.remaining_spots %>
+                              <span class="text-brand italic">(<%= t(".spots_left", count: product.remaining_spots) %> )</span>
+                            <% end %>
+                          <% else %>
                             <span class="text-brand italic">(<%= t(".products.not_available") %>)</span>
                           <% end %>
                         </th>
