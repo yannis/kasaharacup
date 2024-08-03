@@ -33,6 +33,14 @@ class Kenshi < ApplicationRecord
   after_create_commit :notify_slack
   after_commit :update_purchase
 
+  scope :shinpans, -> {
+    where(shinpan: true).where.missing(:participations)
+  }
+
+  scope :not_shinpans, -> {
+    where.not(id: shinpans)
+  }
+
   def self.from(user)
     new(
       first_name: user.first_name,

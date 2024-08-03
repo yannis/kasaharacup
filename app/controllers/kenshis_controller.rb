@@ -20,20 +20,9 @@ class KenshisController < ApplicationController
       @title = t("kenshis.index.title_#{category}")
     end
     @kenshis = @kenshis
+      .not_shinpans
       .includes(:user, :club, participations: [:category])
       .order(created_at: :desc)
-    respond_with @kenshis do |format|
-      format.html
-      format.csv {
-        filename = Time.zone.now.to_fs(:datetime).gsub(/[^0-9a-z]/,
-          "") + "_" + @title.gsub(/[^0-9a-zA-Z]/, "_").gsub("__", "_") + ".csv"
-        send_data(
-          Kenshi.to_csv(@kenshis),
-          as: "text/csv; charset=utf-8; header=present",
-          filename: filename
-        )
-      }
-    end
   end
 
   def show
