@@ -48,7 +48,7 @@ fi
 # Here we download the latest backup of the DB
 download_dump() {
   set -x
-  curl -o tmp/kasaharacup-production.dmp `heroku pg:backups public-url --app kasaharacup-production`
+  curl -o tmp/kasaharacup-production.dmp `heroku pg:backups:url --app kasaharacup-production`
 }
 
 set +x
