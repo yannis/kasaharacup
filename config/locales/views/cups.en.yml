@@ -75,3 +75,6 @@ en:
             <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map to the competition hall</a>
         map_link: Larger map
         title: Venue
+      spots_left:
+        one: 1 spot left
+        other: "%{count} spots left"
