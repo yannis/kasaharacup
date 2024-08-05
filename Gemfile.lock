@@ -221,7 +221,7 @@ GEM
     hashdiff (1.1.1)
     highline (3.1.0)
       reline
-    honeybadger (5.15.4)
+    honeybadger (5.15.5)
     htmlbeautifier (1.4.3)
     htmlentities (4.3.4)
     httparty (0.22.0)
