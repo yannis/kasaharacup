@@ -288,7 +288,7 @@ GEM
       letter_opener (~> 1.9)
       railties (>= 6.1)
       rexml
-    libyear-bundler (0.7.0)
+    libyear-bundler (0.8.0)
       bundler (>= 1.14, < 3)
     lint_roller (1.1.0)
     logger (1.6.0)
