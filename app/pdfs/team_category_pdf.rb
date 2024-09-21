@@ -18,7 +18,7 @@ class TeamCategoryPdf < Prawn::Document
       text @team_category.name, align: :center
     end
 
-    @team_category.teams.order(:name).each do |team|
+    @team_category.teams.includes(kenshis: [:club, participations: :category]).order(:name).each do |team|
       start_new_page layout: :portrait
 
       bounding_box [bounds.left + 10, bounds.top - 50], width: 500 do
@@ -32,7 +32,7 @@ class TeamCategoryPdf < Prawn::Document
         end
       end
 
-      team.kenshis.each do |kenshi|
+      team.kenshis.find_each do |kenshi|
         start_new_page layout: :landscape
 
         bounding_box [bounds.left + 10, bounds.top - 280], width: 700 do
