@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PersonalInfo < ApplicationRecord
-  enum document_type: {passport: "passport", id_card: "id_card"}
+  enum :document_type, {passport: "passport", id_card: "id_card"}
 
   encrypts :residential_address, :residential_zip_code, :residential_city,
     :residential_phone_number, :document_number, :email
