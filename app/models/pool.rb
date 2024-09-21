@@ -23,4 +23,8 @@ class Pool
     end
     data
   end
+
+  def total_dan
+    participations.sum { |participation| participation.kenshi.grade.to_i }
+  end
 end
