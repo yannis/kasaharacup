@@ -9,7 +9,7 @@
 <% end %>
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <%= render(HeroComponent.new(cup: @cup, current_user: current_user)) %>
-  <% if @cup.description %>
+  <% if @cup.description.present? %>
     <div class="text-4xl font-extrabold tracking-tight text-slate-900 text-center py-10 md:text-7xl">
       <%= md_to_html(@cup.description) %>
     </div>
