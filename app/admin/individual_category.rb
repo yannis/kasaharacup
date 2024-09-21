@@ -49,7 +49,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       panel "Pools" do
         category.pools.sort_by(&:number).each do |pool|
           h2 do
-            "Pool #{pool.number}"
+            "Pool #{pool.number} (total Dan: #{pool.total_dan})"
           end
           begin
             table_for pool.participations do |participation|
