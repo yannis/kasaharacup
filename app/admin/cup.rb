@@ -171,7 +171,10 @@ ActiveAdmin.register Cup do
     kenshis = @cup.kenshis
       .includes(:user, :club, participations: :category, purchases: :product).order(:last_name, :first_name)
     csv = CSV.generate do |csv|
-      header = ["Last name", "First name", "Inscrit par (nom)", "Inscrit par (email)", "Club", "Dob", "Grade"]
+      header = [
+        "Last name", "First name", "Inscrit par (nom)", "Inscrit par (email)", "Club", "Dob",
+        "Grade", "Création", "Dernière modification"
+      ]
       [@cup.team_categories, @cup.individual_categories, @cup.products].flatten.each do |tc|
         header << tc.name
       end
@@ -195,6 +198,8 @@ ActiveAdmin.register Cup do
         end
         kcsv << kenshi.fees(:chf)
         kcsv << kenshi.fees(:eu)
+        kcsv << kenshi.created_at.to_fs(:db)
+        kcsv << kenshi.updated_at.to_fs(:db)
         csv << kcsv.flatten
       end
     end
