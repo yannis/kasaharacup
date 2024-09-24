@@ -14,8 +14,6 @@ If the inscriptions make it necessary, pools of two (2) will be included.
 
 The 4 teams that got the medals at the previous Team Championships will be seeded into different pools and removed to the far end of the grid.
 
-However, the 4 teams that got the medals at the previous Team Championships will be seeded into different pools and removed to the far end of the grid.
-
 Only the first team out of every pool will be entered on the tournament grid.
 
 For the first round, the names and the order of combats shall be handed in at the managers’ meeting, all others at the administration table of the shiai-jo immediately after the end of the previous fight of the respective team.
@@ -47,11 +45,11 @@ It is possible that in this same order pools may be combined, or a different ord
 The combat time is 3 minutes, following the “sanbon shobu” rule. If appropriate an even match (hikiwake) may be the result.
 The fighters of the same pool will be ranked as follows. The criteria will be applied in that order and the subsequent criteria will be only applied if a clear decision is not reached:
 
-- The higher number of fights won; if it is still a tie, then
-- The lower number of fights lost; if it is still a tie, then
-- The higher number of hikiwake; if it is still a tie, then
-- The higher number of points scored; if it is still a tie, then
-- The lower number of points lost.
+1. The higher number of fights won; if it is still a tie, then
+1. The lower number of fights lost; if it is still a tie, then
+1. The higher number of hikiwake; if it is still a tie, then
+1. The higher number of points scored; if it is still a tie, then
+1. The lower number of points lost.
 
 In case of equality between two fighters, one supplementary fight will take place immediately after the normal pool fights, to establish the final order among the fighters. These fights will follow the rule of "ippon shobu", without time limit.
 
