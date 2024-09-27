@@ -22,14 +22,37 @@ The combats are played by "sanbon-shobu" and the duration is 3 minutes for all c
 
 If two teams remain even at the end of the pool, a supplementary fight, between two of the team members will decide on the victory. This fight will be held according to the "ippon-shobu"-principle, without time limit.
 
-### Tournament
-
-Determination of the winning team in tournament matches will be made in the following order of precedence:
+Determination of the winning team in both pool and tournament matches will be made in the following order of precedence:
 
 1. Highest number of individual winners; but, if it is a tie, then
-1. Highest number of points scored.
-1. Should 1. and 2. still be a tie, a play-off will be conducted in the tournament matches.
-1. A default is regarded as a loss: the opponent is given 2 points.
+2. Highest number of points scored.
+3. Should 1. and 2. still be a tie, a draw will be declared in the pool matches (see next paragraph) and a play-off will be conducted in the tournament matches.
+4. A default is regarded as a loss: the opponent is given 2 points.
+
+Determination of the ranking of teams in the pool matches will be made in the following order of
+precedence:
+
+1. Higher number of team matches won; but, if it is a tie, then
+2. Lower number of team matches lost; but, if it is a tie, then
+3. Higher number of draws in team matches (see above), if it is still a tie, then
+4. Higher number of individual winners; if it is still a tie, then
+5. Lower number of individual losses; but, if it is a tie, then
+6. Higher number of individual draws (hikiwake), if it is still a tie, then
+7. Higher number of points scored, if it is still a tie, then
+8. Lower number of points lost.
+
+If the situation is still a tie between two teams, either to determine the order between first and
+second or second and third team in the pool, a play-off (ippon-shobu) between representatives of
+the two teams will determine the ranking.
+
+Should the situation be a tie between all three teams in the pool, the ranking of teams shall be
+determined by a pool played by a representative of each team in play-off (ippon-shobu) 3 Minutes,
+like in the individual tournament.
+
+### Tournament
+
+The tournament is using the knockout system. The refereeing rules and the principles for discerning
+the winners are the same as those defined for the pools. The duration of fights is 3 minutes.
 
 ## Individual competition
 
