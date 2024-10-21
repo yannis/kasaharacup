@@ -180,7 +180,7 @@ GEM
       railties (>= 6.1)
     drb (2.2.1)
     e2mmap (0.1.0)
-    erb_lint (0.6.0)
+    erb_lint (0.7.0)
       activesupport
       better_html (>= 2.0.1)
       parser (>= 2.7.1.4)
@@ -440,7 +440,7 @@ GEM
       railties (>= 5.2)
     reverse_markdown (2.1.1)
       nokogiri
-    rexml (3.3.7)
+    rexml (3.3.8)
     rouge (4.4.0)
     rspec-core (3.13.1)
       rspec-support (~> 3.13.0)
