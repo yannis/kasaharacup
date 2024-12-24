@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "translate"
-require "smart_pooler"
 
 module ActsAsCategory
   extend ActiveSupport::Concern
