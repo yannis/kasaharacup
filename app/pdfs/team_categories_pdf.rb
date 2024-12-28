@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "poster_size"
 class TeamCategoriesPdf < Prawn::Document
   include PosterSize
   def initialize(teams)
