@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "poster_size"
 class KenshiPdf < Prawn::Document
   include PosterSize
 

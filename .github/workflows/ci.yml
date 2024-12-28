@@ -71,4 +71,4 @@ jobs:
         run: docker compose run --rm app bundle exec rake db:drop db:create db:migrate
 
       - name: Run Rspec
-        run: docker compose run --rm app bundle exec rails parallel:create parallel:load_schema parallel:spec
+        run: docker compose run --rm app bundle exec rspec

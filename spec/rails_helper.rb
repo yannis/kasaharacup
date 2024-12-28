@@ -87,6 +87,13 @@ RSpec.configure do |config|
   config.include ViewComponent::TestHelpers, type: :component
   config.include Capybara::RSpecMatchers, type: :component
 
+  # Allows you to group a set of expectations and see all the failures at once,
+  # rather than it aborting on the first failure. Interesting when grouping expectations
+  # for performance reasons.
+  config.define_derived_metadata do |meta|
+    meta[:aggregate_failures] = true unless meta[:js]
+  end
+
   Shoulda::Matchers.configure do |config|
     config.integrate do |with|
       with.test_framework :rspec

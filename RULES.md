@@ -84,6 +84,6 @@ After the pool system, the first and second out of every pool will be put on the
 
 The combat time is 3 minutes for seniors and juniors, following the "sanbon shobu" rule, with the possibility of one prolongation (encho).
 
-There is time limit of three minutes for the “encho”. 
+There is time limit of three minutes for the “encho”.
 
 If the "encho" is not enough to determine a winner after three minutes, the fight will be decided by shinpan-decisions (hantei) except for semi-final and finals, where encho without time limit will apply.

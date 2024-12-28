@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "poster_size"
 class IndividualCategoryPoolMatchesPdf < Prawn::Document
   include PosterSize
 
