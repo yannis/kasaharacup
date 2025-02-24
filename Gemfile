@@ -26,7 +26,7 @@ gem "stimulus-rails"
 gem "turbo-rails"
 
 # Use Redis adapter to run Action Cable in production
-gem "redis", "~> 5.0"
+gem "redis", "~> 5.4"
 
 # reCAPTCHA
 gem "recaptcha"
