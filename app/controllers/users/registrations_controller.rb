@@ -48,11 +48,11 @@ module Users
 
     protected def my_sanitizer
       if current_user.try("admin?")
-        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin,
-          :password, :password_confirmation, :current_password)
+        params.expect(user: [:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :admin,
+          :password, :password_confirmation, :current_password])
       else
-        params.require(:user).permit(:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :password,
-          :password_confirmation, :current_password)
+        params.expect(user: [:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :password,
+          :password_confirmation, :current_password])
       end
     end
 
