@@ -54,7 +54,7 @@ GEM
       rails-html-sanitizer (~> 1.6)
     active_record_doctor (1.15.0)
       activerecord (>= 4.2.0)
-    activeadmin (3.2.5)
+    activeadmin (3.3.0)
       arbre (~> 1.2, >= 1.2.1)
       csv
       formtastic (>= 3.1)
@@ -376,7 +376,7 @@ GEM
     puma (6.6.0)
       nio4r (~> 2.0)
     racc (1.8.1)
-    rack (3.1.10)
+    rack (3.1.11)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-mini-profiler (3.3.1)
