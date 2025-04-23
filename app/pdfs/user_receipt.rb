@@ -14,7 +14,7 @@ class UserReceipt < Prawn::Document
 
     bounding_box [bounds.left + 110, bounds.top], width: 200 do
       font_size 24
-      text (ENV["CUP_NAME"]).to_s, align: :right
+      text ENV["CUP_NAME"].to_s, align: :right
       font_size 14
       text ENV.fetch("CONTACT_EMAIL")
       text "kasaharacup.com"

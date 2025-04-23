@@ -10,10 +10,12 @@ inherit_gem:
   standard:
     - config/base.yml
 
-require:
+plugins:
   - rubocop-rspec
   # Performance cops are bundled with Standard
   - rubocop-performance
+
+require:
   # Standard's config uses this custom cop,
   # so it must be loaded
   - standard/cop/block_single_line_braces

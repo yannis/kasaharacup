@@ -346,7 +346,7 @@
     <div class="flex justify-end">
       <%=
         link_to(
-          t("form.cancel"), (session[:return_to].nil? ? root_path : session[:return_to]), accesskey: "ESC",
+          t("form.cancel"), session[:return_to].nil? ? root_path : session[:return_to], accesskey: "ESC",
           title: "Cancel #{f.object_name} form",
           class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         )
