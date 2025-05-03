@@ -15,7 +15,7 @@ class CupsController < ApplicationController
     else
       @current_cup = @cup
       @grouped_events = @cup.events.order(:start_on).group_by { |e| e.start_on.to_date }
-      @headlines = @cup.headlines.shown.order("headlines.created_at DESC")
+      @headlines = @cup.headlines.shown.order(created_at: :desc)
       @shinpans = @cup.kenshis.shinpans.includes(:club).order(:last_name, :first_name)
       template = if @cup.canceled?
         "show_canceled"

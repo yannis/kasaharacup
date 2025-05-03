@@ -142,23 +142,23 @@ class KenshisController < ApplicationController
     params[:kenshi][:participations_attributes]&.reject! { |k, v|
       v["category_type"] == "IndividualCategory" && v["category_id"].blank?
     }
-    params.expect(
-      kenshi: [:first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade, :club_name,
-        purchases_attributes: [:id, :product_id, :_destroy],
-        individual_category_ids: [],
-        participations_attributes: [:id, :category_type, :category_id, :ronin, :team_name, :_destroy],
-        product_ids: [],
-        personal_info_attributes: %i[
-          email
-          residential_address
-          residential_zip_code
-          residential_city
-          residential_country
-          residential_phone_number
-          origin_country
-          document_type
-          document_number
-        ]]
-    )
+    params.expect(kenshi: [
+      :first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade, :club_name,
+      purchases_attributes: [[:id, :product_id, :_destroy]],
+      individual_category_ids: [],
+      participations_attributes: [[:id, :category_type, :category_id, :ronin, :team_name, :_destroy]],
+      product_ids: [],
+      personal_info_attributes: %i[
+        email
+        residential_address
+        residential_zip_code
+        residential_city
+        residential_country
+        residential_phone_number
+        origin_country
+        document_type
+        document_number
+      ]
+    ])
   end
 end
