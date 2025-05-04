@@ -1,4 +1,8 @@
-FROM ruby:3.3.6-alpine
+# https://devcenter.heroku.com/articles/ruby-support#supported-runtimes
+FROM ruby:3.4.3-alpine
+ENV RUBYGEMS_VERSION=3.6.7
+
+FROM ruby:3.4.3-alpine
 LABEL mainainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
 
