@@ -18,6 +18,8 @@ RUN apk add --no-cache --update build-base \
   graphviz \
   font-noto \
   fontconfig \
+  yaml-dev \
+  linux-headers \
   && rm -rf /var/cache/apk/*
 
 RUN fc-cache -f
