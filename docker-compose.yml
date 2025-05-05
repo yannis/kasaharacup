@@ -35,6 +35,8 @@ services:
   css:
     <<: *base
     command: yarn build:css --watch
+    depends_on:
+      - selenium-chrome
 
   database:
     image: postgres:13.2
