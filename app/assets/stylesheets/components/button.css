@@ -1,0 +1,17 @@
+@layer components {
+  .btn {
+    @apply inline-flex items-center px-4 py-2 bg-transparent border-transparent font-semibold text-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 rounded-md transition-all;
+  }
+
+  .btn-sm {
+    @apply px-2 py-1 font-semibold text-xs;
+  }
+
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand-light focus:ring-brand active:bg-brand-dark;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 shadow-xs hover:bg-gray-50 focus:ring-brand;
+  }
+}
