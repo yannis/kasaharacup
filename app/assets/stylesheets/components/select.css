@@ -1,0 +1,5 @@
+@layer components {
+  select {
+    @apply max-w-lg block focus:ring-red-500 focus:border-red-500 w-full shadow-xs sm:max-w-xs sm:text-sm border-gray-300 rounded-md;
+  }
+}

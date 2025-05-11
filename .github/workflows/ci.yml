@@ -64,6 +64,11 @@ jobs:
         run: |
           yq 'del(.x-base.build) | .x-base.image = "ghcr.io/yannis/kasaharacup-app:${{ steps.meta.outputs.version }}"' docker-compose.yml -i
 
+      - name: Install Node Modules
+        run: |
+          docker compose run --rm app corepack enable
+          docker compose run --rm app yarn install --immutable
+
       - name: Rubocop
         run: docker compose run --rm app bundle exec rubocop --parallel
 
