@@ -42,7 +42,7 @@
             <%= link_to t(".about"), about_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
             <%=
               link_to(
-                t("navigation.kenshis.text", kenshis: current_cup.kenshis.not_shinpans.count),
+                t("navigation.kenshis.text", kenshis: current_cup.kenshis.not_shinpans.joins(:participations).distinct.count),
                 cup_kenshis_path(current_cup),
                 class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               )
