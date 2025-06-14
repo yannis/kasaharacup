@@ -16,7 +16,7 @@ RSpec.describe SmartPooler do
       begin
         kenshi = create(:kenshi, cup: cup)
       rescue
-        puts "retries to create kenshi: SmartPooler spec, line 14"
+        Rails.logger.info("retries to create kenshi: SmartPooler spec, line 14")
         retry
       end
       create(:participation, category: individual_category, kenshi: kenshi)
