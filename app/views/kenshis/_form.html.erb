@@ -5,212 +5,143 @@
       <h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"><%= form_title %></h3>
     </div>
   </div>
-    <%=
-      form_with(
-        model: [@user, @kenshi],
-        url: polymorphic_path([@cup, @user, @kenshi]),
-        html: {class: "kasa-form"},
-        data: {
-          controller: "kenshi-form"
-        }
-      ) do |f|
-    %>
-    <%= render "layouts/error_messages", target: f.object %>
-    <div style="border: 0">
-      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <div class="input-group">
-          <%= f.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
-          <div class="input-field">
-            <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
-            <%= tag.p(f.object.errors.full_messages_for(:female).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
-          </div>
+</div>
+<%=
+  form_with(
+    model: [@user, @kenshi],
+    url: polymorphic_path([@cup, @user, @kenshi]),
+    html: {class: "kasa-form"},
+    data: {
+      controller: "kenshi-form"
+    }
+  ) do |f|
+%>
+  <%= render "layouts/error_messages", target: f.object %>
+  <div style="border: 0">
+    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+      <div class="input-group">
+        <%= f.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+        <div class="input-field">
+          <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
+          <%= tag.p(f.object.errors.full_messages_for(:female).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
         </div>
-        <div class="input-group">
-          <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
-          <div class="input-field">
-            <%= f.text_field :first_name, autocomplete: "given-name" %>
-            <%= tag.p(f.object.errors.full_messages_for(:first_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
-          </div>
+      </div>
+      <div class="input-group">
+        <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+        <div class="input-field">
+          <%= f.text_field :first_name, autocomplete: "given-name" %>
+          <%= tag.p(f.object.errors.full_messages_for(:first_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
         </div>
-        <div class="input-group">
-          <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
-          <div class="input-field">
-            <%= f.text_field :last_name, autocomplete: "family-name" %>
-            <%= tag.p(f.object.errors.full_messages_for(:last_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
-          </div>
+      </div>
+      <div class="input-group">
+        <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+        <div class="input-field">
+          <%= f.text_field :last_name, autocomplete: "family-name" %>
+          <%= tag.p(f.object.errors.full_messages_for(:last_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
         </div>
-        <div class="input-group">
-          <%= f.label :dob, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
-          <div class="input-field">
-            <%= f.date_field :dob %>
-            <%= tag.p(f.object.errors.full_messages_for(:dob).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
-          </div>
+      </div>
+      <div class="input-group">
+        <%= f.label :dob, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+        <div class="input-field">
+          <%= f.date_field :dob %>
+          <%= tag.p(f.object.errors.full_messages_for(:dob).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
         </div>
-        <div class="input-group">
-          <%= f.label :club_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
-          <div class="input-field">
-            <%=
-              f.select :club_name,
-                @club_names,
-                {include_blank: true},
-                class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs placeholder-gray-400 focus:outline-hidden focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                data: {
-                  controller: "select2-single-tag",
-                  locale: I18n.locale
-                },
-                style: "width: 20em;"
-            %>
-            <%= tag.p(f.object.errors.full_messages_for(:club_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
-            <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
-          </div>
+      </div>
+      <div class="input-group">
+        <%= f.label :club_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+        <div class="input-field">
+          <%=
+            f.select :club_name,
+              @club_names,
+              {include_blank: true},
+              class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs placeholder-gray-400 focus:outline-hidden focus:ring-red-500 focus:border-red-500 sm:text-sm",
+              data: {
+                controller: "select2-single-tag",
+                locale: I18n.locale
+              },
+              style: "width: 20em;"
+          %>
+          <%= tag.p(f.object.errors.full_messages_for(:club_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
         </div>
-        <div class="input-group">
-          <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
-          <div class="input-field">
-            <%= f.select :grade, Kenshi::GRADES %>
-            <%= tag.p(f.object.errors.full_messages_for(:grade).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
-            <p class="helper-text mt-2">
-              <%= t("cups.show.shinpans.info") %>
-            </p>
-          </div>
+      </div>
+      <div class="input-group">
+        <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
+        <div class="input-field">
+          <%= f.select :grade, Kenshi::GRADES %>
+          <%= tag.p(f.object.errors.full_messages_for(:grade).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <p class="helper-text mt-2">
+            <%= t("cups.show.shinpans.info") %>
+          </p>
         </div>
       </div>
     </div>
-    <div>
-      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <div class="pt-6 sm:pt-5">
-          <div role="group" aria-labelledby="label-email">
-            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
-              <div>
-                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
-                  <%= Kenshi.human_attribute_name(:team) %>
-                </div>
+  </div>
+  <div>
+    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+      <div class="pt-6 sm:pt-5">
+        <div role="group" aria-labelledby="label-email">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+            <div>
+              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                <%= Kenshi.human_attribute_name(:team) %>
               </div>
-              <% cup.team_categories.find_each do |c| %>
-                <% participation = f.object.participations.detect { |p| p.category == c }.presence || Participation.new(category: c) # rubocop:disable Lint/UselessAssignment %>
-                <%= f.fields_for :participations, participation do |g| %>
-                  <% if participation.persisted? %>
-                    <%= g.hidden_field :id %>
-                  <% end %>
-                  <%= g.hidden_field :category_type %>
-                  <%= g.hidden_field :category_id %>
-                  <div class="mt-4 sm:mt-0 sm:col-span-2">
-                    <div class="max-w-full space-y-4">
-                      <div class="relative flex items-start">
-                        <div class="flex items-center h-5">
-                          <%= g.check_box :ronin, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs" %>
-                        </div>
-                        <div class="ml-3 text-sm">
-                          <%= g.label :ronin, class: "font-medium text-gray-700" %>
-                          <p class="helper-text">
-                            <%= t ".ronin_info", category_name: c.name %>
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="relative">
-                          <div class="mb-1 text-sm">
-                            <%= g.label :team_name, class: "font-medium text-gray-700" %>
-                          </div>
-                          <div class="">
-                            <%=
-                              g.select :team_name,
-                                c.teams.order(:name).pluck(:name),
-                                {include_blank: true},
-                                class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs placeholder-gray-400 focus:outline-hidden focus:ring-red-500 focus:border-red-500 sm:text-sm",
-                                data: {
-                                  controller: "select2-single-tag",
-                                  team_name: participation.team_name,
-                                  locale: I18n.locale
-                                },
-                                style: "width: 20em;"
-                            %>
-                            <p class="helper-text mt-2"><%= t(".team_info") %></p>
-
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
-                  </div>
+            </div>
+            <% cup.team_categories.find_each do |c| %>
+              <% participation = f.object.participations.detect { |p| p.category == c }.presence || Participation.new(category: c) # rubocop:disable Lint/UselessAssignment %>
+              <%= f.fields_for :participations, participation do |g| %>
+                <% if participation.persisted? %>
+                  <%= g.hidden_field :id %>
                 <% end %>
+                <%= g.hidden_field :category_type %>
+                <%= g.hidden_field :category_id %>
+                <div class="mt-4 sm:mt-0 sm:col-span-2">
+                  <div class="max-w-full space-y-4">
+                    <div class="relative flex items-start">
+                      <div class="flex items-center h-5">
+                        <%= g.check_box :ronin, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs" %>
+                      </div>
+                      <div class="ml-3 text-sm">
+                        <%= g.label :ronin, class: "font-medium text-gray-700" %>
+                        <p class="helper-text">
+                          <%= t ".ronin_info", category_name: c.name %>
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="relative">
+                        <div class="mb-1 text-sm">
+                          <%= g.label :team_name, class: "font-medium text-gray-700" %>
+                        </div>
+                        <div class="">
+                          <%=
+                            g.select :team_name,
+                              c.teams.order(:name).pluck(:name),
+                              {include_blank: true},
+                              class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs placeholder-gray-400 focus:outline-hidden focus:ring-red-500 focus:border-red-500 sm:text-sm",
+                              data: {
+                                controller: "select2-single-tag",
+                                team_name: participation.team_name,
+                                locale: I18n.locale
+                              },
+                              style: "width: 20em;"
+                          %>
+                          <p class="helper-text mt-2"><%= t(".team_info") %></p>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                </div>
               <% end %>
-            </div>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
-    <% if cup.individual_categories.present? %>
-      <div>
-        <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-          <div class="pt-6 sm:pt-5">
-            <div role="group" aria-labelledby="label-email">
-              <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
-                <div>
-                  <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
-                    <%= t("kenshis.form.individual_categories") %>
-                  </div>
-                </div>
-                <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% cup.individual_categories.find_each do |individual_category| %>
-                    <div class="max-w-full space-y-4">
-                      <div class="relative flex items-start mb-4">
-                        <% participation = kenshi.participations.to_a.find { |p| p.category == individual_category } # rubocop:disable Lint/UselessAssignment %>
-                        <% if participation.present? %>
-                          <%= f.fields_for :participations, participation do |g| %>
-                            <% if participation.persisted? %>
-                              <%= g.hidden_field :id %>
-                            <% end %>
-                            <%= g.hidden_field :category_type %>
-                            <%= g.hidden_field :category_id %>
-                            <div class="flex items-center h-5">
-                              <%=
-                                g.check_box(
-                                  :_destroy,
-                                  {
-                                    checked: true,
-                                    class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs"
-                                  },
-                                  0, # checked_value
-                                  1 # unchecked_value
-                                )
-                              %>
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <%= g.label :_destroy, individual_category.name, class: "font-medium text-gray-700" %>
-                              <p class="helper-text">
-                                <%= individual_category.description %>
-                              </p>
-                              <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
-                            </div>
-
-                          <% end %>
-                        <% else %>
-                          <% participation = kenshi.participations.new(category: individual_category) # rubocop:disable Lint/UselessAssignment %>
-                          <%= f.fields_for :participations, participation do |g| %>
-                            <%= g.hidden_field :category_type %>
-                            <div class="flex items-center h-5">
-                              <%= check_box_tag "#{g.object_name}[category_id]", individual_category.id, nil, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs" %>
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <%= g.label :category_id, individual_category.name, class: "font-medium text-gray-700" %>
-                              <p class="helper-text">
-                                <%= individual_category.description %>
-                              </p>
-                              <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
-                            </div>
-                          <% end %>
-                        <% end %>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
+  </div>
+  <% if cup.individual_categories.present? %>
     <div>
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="pt-6 sm:pt-5">
@@ -218,124 +149,193 @@
             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
               <div>
                 <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
-                  <%= t(".waiver.title") %>
+                  <%= t("kenshis.form.individual_categories") %>
                 </div>
               </div>
               <div class="mt-4 sm:mt-0 sm:col-span-2">
-                <%= t(".waiver.info") %>
-                <%= link_to(t(".waiver.title"), cup_waiver_path(@cup), class: "text-brand hover:underline", download: true) %>
+                <% cup.individual_categories.find_each do |individual_category| %>
+                  <div class="max-w-full space-y-4">
+                    <div class="relative flex items-start mb-4">
+                      <% participation = kenshi.participations.to_a.find { |p| p.category == individual_category } # rubocop:disable Lint/UselessAssignment %>
+                      <% if participation.present? %>
+                        <%= f.fields_for :participations, participation do |g| %>
+                          <% if participation.persisted? %>
+                            <%= g.hidden_field :id %>
+                          <% end %>
+                          <%= g.hidden_field :category_type %>
+                          <%= g.hidden_field :category_id %>
+                          <div class="flex items-center h-5">
+                            <%=
+                              g.check_box(
+                                :_destroy,
+                                {
+                                  checked: true,
+                                  class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs"
+                                },
+                                0, # checked_value
+                                1 # unchecked_value
+                              )
+                            %>
+                          </div>
+                          <div class="ml-3 text-sm">
+                            <%= g.label :_destroy, individual_category.name, class: "font-medium text-gray-700" %>
+                            <p class="helper-text">
+                              <%= individual_category.description %>
+                            </p>
+                            <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                          </div>
+
+                        <% end %>
+                      <% else %>
+                        <% participation = kenshi.participations.new(category: individual_category) # rubocop:disable Lint/UselessAssignment %>
+                        <%= f.fields_for :participations, participation do |g| %>
+                          <%= g.hidden_field :category_type %>
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "#{g.object_name}[category_id]", individual_category.id, nil, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs" %>
+                          </div>
+                          <div class="ml-3 text-sm">
+                            <%= g.label :category_id, individual_category.name, class: "font-medium text-gray-700" %>
+                            <p class="helper-text">
+                              <%= individual_category.description %>
+                            </p>
+                            <%= tag.p(safe_join(participation.errors.messages_for(:category), "<br>"), class: "mt-2 text-sm text-red-600") if participation.errors.messages_for(:category).any? %>
+                          </div>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <% if products.present? %>
-      <div>
-        <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-          <div class="pt-6 sm:pt-5">
-            <div role="group" aria-labelledby="label-email">
-              <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
-                <div>
-                  <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
-                    <%= t(".extra") %>
-                  </div>
+  <% end %>
+  <div>
+    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+      <div class="pt-6 sm:pt-5">
+        <div role="group" aria-labelledby="label-email">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+            <div>
+              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                <%= t(".waiver.title") %>
+              </div>
+            </div>
+            <div class="mt-4 sm:mt-0 sm:col-span-2">
+              <%= t(".waiver.info") %>
+              <%= link_to(t(".waiver.title"), cup_waiver_path(@cup), class: "text-brand hover:underline", download: true) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if products.present? %>
+    <div>
+      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+        <div class="pt-6 sm:pt-5">
+          <div role="group" aria-labelledby="label-email">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+              <div>
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                  <%= t(".extra") %>
                 </div>
-                <div class="mt-4 sm:mt-0 sm:col-span-2">
-                  <% products.includes(:purchases).find_each do |p| %>
-                    <% price = (p.fee_chf == 0) ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" # rubocop:disable Lint/UselessAssignment %>
-                    <div class="max-w-lg mb-4">
-                      <% purchase = kenshi.purchases.to_a.find { |purch| purch.product_id == p.id } # rubocop:disable Lint/UselessAssignment %>
-                      <% if purchase.present? %>
-                        <div class="relative flex items-start">
-                          <%= f.fields_for :purchases, purchase do |g| %>
-                            <div class="flex items-center h-5">
-                              <%=
-                                g.check_box(
-                                  :_destroy,
-                                  {
-                                    checked: true,
-                                    disabled: cannot?(:destroy, purchase),
-                                    class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs",
-                                    id: dom_id(g.object),
-                                    data: {
-                                      require_personal_infos: p.require_personal_infos,
-                                      action: "change->kenshi-form#handleProductChange"
-                                    }
-                                  },
-                                  0, # checked_value
-                                  1 # unchecked_value
-                                )
-                              %>
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium text-gray-700", for: dom_id(g.object) %>
-                              <p class="helper-text">
-                                <%= p.description %>
-                              </p>
-                            </div>
-                          <% end %>
-                        </div>
-                      <% else %>
-                        <% purchase = kenshi.purchases.new(product: p) # rubocop:disable Lint/UselessAssignment %>
+              </div>
+              <div class="mt-4 sm:mt-0 sm:col-span-2">
+                <% products.includes(:purchases).find_each do |p| %>
+                  <% price = (p.fee_chf == 0) ? t("cups.show.fees.variable") : "#{p.fee_chf} CHF/#{p.fee_eu} €" # rubocop:disable Lint/UselessAssignment %>
+                  <div class="max-w-lg mb-4">
+                    <% purchase = kenshi.purchases.to_a.find { |purch| purch.product_id == p.id } # rubocop:disable Lint/UselessAssignment %>
+                    <% if purchase.present? %>
+                      <div class="relative flex items-start">
                         <%= f.fields_for :purchases, purchase do |g| %>
-                          <div class="relative flex items-start">
-                            <div class="flex items-center h-5">
-                              <%=
-                                check_box_tag(
-                                  "#{g.object_name}[product_id]",
-                                  p.id,
-                                  nil,
-                                  disabled: !p.still_available?,
+                          <div class="flex items-center h-5">
+                            <%=
+                              g.check_box(
+                                :_destroy,
+                                {
+                                  checked: true,
+                                  disabled: cannot?(:destroy, purchase),
                                   class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs",
+                                  id: dom_id(g.object),
                                   data: {
                                     require_personal_infos: p.require_personal_infos,
                                     action: "change->kenshi-form#handleProductChange"
                                   }
-                                )
-                              %>
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium #{p.still_available? ? "text-gray-700" : "text-gray-400"}" %>
-                              <p class="helper-text">
-                                <%= p.description %>
-                              </p>
-                            </div>
+                                },
+                                0, # checked_value
+                                1 # unchecked_value
+                              )
+                            %>
+                          </div>
+                          <div class="ml-3 text-sm">
+                            <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium text-gray-700", for: dom_id(g.object) %>
+                            <p class="helper-text">
+                              <%= p.description %>
+                            </p>
                           </div>
                         <% end %>
-                        <% unless p.still_available? %>
-                          <p class="text-brand text-sm">
-                            <%= t("kenshis.form.not_available", product_name: p.name) %>
-                          </p>
-                        <% end %>
+                      </div>
+                    <% else %>
+                      <% purchase = kenshi.purchases.new(product: p) # rubocop:disable Lint/UselessAssignment %>
+                      <%= f.fields_for :purchases, purchase do |g| %>
+                        <div class="relative flex items-start">
+                          <div class="flex items-center h-5">
+                            <%=
+                              check_box_tag(
+                                "#{g.object_name}[product_id]",
+                                p.id,
+                                nil,
+                                disabled: !p.still_available?,
+                                class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs",
+                                data: {
+                                  require_personal_infos: p.require_personal_infos,
+                                  action: "change->kenshi-form#handleProductChange"
+                                }
+                              )
+                            %>
+                          </div>
+                          <div class="ml-3 text-sm">
+                            <%= g.label :product_id, "#{p.name} (#{price})", class: "font-medium #{p.still_available? ? "text-gray-700" : "text-gray-400"}" %>
+                            <p class="helper-text">
+                              <%= p.description %>
+                            </p>
+                          </div>
+                        </div>
                       <% end %>
-                    </div>
-                  <% end %>
-                </div>
+                      <% unless p.still_available? %>
+                        <p class="text-brand text-sm">
+                          <%= t("kenshis.form.not_available", product_name: p.name) %>
+                        </p>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
             </div>
           </div>
         </div>
       </div>
-    <% end %>
-    <div data-kenshi-form-target="details">
-      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <div class="pt-6 sm:pt-5">
-          <div role="group" aria-labelledby="label-more-details">
-            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
-              <div>
-                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-more-details">
-                  <%= t(".more_details.title") %>
-                </div>
+    </div>
+  <% end %>
+  <div data-kenshi-form-target="details">
+    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+      <div class="pt-6 sm:pt-5">
+        <div role="group" aria-labelledby="label-more-details">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+            <div>
+              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-more-details">
+                <%= t(".more_details.title") %>
               </div>
-              <div class="mt-4 sm:mt-0 sm:col-span-2">
-                <p>
-                  <%= t(".more_details.help") %>
-                </p>
-                <%= f.fields_for(:personal_info, f.object.personal_info) do |g| %>
-                  <%= render("personal_infos/form_fields", g: g) %>
-                <% end %>
-              </div>
+            </div>
+            <div class="mt-4 sm:mt-0 sm:col-span-2">
+              <p>
+                <%= t(".more_details.help") %>
+              </p>
+              <%= f.fields_for(:personal_info, f.object.personal_info) do |g| %>
+                <%= render("personal_infos/form_fields", g: g) %>
+              <% end %>
             </div>
           </div>
         </div>
