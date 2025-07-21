@@ -441,9 +441,9 @@ GEM
       psych (>= 4.0.0)
     recaptcha (5.19.0)
     redcarpet (3.6.1)
-    redis (5.4.0)
+    redis (5.4.1)
       redis-client (>= 0.22.0)
-    redis-client (0.24.0)
+    redis-client (0.25.1)
       connection_pool
     regexp_parser (2.10.0)
     reline (0.6.1)
@@ -687,7 +687,7 @@ DEPENDENCIES
   rails (~> 8.0.0)
   rails-controller-testing
   recaptcha
-  redis (~> 5.0)
+  redis (~> 5.4)
   rspec-rails
   rubocop-rails_config
   rubocop-rspec
