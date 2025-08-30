@@ -21,6 +21,9 @@
           <%= render "headline", headline: @headlines.first %>
         </div>
       <% end %>
+      <div class="text-green-600 lg:col-span-2 bg-white shadow-xs sm:rounded-lg mt-2 p-2 text-center font-bold">
+        <%= t(".public") %>
+      </div>
       <% if @grouped_events.any? %>
         <% if @cup.start_on > Date.today.end_of_day - 3.days %>
           <h2 class="mt-10">
@@ -40,7 +43,7 @@
                           <%= event.start_on.to_fs(:time_only) %>
                         </th>
                         <td>
-                          <%= event.name %>
+                          <%= md_to_html(event.name).delete_prefix("<p>").sub(/<\/p>\s*\z/, "").html_safe %>
                         </td>
                       </tr>
                     <% end %>
