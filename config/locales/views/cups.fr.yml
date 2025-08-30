@@ -39,6 +39,7 @@ fr:
         not_available: Malheureusement plus disponible
       program:
         title: Programme
+      public: La compétition est ouverte aux spectateurs, entrée libre.
       registrations_opening_soon: "Les inscriptions vont ouvrir bientôt"
       results:
         coming_soon: Les résultats complets arrivent bientôt…

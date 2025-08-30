@@ -9,7 +9,7 @@
     %>
     <div class="absolute inset-0 bg-red-200 mix-blend-multiply"></div>
   </div>
-  <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+  <div class="relative px-4 py-16 sm:px-6 sm:py-18 lg:py-24 lg:px-8">
     <h1 class="text-center text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
       <span class="block text-white"><%= t("layout.header.title") %></span>
       <span class="block text-red-50"><%= @cup.year %></span>
@@ -18,9 +18,10 @@
       <% if @cup.end_on %>
         <%= "#{l(@cup.start_on, format: :day_only)}–#{l(@cup.end_on, format: :day_month_year)}," %>
       <% else %>
-        <%= "#{l(@cup.start_on, format: :long)}," %>
+        <%= l(@cup.start_on, format: :long) %>
       <% end %>
-      <%= t("layout.header.title_em") %>
+      <br>
+      <%= t("layout.header.title_em_1") %>, <%= t("layout.header.title_em_2") %>
     </p>
     <% if @cup.registerable? %>
       <div class="mt-10 max-w-sm mx-auto text-center">

@@ -45,6 +45,7 @@ en:
         not_available: Unfortunately not available anymore
       program:
         title: Program
+      public: The competition is open to the public. Free entry.
       registrations_opening_soon: Registrations will open soon
       results:
         coming_soon: Full results are coming soon…
