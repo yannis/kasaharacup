@@ -17,7 +17,7 @@ fr:
       fees:
         adults:
           title: Adultes – né(e) en %{year} ou avant
-        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèce seulement, € ou CHF).
+        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèces ou par carte bancaire, € ou CHF).
         dinner:
           fee: "%{dinner_fees_chf} CHF ou %{dinner_fees_eur} €"
           title: Repas du samedi soir<br><em>+ une boisson comprise</em>

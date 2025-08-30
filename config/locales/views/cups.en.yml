@@ -24,7 +24,7 @@ en:
       fees:
         adults:
           title: Adults (born in %{year} or before)
-        description: Payment of fees upon arrival at the competition venue (in cash only, € or CHF).
+        description: Payment of fees upon arrival at the competition venue (in cash or by card, € or CHF).
         dinner:
           fee: "%{dinner_fees_chf} CHF or %{dinner_fees_eur} €"
           title: Saturday night dinner
