@@ -43,8 +43,8 @@ module Kasaharacup
     config.i18n.default_locale = :fr
 
     # ViewComponent config
-    config.view_component.preview_paths << Rails.root.join("lib/component_previews")
-    config.view_component.preview_route = "/styleguide/components"
+    config.view_component.previews.paths << Rails.root.join("lib/component_previews")
+    config.view_component.previews.route = "/styleguide/components"
 
     config.active_record.encryption.primary_key = ENV.fetch("ENCRYPTION_PRIMARY_KEY")
     config.active_record.encryption.deterministic_key = ENV.fetch("ENCRYPTION_DETERMINISTIC_KEY")
