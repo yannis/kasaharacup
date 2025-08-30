@@ -86,7 +86,7 @@ class KenshisController < ApplicationController
           .first_name, last_name: current_user.last_name)
         if existing_kenshis.present?
           redirect_to(cup_kenshi_path(@cup, existing_kenshis.first),
-            notice: t("kenshis.self.exist"), status: :unprocessable_entity)
+            notice: t("kenshis.self.exist"), status: :unprocessable_content)
         else
           @kenshi = Kenshi.from(current_user)
           @title = t("kenshis.new.yourself")
@@ -106,7 +106,7 @@ class KenshisController < ApplicationController
       end
       respond_with @kenshi do |format|
         flash.now[:alert] = t("kenshis.create.flash.alert")
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -118,7 +118,7 @@ class KenshisController < ApplicationController
     else
       @title = t("kenshis.edit.title", full_name: @kenshi.full_name)
       @kenshi.valid?
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

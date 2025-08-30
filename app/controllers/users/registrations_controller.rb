@@ -15,7 +15,7 @@ module Users
         sign_in @user
         redirect_to new_cup_user_kenshi_path(@current_cup, self: true)
       else
-        render action: :new, status: :unprocessable_entity
+        render action: :new, status: :unprocessable_content
       end
     end
 
@@ -42,7 +42,7 @@ module Users
         redirect_to cup_user_path(@current_cup)
         # redirect_to after_update_path_for(@user)
       else
-        render "edit", status: :unprocessable_entity
+        render "edit", status: :unprocessable_content
       end
     end
 
