@@ -187,6 +187,8 @@ ActiveAdmin.register Cup do
           kenshi.norm_last_name, kenshi.norm_first_name, user.full_name, user.email,
           kenshi.club.name, kenshi.dob, kenshi.grade
         ]
+        kcsv << kenshi.created_at.to_fs(:db)
+        kcsv << kenshi.updated_at.to_fs(:db)
         @cup.team_categories.each do |tc|
           kcsv << (kenshi.takes_part_to?(tc) ? kenshi.participations.to(tc).first.team : nil)
         end
@@ -198,8 +200,6 @@ ActiveAdmin.register Cup do
         end
         kcsv << kenshi.fees(:chf)
         kcsv << kenshi.fees(:eu)
-        kcsv << kenshi.created_at.to_fs(:db)
-        kcsv << kenshi.updated_at.to_fs(:db)
         csv << kcsv.flatten
       end
     end
