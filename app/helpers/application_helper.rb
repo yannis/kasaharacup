@@ -27,7 +27,7 @@ module ApplicationHelper
     link << t("form.or")
     link << link_to(t("form.cancel"), session[:return_to].nil? ? root_path : session[:return_to], accesskey: "ESC",
       title: "Cancel #{f.object_name} form",
-      class: "cancel #{(request.format == "application/javascript") ? "close_div" : ""}")
+      class: "cancel #{"close_div" if request.format == "application/javascript"}")
     link.join(" ").html_safe
   end
 
@@ -60,7 +60,7 @@ module ApplicationHelper
   def edit_link(object, title: "Edit", classes: "")
     classes += " btn btn-info"
     link_to(title, polymorphic_path([:edit, *object]),
-      title: "Edit #{object.class.to_s.humanize}#{object.respond_to?(:name) ? " #{object.name}" : ""}", class: classes)
+      title: "Edit #{object.class.to_s.humanize}#{" #{object.name}" if object.respond_to?(:name)}", class: classes)
   end
 
   def current_user_admin_or_owner?(kenshi)

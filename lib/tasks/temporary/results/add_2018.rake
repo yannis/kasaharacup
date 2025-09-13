@@ -6,6 +6,7 @@ namespace :temporary do
     desc "Add results, documents and videos for 2018"
     task add_2018: :environment do
       include AddResults
+
       ActiveRecord::Base.transaction do
         cup = Cup.find_by!(year: 2018)
         create_header_image(cup: cup, image: "kasa-2018.jpeg")

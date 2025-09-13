@@ -2,6 +2,7 @@
 
 class KenshisPdf < Prawn::Document
   include PosterSize
+
   def initialize(kenshis)
     super(page_layout: :landscape)
     @kenshis = kenshis

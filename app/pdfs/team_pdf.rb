@@ -2,6 +2,7 @@
 
 class TeamPdf < Prawn::Document
   include PosterSize
+
   def initialize(team)
     super(page_layout: :portrait)
     @team = team

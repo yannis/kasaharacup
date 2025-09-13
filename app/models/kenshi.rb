@@ -2,6 +2,7 @@
 
 class Kenshi < ApplicationRecord
   include ActsAsFighter
+
   GRADES = %w[kyu 1Dan 2Dan 3Dan 4Dan 5Dan 6Dan 7Dan 8Dan]
 
   belongs_to :cup, inverse_of: :kenshis

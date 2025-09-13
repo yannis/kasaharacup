@@ -143,7 +143,7 @@ Rails/UniqueValidationWithoutIndex:
 # Naming
 # --------------
 
-Naming/PredicateName:
+Naming/PredicatePrefix:
   Enabled: false
 
 Naming/VariableNumber:

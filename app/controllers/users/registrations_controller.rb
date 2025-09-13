@@ -3,6 +3,7 @@
 module Users
   class RegistrationsController < Devise::RegistrationsController
     include HasLocale
+
     before_action :set_variables, only: [:new, :edit, :update, :create] # rubocop:disable Rails/LexicallyScopedActionFilter
 
     def new
