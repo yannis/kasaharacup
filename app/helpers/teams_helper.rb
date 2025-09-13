@@ -13,7 +13,7 @@ module TeamsHelper
       )
     end
 
-    content_tag(:ul, class: "admin_links horizontal #{options[:nav] ? "nav" : nil}",
+    content_tag(:ul, class: "admin_links horizontal #{"nav" if options[:nav]}",
       id: "#{team.class.to_s.tableize}_#{team.id}_admin_links") do
       links.each do |link|
         concat(link)

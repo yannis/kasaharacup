@@ -6,6 +6,7 @@ namespace :temporary do
     desc "Add results, documents and videos for 2016"
     task add_2016: :environment do
       include AddResults
+
       ActiveRecord::Base.transaction do
         cup = Cup.find_by!(year: 2016)
         add_team_results(
