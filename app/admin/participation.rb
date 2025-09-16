@@ -55,7 +55,9 @@ ActiveAdmin.register Participation, as: "Participation" do
         f.input :fighting_spirit
       elsif f.object.category.is_a?(TeamCategory)
         f.input :ronin
-        f.input :team, collection: f.object.category.cup.teams.map { |c| ["#{c.name} (#{c.cup.year})", c.id] }
+        f.input :team, collection: f.object.category.cup.teams
+          .order(:name)
+          .map { |c| ["#{c.name} (#{c.cup.year})", c.id] }
       end
     end
 

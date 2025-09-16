@@ -86,9 +86,9 @@ ActiveAdmin.register Product, as: "Product" do
   form do |f|
     f.inputs "Details" do
       f.input :cup
-      f.input :event, collection: Event.includes(:cup).where(cup: f.object.cup).all.map { |e|
-                                    ["#{e.name} (#{e.cup})", e.id]
-                                  }
+      f.input :event, collection: f.object&.cup&.events
+        &.order(:name_fr)
+        &.map { |e| ["#{e.name_fr} (#{e.cup.year})", e.id] }
       f.input :name_en
       f.input :name_fr
       f.input :description_en
