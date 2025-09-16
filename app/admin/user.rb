@@ -59,7 +59,7 @@ ActiveAdmin.register User, as: "User" do
       f.input :first_name
       f.input :last_name
       f.input :email
-      f.input :club
+      f.input :club, collection: Club.order(:name)
       f.input :dob, as: :datepicker
       # f.input :password
       # f.input :password_confirmation

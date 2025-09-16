@@ -148,8 +148,10 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     f.semantic_errors
     f.inputs "Kenshi details" do
       f.input :cup
-      f.input :user
-      f.input :club
+      f.input :user, collection: User
+        .order(:last_name, :first_name)
+        .map { |u| ["#{u.last_name} #{u.first_name}", u.id] }
+      f.input :club, collection: Club.order(:name)
       f.input :female, as: :radio, collection: {Ms: true, "M.": false}
       f.input :first_name
       f.input :last_name
@@ -159,17 +161,19 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       f.input :shinpan, as: :radio, collection: {Yes: true, No: false}
       f.input :remarks
     end
-    f.inputs "Participations" do
-      f.has_many :participations do |j|
-        j.input :category_individual, collection: IndividualCategory.all
-        j.input :category_team, collection: TeamCategory.all
-        j.input :_destroy, as: :boolean
+    if f.object.persisted?
+      f.inputs "Participations" do
+        f.has_many :participations do |j|
+          j.input :category_individual, collection: f.object.cup.individual_categories.order(:name)
+          j.input :category_team, collection: f.object.cup.team_categories.order(:name)
+          j.input :_destroy, as: :boolean
+        end
       end
-    end
-    f.inputs "Purchases" do
-      f.has_many :purchases do |j|
-        j.input :product
-        j.input :_destroy, as: :boolean
+      f.inputs "Purchases" do
+        f.has_many :purchases do |j|
+          j.input :product, collection: f.object.cup.products.order(:name_fr)
+          j.input :_destroy, as: :boolean
+        end
       end
     end
 

@@ -23,6 +23,7 @@ ActiveAdmin.register User do
       f.input :email
       f.input :password
       f.input :password_confirmation
+      f.input :club, collection: Club.order(:name)
     end
     f.actions
   end
