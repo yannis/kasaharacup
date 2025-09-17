@@ -161,19 +161,26 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
       f.input :shinpan, as: :radio, collection: {Yes: true, No: false}
       f.input :remarks
     end
-    if f.object.persisted?
-      f.inputs "Participations" do
-        f.has_many :participations do |j|
-          j.input :category_individual, collection: f.object.cup.individual_categories.order(:name)
-          j.input :category_team, collection: f.object.cup.team_categories.order(:name)
-          j.input :_destroy, as: :boolean
-        end
+    f.inputs "Participations" do
+      f.has_many :participations do |j|
+        j.input :category_individual, collection: IndividualCategory
+          .includes(:cup)
+          .order(cup: {year: :desc}, name: :asc)
+          .map { |c| ["#{c.name} (#{c.cup.year})", c.id] }
+        j.input :category_team, collection: TeamCategory
+          .includes(:cup)
+          .order(cup: {year: :desc}, name: :asc)
+          .map { |c| ["#{c.name} (#{c.cup.year})", c.id] }
+        j.input :_destroy, as: :boolean
       end
-      f.inputs "Purchases" do
-        f.has_many :purchases do |j|
-          j.input :product, collection: f.object.cup.products.order(:name_fr)
-          j.input :_destroy, as: :boolean
-        end
+    end
+    f.inputs "Purchases" do
+      f.has_many :purchases do |j|
+        j.input :product, collection: Product
+          .includes(:cup)
+          .order(cup: {year: :desc}, name_fr: :asc)
+          .map { |c| ["#{c.name_fr} (#{c.cup.year})", c.id] }
+        j.input :_destroy, as: :boolean
       end
     end
 

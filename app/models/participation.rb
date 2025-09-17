@@ -82,7 +82,15 @@ class Participation < ApplicationRecord
   private def assign_category
     return unless @category_individual.present? || @category_team.present?
 
-    self.category = @category_individual.presence || @category_team.presence
+    self.category = if @category_individual.is_a?(IndividualCategory)
+      @category_individual
+    elsif @category_team.is_a?(TeamCategory)
+      @category_team
+    elsif @category_individual.present?
+      IndividualCategory.find(@category_individual)
+    elsif @category_team.present?
+      TeamCategory.find(@category_team)
+    end
   end
 
   private def individual_or_team_category
