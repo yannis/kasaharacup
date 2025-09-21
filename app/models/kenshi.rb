@@ -132,14 +132,12 @@ class Kenshi < ApplicationRecord
 
     same_name_kenshis = Kenshi.where(last_name: last_name).where.not(id: id)
     same_name_kenshis = if category
-      same_name_kenshis.includes(:participations).where(participations: {category: category})
+      same_name_kenshis.includes(:participations).where(participations: {category:})
     else
       same_name_kenshis.where(cup: cup)
     end
     if same_name_kenshis.exists?
-      poster_name << first_name.split(/[\s|-]/).map { |s|
-        s.first + "."
-      }.join
+      poster_name << first_name_initials(category:)
     end
     poster_name.join(" ").mb_chars.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase.to_s
   end
@@ -150,6 +148,25 @@ class Kenshi < ApplicationRecord
 
   def fitness
     (grade.to_f / age_at_cup.to_f).round(4)
+  end
+
+  def first_name_initials(category: nil)
+    initials = first_name.split(/[\s|-]/).map { |s| s.first + "." }.join
+    same_name_kenshis = Kenshi.where(last_name:).where.not(id:)
+    same_name_kenshis = if category
+      same_name_kenshis.includes(:participations).where(participations: {category:})
+    else
+      same_name_kenshis.where(cup:)
+    end
+    if same_name_kenshis.exists?
+      same_name_kenshis_initials = same_name_kenshis.map do |k|
+        k.first_name.split(/[\s|-]/).map { |s| s.first + "." }.join
+      end
+      if same_name_kenshis_initials.include?(initials)
+        initials = first_name.split(/[\s|-]/).map { |s| s[0..1] + "." }.join
+      end
+    end
+    initials
   end
 
   private def format

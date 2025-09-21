@@ -2,7 +2,7 @@
 
 module PosterSize
   def landscape_size(string)
-    val = 1400 / string.size
+    val = 1380 / string.size
     # if val > 200
     #   val = 100
     # end
