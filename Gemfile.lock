@@ -52,8 +52,8 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
-    active_record_doctor (1.15.0)
-      activerecord (>= 4.2.0)
+    active_record_doctor (2.0.1)
+      activerecord (>= 7.0.0)
     activeadmin (3.3.0)
       arbre (~> 1.2, >= 1.2.1)
       csv
