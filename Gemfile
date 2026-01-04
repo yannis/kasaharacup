@@ -8,10 +8,10 @@ ruby "4.0.0"
 gem "rails", "~> 8.1.1"
 
 # Database
-gem "pg", "~> 1.5"
+gem "pg"
 
 # Server
-gem "puma", "~> 6.4"
+gem "puma"
 
 # Authentication and Authorization
 gem "devise"
