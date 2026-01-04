@@ -106,7 +106,7 @@ class Kenshi < ApplicationRecord
 
   def norm_first_name
     # first_name.try :titleize
-    first_name&.mb_chars&.gsub(/[[:alpha:]]+/) { |w| w.capitalize }
+    first_name&.gsub(/[[:alpha:]]+/) { |w| w.capitalize }
   end
 
   def norm_last_name
@@ -139,7 +139,7 @@ class Kenshi < ApplicationRecord
     if same_name_kenshis.exists?
       poster_name << first_name_initials(category:)
     end
-    poster_name.join(" ").mb_chars.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase.to_s
+    poster_name.join(" ").to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase
   end
 
   def logs
@@ -172,7 +172,7 @@ class Kenshi < ApplicationRecord
   private def format
     # use POSIX bracket expression here
     self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
-    self.first_name = first_name.mb_chars.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
+    self.first_name = first_name.to_s.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
     self.email = email.downcase if email
   end
 
