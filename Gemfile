@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.4.4"
+ruby "4.0.0"
 
 gem "rails", "~> 8.1.1"
 
@@ -79,7 +79,7 @@ gem "kramdown"
 gem "matrix"
 
 group :development, :test do
-  gem "debug", platforms: %i[mri mingw x64_mingw]
+  gem "debug", platforms: %i[mri windows]
   gem "dotenv-rails"
   gem "erb_lint"
   gem "factory_bot_rails"
