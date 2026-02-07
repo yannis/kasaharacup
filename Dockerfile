@@ -1,6 +1,6 @@
 # https://devcenter.heroku.com/articles/ruby-support#supported-runtimes
-FROM ruby:4.0.0-alpine
-ENV RUBYGEMS_VERSION=3.6.7
+FROM ruby:4.0.1-alpine
+ENV RUBYGEMS_VERSION=4.0.3
 LABEL mainainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
 

@@ -22,7 +22,7 @@ require:
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.5.0
+  TargetRubyVersion: 4.0.0
   DisabledByDefault: false
   Exclude:
     - "app/vendor/**/*"

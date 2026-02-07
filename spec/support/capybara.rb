@@ -34,7 +34,18 @@ RSpec.configure do |config|
       port = 4000 + ENV["TEST_ENV_NUMBER"].to_i
       Capybara.server_host = "0.0.0.0"
       Capybara.server_port = port
-      Capybara.app_host = "https://host.docker.internal:#{port}"
+
+      # Browser runs in selenium-chrome container; it must reach this container on the Docker network.
+      # When using 'docker compose run', an ephemeral container is created.
+      # We use the container's IP address on the Docker network, which is always accessible.
+      require "socket"
+
+      app_container_host = ENV["CAPYBARA_APP_HOST"].presence || Socket.ip_address_list.find { |addr|
+        addr.ipv4_private? && !addr.ipv4_loopback?
+      }&.ip_address || "127.0.0.1"
+
+      protocol = ENV.fetch("APP_PROTOCOL", "http")
+      Capybara.app_host = "#{protocol}://#{app_container_host}:#{port}"
     else
       # `selenium_chrome_headless` and `selenium_chrome` are defined in
       # the Capybara gem: /lib/capybara/registrations/drivers.rb
