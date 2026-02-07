@@ -1,68 +1,100 @@
-x-base: &base
+# Base configuration for app containers
+x-app-base: &app-base
   build:
     context: .
     dockerfile: Dockerfile
+    target: development
   env_file:
     - .env
     - .env.override
   environment:
     - POSTGRES_HOST=database
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=
     - SELENIUM_REMOTE_HOST=selenium-chrome
   volumes:
-    - $PWD:/app:delegated
+    # Mount only necessary directories (avoid conflicts with node_modules)
+    - ./app:/app/app:cached
+    - ./spec:/app/spec:cached
+    - ./config:/app/config:cached
+    - ./db:/app/db:cached
+    - ./lib:/app/lib:cached
+    - ./public:/app/public:cached
+    - ./bin:/app/bin:cached
+    - ./docker-entrypoint.sh:/app/docker-entrypoint.sh:cached
+    # Use named volumes for dependencies and cache
     - bundle_cache:/usr/local/bundle:cached
     - node_modules:/app/node_modules:cached
+    - rails_cache:/app/tmp/cache:cached
+  depends_on:
+    database:
+      condition: service_healthy
   tty: true
   stdin_open: true
 
 services:
   app:
-    <<: *base
+    <<: *app-base
     command: bin/rails server -p 3000 -b 0.0.0.0
     ports:
       - "80:3000"
     depends_on:
-      - database
-      - js
-      - selenium-chrome
+      database:
+        condition: service_healthy
+      assets:
+        condition: service_started
 
-  js:
-    <<: *base
-    command: yarn build --watch
+  # Combined asset compilation service (replaces separate js/css services)
+  assets:
+    <<: *app-base
+    command:
+      - bash
+      - -c
+      - "yarn build:css --watch & yarn build --watch & wait"
     depends_on:
-      - css
-
-  css:
-    <<: *base
-    command: yarn build:css --watch
-    depends_on:
-      - selenium-chrome
+      database:
+        condition: service_healthy
 
   database:
-    image: postgres:13.2
+    image: postgres:16.9-alpine
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=kasaharacup_development
     volumes:
       - db_data:/var/lib/postgresql/data:cached
       - db_dump:/app/db_dump:cached
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   selenium-chrome:
-    image: selenium/standalone-chrome-debug:latest
+    image: selenium/standalone-chrome:131.0
     shm_size: 2G
-    logging:
-      driver: none
     ports:
-      - 5900:5900
+      - "4444:4444"
+      - "7900:7900"  # VNC web interface (http://localhost:7900)
     environment:
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_NODE_SESSION_TIMEOUT=300
+      - SE_VNC_NO_PASSWORD=1
       - SCREEN_WIDTH=1680
       - SCREEN_HEIGHT=1050
-    extra_hosts:
-      - "host.docker.internal:host-gateway" # To work on Linux
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4444/wd/hub/status > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
 volumes:
   db_data:
   db_dump:
   bundle_cache:
   node_modules:
+  rails_cache:
