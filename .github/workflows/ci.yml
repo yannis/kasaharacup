@@ -9,71 +9,270 @@ on:
       - main
       - '**/main'
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      image-name: ${{ steps.image.outputs.name }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set environment variables
-        run: |
-          echo "ENVIRONMENT=test" >> .env.override
-          echo "RAILS_ENV=test" >> .env.override
-          echo "CI=true" >> .env.override
-          echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}" >> .env.override
-          echo "ENCRYPTION_PRIMARY_KEY=${{ secrets.ENCRYPTION_PRIMARY_KEY }}" >> .env.override
-          echo "ENCRYPTION_DETERMINISTIC_KEY=${{ secrets.ENCRYPTION_DETERMINISTIC_KEY }}" >> .env.override
-          echo "ENCRYPTION_KEY_DERIVATION_SALT=${{ secrets.ENCRYPTION_KEY_DERIVATION_SALT }}" >> .env.override
-
-      - name: Set the right tag/label name in Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/yannis/kasaharacup-app
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub Container Registry
+      - name: Set image name
+        id: image
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            # For main branch, use registry
+            IMAGE_NAME="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          else
+            # For PRs, use local tag
+            IMAGE_NAME="kasaharacup-app:ci"
+          fi
+          echo "name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Using image: $IMAGE_NAME"
+
+      - name: Log in to Container Registry
+        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image and push it to GitHub Container Registry
+      - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=ghcr.io/yannis/kasaharacup-app:buildcache
-          cache-to: type=registry,ref=ghcr.io/yannis/kasaharacup-app:buildcache,mode=max
+          target: development
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.image.outputs.name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: ${{ github.event_name != 'push' }}
 
-      - name: Modify docker-compose.yml to use the specific Docker image and label
+      - name: Save image for PR tests
+        if: github.event_name != 'push'
         run: |
-          yq 'del(.x-base.build) | .x-base.image = "ghcr.io/yannis/kasaharacup-app:${{ steps.meta.outputs.version }}"' docker-compose.yml -i
+          docker save kasaharacup-app:ci | gzip > /tmp/docker-image.tar.gz
+          echo "Image saved successfully"
 
-      - name: Install Node Modules
+      - name: Upload image artifact
+        if: github.event_name != 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/docker-image.tar.gz
+          retention-days: 1
+
+  lint:
+    name: Lint (Rubocop)
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Download image artifact
+        if: github.event_name != 'push'
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        if: github.event_name != 'push'
         run: |
-          docker compose run --rm app corepack enable
-          docker compose run --rm app yarn install --immutable
+          docker load < /tmp/docker-image.tar.gz
+          docker tag kasaharacup-app:ci kasaharacup-app:latest
 
-      - name: Rubocop
+      - name: Pull image from registry
+        if: github.event_name == 'push'
+        run: |
+          docker pull ${{ needs.build.outputs.image-name }}
+          docker tag ${{ needs.build.outputs.image-name }} kasaharacup-app:latest
+
+      - name: Create env files
+        run: |
+          cat > .env.override << EOF
+          ENVIRONMENT=test
+          RAILS_ENV=test
+          CI=true
+          SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}
+          ENCRYPTION_PRIMARY_KEY=${{ secrets.ENCRYPTION_PRIMARY_KEY }}
+          ENCRYPTION_DETERMINISTIC_KEY=${{ secrets.ENCRYPTION_DETERMINISTIC_KEY }}
+          ENCRYPTION_KEY_DERIVATION_SALT=${{ secrets.ENCRYPTION_KEY_DERIVATION_SALT }}
+          EOF
+          
+          touch .env.test.local
+
+      - name: Update docker-compose for CI
+        run: |
+          sed -i 's|build:|# build:|' docker-compose.yml
+          sed -i 's|context: .|# context: .|' docker-compose.yml
+          sed -i 's|dockerfile: Dockerfile|# dockerfile: Dockerfile|' docker-compose.yml
+          sed -i 's|target: development|# target: development|' docker-compose.yml
+          sed -i '/x-app-base:/a\  image: kasaharacup-app:latest' docker-compose.yml
+
+      - name: Run Rubocop
         run: docker compose run --rm app bundle exec rubocop --parallel
 
-      - name: Setup database
-        run: docker compose run --rm app bundle exec rake db:drop db:create db:migrate
+  test:
+    name: Test (RSpec)
+    needs: build
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        ci_node_total: [3]
+        ci_node_index: [1, 2, 3]
 
-      - name: Run Rspec
-        run: docker compose run --rm app bundle exec rspec
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Download image artifact
+        if: github.event_name != 'push'
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        if: github.event_name != 'push'
+        run: |
+          docker load < /tmp/docker-image.tar.gz
+          docker tag kasaharacup-app:ci kasaharacup-app:latest
+
+      - name: Pull image from registry
+        if: github.event_name == 'push'
+        run: |
+          docker pull ${{ needs.build.outputs.image-name }}
+          docker tag ${{ needs.build.outputs.image-name }} kasaharacup-app:latest
+
+      - name: Create env files
+        run: |
+          cat > .env.override << EOF
+          ENVIRONMENT=test
+          RAILS_ENV=test
+          CI=true
+          SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}
+          ENCRYPTION_PRIMARY_KEY=${{ secrets.ENCRYPTION_PRIMARY_KEY }}
+          ENCRYPTION_DETERMINISTIC_KEY=${{ secrets.ENCRYPTION_DETERMINISTIC_KEY }}
+          ENCRYPTION_KEY_DERIVATION_SALT=${{ secrets.ENCRYPTION_KEY_DERIVATION_SALT }}
+          EOF
+          
+          # Create .env.test.local with required encryption keys
+          cat > .env.test.local << EOF
+          SYSTEM_SPECS=true
+          APP_PROTOCOL=http
+          APP_PORT=3030
+          ENCRYPTION_PRIMARY_KEY=${{ secrets.ENCRYPTION_PRIMARY_KEY }}
+          ENCRYPTION_DETERMINISTIC_KEY=${{ secrets.ENCRYPTION_DETERMINISTIC_KEY }}
+          ENCRYPTION_KEY_DERIVATION_SALT=${{ secrets.ENCRYPTION_KEY_DERIVATION_SALT }}
+          RAILS_ENV=test
+          SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}
+          EOF
+
+      - name: Update docker-compose for CI
+        run: |
+          sed -i 's|build:|# build:|' docker-compose.yml
+          sed -i 's|context: .|# context: .|' docker-compose.yml
+          sed -i 's|dockerfile: Dockerfile|# dockerfile: Dockerfile|' docker-compose.yml
+          sed -i 's|target: development|# target: development|' docker-compose.yml
+          sed -i '/x-app-base:/a\  image: kasaharacup-app:latest' docker-compose.yml
+
+      - name: Start services
+        run: |
+          docker compose up -d database selenium-chrome
+          
+          # Wait for services to be healthy
+          echo "Waiting for database..."
+          timeout 60 bash -c 'until docker compose exec -T database pg_isready -U postgres; do sleep 2; done'
+          
+          echo "Waiting for Selenium..."
+          timeout 60 bash -c 'until docker compose exec -T selenium-chrome curl -sf http://localhost:4444/wd/hub/status > /dev/null; do sleep 2; done'
+          
+          echo "Services are ready!"
+          docker compose ps
+
+      - name: Setup database
+        run: |
+          docker compose run --rm app bundle exec rails db:create db:schema:load
+
+      - name: Precompile assets
+        run: |
+          echo "Compiling assets for tests..."
+          docker compose run --rm app bash -c "yarn build:css && yarn build"
+          echo "Assets compiled successfully"
+
+      - name: Run RSpec (node ${{ matrix.ci_node_index }}/${{ matrix.ci_node_total }})
+        env:
+          CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
+          CI_NODE_INDEX: ${{ matrix.ci_node_index }}
+        run: |
+          docker compose run --rm app bash -c "
+            bundle exec parallel_test spec/ \
+              -n \$CI_NODE_TOTAL \
+              --only-group \$CI_NODE_INDEX \
+              --type rspec
+          "
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots-node-${{ matrix.ci_node_index }}
+          path: tmp/capybara/**/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          echo "=== Database logs ==="
+          docker compose logs database
+          echo "=== Selenium logs ==="
+          docker compose logs selenium-chrome
+          echo "=== App logs ==="
+          docker compose logs app || true
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
+
+  test-results:
+    name: Test Summary
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Check test status
+        run: |
+          echo "All ${{ strategy.job-total }} test nodes completed"
+          echo "Check individual test job results above"
+
+  success:
+    name: All tests passed
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Success message
+        run: echo "✅ All tests passed!"

@@ -1,5 +1,49 @@
-.git*
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+*.md
+README*
+CHANGELOG*
+LICENSE*
+doc/
+
+# Development files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
 log/*
+*.log
+
+# Temporary files
 tmp/*
-Dockerfile
-README.md
+!tmp/.keep
+
+# Test files
+coverage/*
+spec/examples.txt
+
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ruby
+.bundle
+vendor/bundle
+
+# Environment
+.env.local
+.env*.local
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
