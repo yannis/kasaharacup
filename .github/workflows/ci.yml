@@ -78,7 +78,7 @@ jobs:
           retention-days: 1
 
   lint:
-    name: Lint (Rubocop)
+    name: Lint (Rubocop & friends)
     needs: build
     runs-on: ubuntu-latest
 
