@@ -1,0 +1,9 @@
+files:
+  # Additional glob patterns to include (additive to defaults)
+  # Global exclude patterns (applies to all tools)
+  exclude:
+    - 'public/**/*'
+    - 'tmp/**/*'
+    - 'vendor/bundle/**/*'
+    - 'node_modules/**/*'
+    - 'coverage/**/*'

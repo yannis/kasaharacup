@@ -37,7 +37,7 @@
                 </h3>
                 <table class="table lg:mb-0">
                   <tbody>
-                    <% for event in events %>
+                    <% events.each do |event| %>
                       <tr>
                         <th class="whitespace-nowrap align-text-top text-right">
                           <%= event.start_on.to_fs(:time_only) %>

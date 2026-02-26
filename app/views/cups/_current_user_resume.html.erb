@@ -16,9 +16,9 @@
       <div class="mt-2 max-w-xl text-sm text-gray-500 prose prose-red-900 prose-lg">
         <% if current_user.has_kenshis_for_cup?(cup) %>
           <%= t "users.resume.kenshis_number", number: current_user.kenshis.for_cup(cup).count %>
-          <ul class="">
+          <ul>
             <% current_user.kenshis.for_cup(cup).each do |kenshi| %>
-              <li class="">
+              <li>
                 <em>
                   <%= kenshi.full_name %>
                 </em>
@@ -45,7 +45,7 @@
         <% end %>
       </div>
     <% else %>
-      <h3 class="">
+      <h3>
         <%= t("devise.sessions.title") %>
       </h3>
       <div class="mt-2 max-w-xl text-sm text-gray-500">

@@ -80,10 +80,10 @@
   <div>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
       <div class="pt-6 sm:pt-5">
-        <div role="group" aria-labelledby="label-email">
+        <div role="group" aria-labelledby="label-team">
           <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
             <div>
-              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-team">
                 <%= Kenshi.human_attribute_name(:team) %>
               </div>
             </div>
@@ -113,7 +113,7 @@
                         <div class="mb-1 text-sm">
                           <%= g.label :team_name, class: "font-medium text-gray-700" %>
                         </div>
-                        <div class="">
+                        <div>
                           <%=
                             g.select :team_name,
                               c.teams.order(:name).pluck(:name),
@@ -145,10 +145,10 @@
     <div>
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="pt-6 sm:pt-5">
-          <div role="group" aria-labelledby="label-email">
+          <div role="group" aria-labelledby="label-individual-categories">
             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
               <div>
-                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-individual-categories">
                   <%= t("kenshis.form.individual_categories") %>
                 </div>
               </div>
@@ -215,10 +215,10 @@
   <div>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
       <div class="pt-6 sm:pt-5">
-        <div role="group" aria-labelledby="label-email">
+        <div role="group" aria-labelledby="label-waiver">
           <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
             <div>
-              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+              <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-waiver">
                 <%= t(".waiver.title") %>
               </div>
             </div>
@@ -235,10 +235,10 @@
     <div>
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <div class="pt-6 sm:pt-5">
-          <div role="group" aria-labelledby="label-email">
+          <div role="group" aria-labelledby="label-extra">
             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
               <div>
-                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-email">
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-extra">
                   <%= t(".extra") %>
                 </div>
               </div>
