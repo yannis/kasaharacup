@@ -15,18 +15,12 @@ data:
 
   # Locale files or `File.find` patterns where translations are read from:
   read:
-    ## Default:
-    # - config/locales/%{locale}.yml
-    ## More files:
-    - config/locales/**/*.%{locale}.yml
+    - config/locales/%{locale}.yml
 
   # Locale files to write new keys to, based on a list of key pattern => file rules. Matched from top to bottom:
   # `i18n-tasks normalize -p` will force move the keys according to these rules
   write:
-    ## For example, write devise and simple form keys to their respective files:
-    # - ['{devise, simple_form}.*', 'config/locales/\1.%{locale}.yml']
-    ## Catch-all default:
-    # - config/locales/%{locale}.yml
+    - config/locales/%{locale}.yml
 
   # External locale data (e.g. gems).
   # This data is not considered unused and is never written to.
@@ -101,17 +95,28 @@ search:
 #   # deepl_version: "v2"
 
 ## Do not consider these keys missing:
-# ignore_missing:
-# - 'errors.messages.{accepted,blank,invalid,too_short,too_long}'
-# - '{devise,simple_form}.*'
+ignore_missing:
+  - 'errors.messages.*'
+  - '{devise,simple_form}.*'
+  - 'activerecord.{attributes,models}.*'
+  - '{description,name,title}'
+  - 'cups.show_2023.*'
+  - 'navigation_dropdown_component.*'
 
 ## Consider these keys used:
-# ignore_unused:
-# - 'activerecord.attributes.*'
-# - '{devise,kaminari,will_paginate}.*'
-# - 'simple_form.{yes,no}'
-# - 'simple_form.{placeholders,hints,labels}.*'
-# - 'simple_form.{error_notification,required}.:'
+ignore_unused:
+  - 'activerecord.*'
+  - '{devise,devise_invitable}.*'
+  - 'simple_form.*'
+  - '{date,datetime,time,number,support}.*'
+  - 'errors.*'
+  - 'helpers.{submit,select,page_entries_info,are_you_sure,cancel}*'
+  - 'views.pagination.*'
+  - 'roles.*'
+  - 'form.*'
+  - 'static_pages.*'
+  - 'waiver.*'
+  - 'navigation_dropdown_component.*'
 
 ## Exclude these keys from the `i18n-tasks eq-base' report:
 # ignore_eq_base:
