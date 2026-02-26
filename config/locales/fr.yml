@@ -1,61 +1,683 @@
 ---
 fr:
+  activerecord:
+    attributes:
+      headline:
+        created_at: Publié
+      individual_category:
+      kenshi:
+        categories: Catégories
+        category: Catégorie
+        club_name: Club / Dojo / Association
+        dob: Date de naissance
+        fees: Frais
+        female: Salutation
+        first_name: Prénom
+        gender: Sexe
+        last_name: Nom
+        male: Homme
+        mr: M.
+        ms: Mme
+        name: Nom
+        salutations: Salutations
+        team: Équipe
+      participation:
+        category: Catégorie
+        team_name: Nom de l'équipe
+      personal_info:
+        document_number: Numéro du document d'identité
+        document_type: Type de document d'identité
+        email: Adresse email personnelle
+        origin_country: Pays d'origine
+        residential_address: Adresse du domicile
+        residential_city: Ville de résidence
+        residential_country: Pays de résidence
+        residential_phone_number: Numéro de téléphone du domicile
+        residential_zip_code: Code postal de résidence
+      registration:
+        dob: Date de naissance
+        female: Femme
+        first_name: Prénom
+        gender: Sexe
+        last_name: Nom
+        male: Homme
+      team_category:
+      teams:
+        kenshis: Kenshis
+        name: Nom
+      user:
+        club_name: Club
+        current_password: Mot de passe actuel
+        dob: Date de naissance
+        email: Email
+        fees: Frais
+        female: Femme
+        first_name: Prénom
+        gender: Sexe
+        last_name: Nom
+        male: Homme
+        mr: M.
+        ms: Mme.
+        password: Mot de passe
+        password_confirmation: Confirmation du mot de passe
+        remember_me: Garder en mémoire
+    errors:
+      messages:
+        record_invalid: 'La validation a échoué : %{errors}'
+        restrict_dependent_destroy:
+          has_many: Vous ne pouvez pas supprimer l'enregistrement parce que les %{record} dépendants existent
+          has_one: Vous ne pouvez pas supprimer l'enregistrement car un(e) %{record} dépendant(e) existe
+      models:
+        kenshi:
+          attributes:
+            dob:
+              blank: requise pour les juniors
+            female:
+              inclusion: requise
+        participation:
+          attributes:
+            category:
+              too_old: Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!
+              too_young: Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!
+        purchase:
+          attributes:
+            product_id:
+              quota_reached: ce produit n'est malheureusement plus disponible
+        registration:
+          attributes:
+            dob:
+              blank: requise pour les juniors
+        team:
+          participations: Participations
+        user:
+          attributes:
+            current_password:
+              blank: Nous avons besoin de votre mot de passe actuel afin de valider votre modification
+              invalid: non valide
+            password_confirmation:
+              confirmation: ne correspond pas au mot de passe choisi
+    models:
+      individual_category:
+        one: Catégorie individuelle
+        other: Catégories individuelles
+      participation:
+        one: Participation
+        other: Participations
+      personal_info:
+        id_card: Carte d'identité
+        one: Détail personnel
+        other: Détails personnels
+        passport: Passeport
+      product:
+        one: Produit
+        other: Produits
+      team_category:
+        one: Catégorie équipe
+        other: Catégories équipe
+      user: Utilisateur
   categories:
-    from: Dès
+    from: de
+    to: à
+    yo: ans
   cups:
-    show_2019:
+    show:
       accomodation:
-        dormitory: Dormitory
-        hotels: Hotels
-        title: Title
+        dormitory: Cette année, nous sommes désolés mais nous ne serons pas en mesure de proposer des dortoirs car le bâtiment des dortoirs est en cours de rénovation.
+        hotels: Vous pouvez toujours choisir parmi <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
+        title: Logement
       categories:
-        title: Title
-      deadline: Deadline
-      deadline_passed: Deadline passed
+        title: Les catégories
+      deadline: Le délai pour les inscriptions est fixé au %{deadline}
+      deadline_passed: Les inscriptions sont fermée depuis le %{deadline}
+      fee: "%{fee_chf} CHF ou %{fee_eu} €"
       fees:
-        adults:
-          fee: Fee
-          title: Title
-        juniors:
-          fee: Fee
-          title: Title
-        title: Title
-        variable: Variable
+        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèces ou par carte bancaire, € ou CHF).
+        title: Combien ça coûte?
+        variable: Prix variable
+      over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
+      products:
+        not_available: Malheureusement plus disponible
       program:
-        title: Title
-      social:
-        title: Title
-      tournament:
-        a: A
-        b: B
-        title: Title
+        title: Programme
+      public: La compétition est ouverte aux spectateurs, entrée libre.
+      registrations_opening_soon: Les inscriptions vont ouvrir bientôt
+      results:
+        title: Résultats
+      shinpans:
+        info: 'Cette année, nous aurons quelques arbitres officiels invités, mais nous comptons toujours sur les plus gradés d''entre vous pour compléter l''effectif des arbitres lorsque vous ne combattez pas.
+
+          '
+        invited:
+          title: Arbitres invités
+        title: Shinpan (arbitres)
+      spots_left:
+        one: 1 place restante
+        other: "%{count} places restantes"
       venue:
-        a: A
-        address: Address
-        title: Title
-  description: Description
+        a: Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}.
+        address:
+          content: |
+            Stade du Bout-du-Monde<br />
+            Route de Vessy 12<br />
+            1206 Genève<br />
+            Switzerland<br />
+            _GPS: 46.180588,6.155893_<br />
+            <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map vers la salle de compétition</a>
+          title: Coordonnées
+        title: Où est-ce que ça se passe?
+  date:
+    abbr_day_names:
+    - dim
+    - lun
+    - mar
+    - mer
+    - jeu
+    - ven
+    - sam
+    abbr_month_names:
+    -
+    - jan.
+    - fév.
+    - mar.
+    - avr.
+    - mai
+    - juin
+    - juil.
+    - août
+    - sept.
+    - oct.
+    - nov.
+    - déc.
+    day_names:
+    - dimanche
+    - lundi
+    - mardi
+    - mercredi
+    - jeudi
+    - vendredi
+    - samedi
+    formats:
+      day_month_year: "%d %B %Y"
+      day_only: "%d"
+      default: "%d/%m/%Y"
+      long: "%e %B %Y"
+      month_only: "%B"
+      short: "%e %b"
+    month_names:
+    -
+    - janvier
+    - février
+    - mars
+    - avril
+    - mai
+    - juin
+    - juillet
+    - août
+    - septembre
+    - octobre
+    - novembre
+    - décembre
+    order:
+    - :day
+    - :month
+    - :year
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: environ une heure
+        other: environ %{count} heures
+      about_x_months:
+        one: environ un mois
+        other: environ %{count} mois
+      about_x_years:
+        one: environ un an
+        other: environ %{count} ans
+      almost_x_years:
+        one: presqu'un an
+        other: presque %{count} ans
+      half_a_minute: une demi‑minute
+      less_than_x_minutes:
+        one: moins d'une minute
+        other: moins de %{count} minutes
+        zero: moins d'une minute
+      less_than_x_seconds:
+        one: moins d'une seconde
+        other: moins de %{count} secondes
+        zero: moins d'une seconde
+      over_x_years:
+        one: plus d'un an
+        other: plus de %{count} ans
+      x_days:
+        one: 1 jour
+        other: "%{count} jours"
+      x_minutes:
+        one: 1 minute
+        other: "%{count} minutes"
+      x_months:
+        one: 1 mois
+        other: "%{count} mois"
+      x_seconds:
+        one: 1 seconde
+        other: "%{count} secondes"
+      x_years:
+        one: 1 an
+        other: "%{count} ans"
+    prompts:
+      day: Jour
+      hour: Heure
+      minute: Minute
+      month: Mois
+      second: Seconde
+      year: Année
+  devise:
+    confirmations:
+      confirmed: Votre compte a été validé.
+      send_instructions: Vous allez recevoir les instructions nécessaires à la confirmation de votre compte dans quelques minutes.
+      send_paranoid_instructions: Si votre e-mail existe dans notre base de données, vous allez bientôt recevoir un e-mail contenant les instructions de confirmation de votre compte.
+      title: Renvoyer les instructions de confirmation
+    failure:
+      already_authenticated: Vous êtes déjà connecté
+      inactive: Votre compte n'est pas encore activé.
+      invalid: Email ou mot de passe incorrect.
+      last_attempt: Vous avez droit à une tentative avant que votre compte ne soit verrouillé.
+      locked: Votre compte est verrouillé.
+      not_found_in_database: Email ou mot de passe invalide.
+      timeout: Votre session est expirée. Veuillez vous reconnecter pour continuer.
+      unauthenticated: Vous devez vous connecter ou vous inscrire pour continuer.
+      unconfirmed: Vous devez valider votre compte pour continuer.
+    links:
+      confirmation: Pas reçu de confirmation d'enregistrement?
+      forgot: Oublié votre mot de passe?
+      oauth: Connectez-vous avec
+      sign_in: Vous avez déjà un compte?
+      sign_up: Pas encore de compte?
+      unlock: Pas reçu d'instructions de déblocage?
+    mailer:
+      confirmation_instructions:
+        action: Confirmer mon email
+        greeting: Bienvenue %{recipient}!
+        instruction: 'Vous pouvez confirmer votre email grâce au lien ci-dessous:'
+        subject: Instructions de confirmation
+      email_changed:
+        greeting: Bonjour %{recipient}!
+        message: Nous vous contactons pour vous informer que votre email a été changé en %{email}.
+        message_unconfirmed: Nous vous contactons pour vous informer que votre email est en train d’être changé par %{email}.
+        subject: Email modifié
+      password_change:
+        greeting: Bonjour %{recipient}!
+        message: Nous vous contactons pour vous notifier que votre mot de passe a été modifié.
+        subject: Mot de passe modifié
+      reset_password_instructions:
+        action: Changer mon mot de passe
+        greeting: Bonjour %{recipient}!
+        instruction: 'Quelqu’un a demandé un lien pour changer votre mot de passe, le voici:'
+        instruction_2: Si vous n’avez pas émis cette demande, merci d’ignorer cet email.
+        instruction_3: Votre mot de passe ne changera pas tant que vous n’aurez pas cliqué sur ce lien et renseigné un nouveau mot de passe.
+        subject: Instructions pour changer le mot de passe
+      unlock_instructions:
+        action: Débloquer mon compte
+        greeting: Bonjour %{recipient}!
+        instruction: 'Suivez ce lien pour débloquer votre compte:'
+        message: Votre compte a été bloqué suite à un nombre d’essais de connexions manquées trop important.
+        subject: Instructions pour déverrouiller le compte
+    passwords:
+      new: Démarrez la réinitialisation du mot de passe
+      no_token: Vous ne pouvez accéder à cette page sans passer par un e-mail de réinitialisation de mot de passe. Si vous êtes passé par un e-mail de ce type, assurez-vous d'utiliser l'URL complète.
+      send_instructions: Vous allez recevoir les instructions de réinitialisation du mot de passe dans quelques instants
+      send_paranoid_instructions: Si votre e-mail existe dans notre base de données, vous allez recevoir un lien de réinitialisation par e-mail
+      title: Changez de mot de passe
+      updated: Votre mot de passe a été édité avec succès, vous êtes maintenant connecté
+      updated_not_active: Votre mot de passe a été changé avec succès.
+    registrations:
+      cancel_title: Détruisez votre compte
+      cancel_verif: Attention! Toutes vos données seront détruites y compris vos inscriptions. Ceci est irréversible.
+      destroyed: Votre compte a été supprimé avec succès. Nous espérons vous revoir bientôt.
+      edit:
+        cancel_my_account: Supprimer ce compte!
+        current_password: Nous avons besoin de votre mot de passe actuel afin de valider votre modification
+        password:
+          hint: Laissez blanc si vous ne désirez pas de modification
+        unhappy: Mécontent?
+      edit_title: Modifiez votre compte
+      new:
+        title: Création d'un compte
+      signed_up: Bienvenu, vous êtes connecté.
+      signed_up_but_inactive: Vous êtes bien enregistré. Vous ne pouvez cependant pas vous connecter car votre compte n'est pas encore activé.
+      signed_up_but_locked: Vous êtes bien enregistré. Vous ne pouvez cependant pas vous connecter car votre compte est verrouillé.
+      signed_up_but_unconfirmed: Un message contenant un lien de confirmation a été envoyé à votre adresse email. Ouvrez ce lien pour activer votre compte.
+      title: Inscrivez-vous
+      update_needs_confirmation: Votre compte a bien été mis à jour mais nous devons vérifier votre nouvelle adresse email. Merci de vérifier vos emails et de cliquer sur le lien de confirmation pour finaliser la validation de votre nouvelle adresse.
+      updated: Votre compte a été modifié avec succès.
+    sessions:
+      email: Email
+      new:
+        title: Connectez-vous
+      password: Mot de passe
+      remember: Se souvenir de moi
+      signed_in: Connecté.
+      signed_out: Déconnecté.
+      title: Connectez-vous
+    unlocks:
+      send_instructions: Vous allez recevoir les instructions nécessaires au déverrouillage de votre compte dans quelques instants
+      send_paranoid_instructions: Si votre compte existe, vous allez bientôt recevoir un email contenant les instructions pour le déverrouiller.
+      title: Renvoyer les instructions de déverrouillage
+      unlocked: Votre compte a été déverrouillé avec succès, vous êtes maintenant connecté.
   errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: doit être accepté(e)
+      already_confirmed: a déjà été validé(e), veuillez essayer de vous connecter
+      blank: ne peut pas rester vide
+      confirmation: ne concorde pas avec %{attribute}
+      confirmation_period_expired: à confirmer dans les %{period}, merci de faire une nouvelle demande
+      date_string_not_iso8601: doit être une date valide au format "AAAA-MM-JJ"
+      doesnt_exist: n’existe pas
+      empty: doit être rempli(e)
+      equal_to: doit être égal à %{count}
+      even: doit être pair
+      exclusion: n'est pas disponible
+      expired: a expiré, merci d'en faire une nouvelle demande
+      greater_than: doit être supérieur à %{count}
+      greater_than_or_equal_to: doit être supérieur ou égal à %{count}
+      inclusion: n'est pas inclus(e) dans la liste
+      invalid: n'est pas valide
+      invalid_codename: ne doit contenir que des lettres, chiffres, tirets bas et esperluettes
+      invalid_uuid: doit être un UUID conforme à la RFC 4122
+      less_than: doit être inférieur à %{count}
+      less_than_or_equal_to: doit être inférieur ou égal à %{count}
+      model_invalid: 'Validation échouée : %{errors}'
+      not_a_number: n'est pas un nombre
+      not_an_integer: doit être un nombre entier
+      not_found: n'a pas été trouvé(e)
+      not_locked: n'était pas verrouillé(e)
+      not_saved:
+        one: '1 erreur a empêché ce(tte) %{resource} d''être sauvegardé(e):'
+        other: "%{count} erreurs ont empêché ce(tte) %{resource} d'être sauvegardé(e):"
+      odd: doit être impair
+      other_than: doit être différent de %{count}
+      positive: doit être positif
+      present: doit être vide
+      required: doit exister
+      taken: a déjà été pris(e)
+      too_long:
+        one: est trop long (pas plus d'un caractère)
+        other: est trop long (pas plus de %{count} caractères)
+      too_short:
+        one: est trop court (au moins un caractère)
+        other: est trop court (au moins %{count} caractères)
+      wrong_length:
+        one: ne fait pas la bonne longueur (doit comporter un seul caractère)
+        other: ne fait pas la bonne longueur (doit comporter %{count} caractères)
     template:
+      body: 'Veuillez vérifier les champs suivants : '
       header:
-        one: "1 erreur a empêché ce(tte) %{model} d'être sauvegardé(e):"
-        other: "%{count} erreurs ont empêché ce(tte) %{model} d'être sauvegardé(e):"
+        one: 'Impossible d''enregistrer ce(tte) %{model} : 1 erreur'
+        other: 'Impossible d''enregistrer ce(tte) %{model} : %{count} erreurs'
   form:
-    cancel: Cancel
-    or: Or
-  name: Name
+    cancel: Annuler
+    or: Ou
+  headlines:
+    index:
+      no_news: Pas de nouvelles pour l'instant…
+      title: Les nouvelles
+    link: Toutes les nouvelles
+  helpers:
+    are_you_sure: Vous êtes sûr?
+    cancel: Annuler
+    page_entries_info:
+      more_pages:
+        display_entries: "%{entry_name}  <b>%{first} - %{last}</b> sur <b>%{total}</b> au total"
+      one_page:
+        display_entries:
+          one: "<b>%{count}</b> %{entry_name}"
+          other: "<b>tous les %{count}</b> %{entry_name}"
+    select:
+      prompt: Veuillez sélectionner
+    submit:
+      create: Créer un(e) %{model}
+      submit: Enregistrer ce(tte) %{model}
+      update: Modifier ce(tte) %{model}
+  kenshi:
+    registered_by: Inscrit par
+  kenshis:
+    create:
+      flash:
+        alert: Erreur lors de l'inscription du kenshi
+        notice: Kenshi inscrit avec succès
+    deadline_passed: Date limite d'inscription dépassée. Merci de contacter %{email}.
+    destroy:
+      notice: Kenshi détruit avec succès
+    edit:
+      title: Modifiez l'inscription de %{full_name}
+    form:
+      button:
+        create: Confirmez l'inscription
+        update: Modifiez l'inscription
+      extra: Autres produits
+      individual_categories: Catégories individuelles
+      more_details:
+        help: Si vous dormez au dortoir, nous devons communiquer certaines de vos informations au bureau d'administration du dortoir. En effet, en tant qu'hôtel, le bureau doit déclarer chaque résident à l'Etat de Genève.
+        title: Plus de détails
+      not_available: Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir  plus tard vérifier une disponibilité éventuelle.
+      ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
+      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers. Si l'équipe n'existe pas encore créez-là en entrant son nom suivi de ↩︎ dans le champs de recherche.
+      waiver:
+        info: 'Les juniors de moins de 18 ans qui participent à la catégorie Team doivent présenter une décharge de responsabilité signée par un responsable légal. Merci de télécharger et compléter le document suivant et de le présenter le jour de la compétition:'
+        title: Décharge de responsabilité
+    helpers:
+      destroy:
+        confirm: Êtes vous sûr?
+        text: Détruire
+      duplicate:
+        text: Dupliquer
+      edit:
+        text: Modifier
+    index:
+      title: Toutes les inscriptions
+      title_for_user: Les inscriptions de %{user_full_name}
+      title_juniors: Inscriptions Juniors
+      title_ladies: Inscriptions Ladies
+      title_open: Inscriptions Open
+      title_team: Inscriptions Team
+    kenshi:
+      no_categories: Ne participe à aucune catégorie pour l'instant
+    new:
+      duplicate: Dupliquez l'inscription de %{full_name}
+      title: Inscrivez quelqu'un à la compétition
+      yourself: Finalisez votre inscription à la compétition
+    self:
+      exist: Il semblerait que vous soyez déjà inscrit. Voulez-vous modifier cette inscription?
+    show:
+      register_someone_else: Inscrivez quelqu'un d'autre
+      title: Inscription de %{full_name}
+    update:
+      flash:
+        notice: Inscription modifiée avec succès
+  layout:
+    description: 'La Coupe Kasahara est un tournoi international de kendo organisé par le Club de Kendo de Genève. Il aura lieu les %{start_on} et %{end_on} à Genève, Suisse.
+
+      '
+    description_short: 'La Coupe Kasahara est un tournoi international de kendo organisé chaque année par le Club de Kendo de Genève.
+
+      '
+    form:
+      mandatory: champs nécessaires
+    header:
+      title: Coupe Kasahara
+      title_em: Genève, Suisse
+      title_em_1: Centre sportif du Bout-du-Monde
+      title_em_2: Genève, Suisse
+  layouts:
+    footer:
+      contact:
+        text: Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre.
+        title: Contact
+      newsletter:
+        button: Abonnez-vous
+        placeholder: Email
+        subtitle: Recevez des informations occasionnelles sur le tournoi.
+        title: Abonnez-vous à notre newsletter
+    navigation:
+      about: A propos
+      account: Compte
+  navigation:
+    kenshis:
+      text: Inscrits (%{kenshis})
+    register:
+      text: Inscriptions
+      title: Inscrivez-vous à la compétition
+    teams:
+      text: Equipes (%{teams})
+      title: Equipes déjà inscrites
+  navigation_dropdown_component:
+    canceled: Annulée
+  number:
+    currency:
+      format:
+        delimiter: " "
+        format: "%n %u"
+        precision: 2
+        separator: ","
+        significant: false
+        strip_insignificant_zeros: false
+        unit: "€"
+    format:
+      delimiter: " "
+      precision: 3
+      separator: ","
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          billion: milliard
+          million: million
+          quadrillion: million de milliards
+          thousand: millier
+          trillion: billion
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one: octet
+            other: octets
+          eb: Eo
+          gb: Go
+          kb: ko
+          mb: Mo
+          pb: Po
+          tb: To
+    percentage:
+      format:
+        delimiter: ''
+        format: "%n%"
+    precision:
+      format:
+        delimiter: ''
+  participations:
+    destroy:
+      alert: Erreur lors de la destruction de l'inscription
+      confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
+      notice: Participation détruite avec succès
+      title: Détruire
+  personal_infos:
+    form_fields:
+      country_prompt: Sélectionner un pays
+      email_helper: Une adresse email personnelle est requise pour recevoir le pass pour les transports publics genevois
+  purchases:
+    destroy:
+      confirm: Etes-vous bien sûr de vouloir détruire cette extra? Le processus est irréversible…
+      title: Détruire
+  registrations:
+    form:
+      club_info: Choisissez ici le Dojo ou Club auquel vous appartenez. Si il n'existe pas encore créez-le en entrant son nom suivi de ↩︎ dans le champs de recherche.
+  roles:
+    annotator: annotateur(trice)
+    manager: manager
+  simple_form:
+    error_notification:
+      default_message: 'Veuillez vérifier les problèmes suivants :'
+    'no': Non
+    required:
+      mark: "*"
+      text: obligatoire
+    'yes': Oui
   static_pages:
     about:
-      title: La compétition
       a: |
         La coupe Kasahara est un tournoi international de kendo organisé chaque année depuis 1984 en l'honneur de <strong>Kasahara Toshiaki sensei</strong>, le premier Secrétaire de la ZNKR (Zen Nippon Kendo Renmei) et de l'IKF (International Kendo Federation). Kasahara sensei a joué un rôle crucial dans le dévelopement du kendo en Suisse.
         <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4ème Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
-      b: "Le tournoi, organisé depuis plus de 20 ans à Genève par le section kendo du <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, réunit environ 150 participants de toute l'Europe. En 2019, la 33ème édition a rassemblé des kenshis français, italiens, japonais, anglais et bien entendu suisses. Après deux ans de Hiatus pour cause de COVID, la 34ème édition de la Coupe Kasahara aura lieu cette année les 24 et 25 septembre au stade du Bout-du-Monde, proche du centre ville."
-  title: Title
-  date:
+      b: Le tournoi, organisé depuis plus de 20 ans à Genève par le section kendo du <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, réunit environ 150 participants de toute l'Europe. En 2019, la 33ème édition a rassemblé des kenshis français, italiens, japonais, anglais et bien entendu suisses. Après deux ans de Hiatus pour cause de COVID, la 34ème édition de la Coupe Kasahara aura lieu cette année les 24 et 25 septembre au stade du Bout-du-Monde, proche du centre ville.
+      title: La compétition
+  support:
+    array:
+      last_word_connector: " et "
+      two_words_connector: " et "
+      words_connector: ", "
+  teams:
+    destroy:
+      confirm: Etes-vous bien sûr de vouloir détruire cette équipe? Le processus est irréversible…
+      title: Détruire
+    index:
+      ronins:
+        info: Nous sommes à la recherche d'une équipe pour les Ronins suivants. Faites-nous savoir si vous avez une place disponible!
+      title: Toutes les équipes
+    show:
+      title: Equipe “%{team_name}”
+    team_row:
+      complete: Complète
+      incomplete: Incomplète
+      invalid: Invalide
+      valid: Valide
+  time:
+    am: am
     formats:
-      default: "%d/%m/%Y"
-      short: "%e %b"
-      long: "%e %B %Y"
       day_only: "%d"
+      default: "%d %B %Y %Hh %Mmin %Ss"
+      long: "%A %d %B %Y %Hh%M"
       month_only: "%B"
-      day_month_year: "%e %B %Y"
+      short: "%d %b %Hh%M"
+    pm: pm
+    zone: Fuseau horaire
+  users:
+    resume:
+      kenshis_number: Vous avez déjà %{number} inscriptions
+    show:
+      edit: Modifier
+      no_registrations: Vous n'avez pas encore d'inscription.
+      register_someone_else: Inscrivez quelqu'un d'autre à la compétition
+      register_yourself: Inscrivez-vous à la compétition
+      title:
+        show: Compte de %{full_name}
+      your_registrations: Vos inscriptions pour la Coupe Kasahara %{year}
+  views:
+    pagination:
+      first: "&laquo; Premier"
+      last: Dernier &raquo;
+      next: Suivant &rsaquo;
+      previous: "&lsaquo; Précédent"
+      truncate: "&hellip;"
+  waiver:
+    body: |
+      à participer à la Coupe Kasahara qui aura lieu les %{start} et %{end} à
+      Genève, dans une catégorie normalement réservée aux adultes de 18 ans et plus.
+      Ayant pris conscience des risques, je confirme que la personne mentionnée ci-dessus dispose d'une assurance accident et décharge l'association Shung Do Kwan Budo, située à Genève, de toute responsabilité en cas d'accident de quelque nature que ce soit durant toute la durée de la compétition.
+      Je confirme avoir lu attentivement la présente décharge et la signe en toute
+      connaissance de cause.
+    junior: |
+      en ma qualité de responsable légal, autorise
+      ............................................................................... (nom, prénom)
+    signature: |
+      ......................................................... (lieu, date)
+      Signature:
+    title: Décharge de responsabilité pour junior de moins de 18 ans
+    undersigned: |
+      Je soussigné(e)
+      ............................................................................... (nom, prénom)

@@ -31,7 +31,7 @@
       </div>
       <div class="ml-2 shrink-0 flex">
         <% if current_user_admin_or_owner?(kenshi) %>
-          <%= raw kenshi_admin_links(kenshi, options: {class: "pull-right"}) %>
+          <%= kenshi_admin_links(kenshi, options: {class: "pull-right"}) %>
         <% end %>
       </div>
     </div>

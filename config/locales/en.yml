@@ -1,61 +1,678 @@
 ---
 en:
+  activerecord:
+    attributes:
+      headline:
+        created_at: Published
+      individual_category:
+      kenshi:
+        categories: Categories
+        club_name: Club / Dojo / Association
+        dob: Date of birth
+        fees: Fees
+        female: Salutation
+        first_name: First name
+        gender: Gender
+        last_name: Last name
+        mr: Mr
+        ms: Ms
+        name: Name
+        salutations: Salutations
+        team: Team
+      participation:
+        category: Category
+        team_name: Team name
+      personal_info:
+        document_number: Identity document number
+        document_type: Identity document type
+        email: Personal email address
+        origin_country: Country of origin
+        residential_address: Home address
+        residential_city: City of residence
+        residential_country: Country of residence
+        residential_phone_number: Home phone number
+        residential_zip_code: Residential zip code
+      registration:
+        dob: Date of birth
+        female: Woman
+        first_name: First name
+        gender: Gender
+        last_name: Last name
+        male: Man
+      team_category:
+      teams:
+        kenshis: Kenshis
+        name: Name
+      user:
+        club_name: Club
+        current_password: Current password
+        dob: Date of birth
+        email: Email
+        fees: Fees
+        female: Woman
+        first_name: First name
+        gender: Gender
+        last_name: Last name
+        male: Man
+        mr: Mr
+        ms: Ms
+        password: Password
+        password_confirmation: Password confirmation
+    errors:
+      messages:
+        record_invalid: 'Validation failed: %{errors}'
+        restrict_dependent_destroy:
+          has_many: Cannot delete record because dependent %{record} exist
+          has_one: Cannot delete record because a dependent %{record} exists
+      models:
+        kenshi:
+          attributes:
+            dob:
+              blank: Date of birth (DOB) is required for junior registrations
+            female:
+              inclusion: Salutation is required
+        participation:
+          attributes:
+            category:
+              too_old: 'not valid: You''re too old to participate to the %{name} category!'
+              too_young: 'not valid: You''re too young to participate to the %{name} category!'
+        purchase:
+          attributes:
+            product_id:
+              quota_reached: this product is unfortunately no longer available
+        registration:
+          attributes:
+            dob:
+              blank: Date of birth (DOB) is required for junior registrations
+        team:
+          participations: Participations
+        user:
+          attributes:
+            current_password:
+              blank: We need your current password to confirm your changes
+              invalid: invalid
+            password_confirmation:
+              confirmation: does not match the chosen password
+    models:
+      individual_category:
+        one: Individual category
+        other: Individual categories
+      participation:
+        one: Participation
+        other: Participations
+      personal_info:
+        id_card: ID card
+        one: Personal detail
+        other: Personal details
+        passport: Passport
+      product:
+        one: Product
+        other: Products
+      team_category:
+        one: Team category
+        other: Team category
   categories:
-    from: Dès
+    from: from
+    to: to
+    yo: year old
   cups:
-    show_2019:
+    show:
       accomodation:
-        dormitory: Dormitory
-        hotels: Hotels
-        title: Title
+        dormitory: This year, we're sorry but we will not be able to offer dormitories as the dormitory building is under renovation.
+        hotels: You can chose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
+        title: Accomodation
       categories:
-        title: Title
-      deadline: Deadline
-      deadline_passed: Deadline passed
+        title: Categories
+      deadline: The deadline for registration is %{deadline}
+      deadline_passed: Registration is closed since %{deadline}
+      fee: "%{fee_chf} CHF or %{fee_eu} €"
       fees:
-        adults:
-          fee: Fee
-          title: Title
-        juniors:
-          fee: Fee
-          title: Title
-        title: Title
-        variable: Variable
+        description: Payment of fees upon arrival at the competition venue (in cash or by card, € or CHF).
+        title: Registration fees
+        variable: Price variable
+      over: The tournament is over! Thanks to all for participating and see you next year!
+      products:
+        not_available: Unfortunately not available anymore
       program:
-        title: Title
-      social:
-        title: Title
-      tournament:
-        a: A
-        b: B
-        title: Title
+        title: Program
+      public: The competition is open to the public. Free entry.
+      registrations_opening_soon: Registrations will open soon
+      results:
+        title: Results
+      shinpans:
+        info: 'This year, we will have a few invited official referees, but we still rely on the most senior among you to supplement the referee team when you are not competing.
+
+          '
+        invited:
+          title: Invited referees
+        title: Shinpan (referees)
+      spots_left:
+        one: 1 spot left
+        other: "%{count} spots left"
       venue:
-        a: A
-        address: Address
-        title: Title
-  description: Description
+        a: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
+        address:
+          content: |
+            Stade du Bout-du-Monde<br />
+            Route de Vessy 12<br />
+            1206 Genève<br />
+            Switzerland<br />
+            _GPS: 46.180588,6.155893_<br />
+            <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map to the competition hall</a>
+          title: Coordinates
+        title: Venue
+  date:
+    abbr_day_names:
+    - Sun
+    - Mon
+    - Tue
+    - Wed
+    - Thu
+    - Fri
+    - Sat
+    abbr_month_names:
+    -
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - May
+    - Jun
+    - Jul
+    - Aug
+    - Sep
+    - Oct
+    - Nov
+    - Dec
+    day_names:
+    - Sunday
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+    formats:
+      day_month_year: "%d %B, %Y"
+      day_only: "%d"
+      default: "%Y-%m-%d"
+      long: "%B %d, %Y"
+      month_only: "%B"
+      short: "%b %d"
+    month_names:
+    -
+    - January
+    - February
+    - March
+    - April
+    - May
+    - June
+    - July
+    - August
+    - September
+    - October
+    - November
+    - December
+    order:
+    - :year
+    - :month
+    - :day
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: about 1 hour
+        other: about %{count} hours
+      about_x_months:
+        one: about 1 month
+        other: about %{count} months
+      about_x_years:
+        one: about 1 year
+        other: about %{count} years
+      almost_x_years:
+        one: almost 1 year
+        other: almost %{count} years
+      half_a_minute: half a minute
+      less_than_x_minutes:
+        one: less than a minute
+        other: less than %{count} minutes
+      less_than_x_seconds:
+        one: less than 1 second
+        other: less than %{count} seconds
+      over_x_years:
+        one: over 1 year
+        other: over %{count} years
+      x_days:
+        one: 1 day
+        other: "%{count} days"
+      x_minutes:
+        one: 1 minute
+        other: "%{count} minutes"
+      x_months:
+        one: 1 month
+        other: "%{count} months"
+      x_seconds:
+        one: 1 second
+        other: "%{count} seconds"
+      x_years:
+        one: 1 year
+        other: "%{count} years"
+    prompts:
+      day: Day
+      hour: Hour
+      minute: Minute
+      month: Month
+      second: Second
+      year: Year
+  devise:
+    confirmations:
+      confirmed: Your email address has been successfully confirmed.
+      send_instructions: You will receive an email with instructions for how to confirm your email address in a few minutes.
+      send_paranoid_instructions: If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes.
+      title: Resend confirmation instructions
+    failure:
+      already_authenticated: You are already signed in.
+      inactive: Your account is not activated yet.
+      invalid: Invalid Email or password.
+      last_attempt: You have one more attempt before your account is locked.
+      locked: Your account is locked.
+      not_found_in_database: Invalid Email or password.
+      timeout: Your session expired. Please sign in again to continue.
+      unauthenticated: You need to sign in or sign up before continuing.
+      unconfirmed: You have to confirm your email address before continuing.
+    links:
+      confirmation: Didn't get your sign up confirmation?
+      forgot: Forgot your password?
+      oauth: Connect with
+      sign_in: Already have an account?
+      sign_up: No account yet?
+      unlock: Didn't get your unlock instructions?
+    mailer:
+      confirmation_instructions:
+        action: Confirm my account
+        greeting: Welcome %{recipient}!
+        instruction: 'You can confirm your account email through the link below:'
+        subject: Confirmation instructions
+      email_changed:
+        greeting: Hello %{recipient}!
+        message: We're contacting you to notify you that your email has been changed to %{email}.
+        message_unconfirmed: We're contacting you to notify you that your email is being changed to %{email}.
+        subject: Email Changed
+      password_change:
+        greeting: Hello %{recipient}!
+        message: We're contacting you to notify you that your password has been changed.
+        subject: Password Changed
+      reset_password_instructions:
+        action: Change my password
+        greeting: Hello %{recipient}!
+        instruction: Someone has requested a link to change your password. You can do this through the link below.
+        instruction_2: If you didn't request this, please ignore this email.
+        instruction_3: Your password won't change until you access the link above and create a new one.
+        subject: Reset password instructions
+      unlock_instructions:
+        action: Unlock my account
+        greeting: Hello %{recipient}!
+        instruction: 'Click the link below to unlock your account:'
+        message: Your account has been locked due to an excessive number of unsuccessful sign in attempts.
+        subject: Unlock instructions
+    passwords:
+      new: Send me reset password instructions
+      no_token: You can't access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided.
+      send_instructions: You will receive an email with instructions on how to reset your password in a few minutes.
+      send_paranoid_instructions: If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.
+      title: Change your password
+      updated: Your password has been changed successfully. You are now signed in.
+      updated_not_active: Your password has been changed successfully.
+    registrations:
+      cancel_title: Destroy your account
+      cancel_verif: Warning! All your data are going to be erased. This is irreversible!
+      destroyed: Bye! Your account has been successfully cancelled. We hope to see you again soon.
+      edit:
+        cancel_my_account: Cancel my account
+        current_password: we need your current password to confirm your changes
+        password:
+          hint: leave it blank if you don't want to change it
+        title: Update
+        unhappy: Unhappy?
+      edit_title: Edit your account
+      new:
+        title: Sign up
+      signed_up: Welcome! You have signed up successfully.
+      signed_up_but_inactive: You have signed up successfully. However, we could not sign you in because your account is not yet activated.
+      signed_up_but_locked: You have signed up successfully. However, we could not sign you in because your account is locked.
+      signed_up_but_unconfirmed: A message with a confirmation link has been sent to your email address. Please follow the link to activate your account.
+      title: Register your account
+      update_needs_confirmation: You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirm link to confirm your new email address.
+      updated: Your account has been updated successfully.
+    sessions:
+      already_signed_out: Logged out successfully.
+      email: Email
+      new:
+        title: Log in
+      password: Password
+      remember: Remember me
+      signed_in: Logged in successfully.
+      signed_out: Logged out successfully.
+      title: Log in to your account
+    unlocks:
+      send_instructions: You will receive an email with instructions for how to unlock your account in a few minutes.
+      send_paranoid_instructions: If your account exists, you will receive an email with instructions for how to unlock it in a few minutes.
+      title: Resend unlock instructions
+      unlocked: Your account has been unlocked successfully. Please sign in to continue.
   errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: must be accepted
+      already_confirmed: was already confirmed, please try signing in
+      blank: can’t be blank
+      confirmation: doesn't match %{attribute}
+      confirmation_period_expired: needs to be confirmed within %{period}, please request a new one
+      date_string_not_iso8601: must be valid date in the format “YYYY-MM-DD”
+      doesnt_exist: doesn’t exist
+      empty: can't be empty
+      equal_to: must be equal to %{count}
+      even: must be even
+      exclusion: is not available
+      expired: has expired, please request a new one
+      greater_than: must be greater than %{count}
+      greater_than_or_equal_to: must be greater than or equal to %{count}
+      inclusion: is not included in the list
+      invalid: is invalid
+      invalid_codename: must only contain “letters, numbers, underscores, and ampersands”
+      invalid_uuid: must be a UUID according to RFC 4122
+      less_than: must be less than %{count}
+      less_than_or_equal_to: must be less than or equal to %{count}
+      model_invalid: 'Validation failed: %{errors}'
+      not_a_number: is not a number
+      not_an_integer: must be an integer
+      not_found: not found
+      not_locked: was not locked
+      not_saved:
+        one: '1 error prohibited this %{resource} from being saved:'
+        other: "%{count} errors prohibited this %{resource} from being saved:"
+      odd: must be odd
+      other_than: must be other than %{count}
+      positive: must be positive
+      present: must be blank
+      required: must exist
+      taken: has already been taken
+      too_long:
+        one: is too long (maximum is 1 character)
+        other: is too long (maximum is %{count} characters)
+      too_short:
+        one: is too short (minimum is 1 character)
+        other: is too short (minimum is %{count} characters)
+      wrong_length:
+        one: is the wrong length (should be 1 character)
+        other: is the wrong length (should be %{count} characters)
     template:
+      body: 'There were problems with the following fields:'
       header:
-        one: "1 error prohibited this %{model} from being saved:"
-        other: "%{count} errors prohibited this %{model} from being saved:"
+        one: 1 error prohibited this %{model} from being saved
+        other: "%{count} errors prohibited this %{model} from being saved"
   form:
     cancel: Cancel
     or: Or
-  name: Name
+  headlines:
+    index:
+      no_news: No headlines yet…
+      title: Headlines
+    link: Read all headlines
+  helpers:
+    are_you_sure: Are you sure?
+    cancel: Cancel
+    page_entries_info:
+      more_pages:
+        display_entries: Displaying %{entry_name} <b>%{first}&nbsp;-&nbsp;%{last}</b> of <b>%{total}</b> in total
+      one_page:
+        display_entries:
+          one: Displaying <b>%{count}</b> %{entry_name}
+          other: Displaying <b>all %{count}</b> %{entry_name}
+          zero: No %{entry_name} found
+    select:
+      prompt: Please select
+    submit:
+      create: Create %{model}
+      submit: Save %{model}
+      update: Update %{model}
+  kenshi:
+    registered_by: Registered by
+  kenshis:
+    create:
+      flash:
+        alert: Kenshi not registered
+        notice: Kenshi successfully registered
+    deadline_passed: The registration deadline is overpassed. Please contact %{email}.
+    destroy:
+      notice: Kenshi successfully destroyed
+    edit:
+      title: Edit registration of %{full_name}
+    form:
+      button:
+        create: Register
+        update: Update registration
+      extra: Additional items
+      individual_categories: Individual categories
+      more_details:
+        help: If you sleep at the dormitory, we need to communicate some of your information to the dormitory administration office. Indeed, as an hotel, the office as to declare each residents to the state of Geneva.
+        title: More details
+      not_available: Sorry, “%{product_name}“ is not available for the time being. Please come back later to check for any availability.
+      ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
+      team_info: Choose here the team you plan to participate in with your teammates. If the team does not exist yet create it by entering its name followed by ↩︎ in the search field.
+      waiver:
+        info: 'Juniors under the age of 18 who are participating in the Team category must present a liability waiver signed by a legal guardian. Please download and complete the following document and present it on the day of the competition:'
+        title: Liability waiver
+    helpers:
+      destroy:
+        confirm: Are you sure?
+        text: Destroy
+      duplicate:
+        text: Duplicate
+      edit:
+        text: Edit
+    index:
+      title: All registrations
+      title_for_user: Registrations of %{user_full_name}
+      title_juniors: Registrations Juniors
+      title_ladies: Registrations Ladies
+      title_open: Registrations Open
+      title_team: Registrations Team
+    kenshi:
+      no_categories: Not participating in any category for the moment
+    new:
+      duplicate: Duplicate the registration of %{full_name}
+      title: Register someone to the competition
+      yourself: Complete your registration to the competition
+    self:
+      exist: It seems you're already registered. Do you want to modify this registration?
+    show:
+      register_someone_else: Register someone else to the competition
+      title: Registration of %{full_name}
+    update:
+      flash:
+        notice: Registration successfully updated
+  layout:
+    description: 'The Kasahara Cup is an international kendo tournament organized by the Geneva Kendo Club. It will take place on the %{start_on} and %{end_on} in Geneva, Switzerland.
+
+      '
+    description_short: 'The Kasahara Cup is an international kendo tournament organized every year by the Geneva Kendo Club.
+
+      '
+    form:
+      mandatory: marks mandatory fields
+    header:
+      title: Kasahara Cup
+      title_em: Geneva, Switzerland
+      title_em_1: Bout-du-Monde sports center
+      title_em_2: Geneva, Switzerland
+  layouts:
+    footer:
+      contact:
+        text: Contact us at %{mail} if you have any questions. We're looking forward to answer to you…
+        title: Contact
+      newsletter:
+        button: Subscribe
+        placeholder: Email
+        subtitle: Receive occasional news about the tournament.
+        title: Subscribe to our newsletter
+    navigation:
+      about: About
+      account: Account
+  navigation:
+    kenshis:
+      text: Kenshis (%{kenshis})
+    register:
+      text: Register
+      title: Register to the competition
+    teams:
+      text: Teams (%{teams})
+      title: Already registered teams
+  navigation_dropdown_component:
+    canceled: Canceled
+  number:
+    currency:
+      format:
+        delimiter: ","
+        format: "%u%n"
+        precision: 2
+        separator: "."
+        significant: false
+        strip_insignificant_zeros: false
+        unit: "$"
+    format:
+      delimiter: ","
+      precision: 3
+      separator: "."
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          billion: Billion
+          million: Million
+          quadrillion: Quadrillion
+          thousand: Thousand
+          trillion: Trillion
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one: Byte
+            other: Bytes
+          eb: EB
+          gb: GB
+          kb: KB
+          mb: MB
+          pb: PB
+          tb: TB
+    percentage:
+      format:
+        delimiter: ''
+        format: "%n%"
+    precision:
+      format:
+        delimiter: ''
+  participations:
+    destroy:
+      alert: Unable to destroy participation
+      confirm: Are you sure you want to destroy this participation? This is irreversible…
+      notice: Participation successfully destroyed
+      title: Destroy
+  personal_infos:
+    form_fields:
+      country_prompt: Select country
+      email_helper: A personal email address is required to receive the pass for Geneva's bus system
+  purchases:
+    destroy:
+      confirm: Are you sure you want to destroy this extra? This is irreversible…
+      title: Destroy
+  registrations:
+    form:
+      club_info: Choose here the Dojo or Club you belong to. If it does not exist yet create it by entering its name followed by ↩︎ in the search field.
+  roles:
+    annotator: annotator
+    manager: manager
+  simple_form:
+    error_notification:
+      default_message: 'Please review the problems below:'
+    'no': 'No'
+    required:
+      mark: "*"
+      text: required
+    'yes': 'Yes'
   static_pages:
     about:
-      title: The tournament
       a: |
         The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
         <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
-      b: "The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe. In 2019, the 33rd edition gathered French, Italian, Japanese, English and of course Swiss kenshis. After a two-year hiatus due to COVID, the 34th edition of the Kasahara Cup will take place this year on September 24 and 25 at the Bout-du-Monde stadium, near the city center."
-  title: Title
-  date:
+      b: The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe. In 2019, the 33rd edition gathered French, Italian, Japanese, English and of course Swiss kenshis. After a two-year hiatus due to COVID, the 34th edition of the Kasahara Cup will take place this year on September 24 and 25 at the Bout-du-Monde stadium, near the city center.
+      title: The tournament
+  support:
+    array:
+      last_word_connector: ", and "
+      two_words_connector: " and "
+      words_connector: ", "
+  teams:
+    destroy:
+      confirm: Are you sure you want to destroy this team? This is irreversible…
+      title: Destroy
+    index:
+      ronins:
+        info: We are loking for a team for the following Ronins. Let us know if you have an available spot!
+      title: All teams
+    show:
+      title: Team “%{team_name}”
+    team_row:
+      complete: Complete
+      incomplete: Incomplete
+      invalid: Invalid
+      valid: Valid
+  time:
+    am: am
     formats:
-      default: "%d/%m/%Y"
-      short: "%e %b"
-      long: "%e %B %Y"
       day_only: "%d"
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      long: "%B %d, %Y %H:%M"
       month_only: "%B"
-      day_month_year: "%e %B %Y"
+      short: "%d %b %H:%M"
+    pm: pm
+    zone: Time Zone
+  users:
+    resume:
+      kenshis_number: You already have %{number} registrations
+    show:
+      edit: edit
+      no_registrations: You have no registrations yet.
+      register_someone_else: Register someone else to the competition
+      register_yourself: Register yourself to the competition
+      title:
+        show: Account of %{full_name}
+      your_registrations: Your registrations for Kasahara Cup %{year}
+  views:
+    pagination:
+      first: "&laquo; First"
+      last: Last &raquo;
+      next: Next &rsaquo;
+      previous: "&lsaquo; Prev"
+      truncate: "&hellip;"
+  waiver:
+    body: |
+      to participate in the Kasahara Cup scheduled to be held on %{start} and %{end}, in Geneva. The participation will be in categories typically reserved for adults aged 18 years and older.
+      Understanding the associated risks, I confirm that the aforementioned individual has accident insurance coverage and I release the Shung Do Kwan Budo association, based in Geneva, from any liability in the event of an accident of any kind during the entire competition.
+      I acknowledge that I have thoroughly read the contents of this release and I sign it with full understanding of the facts stated herein.
+    junior: |
+      in my capacity as the legal guardian, hereby authorize
+      ............................................................................... (name, first name)
+    signature: |
+      ......................................................... (place, date)
+      Signature:
+    title: Liability waiver for junior under 18 years old
+    undersigned: |
+      I, the undersigned
+      ............................................................................... (name, first name)

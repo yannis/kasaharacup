@@ -5,5 +5,5 @@ module.exports = {
     './app/components/**/*.rb',
     './app/helpers/**/*.rb',
     './app/javascript/**/*.js',
-  ]
+  ],
 };
