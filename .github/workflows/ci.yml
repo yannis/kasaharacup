@@ -130,6 +130,18 @@ jobs:
       - name: Run Rubocop
         run: docker compose run --rm app bundle exec rubocop --parallel
 
+      - name: Brakeman
+        run: docker compose run --rm app bundle exec brakeman --color
+
+      - name: Herb linter
+        run: docker compose run --rm app npx @herb-tools/linter .
+
+      - name: ESLint
+        run: docker compose run --rm app yarn run eslint .
+
+      - name: Check translations
+        run: docker compose run --rm app bundle exec i18n-tasks health
+
   test:
     name: Test (RSpec)
     needs: build
