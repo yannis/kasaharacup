@@ -71,7 +71,7 @@ jobs:
 
       - name: Upload image artifact
         if: github.event_name != 'push'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docker-image
           path: /tmp/docker-image.tar.gz
@@ -234,7 +234,7 @@ jobs:
 
       - name: Upload failure screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: failure-screenshots
           path: tmp/capybara/**/*.png
