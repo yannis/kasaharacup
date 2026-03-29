@@ -125,9 +125,9 @@ en:
         title: Categories
       deadline: The deadline for registration is %{deadline}
       deadline_passed: Registration is closed since %{deadline}
-      fee: "%{fee_chf} CHF or %{fee_eu} €"
+      fee: "%{fee_chf} CHF"
       fees:
-        description: Payment of fees upon arrival at the competition venue (in cash or by card, € or CHF).
+        description: Payment of fees upon arrival at the competition venue (in cash or by card, CHF only).
         title: Registration fees
         variable: Price variable
       over: The tournament is over! Thanks to all for participating and see you next year!

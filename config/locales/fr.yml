@@ -129,9 +129,9 @@ fr:
         title: Les catégories
       deadline: Le délai pour les inscriptions est fixé au %{deadline}
       deadline_passed: Les inscriptions sont fermée depuis le %{deadline}
-      fee: "%{fee_chf} CHF ou %{fee_eu} €"
+      fee: "%{fee_chf} CHF"
       fees:
-        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèces ou par carte bancaire, € ou CHF).
+        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèces ou par carte bancaire, CHF uniquement).
         title: Combien ça coûte?
         variable: Prix variable
       over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
