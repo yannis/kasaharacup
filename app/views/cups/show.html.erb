@@ -29,133 +29,21 @@
           <h2 class="mt-10">
             <%= t(".program.title") %>
           </h2>
-          <div class="lg:grid lg:grid-cols-2 lg:gap-8">
+          <div class="space-y-8 not-prose">
             <% @grouped_events.each do |date, events| %>
               <div>
-                <h3 class="mt-0">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-red-900 border-b border-red-200 pb-1 mb-1">
                   <%= l date, format: :short %>
                 </h3>
-                <table class="table lg:mb-0">
+                <table class="w-full text-base [&_th]:border-0 [&_td]:border-0">
                   <tbody>
                     <% events.each do |event| %>
                       <tr>
-                        <th class="whitespace-nowrap align-text-top text-right">
+                        <th class="whitespace-nowrap align-text-top text-right text-gray-400 tabular-nums font-normal py-0.5 pr-3 w-1">
                           <%= event.start_on.to_fs(:time_only) %>
                         </th>
-                        <td>
-                          <%= md_to_html(event.name).delete_prefix("<p>").sub(/<\/p>\s*\z/, "").html_safe %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>
-                </table>
-              </div>
-            <% end %>
-            <% if @cup.individual_categories.any? || @cup.team_categories.any? %>
-              <div id="categories" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
-                <h2 class="mt-10">
-                  <%= t(".categories.title") %>
-                </h2>
-                <table class="table lg:mb-0">
-                  <tbody>
-                    <% @cup.individual_categories.order(:name).each do |c| %>
-                      <tr>
-                        <th class="whitespace-nowrap text-right">
-                          <%= c.name %>
-                        </th>
-                        <td>
-                          <% if c.description.present? %>
-                            <%= c.description %>
-                          <% elsif c.min_age %>
-                            <%= t("categories.from") %>
-                            <%= c.min_age %>
-                            <%= t("categories.yo") %>
-                          <% elsif c.max_age %>
-                            <%= t("categories.to") %>
-                            <%= c.max_age %>
-                            <%= t("categories.yo") %>
-                          <% end %>
-                        </td>
-                      </tr>
-                    <% end %>
-                    <% @cup.team_categories.each do |c| %>
-                      <tr>
-                        <th class="whitespace-nowrap text-right">
-                          <%= c.name.capitalize %>
-                        </th>
-                        <td>
-                          <%= c.description.to_s %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>
-                </table>
-              </div>
-            <% end %>
-            <div id="shinpans" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
-              <h2 class="mt-10">
-                <%= t(".shinpans.title") %>
-              </h2>
-              <p>
-                <%= t(".shinpans.info") %>
-              </p>
-              <% if @shinpans.any? %>
-                <h3 class="mt-10">
-                  <%= t(".shinpans.invited.title") %>
-                </h3>
-                <table class="table">
-                  <tbody>
-                    <% @shinpans.each.with_index do |shinpan, index| %>
-                      <tr>
-                        <td class="text-right">
-                          <%= index + 1 %>.
-                        </td>
-                        <td class="text-right">
-                          <%= shinpan.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %>
-                        </td>
-                        <th class="lg:whitespace-nowrap text-left">
-                          <%= shinpan.full_name %>
-                        </th>
-                        <td class="text-left">
-                          <em><%= shinpan.grade %></em>
-                        </td>
-                        <td class="text-right">
-                          <%= shinpan.club.name %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>
-                </table>
-              <% end %>
-            </div>
-            <% if @cup.products.any? %>
-              <div id="fees" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
-                <h2 class="mt-10">
-                  <%= t(".fees.title") %>
-                </h2>
-                <p>
-                  <%= t(".fees.description") %>
-                </p>
-                <table class="table">
-                  <tbody>
-                    <% @cup.products.order(:position).each do |product| %>
-                      <tr>
-                        <th class="lg:whitespace-nowrap text-right">
-                          <%= product.name %>
-                          <% if product.description.present? %>
-                              <em class="text-gray-500 ">(<%= product.description %>)</em>
-                          <% end %>
-
-                          <% if product.still_available? %>
-                            <% if product.remaining_spots %>
-                              <span class="text-brand italic">(<%= t(".spots_left", count: product.remaining_spots) %> )</span>
-                            <% end %>
-                          <% else %>
-                            <span class="text-brand italic">(<%= t(".products.not_available") %>)</span>
-                          <% end %>
-                        </th>
-                        <td class="text-left">
-                          <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
+                        <td class="py-0.5">
+                          <%= md_to_html_inline(event.name) %>
                         </td>
                       </tr>
                     <% end %>
@@ -164,6 +52,113 @@
               </div>
             <% end %>
           </div>
+          <% if @cup.individual_categories.any? || @cup.team_categories.any? %>
+            <div id="categories" class="not-prose mt-10">
+              <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                <%= t(".categories.title") %>
+              </h2>
+              <table class="w-full text-base [&_th]:border-0 [&_td]:border-0">
+                <tbody>
+                  <% @cup.individual_categories.order(:name).each do |c| %>
+                    <tr>
+                      <th class="whitespace-nowrap align-text-top text-right font-semibold py-1 pr-3 w-1">
+                        <%= c.name %>
+                      </th>
+                      <td class="text-gray-500 py-1">
+                        <% if c.description.present? %>
+                          <%= c.description %>
+                        <% elsif c.min_age %>
+                          <%= t("categories.from") %> <%= c.min_age %> <%= t("categories.yo") %>
+                        <% elsif c.max_age %>
+                          <%= t("categories.to") %> <%= c.max_age %> <%= t("categories.yo") %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                  <% @cup.team_categories.each do |c| %>
+                    <tr>
+                      <th class="whitespace-nowrap align-text-top text-right font-semibold py-1 pr-3 w-1">
+                        <%= c.name.capitalize %>
+                      </th>
+                      <td class="text-gray-500 py-1">
+                        <%= c.description.to_s %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+          <div id="shinpans" class="prose prose-red-900 prose-lg text-gray-900">
+            <h2 class="mt-10">
+              <%= t(".shinpans.title") %>
+            </h2>
+            <p>
+              <%= t(".shinpans.info") %>
+            </p>
+            <% if @shinpans.any? %>
+              <h3 class="mt-10">
+                <%= t(".shinpans.invited.title") %>
+              </h3>
+              <table class="w-full text-base not-prose [&_th]:border-0 [&_td]:border-0">
+                <tbody>
+                  <% @shinpans.each.with_index do |shinpan, index| %>
+                    <tr>
+                      <td class="text-right text-gray-400 tabular-nums py-0.5 pr-2 w-1">
+                        <%= index + 1 %>.
+                      </td>
+                      <td class="text-right py-0.5 pr-1 whitespace-nowrap">
+                        <%= shinpan.female ? User.human_attribute_name(:ms) : User.human_attribute_name(:mr) %>
+                      </td>
+                      <th class="lg:whitespace-nowrap text-left font-semibold py-0.5 pr-2">
+                        <%= shinpan.full_name %>
+                      </th>
+                      <td class="text-left text-gray-500 italic py-0.5 pr-2">
+                        <%= shinpan.grade %>
+                      </td>
+                      <td class="text-right text-gray-500 py-0.5">
+                        <%= shinpan.club.name %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+          <% if @cup.products.any? %>
+            <div id="fees" class="not-prose mt-10">
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                <%= t(".fees.title") %>
+              </h2>
+              <p class="text-gray-500 mb-4">
+                <%= t(".fees.description") %>
+              </p>
+              <table class="w-full text-base [&_th]:border-0 [&_td]:border-0">
+                <tbody>
+                  <% @cup.products.order(:position).each do |product| %>
+                    <tr>
+                      <th class="lg:whitespace-nowrap text-right font-semibold py-1 pr-3 w-1">
+                        <%= product.name %>
+                        <% if product.description.present? %>
+                          <em class="text-gray-500 font-normal">(<%= product.description %>)</em>
+                        <% end %>
+                        <% if product.still_available? %>
+                          <% if product.remaining_spots %>
+                            <span class="text-brand italic font-normal">(<%= t(".spots_left", count: product.remaining_spots) %>)</span>
+                          <% end %>
+                        <% else %>
+                          <span class="text-brand italic font-normal">(<%= t(".products.not_available") %>)</span>
+                        <% end %>
+                      </th>
+                      <td class="text-left py-1 tabular-nums">
+                        <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
         <% end %>
       <% end %>
       <div id="venue" class="prose prose-red-900 prose-lg text-gray-900 lg:col-span-2">
@@ -183,10 +178,7 @@
           <%= t ".accomodation.title" %>
         </h2>
         <p>
-          <%= raw t ".accomodation.dormitory" %>
-        </p>
-        <p>
-          <%= raw t ".accomodation.hotels" %>
+          <%= t ".accomodation.hotels_html" %>
         </p>
       </div>
     </div>

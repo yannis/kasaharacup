@@ -123,7 +123,7 @@ fr:
     show:
       accomodation:
         dormitory: Cette année, nous sommes désolés mais nous ne serons pas en mesure de proposer des dortoirs car le bâtiment des dortoirs est en cours de rénovation.
-        hotels: Vous pouvez toujours choisir parmi <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
+        hotels_html: Vous pouvez toujours choisir parmi <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
         title: Logement
       categories:
         title: Les catégories
