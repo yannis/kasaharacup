@@ -122,16 +122,22 @@ fr:
   cups:
     show:
       accomodation:
-        dormitory: Cette année, nous sommes désolés mais nous ne serons pas en mesure de proposer des dortoirs car le bâtiment des dortoirs est en cours de rénovation.
-        hotels: Vous pouvez toujours choisir parmi <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
+        hotels_html: Vous pouvez toujours choisir parmi <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
         title: Logement
       categories:
         title: Les catégories
       deadline: Le délai pour les inscriptions est fixé au %{deadline}
       deadline_passed: Les inscriptions sont fermée depuis le %{deadline}
-      fee: "%{fee_chf} CHF ou %{fee_eu} €"
+      fee: "%{fee_chf} CHF"
       fees:
-        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèces ou par carte bancaire, € ou CHF).
+        description: Carte bancaire ou Twint (CHF uniquement, pas d'espèces).
+        on_the_spot: Sur place
+        payment_title: Comment payer ?
+        prepayment: Virement bancaire
+        prepayment_deadline: 'Délai : %{deadline}'
+        prepayment_recommended: Recommandé
+        prepayment_reference: KasaharaCup2026 + nom du participant
+        prepayment_reference_label: Référence de paiement
         title: Combien ça coûte?
         variable: Prix variable
       over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
@@ -154,7 +160,7 @@ fr:
         one: 1 place restante
         other: "%{count} places restantes"
       venue:
-        a: Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}.
+        a_html: Comme chaque année, la compétition se déroulera au %{stade_du_bout_du_monde}.
         address:
           content: |
             Stade du Bout-du-Monde<br />
@@ -510,7 +516,7 @@ fr:
   layouts:
     footer:
       contact:
-        text: Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre.
+        text_html: Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre.
         title: Contact
       newsletter:
         button: Abonnez-vous
@@ -611,10 +617,10 @@ fr:
     'yes': Oui
   static_pages:
     about:
-      a: |
+      a_html: |
         La coupe Kasahara est un tournoi international de kendo organisé chaque année depuis 1984 en l'honneur de <strong>Kasahara Toshiaki sensei</strong>, le premier Secrétaire de la ZNKR (Zen Nippon Kendo Renmei) et de l'IKF (International Kendo Federation). Kasahara sensei a joué un rôle crucial dans le dévelopement du kendo en Suisse.
         <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4ème Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
-      b: Le tournoi, organisé depuis plus de 20 ans à Genève par le section kendo du <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, réunit environ 150 participants de toute l'Europe. En 2019, la 33ème édition a rassemblé des kenshis français, italiens, japonais, anglais et bien entendu suisses. Après deux ans de Hiatus pour cause de COVID, la 34ème édition de la Coupe Kasahara aura lieu cette année les 24 et 25 septembre au stade du Bout-du-Monde, proche du centre ville.
+      b_html: Le tournoi, organisé depuis plus de 20 ans à Genève par le section kendo du <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, réunit environ 150 participants de toute l'Europe. En 2019, la 33ème édition a rassemblé des kenshis français, italiens, japonais, anglais et bien entendu suisses. Après deux ans de Hiatus pour cause de COVID, la 34ème édition de la Coupe Kasahara aura lieu cette année les 24 et 25 septembre au stade du Bout-du-Monde, proche du centre ville.
       title: La compétition
   support:
     array:

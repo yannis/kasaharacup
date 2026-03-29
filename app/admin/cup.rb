@@ -21,6 +21,14 @@ ActiveAdmin.register Cup do
       f.input :canceled_at, as: :datepicker
       f.input :registerable_at, as: :datepicker
       f.input(
+        :product_team_id,
+        as: :select,
+        collection: f.object.products
+          .order(:position)
+          .where("LOWER(products.name_en) ~ 'team'")
+          .map { |p| [p.name, p.id] }
+      )
+      f.input(
         :product_individual_junior_id,
         as: :select,
         collection: f.object.products
@@ -29,7 +37,23 @@ ActiveAdmin.register Cup do
           .map { |p| [p.name, p.id] }
       )
       f.input(
+        :product_full_junior_id,
+        as: :select,
+        collection: f.object.products
+          .order(:position)
+          .where("LOWER(products.name_en) ~ 'junior'")
+          .map { |p| [p.name, p.id] }
+      )
+      f.input(
         :product_individual_adult_id,
+        as: :select,
+        collection: f.object.products
+          .order(:position)
+          .where("LOWER(products.name_en) ~ 'adult'")
+          .map { |p| [p.name, p.id] }
+      )
+      f.input(
+        :product_full_adult_id,
         as: :select,
         collection: f.object.products
           .order(:position)

@@ -6,6 +6,15 @@ class Product < ApplicationRecord
   belongs_to :event, optional: true
   has_many :purchases, dependent: :destroy, autosave: true
   has_many :kenshis, through: :purchases
+  has_one :cup_team, class_name: "Cup", foreign_key: "product_team_id", inverse_of: :product_team, dependent: :nullify
+  has_one :cup_full_junior, class_name: "Cup", foreign_key: "product_full_junior_id", inverse_of: :product_full_junior,
+    dependent: :nullify
+  has_one :cup_full_adult, class_name: "Cup", foreign_key: "product_full_adult_id", inverse_of: :product_full_adult,
+    dependent: :nullify
+  has_one :cup_individual_junior, class_name: "Cup", foreign_key: "product_individual_junior_id",
+    inverse_of: :product_individual_junior, dependent: :nullify
+  has_one :cup_individual_adult, class_name: "Cup", foreign_key: "product_individual_adult_id",
+    inverse_of: :product_individual_adult, dependent: :nullify
 
   validates :name_en, presence: true, uniqueness: {scope: :cup_id}
   validates :name_fr, presence: true, uniqueness: {scope: :cup_id}

@@ -118,16 +118,22 @@ en:
   cups:
     show:
       accomodation:
-        dormitory: This year, we're sorry but we will not be able to offer dormitories as the dormitory building is under renovation.
-        hotels: You can chose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
+        hotels_html: You can chose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
         title: Accomodation
       categories:
         title: Categories
       deadline: The deadline for registration is %{deadline}
       deadline_passed: Registration is closed since %{deadline}
-      fee: "%{fee_chf} CHF or %{fee_eu} €"
+      fee: "%{fee_chf} CHF"
       fees:
-        description: Payment of fees upon arrival at the competition venue (in cash or by card, € or CHF).
+        description: Credit card or Twint (CHF only, no cash).
+        on_the_spot: On the spot
+        payment_title: How to pay?
+        prepayment: Bank transfer
+        prepayment_deadline: 'Deadline: %{deadline}'
+        prepayment_recommended: Recommended
+        prepayment_reference: KasaharaCup2026 + name of the participant
+        prepayment_reference_label: Payment reference
         title: Registration fees
         variable: Price variable
       over: The tournament is over! Thanks to all for participating and see you next year!
@@ -150,7 +156,7 @@ en:
         one: 1 spot left
         other: "%{count} spots left"
       venue:
-        a: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
+        a_html: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
         address:
           content: |
             Stade du Bout-du-Monde<br />
@@ -507,7 +513,7 @@ en:
   layouts:
     footer:
       contact:
-        text: Contact us at %{mail} if you have any questions. We're looking forward to answer to you…
+        text_html: Contact us at %{mail} if you have any questions. We're looking forward to answer to you…
         title: Contact
       newsletter:
         button: Subscribe
@@ -608,10 +614,10 @@ en:
     'yes': 'Yes'
   static_pages:
     about:
-      a: |
+      a_html: |
         The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
         <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
-      b: The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe. In 2019, the 33rd edition gathered French, Italian, Japanese, English and of course Swiss kenshis. After a two-year hiatus due to COVID, the 34th edition of the Kasahara Cup will take place this year on September 24 and 25 at the Bout-du-Monde stadium, near the city center.
+      b_html: The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe. In 2019, the 33rd edition gathered French, Italian, Japanese, English and of course Swiss kenshis. After a two-year hiatus due to COVID, the 34th edition of the Kasahara Cup will take place this year on September 24 and 25 at the Bout-du-Monde stadium, near the city center.
       title: The tournament
   support:
     array:

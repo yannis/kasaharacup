@@ -23,7 +23,7 @@
           <%= t ".contact.title" %>
         </h3>
         <p class="mt-2 text-base text-gray-500 prose">
-          <%= raw t ".contact.text", mail: mail_to(ENV.fetch("CONTACT_EMAIL"), nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_") %>
+          <%= t ".contact.text_html", mail: mail_to(ENV.fetch("CONTACT_EMAIL"), nil, encode: "hex", replace_at: "_at_", replace_dot: "_dot_") %>
         </p>
         <div class="mt-6 pt-6 border-t">
           <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
