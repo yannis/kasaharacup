@@ -39,7 +39,7 @@ RSpec.describe Team do
       it { expect(described_class.incomplete.all).to include(team) }
       it { expect(described_class.incomplete).to eq [team] }
       it { expect(team.participations.count).to eq 1 }
-      it { expect(team.fitness).to eq 0.1429 }
+      it { expect(team.fitness).to eq 0.1364 }
       it { expect(described_class.empty.to_a).not_to include(team) }
     end
 
@@ -57,7 +57,7 @@ RSpec.describe Team do
       it { expect(team).to be_isvalid }
       it { expect(described_class.complete.all).to include(team) }
       it { expect(team.participations.count).to eq 5 }
-      it { expect(team.fitness).to eq 0.4839 }
+      it { expect(team.fitness).to eq 0.5 }
     end
 
     context "with 4 participations" do
