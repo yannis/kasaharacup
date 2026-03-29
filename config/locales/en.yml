@@ -118,7 +118,6 @@ en:
   cups:
     show:
       accomodation:
-        dormitory: This year, we're sorry but we will not be able to offer dormitories as the dormitory building is under renovation.
         hotels_html: You can chose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
         title: Accomodation
       categories:
