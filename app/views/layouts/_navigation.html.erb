@@ -51,7 +51,7 @@
               link_to(
                 t("navigation.teams.text", teams: current_cup.teams.joins(:participations).distinct.count),
                 cup_teams_path(current_cup),
-                title: t("navigation.teams.title").html_safe,
+                title: t("navigation.teams.title"),
                 class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               )
             %>
@@ -123,7 +123,7 @@
         link_to(
           t("navigation.teams.text", teams: current_cup.teams.joins(:participations).distinct.count),
           cup_teams_path(current_cup),
-          title: t("navigation.teams.title").html_safe,
+          title: t("navigation.teams.title"),
           class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
         )
       %>

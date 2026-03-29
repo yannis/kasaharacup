@@ -5,7 +5,7 @@
       <%= md_to_html(headline.content) %>
     </div>
     <div class="mt-3 text-sm">
-      <%= link_to cup_headlines_path(@cup), class: "font-medium text-red-600 hover:text-red-500" do %>
+      <%= link_to cup_headlines_path(cup), class: "font-medium text-red-600 hover:text-red-500" do %>
         <%= t("headlines.link") %>
         <span aria-hidden="true">&rarr;</span>
       <% end %>

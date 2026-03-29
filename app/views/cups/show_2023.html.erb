@@ -18,7 +18,7 @@
     <div class="mt-6 prose prose-red-900 prose-lg text-gray-900 lg:col-span-2" id="program">
       <% if @headlines.any? %>
         <div class="mt-4">
-          <%= render "headline", headline: @headlines.first %>
+          <%= render "headline", headline: @headlines.first, cup: @cup %>
         </div>
       <% end %>
       <% if @grouped_events.any? %>
@@ -119,7 +119,7 @@
                           <% end %>
                         </th>
                         <td class="text-right">
-                          <%= raw t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
+                          <%= t(".fee", fee_chf: product.fee_chf, fee_eu: product.fee_eu) %>
                         </td>
                       </tr>
                     <% end %>
@@ -135,7 +135,7 @@
           <%= t(".venue.title") %>
         </h2>
         <p>
-          <%= raw t(".venue.a", stade_du_bout_du_monde: link_to("Centre sportif du Bout-du-Monde", "http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/")) %>
+          <%= t(".venue.a_html", stade_du_bout_du_monde: link_to("Centre sportif du Bout-du-Monde", "http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/")) %>
         </p>
         <h3>
           <%= t(".venue.address.title") %>
@@ -147,10 +147,10 @@
           <%= t ".accomodation.title" %>
         </h2>
         <p>
-          <%= raw t ".accomodation.dormitory" %>
+          <%= t ".accomodation.dormitory_html" %>
         </p>
         <p>
-          <%= raw t ".accomodation.hotels" %>
+          <%= t ".accomodation.hotels_html" %>
         </p>
       </div>
     </div>

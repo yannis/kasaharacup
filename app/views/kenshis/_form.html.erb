@@ -8,8 +8,8 @@
 </div>
 <%=
   form_with(
-    model: [@user, @kenshi],
-    url: polymorphic_path([@cup, @user, @kenshi]),
+    model: [user, kenshi],
+    url: polymorphic_path([cup, user, kenshi]),
     html: {class: "kasa-form"},
     data: {
       controller: "kenshi-form"
@@ -23,28 +23,28 @@
         <%= f.label :female, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
         <div class="input-field">
           <%= f.select :female, [[Kenshi.human_attribute_name(:ms), true], [Kenshi.human_attribute_name(:mr), false]] %>
-          <%= tag.p(f.object.errors.full_messages_for(:female).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <%= tag.p(safe_join(f.object.errors.full_messages_for(:female), tag.br), class: "mt-2 text-sm text-red-600") %>
         </div>
       </div>
       <div class="input-group">
         <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
         <div class="input-field">
           <%= f.text_field :first_name, autocomplete: "given-name" %>
-          <%= tag.p(f.object.errors.full_messages_for(:first_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <%= tag.p(safe_join(f.object.errors.full_messages_for(:first_name), tag.br), class: "mt-2 text-sm text-red-600") %>
         </div>
       </div>
       <div class="input-group">
         <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
         <div class="input-field">
           <%= f.text_field :last_name, autocomplete: "family-name" %>
-          <%= tag.p(f.object.errors.full_messages_for(:last_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <%= tag.p(safe_join(f.object.errors.full_messages_for(:last_name), tag.br), class: "mt-2 text-sm text-red-600") %>
         </div>
       </div>
       <div class="input-group">
         <%= f.label :dob, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
         <div class="input-field">
           <%= f.date_field :dob %>
-          <%= tag.p(f.object.errors.full_messages_for(:dob).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <%= tag.p(safe_join(f.object.errors.full_messages_for(:dob), tag.br), class: "mt-2 text-sm text-red-600") %>
         </div>
       </div>
       <div class="input-group">
@@ -52,7 +52,7 @@
         <div class="input-field">
           <%=
             f.select :club_name,
-              @club_names,
+              club_names,
               {include_blank: true},
               class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs placeholder-gray-400 focus:outline-hidden focus:ring-red-500 focus:border-red-500 sm:text-sm",
               data: {
@@ -61,7 +61,7 @@
               },
               style: "width: 20em;"
           %>
-          <%= tag.p(f.object.errors.full_messages_for(:club_name).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <%= tag.p(safe_join(f.object.errors.full_messages_for(:club_name), tag.br), class: "mt-2 text-sm text-red-600") %>
           <p class="mt-2 text-sm text-gray-500" id="club-info"><%= t("registrations.form.club_info") %></p>
         </div>
       </div>
@@ -69,7 +69,7 @@
         <%= f.label :grade, class: "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2" %>
         <div class="input-field">
           <%= f.select :grade, Kenshi::GRADES %>
-          <%= tag.p(f.object.errors.full_messages_for(:grade).join("<br>").html_safe, class: "mt-2 text-sm text-red-600") %>
+          <%= tag.p(safe_join(f.object.errors.full_messages_for(:grade), tag.br), class: "mt-2 text-sm text-red-600") %>
           <p class="helper-text mt-2">
             <%= t("cups.show.shinpans.info") %>
           </p>
@@ -224,7 +224,7 @@
             </div>
             <div class="mt-4 sm:mt-0 sm:col-span-2">
               <%= t(".waiver.info") %>
-              <%= link_to(t(".waiver.title"), cup_waiver_path(@cup), class: "text-brand hover:underline", download: true) %>
+              <%= link_to(t(".waiver.title"), cup_waiver_path(cup), class: "text-brand hover:underline", download: true) %>
             </div>
           </div>
         </div>

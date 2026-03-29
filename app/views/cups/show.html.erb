@@ -18,7 +18,7 @@
     <div class="mt-6 prose prose-red-900 prose-lg text-gray-900 lg:col-span-2" id="program">
       <% if @headlines.any? %>
         <div class="mt-4">
-          <%= render "headline", headline: @headlines.first %>
+          <%= render "headline", headline: @headlines.first, cup: @cup %>
         </div>
       <% end %>
       <div class="text-green-600 lg:col-span-2 bg-white shadow-xs sm:rounded-lg mt-2 p-2 text-center font-bold">
@@ -189,7 +189,7 @@
           <%= t(".venue.title") %>
         </h2>
         <p>
-          <%= raw t(".venue.a", stade_du_bout_du_monde: link_to("Centre sportif du Bout-du-Monde", "http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/")) %>
+          <%= t(".venue.a_html", stade_du_bout_du_monde: link_to("Centre sportif du Bout-du-Monde", "http://www.ville-geneve.ch/plan-ville/sports/centre-sportif-bout-monde/")) %>
         </p>
         <h3>
           <%= t(".venue.address.title") %>
