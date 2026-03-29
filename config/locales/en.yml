@@ -127,7 +127,14 @@ en:
       deadline_passed: Registration is closed since %{deadline}
       fee: "%{fee_chf} CHF"
       fees:
-        description: Payment of fees upon arrival at the competition venue (in cash or by card, CHF only).
+        description: Credit card or Twint (CHF only, no cash).
+        on_the_spot: On the spot
+        payment_title: How to pay?
+        prepayment: Bank transfer
+        prepayment_deadline: 'Deadline: %{deadline}'
+        prepayment_recommended: Recommended
+        prepayment_reference: KasaharaCup2026 + name of the participant
+        prepayment_reference_label: Payment reference
         title: Registration fees
         variable: Price variable
       over: The tournament is over! Thanks to all for participating and see you next year!

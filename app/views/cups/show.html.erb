@@ -14,7 +14,7 @@
       <%= md_to_html(@cup.description) %>
     </div>
   <% end %>
-  <div class="lg:grid lg:grid-cols-3 lg:gap-12">
+  <div class="<%= @cup.registerable? ? "lg:grid lg:grid-cols-3 lg:gap-12" : "max-w-3xl mx-auto" %>">
     <div class="mt-6 prose prose-red-900 prose-lg text-gray-900 lg:col-span-2" id="program">
       <% if @headlines.any? %>
         <div class="mt-4">
@@ -130,33 +130,56 @@
               <h2 class="text-2xl font-bold text-gray-900 mb-2">
                 <%= t(".fees.title") %>
               </h2>
-              <p class="text-gray-500 mb-4">
-                <%= t(".fees.description") %>
-              </p>
-              <table class="w-full text-base [&_th]:border-0 [&_td]:border-0">
-                <tbody>
-                  <% @cup.products.order(:position).each do |product| %>
-                    <tr>
-                      <th class="lg:whitespace-nowrap text-right font-semibold py-1 pr-3 w-1">
-                        <%= product.name %>
-                        <% if product.description.present? %>
-                          <em class="text-gray-500 font-normal">(<%= product.description %>)</em>
+              <div class="divide-y divide-gray-100">
+                <% @cup.products.order(:position).each do |product| %>
+                  <div class="flex items-baseline justify-between py-2">
+                    <div>
+                      <span class="font-semibold text-gray-900"><%= product.name %></span>
+                      <% if product.description.present? %>
+                        <span class="text-gray-500 text-sm ml-1">(<%= product.description %>)</span>
+                      <% end %>
+                      <% if product.still_available? %>
+                        <% if product.remaining_spots %>
+                          <span class="text-brand italic text-sm ml-1">(<%= t(".spots_left", count: product.remaining_spots) %>)</span>
                         <% end %>
-                        <% if product.still_available? %>
-                          <% if product.remaining_spots %>
-                            <span class="text-brand italic font-normal">(<%= t(".spots_left", count: product.remaining_spots) %>)</span>
-                          <% end %>
-                        <% else %>
-                          <span class="text-brand italic font-normal">(<%= t(".products.not_available") %>)</span>
-                        <% end %>
-                      </th>
-                      <td class="text-left py-1 tabular-nums">
-                        <%= t(".fee", fee_chf: product.fee_chf) %>
-                      </td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
+                      <% else %>
+                        <span class="text-brand italic text-sm ml-1">(<%= t(".products.not_available") %>)</span>
+                      <% end %>
+                    </div>
+                    <span class="font-semibold text-gray-900 tabular-nums whitespace-nowrap ml-4"><%= t(".fee", fee_chf: product.fee_chf) %></span>
+                  </div>
+                <% end %>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mt-8 mb-3"><%= t(".fees.payment_title") %></h3>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="relative border-2 border-red-800 rounded-lg p-4 text-sm">
+                  <span class="absolute -top-2.5 left-3 bg-red-800 text-white text-xs font-bold px-2 py-0.5 rounded-full"><%= t(".fees.prepayment_recommended") %></span>
+                  <p class="font-bold text-gray-900 mt-1"><%= t(".fees.prepayment") %></p>
+                  <p class="text-gray-500 text-xs mb-3"><%= t(".fees.prepayment_deadline", deadline: l(@cup.start_on - 4.days, format: :long)) %></p>
+                  <dl class="space-y-1 text-gray-700">
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0">IBAN</dt>
+                      <dd class="font-mono text-xs self-center"><%= ENV.fetch("BANK_IBAN") %></dd>
+                    </div>
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0">BIC/SWIFT</dt>
+                      <dd class="font-mono text-xs self-center"><%= ENV.fetch("BANK_BIC") %></dd>
+                    </div>
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0"><%= t("activerecord.attributes.kenshi.name") %></dt>
+                      <dd><%= ENV.fetch("BANK_ACCOUNT_HOLDER") %></dd>
+                    </div>
+                  </dl>
+                  <div class="mt-3 bg-red-50 border border-red-200 rounded p-2">
+                    <p class="text-xs text-gray-500"><%= t(".fees.prepayment_reference_label") %></p>
+                    <p class="font-bold text-red-900 text-sm"><%= t(".fees.prepayment_reference") %></p>
+                  </div>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4 text-sm">
+                  <p class="font-bold text-gray-900 mt-1"><%= t(".fees.on_the_spot") %></p>
+                  <p class="text-gray-500 mt-2"><%= t(".fees.description") %></p>
+                </div>
+              </div>
             </div>
           <% end %>
         <% end %>

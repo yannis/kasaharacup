@@ -131,7 +131,14 @@ fr:
       deadline_passed: Les inscriptions sont fermée depuis le %{deadline}
       fee: "%{fee_chf} CHF"
       fees:
-        description: Paiement des frais à l'arrivée sur le lieu de la compétition (en espèces ou par carte bancaire, CHF uniquement).
+        description: Carte bancaire ou Twint (CHF uniquement, pas d'espèces).
+        on_the_spot: Sur place
+        payment_title: Comment payer ?
+        prepayment: Virement bancaire
+        prepayment_deadline: 'Délai : %{deadline}'
+        prepayment_recommended: Recommandé
+        prepayment_reference: KasaharaCup2026 + nom du participant
+        prepayment_reference_label: Référence de paiement
         title: Combien ça coûte?
         variable: Prix variable
       over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
