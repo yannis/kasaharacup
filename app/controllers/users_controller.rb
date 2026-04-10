@@ -5,6 +5,6 @@ class UsersController < ApplicationController
 
   def show
     @user = current_user
-    @title = t("users.show.title.show", full_name: @user.full_name)
+    @title = t(".title", full_name: @user.full_name)
   end
 end

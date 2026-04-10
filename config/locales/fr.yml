@@ -660,8 +660,7 @@ fr:
       no_registrations: Vous n'avez pas encore d'inscription.
       register_someone_else: Inscrivez quelqu'un d'autre à la compétition
       register_yourself: Inscrivez-vous à la compétition
-      title:
-        show: Compte de %{full_name}
+      title: Compte de %{full_name}
       your_registrations: Vos inscriptions pour la Coupe Kasahara %{year}
   views:
     pagination:
