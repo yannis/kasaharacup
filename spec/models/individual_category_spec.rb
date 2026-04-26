@@ -31,6 +31,28 @@ RSpec.describe IndividualCategory do
     end
   end
 
+  describe "Validations" do
+    let(:cup) { create(:cup) }
+
+    it "accepts nil gender_restriction (open category)" do
+      expect(build(:individual_category, cup: cup, gender_restriction: nil)).to be_valid
+    end
+
+    it "accepts \"female\" gender_restriction" do
+      expect(build(:individual_category, cup: cup, gender_restriction: "female")).to be_valid
+    end
+
+    it "accepts \"male\" gender_restriction" do
+      expect(build(:individual_category, cup: cup, gender_restriction: "male")).to be_valid
+    end
+
+    it "rejects an unknown gender_restriction value" do
+      category = build(:individual_category, cup: cup, gender_restriction: "other")
+      expect(category).not_to be_valid
+      expect(category.errors[:gender_restriction]).to be_present
+    end
+  end
+
   describe "A individual_category “open”" do
     let!(:individual_category) {
       create(:individual_category, name: "open", pool_size: 3, out_of_pool: 2,
