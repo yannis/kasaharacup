@@ -159,6 +159,7 @@ namespace :temporary do
           out_of_pool: 2,
           min_age: 17,
           max_age: nil,
+          gender_restriction: "female",
           description_en: "For ladies who are 16 years or older.
           Participants less than 18 years old
           will be required to show a document signed by a legal representative".squish,
