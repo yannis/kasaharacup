@@ -31,6 +31,28 @@ RSpec.describe TeamCategory do
     end
   end
 
+  describe "Validations" do
+    let(:cup) { create(:cup) }
+
+    it "accepts nil gender_restriction (open category)" do
+      expect(build(:team_category, cup: cup, gender_restriction: nil)).to be_valid
+    end
+
+    it "accepts \"female\" gender_restriction" do
+      expect(build(:team_category, cup: cup, gender_restriction: "female")).to be_valid
+    end
+
+    it "accepts \"male\" gender_restriction" do
+      expect(build(:team_category, cup: cup, gender_restriction: "male")).to be_valid
+    end
+
+    it "raises on an unknown gender_restriction value" do
+      expect {
+        build(:team_category, cup: cup, gender_restriction: "other")
+      }.to raise_error(ArgumentError, /not a valid gender_restriction/)
+    end
+  end
+
   describe "A team_category team" do
     let!(:team_category) {
       create(:team_category, name: "team", pool_size: 3, out_of_pool: 2,

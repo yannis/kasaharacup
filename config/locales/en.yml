@@ -76,6 +76,7 @@ en:
             category:
               too_old: 'not valid: You''re too old to participate to the %{name} category!'
               too_young: 'not valid: You''re too young to participate to the %{name} category!'
+              wrong_gender: 'not valid: this category (%{name}) is restricted to a different gender!'
         purchase:
           attributes:
             product_id:

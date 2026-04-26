@@ -8,6 +8,8 @@ module ActsAsCategory
   included do
     has_many :fights, dependent: :destroy
 
+    enum :gender_restriction, {female: "female", male: "male"}
+
     validates :name, presence: true
     validates :cup_id, presence: true
     validates :name, uniqueness: {scope: :cup_id}

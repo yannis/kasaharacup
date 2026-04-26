@@ -79,6 +79,7 @@ fr:
             category:
               too_old: Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!
               too_young: Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!
+              wrong_gender: Désolé, mais la catégorie %{name} est réservée à un autre genre!
         purchase:
           attributes:
             product_id:

@@ -127,6 +127,67 @@ RSpec.describe Participation do
         }
       end
     end
+
+    describe "#category_gender" do
+      let(:cup) { create(:cup, start_on: 2.months.from_now) }
+
+      context "when category has no gender_restriction" do
+        let(:individual_category) { create(:individual_category, cup: cup, gender_restriction: nil) }
+
+        it "is valid for a female kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: true)
+          expect(build(:participation, kenshi: kenshi, category: individual_category)).to be_valid
+        end
+
+        it "is valid for a male kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: false)
+          expect(build(:participation, kenshi: kenshi, category: individual_category)).to be_valid
+        end
+      end
+
+      context "when category is gender_restriction: \"female\"" do
+        let(:individual_category) { create(:individual_category, cup: cup, gender_restriction: "female") }
+
+        it "is valid for a female kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: true)
+          expect(build(:participation, kenshi: kenshi, category: individual_category)).to be_valid
+        end
+
+        it "is invalid for a male kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: false)
+          participation = build(:participation, kenshi: kenshi, category: individual_category)
+          expect(participation).not_to be_valid
+          expect(participation.errors[:category]).to be_present
+        end
+      end
+
+      context "when category is gender_restriction: \"male\"" do
+        let(:individual_category) { create(:individual_category, cup: cup, gender_restriction: "male") }
+
+        it "is valid for a male kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: false)
+          expect(build(:participation, kenshi: kenshi, category: individual_category)).to be_valid
+        end
+
+        it "is invalid for a female kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: true)
+          participation = build(:participation, kenshi: kenshi, category: individual_category)
+          expect(participation).not_to be_valid
+          expect(participation.errors[:category]).to be_present
+        end
+      end
+
+      context "when category is a TeamCategory with gender_restriction: \"female\"" do
+        let(:team_category) { create(:team_category, cup: cup, gender_restriction: "female") }
+
+        it "is invalid for a male kenshi" do
+          kenshi = create(:kenshi, cup: cup, female: false)
+          participation = build(:participation, kenshi: kenshi, category: team_category)
+          expect(participation).not_to be_valid
+          expect(participation.errors[:category]).to be_present
+        end
+      end
+    end
   end
 
   describe "#product" do

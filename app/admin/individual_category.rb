@@ -1,7 +1,27 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
-  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :description_en, :description_fr, :cup_id
+  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :gender_restriction,
+    :description_en, :description_fr, :cup_id
+
+  form do |f|
+    f.semantic_errors
+    f.inputs do
+      f.input :cup
+      f.input :name
+      f.input :description_en
+      f.input :description_fr
+      f.input :pool_size
+      f.input :out_of_pool
+      f.input :min_age
+      f.input :max_age
+      f.input :gender_restriction,
+        as: :select,
+        collection: IndividualCategory.gender_restrictions.keys,
+        include_blank: "Open"
+    end
+    f.actions
+  end
 
   controller do
     def scoped_collection
@@ -22,6 +42,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     column :out_of_pool
     column :min_age
     column :max_age
+    column :gender_restriction
     column :kenshi_count do |c|
       c.participations.size
     end
@@ -44,6 +65,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       row :description_fr
       row :pool_size
       row :out_of_pool
+      row :gender_restriction
     end
     if category.pools.present?
       panel "Pools" do

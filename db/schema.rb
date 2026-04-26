@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_01_02_133729) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2024_01_02_133729) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "document_type", ["passport", "id_card"]
+  create_enum "gender_restriction", ["female", "male"]
 
   create_table "active_admin_comments", id: :serial, force: :cascade do |t|
     t.integer "author_id"
@@ -159,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2024_01_02_133729) do
     t.text "description_de"
     t.text "description_en"
     t.text "description_fr"
+    t.enum "gender_restriction", enum_type: "gender_restriction"
     t.integer "max_age"
     t.integer "min_age"
     t.string "name", limit: 255, null: false
@@ -264,6 +266,7 @@ ActiveRecord::Schema[8.1].define(version: 2024_01_02_133729) do
     t.text "description_de"
     t.text "description_en"
     t.text "description_fr"
+    t.enum "gender_restriction", enum_type: "gender_restriction"
     t.integer "max_age"
     t.integer "min_age"
     t.string "name", limit: 255, null: false
