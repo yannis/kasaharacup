@@ -14,6 +14,7 @@ class Participation < ApplicationRecord
   validates :pool_number, numericality: {only_integer: true, greater_than: 0, allow_nil: true}
   validate :individual_or_team_category
   validate :category_age
+  validate :category_gender
 
   before_validation :assign_category
 
@@ -110,6 +111,15 @@ class Participation < ApplicationRecord
       if category.max_age && age > category.max_age
         errors.add(:category, :too_old, name: category.name)
       end
+    end
+  end
+
+  private def category_gender
+    return unless kenshi && category&.gender_restriction
+
+    expected_female = category.gender_restriction == "female"
+    if kenshi.female != expected_female
+      errors.add(:category, :wrong_gender, name: category.name)
     end
   end
 end
