@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_01_02_133729) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_26_181608) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "heroku_ext.pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
-  enable_extension "pg_stat_statements"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -159,6 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2024_01_02_133729) do
     t.text "description_de"
     t.text "description_en"
     t.text "description_fr"
+    t.string "gender_restriction"
     t.integer "max_age"
     t.integer "min_age"
     t.string "name", limit: 255, null: false
