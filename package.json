@@ -9,10 +9,10 @@
     "@tailwindcss/cli": "^4.1.6",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.13",
-    "esbuild": "^0.27.3",
+    "esbuild": "^0.28.0",
     "globals": "^17.3.0",
     "jquery": "^4.0.0",
-    "postcss": "^8.4.40",
+    "postcss": "^8.5.12",
     "select2": "^4.1.0-rc.0",
     "stimulus-use": "^0.52.2",
     "tailwindcss": "^4.1.6"
@@ -22,8 +22,8 @@
     "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css"
   },
   "devDependencies": {
-    "@herb-tools/formatter": "^0.8.10",
-    "@herb-tools/linter": "^0.9.2",
+    "@herb-tools/formatter": "^0.10.1",
+    "@herb-tools/linter": "^0.10.1",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1"
