@@ -17,7 +17,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       f.input :max_age
       f.input :gender_restriction,
         as: :select,
-        collection: ActsAsCategory::GENDER_RESTRICTIONS,
+        collection: IndividualCategory.gender_restrictions.keys,
         include_blank: "Open"
     end
     f.actions

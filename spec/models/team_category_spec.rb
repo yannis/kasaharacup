@@ -46,10 +46,10 @@ RSpec.describe TeamCategory do
       expect(build(:team_category, cup: cup, gender_restriction: "male")).to be_valid
     end
 
-    it "rejects an unknown gender_restriction value" do
-      category = build(:team_category, cup: cup, gender_restriction: "other")
-      expect(category).not_to be_valid
-      expect(category.errors[:gender_restriction]).to be_present
+    it "raises on an unknown gender_restriction value" do
+      expect {
+        build(:team_category, cup: cup, gender_restriction: "other")
+      }.to raise_error(ArgumentError, /not a valid gender_restriction/)
     end
   end
 

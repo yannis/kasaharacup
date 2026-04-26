@@ -17,7 +17,7 @@ ActiveAdmin.register TeamCategory do
       f.input :max_age
       f.input :gender_restriction,
         as: :select,
-        collection: ActsAsCategory::GENDER_RESTRICTIONS,
+        collection: TeamCategory.gender_restrictions.keys,
         include_blank: "Open"
     end
     f.actions

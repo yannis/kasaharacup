@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "document_type", ["passport", "id_card"]
+  create_enum "gender_restriction", ["female", "male"]
 
   create_table "active_admin_comments", id: :serial, force: :cascade do |t|
     t.integer "author_id"
@@ -159,7 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
     t.text "description_de"
     t.text "description_en"
     t.text "description_fr"
-    t.string "gender_restriction"
+    t.enum "gender_restriction", enum_type: "gender_restriction"
     t.integer "max_age"
     t.integer "min_age"
     t.string "name", limit: 255, null: false
@@ -265,7 +266,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
     t.text "description_de"
     t.text "description_en"
     t.text "description_fr"
-    t.string "gender_restriction"
+    t.enum "gender_restriction", enum_type: "gender_restriction"
     t.integer "max_age"
     t.integer "min_age"
     t.string "name", limit: 255, null: false
