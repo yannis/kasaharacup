@@ -2,7 +2,7 @@
 # Optimized multi-stage build
 
 # Stage 1: Base image with system dependencies
-FROM ruby:4.0.1-alpine AS base
+FROM ruby:4.0.3-alpine AS base
 
 LABEL maintainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
