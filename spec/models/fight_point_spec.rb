@@ -81,6 +81,34 @@ RSpec.describe FightPoint do
     end
   end
 
+  describe "touches parent fight" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:k1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:k2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:fight) {
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: k1, fighter_2: k2)
+    }
+
+    it "touches the fight when a point is created" do
+      original = fight.updated_at
+      travel(1.second) do
+        create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      end
+      expect(fight.reload.updated_at).to be > original
+    end
+
+    it "touches the fight when a point is destroyed" do
+      point = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      original = fight.reload.updated_at
+      travel(1.second) do
+        point.destroy!
+      end
+      expect(fight.reload.updated_at).to be > original
+    end
+  end
+
   describe "#code" do
     {
       "men" => "M",

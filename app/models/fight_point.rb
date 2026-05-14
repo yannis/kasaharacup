@@ -10,7 +10,7 @@ class FightPoint < ApplicationRecord
     "hansoku" => "△"
   }.freeze
 
-  belongs_to :fight
+  belongs_to :fight, touch: true
 
   enum :fighter_side, {fighter_1: "fighter_1", fighter_2: "fighter_2"}
   enum :kind, {

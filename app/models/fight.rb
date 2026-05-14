@@ -36,6 +36,14 @@ class Fight < ApplicationRecord
   after_update_commit :broadcast_competition_tree,
     if: -> { saved_change_to_winner_id? && pool_number.blank? }
 
+  after_commit :broadcast_pool_panel,
+    on: [:create, :destroy],
+    if: -> { pool_number.present? }
+  after_commit :broadcast_pool_panel_on_change,
+    on: :update,
+    if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
+  after_touch :broadcast_pool_panel, if: -> { pool_number.present? }
+
   scope :bracket_order, -> { order(:round, :position) }
 
   PARENT_ASSOCIATIONS = [:parent_fight_1, :parent_fight_2].freeze
@@ -117,6 +125,18 @@ class Fight < ApplicationRecord
       attributes: {method: :morph}
     )
   end
+
+  private def broadcast_pool_panel
+    broadcast_replace_later_to(
+      [individual_category, :competition_tree],
+      target: "pool_#{pool_number}_#{dom_id(individual_category)}",
+      partial: "admin/pool_fights/pool",
+      locals: {category: individual_category, pool_number: pool_number, admin: true},
+      attributes: {method: :morph}
+    )
+  end
+
+  private alias_method :broadcast_pool_panel_on_change, :broadcast_pool_panel
 
   private def fighters_participate_in_category
     validate_fighter_participates(:fighter_1, fighter_1)

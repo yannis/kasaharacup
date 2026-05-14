@@ -357,4 +357,57 @@ RSpec.describe Fight do
       expect(fight).to be_valid_verbose
     end
   end
+
+  describe "Pool fight broadcasting" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:kenshi2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+
+    def pool_target_substring
+      "pool_1_individual_category_#{category.id}"
+    end
+
+    def broadcast_targets
+      ActiveJob::Base.queue_adapter.enqueued_jobs.map { |j| j[:args].to_s }
+    end
+
+    before { ActiveJob::Base.queue_adapter.enqueued_jobs.clear }
+
+    it "broadcasts on pool fight create" do
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      expect(broadcast_targets.join).to include(pool_target_substring)
+    end
+
+    it "broadcasts on winner change for a pool fight" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      fight.update!(winner: kenshi1)
+
+      expect(broadcast_targets.join).to include(pool_target_substring)
+    end
+
+    it "broadcasts on pool fight destroy" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      fight.destroy!
+
+      expect(broadcast_targets.join).to include(pool_target_substring)
+    end
+
+    it "broadcasts when touched" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      fight.touch
+
+      expect(broadcast_targets.join).to include(pool_target_substring)
+    end
+  end
 end
