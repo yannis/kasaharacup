@@ -73,6 +73,12 @@ class Participation < ApplicationRecord
     end
   end
 
+  def pool_label
+    return if pool_number.blank? || pool_position.blank?
+
+    "#{pool_number}.#{pool_position}"
+  end
+
   def descriptive_name
     full_name = [category.name]
     full_name << "(#{team.name})" if team

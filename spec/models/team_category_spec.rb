@@ -19,7 +19,7 @@ RSpec.describe TeamCategory do
       expect(team_category).to respond_to :out_of_pool
       expect(team_category).to respond_to :pools
       expect(team_category).to respond_to :fights
-      expect(team_category).to respond_to :tree
+      expect(team_category).to respond_to :data
       expect(team_category).to respond_to :min_age
       expect(team_category).to respond_to :max_age
       expect(team_category).to respond_to :description
@@ -101,10 +101,6 @@ RSpec.describe TeamCategory do
         before { team_category.set_smart_pools }
 
         it { expect(team_category.pools.size).to eq 8 }
-        # it {expect(team_category.tree).to be_a Tree}
-        # it {expect(team_category.data).to be_a Hash}
-        # it {expect(team_category.data.keys).to eq [:tree]}
-        # it {expect(team_category.data[:tree].keys).to eq [:elements, :depth, :branch_number]}
       end
     end
   end

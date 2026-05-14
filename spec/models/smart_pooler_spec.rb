@@ -26,8 +26,6 @@ RSpec.describe SmartPooler do
   before { smart_pooler.set_pools }
 
   it { expect(individual_category.pools.size).to eq 8 }
-  it { expect(individual_category.tree).to be_a Tree }
   it { expect(individual_category.data).to be_a Hash }
-  it { expect(individual_category.data.keys).to eq [:tree] }
-  it { expect(individual_category.data[:tree].keys).to eq [:elements, :depth, :branch_number] }
+  it { expect(individual_category.data.keys).to eq [:fights] }
 end

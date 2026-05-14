@@ -1,0 +1,113 @@
+<%= helpers.turbo_frame_tag tree_dom_id do %>
+  <%# Live broadcasts are admin-only — public viewers see a static snapshot. %>
+  <% if admin %>
+    <%= helpers.turbo_stream_from category, :competition_tree %>
+  <% end %>
+  <div id="<%= tree_dom_id %>" class="competition-tree">
+    <% if rounds.empty? %>
+      <p class="text-sm text-gray-500">No competition tree has been generated yet.</p>
+    <% else %>
+      <div class="competition-tree__viewport" style="width: <%= canvas_width %>px; height: <%= canvas_height %>px;">
+        <svg class="competition-tree__svg" width="<%= canvas_width %>" height="<%= canvas_height %>" viewBox="0 0 <%= canvas_width %> <%= canvas_height %>" aria-hidden="true">
+          <% connector_paths.each do |path| %>
+            <path class="competition-tree__line" d="<%= path %>" />
+          <% end %>
+        </svg>
+
+        <% rounds.each do |round_number, fights| %>
+          <h3 class="competition-tree__round competition-tree__round-title" style="left: <%= match_left(fights.first) %>px;">Round <%= round_number %></h3>
+
+          <% fights.each do |fight| %>
+            <% next unless render_fight?(fight) %>
+
+            <% if fight.bye? %>
+              <% bye_slot = fight.bye_slot %>
+              <article class="competition-tree__match competition-tree__match--bye" style="<%= match_style(fight) %>">
+                <div class="competition-tree__match-header">
+                  <span>Fight <%= fight.number %> <span class="competition-tree__bye-label">Bye</span></span>
+                </div>
+                <ol class="competition-tree__fighters">
+                  <li class="competition-tree__fighter competition-tree__fighter--winner">
+                    <% if (prefix = fighter_pool_prefix(fight, bye_slot)) %>
+                      <span class="competition-tree__pool-position"><%= prefix %></span>
+                    <% end %>
+                    <%= fighter_name(fight, bye_slot) %>
+                  </li>
+                </ol>
+              </article>
+            <% else %>
+              <article class="competition-tree__match" style="<%= match_style(fight) %>">
+                <% if admin && fight.fighters.any? %>
+                  <details class="competition-tree__admin-details"
+                          data-controller="fight-winner"
+                          data-fight-winner-url-value="<%= admin_individual_category_fight_path(category, fight) %>">
+                    <summary class="competition-tree__match-header">
+                      <span>Fight <%= fight.number %></span>
+                      <span class="competition-tree__admin-summary">
+                        <span class="competition-tree__admin-summary-label competition-tree__admin-summary-label--edit">Edit result</span>
+                        <span class="competition-tree__admin-summary-label competition-tree__admin-summary-label--close">Close</span>
+                      </span>
+                    </summary>
+
+                    <% [1, 2].each do |slot| %>
+                      <% fighter = fight.public_send(:"resolved_fighter_#{slot}") %>
+                      <% next unless fighter %>
+                      <% side = (slot == 1) ? "fighter_1" : "fighter_2" %>
+                      <div class="competition-tree__point-controls" data-side="<%= side %>">
+                        <label class="competition-tree__point-side">
+                          <%= tag.input type: "radio", name: "fight_#{fight.id}_winner", value: fighter.id,
+                                checked: fight.winner_id == fighter.id,
+                                data: {action: "mousedown->fight-winner#detectExistingSelection click->fight-winner#submit"} %>
+                          <span class="competition-tree__point-side-name">
+                            <% if (prefix = fighter_pool_prefix(fight, slot)) %>
+                              <span class="competition-tree__pool-position"><%= prefix %></span>
+                            <% end %>
+                            <%= poster_name_for(fighter) %>
+                          </span>
+                        </label>
+                        <ol class="competition-tree__points">
+                          <% points_for(fight, slot).each do |point| %>
+                            <%= tag.li class: ["competition-tree__point", "competition-tree__point--#{point.kind}", ("competition-tree__point--first" if first_scoring_point?(fight, point))], data: {point_id: point.id} do %>
+                              <span class="competition-tree__point-code"><%= point.code %></span>
+                              <%= button_to "×", admin_individual_category_fight_fight_point_path(category, fight, point), method: :delete, class: "competition-tree__point-remove", form: {class: "competition-tree__point-remove-form", data: {turbo: true}} %>
+                            <% end %>
+                          <% end %>
+                        </ol>
+                        <div class="competition-tree__point-buttons">
+                          <% point_kind_codes.each do |kind, code| %>
+                            <%= button_to code, admin_individual_category_fight_fight_points_path(category, fight), method: :post, params: {fight_point: {fighter_side: side, kind: kind}}, class: ["competition-tree__point-button", "competition-tree__point-button--#{kind}"], form: {class: "competition-tree__point-button-form", data: {turbo: true}} %>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </details>
+                <% else %>
+                  <div class="competition-tree__match-header">
+                    <span>Fight <%= fight.number %></span>
+                  </div>
+                <% end %>
+                <ol class="competition-tree__fighters">
+                  <% [1, 2].each do |slot| %>
+                    <li class="competition-tree__fighter <%= "competition-tree__fighter--winner" if fighter_winner?(fight, slot) %>">
+                      <span class="competition-tree__fighter-name">
+                        <% if (prefix = fighter_pool_prefix(fight, slot)) %>
+                          <span class="competition-tree__pool-position"><%= prefix %></span>
+                        <% end %>
+                        <%= fighter_name(fight, slot) %>
+                      </span>
+                      <ol class="competition-tree__points">
+                        <% points_for(fight, slot).each do |point| %>
+                          <%= tag.li point.code, class: ["competition-tree__point", "competition-tree__point--#{point.kind}", ("competition-tree__point--first" if first_scoring_point?(fight, point))] %>
+                        <% end %>
+                      </ol>
+                    </li>
+                  <% end %>
+                </ol>
+              </article>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -84,7 +84,16 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
                 participation.kenshi.age_at_cup
               end
               column :pool_number do |participation|
-                best_in_place participation, :pool_number, as: :input, url: [:admin, participation]
+                best_in_place participation, :pool_number, as: :input, url: [:admin, participation],
+                  class: "best_in_place_short"
+              end
+              column :pool_position do |participation|
+                best_in_place participation, :pool_position, as: :input, url: [:admin, participation],
+                  class: "best_in_place_short"
+              end
+              column :pool_rank do |participation|
+                best_in_place participation, :pool_rank, as: :input, url: [:admin, participation],
+                  class: "best_in_place_short"
               end
               column :admin_links do |participation|
                 [
@@ -99,10 +108,28 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
           end
         end
       end
+    end
 
-      # panel "Tree" do
-      #   render partial: "category_tree", locals: {category: category}
-      # end
+    panel "Competition tree" do
+      div do
+        if category.fights.none?
+          span link_to("Generate tree", generate_bracket_admin_individual_category_path(category), method: :post,
+            data: {confirm: "Generate the competition tree from current pool results?"})
+        else
+          span link_to("Update tree", generate_bracket_admin_individual_category_path(category),
+            method: :post,
+            data: {confirm: "Fill in the latest pool ranks. Recorded winners are kept."})
+          span " | "
+          span link_to("Force rebuild",
+            generate_bracket_admin_individual_category_path(category, rebuild_started: true),
+            method: :post,
+            data: {confirm: "This destroys the existing tree and recorded winners, " \
+              "and rebuilds from scratch. Continue?"})
+          span " | "
+          span link_to("Download PDF", competition_tree_pdf_admin_individual_category_path(category))
+        end
+      end
+      render CompetitionTreeComponent.new(category: category, admin: true)
     end
 
     if category.participations.no_pool.present?
@@ -145,7 +172,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     if category.documents.any?
       panel "Documents" do
-        table_for category.documents do |document|
+        table_for category.documents.with_attached_file do |document|
           column :name
           column :url do |document|
             link_to document.file.filename, document.file.url
@@ -206,6 +233,15 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       type: "application/pdf",
       disposition: "inline",
       page_size: "A4"
+  end
+
+  member_action :competition_tree_pdf do
+    @category = IndividualCategory.find params[:id]
+    pdf = CompetitionTreePdf.new(@category)
+    send_data pdf.render,
+      filename: "#{@category.name.parameterize(separator: "_")}_competition_tree.pdf",
+      type: "application/pdf",
+      disposition: "inline"
   end
 
   action_item :new_video, only: :show do

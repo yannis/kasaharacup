@@ -42,10 +42,6 @@ class Team < ApplicationRecord
       .having("COUNT(participations.id) < 3")
   end
 
-  def self.tree
-    Tree.new(self)
-  end
-
   def to_s
     name
   end

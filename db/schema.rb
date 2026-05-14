@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_175343) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
+  enable_extension "pg_catalog.plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -116,15 +116,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
     t.index ["cup_id"], name: "index_events_on_cup_id"
   end
 
+  create_table "fight_points", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "fight_id", null: false
+    t.string "fighter_side", null: false
+    t.string "kind", null: false
+    t.integer "position", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fight_id", "fighter_side"], name: "index_fight_points_on_fight_id_and_fighter_side"
+    t.index ["fight_id", "position"], name: "index_fight_points_on_fight_id_and_position", unique: true
+    t.index ["fight_id"], name: "index_fight_points_on_fight_id"
+  end
+
   create_table "fights", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil
-    t.integer "fighter_1_id", null: false
-    t.integer "fighter_2_id", null: false
+    t.integer "fighter_1_id"
+    t.integer "fighter_1_pool_number"
+    t.integer "fighter_1_pool_rank"
+    t.integer "fighter_2_id"
+    t.integer "fighter_2_pool_number"
+    t.integer "fighter_2_pool_rank"
     t.string "fighter_type", limit: 255
     t.integer "individual_category_id", null: false
     t.integer "number", null: false
     t.integer "parent_fight_1_id"
     t.integer "parent_fight_2_id"
+    t.integer "position"
+    t.integer "round"
     t.string "score", limit: 255
     t.integer "team_category_id"
     t.datetime "updated_at", precision: nil
@@ -132,6 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
     t.index ["fighter_1_id"], name: "index_fights_on_fighter_1_id"
     t.index ["fighter_2_id"], name: "index_fights_on_fighter_2_id"
     t.index ["individual_category_id", "number"], name: "index_fights_on_individual_category_id_and_number", unique: true
+    t.index ["individual_category_id", "round", "position"], name: "index_fights_on_individual_category_id_and_round_and_position", unique: true
     t.index ["individual_category_id"], name: "index_fights_on_individual_category_id"
     t.index ["number"], name: "index_fights_on_number"
     t.index ["parent_fight_1_id"], name: "index_fights_on_parent_fight_1_id"
@@ -201,6 +220,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
     t.integer "kenshi_id", null: false
     t.integer "pool_number"
     t.integer "pool_position"
+    t.integer "pool_rank"
     t.integer "rank"
     t.boolean "ronin"
     t.integer "team_id"
@@ -208,6 +228,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
     t.index ["category_id", "category_type"], name: "index_participations_on_category_id_and_category_type"
     t.index ["kenshi_id"], name: "index_participations_on_kenshi_id"
     t.index ["pool_number"], name: "index_participations_on_pool_number"
+    t.index ["pool_rank"], name: "index_participations_on_pool_rank"
     t.index ["rank"], name: "index_participations_on_rank"
     t.index ["team_id"], name: "index_participations_on_team_id"
   end
@@ -338,6 +359,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_26_183501) do
   add_foreign_key "cups", "products", column: "product_individual_junior_id"
   add_foreign_key "cups", "products", column: "product_team_id"
   add_foreign_key "events", "cups"
+  add_foreign_key "fight_points", "fights"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"
   add_foreign_key "kenshis", "clubs"

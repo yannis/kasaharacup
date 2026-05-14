@@ -64,7 +64,7 @@ gem "countries"
 gem "country_select"
 
 # Edit in place
-gem "best_in_place", git: "https://github.com/mmotherwell/best_in_place"
+gem "best_in_place", git: "https://github.com/bernat/best_in_place"
 
 # Exceptions notification
 gem "honeybadger"

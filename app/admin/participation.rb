@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Participation, as: "Participation" do
-  permit_params :category_id, :category_type, :team_id, :pool_number, :pool_position, :ronin, :category_individual,
-    :category_team, :rank, :fighting_spirit
+  permit_params :category_id, :category_type, :team_id, :pool_number, :pool_position, :pool_rank, :ronin,
+    :category_individual, :category_team, :rank, :fighting_spirit
 
   controller do
     def scoped_collection
@@ -22,6 +22,7 @@ ActiveAdmin.register Participation, as: "Participation" do
     column :team
     column :pool_number
     column :pool_position
+    column :pool_rank
     column :ronin
     column :rank
     column :fighting_spirit
@@ -38,6 +39,7 @@ ActiveAdmin.register Participation, as: "Participation" do
       row :team
       row :pool_number
       row :pool_position
+      row :pool_rank
       row :ronin
       row :rank
       row :fighting_spirit
@@ -51,6 +53,7 @@ ActiveAdmin.register Participation, as: "Participation" do
       if f.object.category.is_a?(IndividualCategory)
         f.input :pool_number
         f.input :pool_position
+        f.input :pool_rank
         f.input :rank
         f.input :fighting_spirit
       elsif f.object.category.is_a?(TeamCategory)
