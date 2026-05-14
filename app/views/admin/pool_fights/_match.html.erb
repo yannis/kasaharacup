@@ -1,9 +1,9 @@
 <li class="pool-match">
   <header><%= fight.tiebreaker ? "Tiebreaker — #{fight.fighter_1&.full_name} vs #{fight.fighter_2&.full_name}" : "Match #{fight.number}" %></header>
   <% [1, 2].each do |slot| %>
-    <% kenshi = fight.public_send(:"fighter_#{slot}") %>
+    <% kenshi = fight.public_send(:"fighter_#{slot}") # rubocop:disable Lint/UselessAssignment %>
     <% next unless kenshi %>
-    <% side = (slot == 1) ? "fighter_1" : "fighter_2" %>
+    <% side = (slot == 1) ? "fighter_1" : "fighter_2" # rubocop:disable Lint/UselessAssignment %>
 
     <div class="pool-match__side">
       <span class="pool-match__name"><%= kenshi.full_name %></span>
