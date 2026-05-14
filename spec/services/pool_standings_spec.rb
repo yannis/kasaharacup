@@ -40,7 +40,7 @@ RSpec.describe PoolStandings do
         wins: 0, losses: 1, hikiwake: 1, points_scored: 2, points_conceded: 3, suggested_rank: 2
       )
       expect(rows.find { |r| r.participation == p3 }).to have_attributes(
-        wins: 0, losses: 1, hikiwake: 1, points_scored: 1, points_conceded: 3, suggested_rank: 2
+        wins: 0, losses: 1, hikiwake: 1, points_scored: 1, points_conceded: 3, suggested_rank: 3
       )
     end
 

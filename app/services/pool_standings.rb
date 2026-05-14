@@ -5,7 +5,7 @@ class PoolStandings
     :points_scored, :points_conceded, :suggested_rank)
 
   CASCADE_KEY = ->(row) {
-    [-row.wins, row.losses, -row.hikiwake]
+    [-row.wins, row.losses, -row.hikiwake, -row.points_scored, row.points_conceded]
   }
 
   def self.for(participations:, fights:)
