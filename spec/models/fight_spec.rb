@@ -147,6 +147,19 @@ RSpec.describe Fight do
       )
     end
 
+    it "does not broadcast a competition tree replacement on a pool fight winner change" do
+      pool_fight = create(:fight, :pool_fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      pool_fight.update!(winner: kenshi1)
+
+      tree_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select { |j|
+        j[:args].to_s.include?("competition_tree_individual_category_")
+      }
+      expect(tree_jobs).to be_empty
+    end
+
     it "enqueues the broadcast off the request thread" do
       ActiveJob::Base.queue_adapter.enqueued_jobs.clear
 

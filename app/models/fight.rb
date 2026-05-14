@@ -33,7 +33,8 @@ class Fight < ApplicationRecord
   before_validation :restore_fighter_type
 
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?
-  after_update_commit :broadcast_competition_tree, if: :saved_change_to_winner_id?
+  after_update_commit :broadcast_competition_tree,
+    if: -> { saved_change_to_winner_id? && pool_number.blank? }
 
   scope :bracket_order, -> { order(:round, :position) }
 
