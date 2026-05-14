@@ -17,6 +17,8 @@ class Participation < ApplicationRecord
   validate :category_gender
 
   before_validation :assign_category
+  before_validation :reset_pool_position_on_pool_change
+  before_validation :auto_assign_pool_position
 
   delegate :full_name, to: "kenshi", allow_nil: true
   delegate :grade, to: "kenshi", allow_nil: true
@@ -127,5 +129,23 @@ class Participation < ApplicationRecord
     if kenshi.female != expected_female
       errors.add(:category, :wrong_gender, name: category.name)
     end
+  end
+
+  private def reset_pool_position_on_pool_change
+    return unless persisted?
+    return unless pool_number_changed?
+    return if pool_position_changed?
+
+    self.pool_position = nil
+  end
+
+  private def auto_assign_pool_position
+    return if pool_number.blank?
+    return if pool_position.present?
+
+    scope = self.class.where(category_type: category_type, category_id: category_id,
+      pool_number: pool_number)
+    scope = scope.where.not(id: id) if persisted?
+    self.pool_position = (scope.maximum(:pool_position) || 0) + 1
   end
 end
