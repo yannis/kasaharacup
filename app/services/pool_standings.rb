@@ -19,6 +19,8 @@ class PoolStandings
 
   def rows
     base = build_base_rows
+    return base.map { |row| Row.new(**row.to_h.except(:suggested_rank), suggested_rank: nil) } if no_data?(base)
+
     rank_by_participation_id = assign_ranks(base)
     base.map { |row|
       Row.new(**row.to_h.except(:suggested_rank),
@@ -27,6 +29,13 @@ class PoolStandings
   end
 
   private attr_reader :participations, :fights
+
+  private def no_data?(rows)
+    rows.all? do |row|
+      row.wins.zero? && row.losses.zero? && row.hikiwake.zero? &&
+        row.points_scored.zero? && row.points_conceded.zero?
+    end
+  end
 
   private def build_base_rows
     participations.map { |participation| compute_row(participation) }

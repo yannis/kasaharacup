@@ -65,9 +65,15 @@
             <td><%= row.hikiwake %></td>
             <td><%= row.points_scored %></td>
             <td><%= row.points_conceded %></td>
-            <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
-            <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
-            <td class="pool-standings__rank"><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
+            <td class="pool-standings__rank">
+              <% if row.suggested_rank.nil? %>
+                <span class="pool-standings__placeholder">—</span>
+              <% else %>
+                <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
+                <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
+                <%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %>
+              <% end %>
+            </td>
             <td>
               <% if admin %>
                 <%= helpers.best_in_place participation, :pool_rank, as: :input,

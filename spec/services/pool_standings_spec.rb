@@ -80,6 +80,20 @@ RSpec.describe PoolStandings do
       expect(rows.find { |r| r.participation == p3 }.suggested_rank).to eq 3
     end
 
+    it "leaves suggested_rank nil for all rows when no fight has results yet" do
+      p1, k1 = participate(pool: 1, position: 1)
+      p2, k2 = participate(pool: 1, position: 2)
+      p3, k3 = participate(pool: 1, position: 3)
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: k1, fighter_2: k2)
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: k2, fighter_2: k3)
+
+      rows = described_class.for(participations: [p1, p2, p3], fights: category.pool_fights)
+
+      expect(rows.map(&:suggested_rank)).to eq [nil, nil, nil]
+    end
+
     it "leaves a 3-way tie equal even without a tiebreaker fight" do
       p1, k1 = participate(pool: 1, position: 1)
       p2, k2 = participate(pool: 1, position: 2)
