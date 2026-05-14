@@ -1,0 +1,67 @@
+<%= helpers.turbo_frame_tag dom_id_for_pool do %>
+  <% if admin %>
+    <%= helpers.turbo_stream_from category, :competition_tree %>
+  <% end %>
+
+  <div id="<%= dom_id_for_pool %>" class="pool-card">
+    <h3>Pool <%= pool_number %></h3>
+
+    <% if pool_fights.empty? %>
+      <p>No pool fights yet.</p>
+      <%= helpers.button_to "Generate pool fights",
+            helpers.generate_pool_fights_admin_individual_category_path(category),
+            method: :post,
+            data: {confirm: "Generate the cyclic match list for this pool?"} %>
+    <% else %>
+      <ol class="pool-matches">
+        <% cyclic_fights.each do |fight| %>
+          <%= helpers.render "admin/pool_fights/match", category: category, fight: fight,
+                point_codes: point_codes, admin: admin %>
+        <% end %>
+        <% tiebreaker_fights.each do |fight| %>
+          <%= helpers.render "admin/pool_fights/match", category: category, fight: fight,
+                point_codes: point_codes, admin: admin %>
+        <% end %>
+      </ol>
+
+      <% if admin %>
+        <%= helpers.form_with url: helpers.admin_individual_category_pool_fights_path(category),
+              method: :post, class: "pool-add-tiebreaker" do |f| %>
+          <%= f.hidden_field "pool_fight[pool_number]", value: pool_number %>
+          <%= f.select "pool_fight[fighter_1_id]",
+                participations.map { |p| [p.full_name, p.kenshi_id] } %>
+          <span>vs</span>
+          <%= f.select "pool_fight[fighter_2_id]",
+                participations.map { |p| [p.full_name, p.kenshi_id] } %>
+          <%= f.submit "Add tiebreaker" %>
+        <% end %>
+
+        <%= helpers.button_to "Reset this pool's fights",
+              helpers.reset_pool_fights_admin_individual_category_path(category),
+              method: :post, params: {pool_number: pool_number},
+              data: {confirm: "This deletes every fight and tiebreaker for pool #{pool_number}. Continue?"} %>
+      <% end %>
+
+      <table class="pool-standings">
+        <thead>
+          <tr><th>Kenshi</th><th>W</th><th>L</th><th>H</th><th>Pts+</th><th>Pts−</th><th>Suggested</th></tr>
+        </thead>
+        <tbody>
+          <% standings_rows.each_with_index do |row, index| %>
+            <tr>
+              <td><%= row.participation.full_name %></td>
+              <td><%= row.wins %></td>
+              <td><%= row.losses %></td>
+              <td><%= row.hikiwake %></td>
+              <td><%= row.points_scored %></td>
+              <td><%= row.points_conceded %></td>
+              <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
+              <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
+              <td><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+<% end %>
