@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_14_154024) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_14_154525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "heroku_ext.pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
@@ -152,7 +152,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_154024) do
     t.integer "winner_id"
     t.index ["fighter_1_id"], name: "index_fights_on_fighter_1_id"
     t.index ["fighter_2_id"], name: "index_fights_on_fighter_2_id"
-    t.index ["individual_category_id", "number"], name: "index_fights_on_individual_category_id_and_number", unique: true
+    t.index ["individual_category_id", "number"], name: "index_fights_on_category_and_number_bracket", unique: true, where: "(pool_number IS NULL)"
+    t.index ["individual_category_id", "pool_number", "number"], name: "index_fights_on_category_and_pool_and_number", unique: true, where: "(pool_number IS NOT NULL)"
     t.index ["individual_category_id", "pool_number"], name: "index_fights_on_individual_category_id_and_pool_number"
     t.index ["individual_category_id", "round", "position"], name: "index_fights_on_individual_category_id_and_round_and_position", unique: true
     t.index ["individual_category_id"], name: "index_fights_on_individual_category_id"
