@@ -13,6 +13,7 @@
           <th>Grade</th>
           <th>Club</th>
           <th>Age</th>
+          <th>Pool</th>
           <th>Pos</th>
           <th>W</th>
           <th>L</th>
@@ -41,6 +42,14 @@
             <td><%= kenshi&.age_at_cup %></td>
             <td>
               <% if admin %>
+                <%= helpers.best_in_place participation, :pool_number, as: :input,
+                      url: [:admin, participation], class: "best_in_place_short" %>
+              <% else %>
+                <%= participation.pool_number %>
+              <% end %>
+            </td>
+            <td>
+              <% if admin %>
                 <%= helpers.best_in_place participation, :pool_position, as: :input,
                       url: [:admin, participation], class: "best_in_place_short" %>
               <% else %>
@@ -65,7 +74,7 @@
             </td>
             <% if admin %>
               <td class="pool-standings__actions">
-                <%= helpers.link_to "Edit", helpers.edit_admin_participation_path(participation) %>
+                <%= helpers.link_to "Edit", helpers.edit_admin_participation_path(participation), data: {turbo_frame: "_top"} %>
               </td>
             <% end %>
           </tr>
