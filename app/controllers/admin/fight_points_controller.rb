@@ -3,6 +3,7 @@
 module Admin
   class FightPointsController < BaseController
     rescue_from ArgumentError, with: :render_unprocessable
+    rescue_from ActiveRecord::RecordInvalid, with: :flash_validation_error
 
     def create
       fight.with_lock { fight.fight_points.create!(point_params) }
@@ -12,6 +13,11 @@ module Admin
     def destroy
       point = fight.fight_points.find(params[:id])
       point.destroy!
+      respond_after_change
+    end
+
+    private def flash_validation_error(exception)
+      flash.now[:alert] = exception.record.errors.full_messages.to_sentence
       respond_after_change
     end
 

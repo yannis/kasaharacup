@@ -32,7 +32,7 @@ RSpec.describe "Admin fight points" do
         fight_point: {fighter_side: "fighter_1", kind: "ippon"}
       }
 
-      expect(response).to have_http_status(:unprocessable_content)
+      expect(flash[:alert]).to include("Fighter already has 2 non-hansoku points")
       expect(fight.fight_points.count).to eq 2
     end
 
@@ -54,6 +54,28 @@ RSpec.describe "Admin fight points" do
 
       expect(response).to redirect_to(admin_individual_category_path(category))
       expect(fight.fight_points).to be_empty
+    end
+  end
+
+  describe "POST under the pool_fights nesting when the model validation fails" do
+    let(:k1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:k2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let!(:pool_fight) {
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: k1, fighter_2: k2)
+    }
+
+    it "renders the pool with a flash alert instead of raising" do
+      create(:fight_point, fight: pool_fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, fight: pool_fight, fighter_side: "fighter_1", kind: "kote")
+
+      post admin_individual_category_pool_fight_fight_points_path(category, pool_fight),
+        params: {fight_point: {fighter_side: "fighter_1", kind: "ippon"}},
+        as: :turbo_stream
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Fighter already has 2 non-hansoku points")
+      expect(pool_fight.fight_points.count).to eq 2
     end
   end
 

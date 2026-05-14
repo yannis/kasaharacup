@@ -6,6 +6,10 @@
   <div id="<%= dom_id_for_pool %>" class="pool-card">
     <h3 class="pool-card__title">Pool <%= pool_number %> (total Dan: <%= pool&.total_dan %>)</h3>
 
+    <% if helpers.flash[:alert].present? %>
+      <p class="pool-card__alert" role="alert"><%= helpers.flash[:alert] %></p>
+    <% end %>
+
     <table class="pool-standings">
       <thead>
         <tr>
