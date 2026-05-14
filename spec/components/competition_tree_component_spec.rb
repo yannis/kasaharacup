@@ -299,4 +299,18 @@ RSpec.describe CompetitionTreeComponent, type: :component do
     end
     [local_category, bye_kenshi]
   end
+
+  it "ignores pool fights when computing rounds" do
+    other_category = create(:individual_category)
+    k1 = create(:kenshi, cup: other_category.cup,
+      participations: [build(:participation, category: other_category)])
+    k2 = create(:kenshi, cup: other_category.cup,
+      participations: [build(:participation, category: other_category)])
+    bracket = create(:fight, individual_category: other_category, fighter_1: k1, fighter_2: k2)
+    create(:fight, :pool_fight, individual_category: other_category, fighter_1: k1, fighter_2: k2)
+
+    rendered = render_inline(described_class.new(category: other_category))
+
+    expect(rendered.to_html).to include("Fight #{bracket.number}")
+  end
 end

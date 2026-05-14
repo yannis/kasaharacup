@@ -17,7 +17,7 @@ class CompetitionTreeComponent < ViewComponent::Base
 
   private def rounds
     @rounds ||= begin
-      fights = category.fights
+      fights = category.bracket_fights
         .includes(:fighter_1, :fighter_2, :winner, :fight_points)
         .bracket_order.to_a
       Fight.preload_parents(fights)
