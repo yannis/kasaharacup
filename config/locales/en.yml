@@ -120,10 +120,10 @@ en:
       update:
         notice: Fight updated
     pool_fights:
-      generate:
-        notice: Pool fights generated
       destroy:
         alert: Only tiebreaker fights can be deleted. Use Reset to clear a pool's regular fights.
+      generate:
+        notice: Pool fights generated
   categories:
     from: from
     to: to

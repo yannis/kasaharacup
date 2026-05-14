@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema[8.1].define(version: 2026_05_14_154525) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "heroku_ext.pg_stat_statements"
+  enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
 
   # Custom types defined in this database.
