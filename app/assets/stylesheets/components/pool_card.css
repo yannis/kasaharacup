@@ -131,6 +131,14 @@
   color: #1e3a8a;
 }
 
+.pool-match__point--first {
+  text-decoration: underline;
+}
+
+.pool-match__point--first .pool-match__point-remove {
+  text-decoration: none;
+}
+
 .pool-match__point-remove-form {
   display: inline-flex;
   margin: 0;
