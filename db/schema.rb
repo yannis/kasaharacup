@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_175343) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_14_154024) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
+  enable_extension "heroku_ext.pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
 
   # Custom types defined in this database.
@@ -130,6 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_175343) do
 
   create_table "fights", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil
+    t.boolean "draw", default: false, null: false
     t.integer "fighter_1_id"
     t.integer "fighter_1_pool_number"
     t.integer "fighter_1_pool_rank"
@@ -141,15 +142,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_175343) do
     t.integer "number", null: false
     t.integer "parent_fight_1_id"
     t.integer "parent_fight_2_id"
+    t.integer "pool_number"
     t.integer "position"
     t.integer "round"
     t.string "score", limit: 255
     t.integer "team_category_id"
+    t.boolean "tiebreaker", default: false, null: false
     t.datetime "updated_at", precision: nil
     t.integer "winner_id"
     t.index ["fighter_1_id"], name: "index_fights_on_fighter_1_id"
     t.index ["fighter_2_id"], name: "index_fights_on_fighter_2_id"
     t.index ["individual_category_id", "number"], name: "index_fights_on_individual_category_id_and_number", unique: true
+    t.index ["individual_category_id", "pool_number"], name: "index_fights_on_individual_category_id_and_pool_number"
     t.index ["individual_category_id", "round", "position"], name: "index_fights_on_individual_category_id_and_round_and_position", unique: true
     t.index ["individual_category_id"], name: "index_fights_on_individual_category_id"
     t.index ["number"], name: "index_fights_on_number"
