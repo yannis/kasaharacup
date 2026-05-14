@@ -29,7 +29,6 @@ RSpec.describe Fight do
       expect(fight).to validate_presence_of :number
       expect(fight).to validate_presence_of :round
       expect(fight).to validate_presence_of :position
-      expect(fight).to validate_uniqueness_of(:number).scoped_to(:individual_category_id)
       expect(fight).to validate_uniqueness_of(:position).scoped_to(:individual_category_id, :round)
     end
   end
@@ -258,6 +257,79 @@ RSpec.describe Fight do
 
         expect(final.reload.winner).to eq kenshi3
       end
+    end
+  end
+
+  describe "Pool fight validations" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:kenshi2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+
+    it "allows a pool fight to have nil round and position" do
+      fight = build(:fight, :pool_fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      expect(fight).to be_valid_verbose
+    end
+
+    it "still requires round and position for bracket fights" do
+      fight = build(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2,
+        round: nil, position: nil)
+      expect(fight).not_to be_valid
+      expect(fight.errors[:round]).to be_present
+      expect(fight.errors[:position]).to be_present
+    end
+
+    it "lets a pool fight and a bracket fight share the same number" do
+      create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2, number: 1)
+      pool_fight = build(:fight, :pool_fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2, number: 1)
+      expect(pool_fight).to be_valid_verbose
+    end
+
+    it "scopes pool fight number uniqueness by pool_number" do
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2, number: 1)
+      duplicate = build(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2, number: 1)
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:number]).to be_present
+    end
+
+    it "lets two different pools share a number sequence" do
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2, number: 1)
+      fight = build(:fight, :pool_fight, individual_category: category, pool_number: 2,
+        fighter_1: kenshi1, fighter_2: kenshi2, number: 1)
+      expect(fight).to be_valid_verbose
+    end
+
+    it "rejects draw=true when pool_number is blank" do
+      fight = build(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2,
+        draw: true)
+      expect(fight).not_to be_valid
+      expect(fight.errors[:draw]).to include("only allowed on pool fights")
+    end
+
+    it "rejects draw=true when a winner is set" do
+      fight = build(:fight, :pool_fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2, draw: true, winner: kenshi1)
+      expect(fight).not_to be_valid
+      expect(fight.errors[:draw]).to include("cannot coexist with a winner")
+    end
+
+    it "rejects tiebreaker=true when pool_number is blank" do
+      fight = build(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2,
+        tiebreaker: true)
+      expect(fight).not_to be_valid
+      expect(fight.errors[:tiebreaker]).to include("only allowed on pool fights")
+    end
+
+    it "rejects a tiebreaker missing fighter_1 or fighter_2" do
+      fight = build(:fight, :tiebreaker, individual_category: category,
+        fighter_1: kenshi1, fighter_2: nil)
+      expect(fight).not_to be_valid
+      expect(fight.errors[:fighter_2]).to be_present
     end
   end
 end

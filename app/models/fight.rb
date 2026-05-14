@@ -13,13 +13,22 @@ class Fight < ApplicationRecord
   has_many :fight_points, -> { order(:position) }, dependent: :destroy
 
   validates :number, presence: true
-  validates :round, presence: true
-  validates :position, presence: true
-  validates :number, uniqueness: {scope: :individual_category_id}
-  validates :position, uniqueness: {scope: [:individual_category_id, :round]}
+  validates :round, presence: true, if: -> { pool_number.blank? }
+  validates :position, presence: true, if: -> { pool_number.blank? }
+  validates :number,
+    uniqueness: {scope: :individual_category_id},
+    if: -> { pool_number.blank? }
+  validates :number,
+    uniqueness: {scope: [:individual_category_id, :pool_number]},
+    if: -> { pool_number.present? }
+  validates :position,
+    uniqueness: {scope: [:individual_category_id, :round]},
+    if: -> { position.present? }
 
   validate :fighters_participate_in_category
   validate :winner_is_a_fighter
+  validate :draw_constraints
+  validate :tiebreaker_constraints
 
   before_validation :restore_fighter_type
 
@@ -157,5 +166,20 @@ class Fight < ApplicationRecord
     return unless fighter_1_id || fighter_2_id || winner_id
 
     self.fighter_type = "Kenshi"
+  end
+
+  private def draw_constraints
+    return unless draw
+
+    errors.add(:draw, "only allowed on pool fights") if pool_number.blank?
+    errors.add(:draw, "cannot coexist with a winner") if winner_id.present?
+  end
+
+  private def tiebreaker_constraints
+    return unless tiebreaker
+
+    errors.add(:tiebreaker, "only allowed on pool fights") if pool_number.blank?
+    errors.add(:fighter_1, "is required for a tiebreaker") if fighter_1_id.blank?
+    errors.add(:fighter_2, "is required for a tiebreaker") if fighter_2_id.blank?
   end
 end
