@@ -110,10 +110,10 @@
               method: :post, class: "pool-add-tiebreaker" do |f| %>
           <%= f.hidden_field "pool_fight[pool_number]", value: pool_number %>
           <%= f.select "pool_fight[fighter_1_id]",
-                participations.map { |p| [p.full_name, p.kenshi_id] } %>
+                participations.map { |p| [p.kenshi&.poster_name(category: category), p.kenshi_id] } %>
           <span>vs</span>
           <%= f.select "pool_fight[fighter_2_id]",
-                participations.map { |p| [p.full_name, p.kenshi_id] } %>
+                participations.map { |p| [p.kenshi&.poster_name(category: category), p.kenshi_id] } %>
           <%= f.submit "Add tiebreaker", class: "pool-add-tiebreaker__submit" %>
         <% end %>
 

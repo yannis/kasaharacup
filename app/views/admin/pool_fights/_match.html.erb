@@ -2,7 +2,7 @@
 <li class="pool-match <%= "pool-match--tiebreaker" if fight.tiebreaker %>">
   <header class="pool-match__header">
     <% if fight.tiebreaker %>
-      Tiebreaker — <%= fight.fighter_1&.full_name %> vs <%= fight.fighter_2&.full_name %>
+      Tiebreaker — <%= fight.fighter_1&.poster_name(category: category) %> vs <%= fight.fighter_2&.poster_name(category: category) %>
     <% else %>
       Match <%= fight.number %>
     <% end %>
@@ -17,7 +17,7 @@
 
       <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
             ("pool-match__side--winner" if winner_here)] do %>
-        <span class="pool-match__name"><%= kenshi.full_name %></span>
+        <span class="pool-match__name"><%= kenshi.poster_name(category: category) %></span>
         <ol class="pool-match__points">
           <% fight.points_for(slot).each do |point| %>
             <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}",
@@ -49,7 +49,7 @@
 
   <% if admin %>
     <div class="pool-match__outcome">
-      <%= button_to "#{fight.fighter_1&.full_name} wins",
+      <%= button_to "#{fight.fighter_1&.poster_name(category: category)} wins",
             admin_individual_category_pool_fight_path(category, fight),
             method: :patch,
             params: {pool_fight: {winner_id: fight.fighter_1_id}},
@@ -63,7 +63,7 @@
             class: ["pool-match__outcome-btn",
               ("pool-match__outcome-btn--active" if fight.draw)],
             form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
-      <%= button_to "#{fight.fighter_2&.full_name} wins",
+      <%= button_to "#{fight.fighter_2&.poster_name(category: category)} wins",
             admin_individual_category_pool_fight_path(category, fight),
             method: :patch,
             params: {pool_fight: {winner_id: fight.fighter_2_id}},

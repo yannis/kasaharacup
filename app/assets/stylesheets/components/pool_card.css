@@ -80,6 +80,11 @@
 
 .pool-match__side--fighter_2 {
   background: rgba(214, 212, 208, 0.25);
+  text-align: right;
+}
+
+.pool-match__side--fighter_2 .pool-match__points {
+  justify-content: flex-end;
 }
 
 .pool-match__side--winner {
