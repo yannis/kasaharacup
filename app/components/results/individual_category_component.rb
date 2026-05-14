@@ -17,5 +17,7 @@ module Results
       @videos = individual_category.videos.order(:name)
       @documents = individual_category.documents
     end
+
+    private attr_reader :individual_category
   end
 end

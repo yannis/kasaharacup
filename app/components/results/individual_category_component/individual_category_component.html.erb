@@ -3,6 +3,11 @@
     <h3 class="text-lg leading-6 font-medium text-gray-900"><%= @individual_category.name.capitalize %></h3>
     <p class="mt-1 max-w-2xl text-sm text-gray-500"><%= @individual_category.description %></p>
   </div>
+  <% if @individual_category.fights.any? %>
+    <div class="border-t border-gray-200 px-4 py-5">
+      <%= render CompetitionTreeComponent.new(category: @individual_category) %>
+    </div>
+  <% end %>
   <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
     <dl class="sm:divide-y sm:divide-gray-200">
       <% @ranked_participations.each do |ranked_participation| %>
