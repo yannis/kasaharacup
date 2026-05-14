@@ -4,5 +4,6 @@ FactoryBot.define do
   factory :individual_category do
     cup
     name { "#{Faker::Adjective.positive} #{Faker::Ancient.primordial}" }
+    pool_size { 3 }
   end
 end
