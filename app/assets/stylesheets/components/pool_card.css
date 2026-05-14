@@ -337,6 +337,21 @@
   font-weight: 700;
 }
 
+.pool-standings__placeholder {
+  border-bottom: 1px dashed #A6A29D;
+  color: #A6A29D;
+  cursor: pointer;
+  display: inline-block;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.pool-standings__placeholder:hover {
+  background: #fef6ef;
+  border-bottom-color: #de7012;
+  color: #de7012;
+}
+
 .pool-standings__actions {
   font-size: 0.75rem;
   white-space: nowrap;

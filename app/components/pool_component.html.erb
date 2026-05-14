@@ -71,7 +71,9 @@
             <td>
               <% if admin %>
                 <%= helpers.best_in_place participation, :pool_rank, as: :input,
-                      url: [:admin, participation], class: "best_in_place_short" %>
+                      url: [:admin, participation],
+                      class: "best_in_place_short pool-standings__placeholder",
+                      nil: "—" %>
               <% else %>
                 <%= participation.pool_rank %>
               <% end %>
