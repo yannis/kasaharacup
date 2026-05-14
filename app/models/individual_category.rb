@@ -8,6 +8,8 @@ class IndividualCategory < ApplicationRecord
   has_many :kenshis, through: :participations
   has_many :documents, as: :category, dependent: :destroy
   has_many :videos, as: :category, dependent: :destroy
+  has_many :bracket_fights, -> { where(pool_number: nil) }, class_name: "Fight", inverse_of: :individual_category
+  has_many :pool_fights, -> { where.not(pool_number: nil) }, class_name: "Fight", inverse_of: :individual_category
 
   delegate :year, to: :cup
 

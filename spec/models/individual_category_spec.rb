@@ -53,6 +53,21 @@ RSpec.describe IndividualCategory do
     end
   end
 
+  describe "fight associations" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:kenshi2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+
+    it "separates bracket and pool fights" do
+      bracket = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+      pool = create(:fight, :pool_fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+
+      expect(category.bracket_fights).to contain_exactly(bracket)
+      expect(category.pool_fights).to contain_exactly(pool)
+    end
+  end
+
   describe "A individual_category “open”" do
     let!(:individual_category) {
       create(:individual_category, name: "open", pool_size: 3, out_of_pool: 2,
