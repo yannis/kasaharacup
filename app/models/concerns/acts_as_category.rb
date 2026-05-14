@@ -36,7 +36,7 @@ module ActsAsCategory
 
     def data
       {
-        fights: fights.bracket_order.to_a
+        fights: fights.where(pool_number: nil).bracket_order.to_a
       }
     end
   end

@@ -112,7 +112,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
 
     panel "Competition tree" do
       div do
-        if category.fights.none?
+        if category.bracket_fights.none?
           span link_to("Generate tree", generate_bracket_admin_individual_category_path(category), method: :post,
             data: {confirm: "Generate the competition tree from current pool results?"})
         else

@@ -68,6 +68,20 @@ RSpec.describe IndividualCategory do
     end
   end
 
+  describe "#data" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:kenshi2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+
+    it "returns only bracket fights" do
+      bracket = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+      create(:fight, :pool_fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+
+      expect(category.data[:fights]).to eq [bracket]
+    end
+  end
+
   describe "A individual_category “open”" do
     let!(:individual_category) {
       create(:individual_category, name: "open", pool_size: 3, out_of_pool: 2,

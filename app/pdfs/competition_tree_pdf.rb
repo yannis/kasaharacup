@@ -20,7 +20,7 @@ class CompetitionTreePdf < Prawn::Document
     super(page_size: "A4", page_layout: :landscape, margin: 24)
     register_inter_font
     @category = category
-    @fights = category.fights
+    @fights = category.bracket_fights
       .includes(:fighter_1, :fighter_2, :winner, :fight_points)
       .bracket_order.to_a
     Fight.preload_parents(@fights)
