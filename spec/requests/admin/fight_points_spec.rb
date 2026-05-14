@@ -56,4 +56,21 @@ RSpec.describe "Admin fight points" do
       expect(fight.fight_points).to be_empty
     end
   end
+
+  describe "POST under the pool_fights nesting" do
+    let(:k1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:k2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let!(:pool_fight) {
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: k1, fighter_2: k2)
+    }
+
+    it "creates a point on a pool fight via the pool_fight_id parent key" do
+      expect {
+        post admin_individual_category_pool_fight_fight_points_path(category, pool_fight),
+          params: {fight_point: {fighter_side: "fighter_1", kind: "men"}}
+      }.to change { pool_fight.fight_points.count }.from(0).to(1)
+      expect(response).to redirect_to(admin_individual_category_path(category))
+    end
+  end
 end
