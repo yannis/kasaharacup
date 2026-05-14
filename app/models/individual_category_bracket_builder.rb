@@ -12,16 +12,16 @@ class IndividualCategoryBracketBuilder
     return [] if slot_specs.empty?
 
     category.transaction do
-      if category.fights.empty?
+      if category.bracket_fights.empty?
         create_new_bracket
       elsif rebuild_started
-        category.fights.destroy_all
+        category.bracket_fights.destroy_all
         create_new_bracket
       else
         update_existing_bracket
       end
     end
-    category.fights.bracket_order.to_a
+    category.bracket_fights.bracket_order.to_a
   end
 
   private attr_reader :category, :rebuild_started
@@ -32,7 +32,7 @@ class IndividualCategoryBracketBuilder
   end
 
   private def update_existing_bracket
-    category.fights.includes(:winner).where(round: 1).find_each do |fight|
+    category.bracket_fights.includes(:winner).where(round: 1).find_each do |fight|
       [1, 2].each { |slot| update_fighter_slot(fight, slot) }
     end
   end

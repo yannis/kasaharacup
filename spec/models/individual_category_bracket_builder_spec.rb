@@ -218,6 +218,23 @@ RSpec.describe IndividualCategoryBracketBuilder do
     end
   end
 
+  context "when the category has pool fights" do
+    it "ignores pool fights when deciding whether to build a fresh bracket" do
+      create_qualified_participation(pool_number: 1, pool_rank: 1)
+      create_qualified_participation(pool_number: 1, pool_rank: 2)
+      create_qualified_participation(pool_number: 2, pool_rank: 1)
+      create_qualified_participation(pool_number: 2, pool_rank: 2)
+      k_a = create(:kenshi, cup: cup, participations: [build(:participation, category: category)])
+      k_b = create(:kenshi, cup: cup, participations: [build(:participation, category: category)])
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: k_a, fighter_2: k_b)
+
+      described_class.new(category).call
+
+      expect(category.bracket_fights).not_to be_empty
+    end
+  end
+
   def create_qualified_participation(pool_number:, pool_rank:)
     create(:participation,
       category: category,

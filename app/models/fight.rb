@@ -16,7 +16,7 @@ class Fight < ApplicationRecord
   validates :round, presence: true, if: -> { pool_number.blank? }
   validates :position, presence: true, if: -> { pool_number.blank? }
   validates :number,
-    uniqueness: {scope: :individual_category_id},
+    uniqueness: {scope: :individual_category_id, conditions: -> { where(pool_number: nil) }},
     if: -> { pool_number.blank? }
   validates :number,
     uniqueness: {scope: [:individual_category_id, :pool_number]},
