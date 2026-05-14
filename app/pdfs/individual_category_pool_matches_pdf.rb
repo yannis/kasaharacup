@@ -32,8 +32,8 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
         participations = pool.participations
         data << [nil, nil, nil, nil, nil, nil]
         Pools::CyclicPairing.pairs_for(participations.size).each_with_index do |(low, high), i|
-          p_low = participations.find { |p| p.pool_position == low }
-          p_high = participations.find { |p| p.pool_position == high }
+          p_low = participations[low - 1]
+          p_high = participations[high - 1]
           next if p_low.nil? || p_high.nil?
 
           name_low = p_low.kenshi.poster_name(category: individual_category)

@@ -73,4 +73,15 @@ RSpec.describe PoolFightGenerator do
         [kenshis[0].id, kenshis[3].id]
       ]
   end
+
+  it "still generates the full match list when participations have duplicate pool_positions" do
+    participate(category, pool_number: 1, pool_position: 1)
+    participate(category, pool_number: 1, pool_position: 2)
+    participate(category, pool_number: 1, pool_position: 2)
+    participate(category, pool_number: 1, pool_position: 3)
+
+    described_class.new(category).call
+
+    expect(category.pool_fights.where(pool_number: 1).count).to eq 4
+  end
 end

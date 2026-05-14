@@ -23,8 +23,8 @@ class PoolFightGenerator
     participations = pool.participations
     pairs = Pools::CyclicPairing.pairs_for(participations.size)
     pairs.each_with_index do |(low, high), index|
-      participation_1 = participations.find { |p| p.pool_position == low }
-      participation_2 = participations.find { |p| p.pool_position == high }
+      participation_1 = participations[low - 1]
+      participation_2 = participations[high - 1]
       next if participation_1.blank? || participation_2.blank?
 
       category.fights.create!(
