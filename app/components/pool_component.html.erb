@@ -4,13 +4,14 @@
   <% end %>
 
   <div id="<%= dom_id_for_pool %>" class="pool-card">
-    <h3>Pool <%= pool_number %></h3>
+    <h3 class="pool-card__title">Pool <%= pool_number %></h3>
 
     <% if pool_fights.empty? %>
-      <p>No pool fights yet.</p>
+      <p class="pool-card__empty">No pool fights yet.</p>
       <%= helpers.button_to "Generate pool fights",
             helpers.generate_pool_fights_admin_individual_category_path(category),
             method: :post,
+            class: "pool-add-tiebreaker__submit",
             data: {confirm: "Generate the cyclic match list for this pool?"} %>
     <% else %>
       <ol class="pool-matches">
@@ -33,12 +34,15 @@
           <span>vs</span>
           <%= f.select "pool_fight[fighter_2_id]",
                 participations.map { |p| [p.full_name, p.kenshi_id] } %>
-          <%= f.submit "Add tiebreaker" %>
+          <%= f.submit "Add tiebreaker", class: "pool-add-tiebreaker__submit" %>
         <% end %>
 
         <%= helpers.button_to "Reset this pool's fights",
               helpers.reset_pool_fights_admin_individual_category_path(category),
-              method: :post, params: {pool_number: pool_number},
+              method: :post,
+              params: {pool_number: pool_number},
+              class: "pool-card__reset",
+              form: {class: "pool-card__reset-form"},
               data: {confirm: "This deletes every fight and tiebreaker for pool #{pool_number}. Continue?"} %>
       <% end %>
 
@@ -57,7 +61,7 @@
               <td><%= row.points_conceded %></td>
               <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
               <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
-              <td><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
+              <td class="pool-standings__rank"><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
             </tr>
           <% end %>
         </tbody>

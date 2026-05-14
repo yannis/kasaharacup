@@ -1,33 +1,49 @@
-<li class="pool-match">
-  <header><%= fight.tiebreaker ? "Tiebreaker — #{fight.fighter_1&.full_name} vs #{fight.fighter_2&.full_name}" : "Match #{fight.number}" %></header>
-  <% [1, 2].each do |slot| %>
-    <% kenshi = fight.public_send(:"fighter_#{slot}") # rubocop:disable Lint/UselessAssignment %>
-    <% next unless kenshi %>
-    <% side = (slot == 1) ? "fighter_1" : "fighter_2" # rubocop:disable Lint/UselessAssignment %>
+<li class="pool-match <%= "pool-match--tiebreaker" if fight.tiebreaker %>">
+  <header class="pool-match__header">
+    <% if fight.tiebreaker %>
+      Tiebreaker — <%= fight.fighter_1&.full_name %> vs <%= fight.fighter_2&.full_name %>
+    <% else %>
+      Match <%= fight.number %>
+    <% end %>
+  </header>
 
-    <div class="pool-match__side">
-      <span class="pool-match__name"><%= kenshi.full_name %></span>
-      <ol class="pool-match__points">
-        <% fight.points_for(slot).each do |point| %>
-          <li>
-            <%= point.code %>
-            <%= button_to "×",
-                  admin_individual_category_pool_fight_fight_point_path(category, fight, point),
-                  method: :delete, form: {data: {turbo: true}} %>
-          </li>
-        <% end %>
-      </ol>
-      <% if admin %>
-        <% point_codes.each do |kind, code| %>
-          <%= button_to code,
-                admin_individual_category_pool_fight_fight_points_path(category, fight),
-                method: :post,
-                params: {fight_point: {fighter_side: side, kind: kind}},
-                form: {data: {turbo: true}} %>
+  <div class="pool-match__sides">
+    <% [1, 2].each do |slot| %>
+      <% kenshi = fight.public_send(:"fighter_#{slot}") # rubocop:disable Lint/UselessAssignment %>
+      <% next unless kenshi %>
+      <% side = (slot == 1) ? "fighter_1" : "fighter_2" # rubocop:disable Lint/UselessAssignment %>
+      <% winner_here = fight.winner_id == kenshi.id # rubocop:disable Lint/UselessAssignment %>
+
+      <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
+            ("pool-match__side--winner" if winner_here)] do %>
+        <span class="pool-match__name"><%= kenshi.full_name %></span>
+        <ol class="pool-match__points">
+          <% fight.points_for(slot).each do |point| %>
+            <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}"] do %>
+              <%= point.code %>
+              <%= button_to "×",
+                    admin_individual_category_pool_fight_fight_point_path(category, fight, point),
+                    method: :delete,
+                    class: "pool-match__point-remove",
+                    form: {class: "pool-match__point-remove-form", data: {turbo: true}} %>
+            <% end %>
+          <% end %>
+        </ol>
+        <% if admin %>
+          <div class="pool-match__buttons">
+            <% point_codes.each do |kind, code| %>
+              <%= button_to code,
+                    admin_individual_category_pool_fight_fight_points_path(category, fight),
+                    method: :post,
+                    params: {fight_point: {fighter_side: side, kind: kind}},
+                    class: ["pool-match__button", "pool-match__button--#{kind}"],
+                    form: {class: "pool-match__button-form", data: {turbo: true}} %>
+            <% end %>
+          </div>
         <% end %>
       <% end %>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 
   <% if admin %>
     <div class="pool-match__outcome">
@@ -35,28 +51,36 @@
             admin_individual_category_pool_fight_path(category, fight),
             method: :patch,
             params: {pool_fight: {winner_id: fight.fighter_1_id}},
-            form: {data: {turbo: true}} %>
+            class: ["pool-match__outcome-btn",
+              ("pool-match__outcome-btn--active" if fight.winner_id == fight.fighter_1_id)],
+            form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
       <%= button_to "Draw",
             admin_individual_category_pool_fight_path(category, fight),
             method: :patch,
             params: {pool_fight: {draw: true}},
-            form: {data: {turbo: true}} %>
+            class: ["pool-match__outcome-btn",
+              ("pool-match__outcome-btn--active" if fight.draw)],
+            form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
       <%= button_to "#{fight.fighter_2&.full_name} wins",
             admin_individual_category_pool_fight_path(category, fight),
             method: :patch,
             params: {pool_fight: {winner_id: fight.fighter_2_id}},
-            form: {data: {turbo: true}} %>
+            class: ["pool-match__outcome-btn",
+              ("pool-match__outcome-btn--active" if fight.winner_id == fight.fighter_2_id)],
+            form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
       <%= button_to "Clear",
             admin_individual_category_pool_fight_path(category, fight),
             method: :patch,
             params: {pool_fight: {winner_id: "", draw: false}},
-            form: {data: {turbo: true}} %>
+            class: "pool-match__outcome-btn pool-match__outcome-btn--clear",
+            form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
       <% if fight.tiebreaker %>
-        <%= button_to "Remove tiebreaker",
+        <%= button_to "Remove",
               admin_individual_category_pool_fight_path(category, fight),
               method: :delete,
               data: {confirm: "Delete this tiebreaker?"},
-              form: {data: {turbo: true}} %>
+              class: "pool-match__outcome-btn pool-match__outcome-btn--destroy",
+              form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
       <% end %>
     </div>
   <% end %>
