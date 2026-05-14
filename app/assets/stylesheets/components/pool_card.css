@@ -305,3 +305,12 @@
 .pool-standings__rank {
   font-weight: 700;
 }
+
+.pool-standings__actions {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.pool-standings__actions a {
+  color: #de7012;
+}

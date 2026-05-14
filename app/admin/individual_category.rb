@@ -70,42 +70,6 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     if category.pools.present?
       panel "Pools" do
         category.pools.sort_by(&:number).each do |pool|
-          h2 do
-            "Pool #{pool.number} (total Dan: #{pool.total_dan})"
-          end
-          begin
-            table_for pool.participations do |participation|
-              column :full_name do |participation|
-                link_to participation.full_name, admin_kenshi_path(participation.kenshi) if participation.kenshi
-              end
-              column :grade
-              column :club
-              column :age do |participation|
-                participation.kenshi.age_at_cup
-              end
-              column :pool_number do |participation|
-                best_in_place participation, :pool_number, as: :input, url: [:admin, participation],
-                  class: "best_in_place_short"
-              end
-              column :pool_position do |participation|
-                best_in_place participation, :pool_position, as: :input, url: [:admin, participation],
-                  class: "best_in_place_short"
-              end
-              column :pool_rank do |participation|
-                best_in_place participation, :pool_rank, as: :input, url: [:admin, participation],
-                  class: "best_in_place_short"
-              end
-              column :admin_links do |participation|
-                [
-                  link_to("View", admin_participation_path(participation)),
-                  link_to("Edit", edit_admin_participation_path(participation)),
-                  link_to("Destroy", admin_participation_path(participation, method: :delete))
-                ].join(" ").html_safe
-              end
-            end
-          rescue
-            "Pool invalid"
-          end
           render PoolComponent.new(category: category, pool_number: pool.number, admin: true)
         end
       end

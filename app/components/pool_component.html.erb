@@ -4,7 +4,74 @@
   <% end %>
 
   <div id="<%= dom_id_for_pool %>" class="pool-card">
-    <h3 class="pool-card__title">Pool <%= pool_number %></h3>
+    <h3 class="pool-card__title">Pool <%= pool_number %> (total Dan: <%= pool&.total_dan %>)</h3>
+
+    <table class="pool-standings">
+      <thead>
+        <tr>
+          <th>Kenshi</th>
+          <th>Grade</th>
+          <th>Club</th>
+          <th>Age</th>
+          <th>Pos</th>
+          <th>Rank</th>
+          <th>W</th>
+          <th>L</th>
+          <th>H</th>
+          <th>Pts+</th>
+          <th>Pts−</th>
+          <th>Suggested</th>
+          <% if admin %><th></th><% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% standings_rows.each_with_index do |row, index| %>
+          <% participation = row.participation # rubocop:disable Lint/UselessAssignment %>
+          <% kenshi = participation.kenshi # rubocop:disable Lint/UselessAssignment %>
+          <tr>
+            <td>
+              <% if kenshi %>
+                <%= helpers.link_to participation.full_name, helpers.admin_kenshi_path(kenshi) %>
+              <% else %>
+                <%= participation.full_name %>
+              <% end %>
+            </td>
+            <td><%= participation.grade %></td>
+            <td><%= participation.club %></td>
+            <td><%= kenshi&.age_at_cup %></td>
+            <td>
+              <% if admin %>
+                <%= helpers.best_in_place participation, :pool_position, as: :input,
+                      url: [:admin, participation], class: "best_in_place_short" %>
+              <% else %>
+                <%= participation.pool_position %>
+              <% end %>
+            </td>
+            <td>
+              <% if admin %>
+                <%= helpers.best_in_place participation, :pool_rank, as: :input,
+                      url: [:admin, participation], class: "best_in_place_short" %>
+              <% else %>
+                <%= participation.pool_rank %>
+              <% end %>
+            </td>
+            <td><%= row.wins %></td>
+            <td><%= row.losses %></td>
+            <td><%= row.hikiwake %></td>
+            <td><%= row.points_scored %></td>
+            <td><%= row.points_conceded %></td>
+            <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
+            <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
+            <td class="pool-standings__rank"><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
+            <% if admin %>
+              <td class="pool-standings__actions">
+                <%= helpers.link_to "Edit", helpers.edit_admin_participation_path(participation) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
     <% if pool_fights.empty? %>
       <p class="pool-card__empty">No pool fights yet.</p>
@@ -45,27 +112,6 @@
               form: {class: "pool-card__reset-form"},
               data: {confirm: "This deletes every fight and tiebreaker for pool #{pool_number}. Continue?"} %>
       <% end %>
-
-      <table class="pool-standings">
-        <thead>
-          <tr><th>Kenshi</th><th>W</th><th>L</th><th>H</th><th>Pts+</th><th>Pts−</th><th>Suggested</th></tr>
-        </thead>
-        <tbody>
-          <% standings_rows.each_with_index do |row, index| %>
-            <tr>
-              <td><%= row.participation.full_name %></td>
-              <td><%= row.wins %></td>
-              <td><%= row.losses %></td>
-              <td><%= row.hikiwake %></td>
-              <td><%= row.points_scored %></td>
-              <td><%= row.points_conceded %></td>
-              <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
-              <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
-              <td class="pool-standings__rank"><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
     <% end %>
   </div>
 <% end %>
