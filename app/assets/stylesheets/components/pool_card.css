@@ -83,21 +83,28 @@
   text-align: right;
 }
 
-.pool-match__side--fighter_2 .pool-match__points {
-  justify-content: flex-end;
-}
-
 .pool-match__side--winner {
   background: #ecfdf3;
   outline: 2px solid #15803d;
 }
 
+.pool-match__row {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
+}
+
+.pool-match__side--fighter_2 .pool-match__row {
+  flex-direction: row-reverse;
+}
+
 .pool-match__name {
   color: #181512;
-  display: block;
+  flex: 1;
   font-size: 0.875rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -108,7 +115,7 @@
   flex-wrap: wrap;
   gap: 0.1875rem;
   list-style: none;
-  margin: 0 0 0.375rem;
+  margin: 0;
   min-height: 1.25rem;
   padding: 0;
 }

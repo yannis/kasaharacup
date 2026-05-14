@@ -17,20 +17,22 @@
 
       <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
             ("pool-match__side--winner" if winner_here)] do %>
-        <span class="pool-match__name"><%= kenshi.poster_name(category: category) %></span>
-        <ol class="pool-match__points">
-          <% fight.points_for(slot).each do |point| %>
-            <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}",
-                  ("pool-match__point--first" if point.id == first_scoring_point_id)] do %>
-              <%= point.code %>
-              <%= button_to "×",
-                    admin_individual_category_pool_fight_fight_point_path(category, fight, point),
-                    method: :delete,
-                    class: "pool-match__point-remove",
-                    form: {class: "pool-match__point-remove-form", data: {turbo: true}} %>
+        <div class="pool-match__row">
+          <span class="pool-match__name"><%= kenshi.poster_name(category: category) %></span>
+          <ol class="pool-match__points">
+            <% fight.points_for(slot).each do |point| %>
+              <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}",
+                    ("pool-match__point--first" if point.id == first_scoring_point_id)] do %>
+                <%= point.code %>
+                <%= button_to "×",
+                      admin_individual_category_pool_fight_fight_point_path(category, fight, point),
+                      method: :delete,
+                      class: "pool-match__point-remove",
+                      form: {class: "pool-match__point-remove-form", data: {turbo: true}} %>
+              <% end %>
             <% end %>
-          <% end %>
-        </ol>
+          </ol>
+        </div>
         <% if admin %>
           <div class="pool-match__buttons">
             <% point_codes.each do |kind, code| %>
