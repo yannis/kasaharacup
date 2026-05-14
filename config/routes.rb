@@ -46,6 +46,10 @@ Rails.application.routes.draw do
       resources :videos
     end
     resources :individual_categories do
+      post :generate_bracket, on: :member, to: "competition_trees#generate_bracket"
+      resources :fights, only: [:update] do
+        resources :fight_points, only: [:create, :destroy]
+      end
       resources :documents
       resources :videos
     end

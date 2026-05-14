@@ -112,6 +112,13 @@ en:
       team_category:
         one: Team category
         other: Team category
+  admin:
+    competition_trees:
+      generate_bracket:
+        notice: Competition tree generated
+    fights:
+      update:
+        notice: Fight updated
   categories:
     from: from
     to: to

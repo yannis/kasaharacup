@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './components/button.css';
+@import './components/competition_tree.css';
 @import './components/select.css';
 
 @plugin "@tailwindcss/forms";
@@ -109,6 +110,10 @@
     --font-size-max: 32px;
     --scaler: 5.75vw;
     font-size: clamp( var(--font-size-min), var(--scaler), var(--font-size-max) );
+  }
+
+  .best-in-place .input {
+    max-width: 3em;
   }
 }
 

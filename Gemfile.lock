@@ -1,10 +1,10 @@
 GIT
-  remote: https://github.com/mmotherwell/best_in_place
-  revision: 88eb3052623a9a6cd346864d2aca05021c2f80d0
+  remote: https://github.com/bernat/best_in_place
+  revision: 3283705c2cf0772df00c31ecc06c7409f1555460
   specs:
-    best_in_place (3.1.1)
-      actionpack (>= 3.2)
-      railties (>= 3.2)
+    best_in_place (4.0.0)
+      actionpack (>= 7.0)
+      railties (>= 7.0)
 
 GEM
   remote: https://rubygems.org/

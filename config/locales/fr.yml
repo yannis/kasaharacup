@@ -116,6 +116,13 @@ fr:
         one: Catégorie équipe
         other: Catégories équipe
       user: Utilisateur
+  admin:
+    competition_trees:
+      generate_bracket:
+        notice: Arbre de compétition généré
+    fights:
+      update:
+        notice: Combat mis à jour
   categories:
     from: de
     to: à
