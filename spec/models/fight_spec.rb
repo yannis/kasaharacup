@@ -331,5 +331,17 @@ RSpec.describe Fight do
       expect(fight).not_to be_valid
       expect(fight.errors[:fighter_2]).to be_present
     end
+
+    it "accepts draw=true on a pool fight without a winner" do
+      fight = build(:fight, :pool_fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2, draw: true)
+      expect(fight).to be_valid_verbose
+    end
+
+    it "accepts a tiebreaker with both fighters present" do
+      fight = build(:fight, :tiebreaker, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      expect(fight).to be_valid_verbose
+    end
   end
 end
