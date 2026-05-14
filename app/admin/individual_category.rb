@@ -106,6 +106,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
           rescue
             "Pool invalid"
           end
+          render PoolComponent.new(category: category, pool_number: pool.number, admin: true)
         end
       end
     end
