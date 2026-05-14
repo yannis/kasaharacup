@@ -123,6 +123,11 @@ fr:
     fights:
       update:
         notice: Combat mis à jour
+    pool_fights:
+      generate:
+        notice: Combats de poule générés
+      destroy:
+        alert: Seuls les combats de barrage peuvent être supprimés. Utilisez Réinitialiser pour effacer les combats réguliers d'une poule.
   categories:
     from: de
     to: à

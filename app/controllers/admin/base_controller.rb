@@ -16,5 +16,18 @@ module Admin
         end
       end
     end
+
+    private def respond_with_pool(category, pool_number, notice: nil)
+      respond_to do |format|
+        format.html { redirect_to admin_individual_category_path(category), notice: notice }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            helpers.pool_dom_id(category, pool_number),
+            PoolComponent.new(category: category, pool_number: pool_number, admin: true),
+            method: :morph
+          )
+        end
+      end
+    end
   end
 end
