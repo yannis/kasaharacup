@@ -14,13 +14,13 @@
           <th>Club</th>
           <th>Age</th>
           <th>Pos</th>
-          <th>Rank</th>
           <th>W</th>
           <th>L</th>
           <th>H</th>
           <th>Pts+</th>
           <th>Pts−</th>
           <th>Suggested</th>
+          <th>Rank</th>
           <% if admin %><th></th><% end %>
         </tr>
       </thead>
@@ -47,14 +47,6 @@
                 <%= participation.pool_position %>
               <% end %>
             </td>
-            <td>
-              <% if admin %>
-                <%= helpers.best_in_place participation, :pool_rank, as: :input,
-                      url: [:admin, participation], class: "best_in_place_short" %>
-              <% else %>
-                <%= participation.pool_rank %>
-              <% end %>
-            </td>
             <td><%= row.wins %></td>
             <td><%= row.losses %></td>
             <td><%= row.hikiwake %></td>
@@ -63,6 +55,14 @@
             <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
             <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
             <td class="pool-standings__rank"><%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %></td>
+            <td>
+              <% if admin %>
+                <%= helpers.best_in_place participation, :pool_rank, as: :input,
+                      url: [:admin, participation], class: "best_in_place_short" %>
+              <% else %>
+                <%= participation.pool_rank %>
+              <% end %>
+            </td>
             <% if admin %>
               <td class="pool-standings__actions">
                 <%= helpers.link_to "Edit", helpers.edit_admin_participation_path(participation) %>
