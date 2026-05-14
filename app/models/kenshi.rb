@@ -139,7 +139,44 @@ class Kenshi < ApplicationRecord
     if same_name_kenshis.exists?
       poster_name << first_name_initials(category:)
     end
-    poster_name.join(" ").to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase
+    Kenshi.send(:normalize_poster_name, poster_name.join(" "))
+  end
+
+  # Batch-computes poster_name for a collection of cup-scoped kenshis with a
+  # single DB query, avoiding the N+1 that calling #poster_name in a loop
+  # produces. Returns a hash {kenshi.id => poster_name}.
+  def self.poster_names_for(kenshis)
+    return {} if kenshis.empty?
+
+    cup_ids = kenshis.map(&:cup_id).uniq
+    last_names = kenshis.map(&:last_name).uniq
+    same_name_groups = Kenshi.where(cup_id: cup_ids, last_name: last_names).group_by { |k| [k.cup_id, k.last_name] }
+
+    kenshis.each_with_object({}) do |kenshi, hash|
+      group = same_name_groups.fetch([kenshi.cup_id, kenshi.last_name], [])
+      hash[kenshi.id] = (group.size > 1) ? format_with_initials(kenshi, group) : normalize_poster_name(kenshi.last_name)
+    end
+  end
+
+  private_class_method def self.format_with_initials(kenshi, same_name_group)
+    others = same_name_group.reject { |k| k.id == kenshi.id }
+    my_initials = single_initials(kenshi.first_name)
+    if others.any? { |k| single_initials(k.first_name) == my_initials }
+      my_initials = double_initials(kenshi.first_name)
+    end
+    normalize_poster_name("#{kenshi.last_name} #{my_initials}")
+  end
+
+  private_class_method def self.single_initials(first_name)
+    first_name.to_s.split(/[\s|-]/).map { |part| "#{part[0]}." }.join
+  end
+
+  private_class_method def self.double_initials(first_name)
+    first_name.to_s.split(/[\s|-]/).map { |part| "#{part[0, 2]}." }.join
+  end
+
+  private_class_method def self.normalize_poster_name(text)
+    text.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase
   end
 
   def logs

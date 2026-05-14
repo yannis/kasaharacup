@@ -19,7 +19,7 @@ RSpec.describe IndividualCategory do
       expect(individual_category).to respond_to :out_of_pool
       expect(individual_category).to respond_to :pools
       expect(individual_category).to respond_to :fights
-      expect(individual_category).to respond_to :tree
+      expect(individual_category).to respond_to :data
       expect(individual_category).to respond_to :min_age
       expect(individual_category).to respond_to :max_age
       expect(individual_category).to respond_to :description
@@ -107,10 +107,8 @@ RSpec.describe IndividualCategory do
 
         it do
           expect(individual_category.pools.size).to eq 8
-          expect(individual_category.tree).to be_a Tree
           expect(individual_category.data).to be_a Hash
-          expect(individual_category.data.keys).to eq [:tree]
-          expect(individual_category.data[:tree].keys).to eq [:elements, :depth, :branch_number]
+          expect(individual_category.data.keys).to eq [:fights]
         end
       end
     end

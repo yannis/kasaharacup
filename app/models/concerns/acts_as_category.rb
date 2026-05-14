@@ -34,17 +34,9 @@ module ActsAsCategory
       SmartPooler.new(self).set_pools
     end
 
-    def tree
-      Tree.new(self)
-    end
-
     def data
       {
-        tree: {
-          elements: tree.elements,
-          depth: tree.depth,
-          branch_number: tree.branch_number
-        }
+        fights: fights.bracket_order.to_a
       }
     end
   end

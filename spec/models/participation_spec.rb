@@ -9,6 +9,7 @@ RSpec.describe Participation do
     it do
       expect(participation).to respond_to :pool_number
       expect(participation).to respond_to :pool_position
+      expect(participation).to respond_to :pool_rank
       expect(participation).to respond_to :ronin
       expect(participation).to respond_to :fighting_spirit
     end
