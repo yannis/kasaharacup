@@ -69,6 +69,14 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     if category.pools.present?
       panel "Pools" do
+        if category.pool_fights.empty?
+          div do
+            span link_to("Generate pool fights",
+              generate_pool_fights_admin_individual_category_path(category),
+              method: :post,
+              data: {confirm: "Generate the cyclic match list for all pools?"})
+          end
+        end
         category.pools.sort_by(&:number).each do |pool|
           render PoolComponent.new(category: category, pool_number: pool.number, admin: true)
         end

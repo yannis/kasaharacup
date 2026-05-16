@@ -125,7 +125,7 @@ fr:
         notice: Combat mis à jour
     pool_fights:
       destroy:
-        alert: Seuls les combats de barrage peuvent être supprimés. Utilisez Réinitialiser pour effacer les combats réguliers d'une poule.
+        alert: Seuls les combats de barrage peuvent être supprimés. Utilisez Regénérer pour recréer les combats réguliers d'une poule.
       generate:
         notice: Combats de poule générés
   categories:

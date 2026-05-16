@@ -99,7 +99,7 @@ RSpec.describe "Admin::PoolFights", type: :request do
     end
   end
 
-  describe "POST /admin/individual_categories/:id/reset_pool_fights" do
+  describe "POST /admin/individual_categories/:id/regenerate_pool_fights" do
     let!(:fight_pool_1) {
       create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: k1, fighter_2: k2)
@@ -113,17 +113,30 @@ RSpec.describe "Admin::PoolFights", type: :request do
         fighter_1: fight_pool_2_p1, fighter_2: fight_pool_2_p2)
     }
 
-    it "deletes only the targeted pool's fights" do
-      post reset_pool_fights_admin_individual_category_path(category), params: {pool_number: 1}
+    it "regenerates only the targeted pool's fights, leaving other pools alone" do
+      post regenerate_pool_fights_admin_individual_category_path(category), params: {pool_number: 1}
       expect(Fight.exists?(fight_pool_1.id)).to be false
       expect(Fight.exists?(fight_pool_2.id)).to be true
+      expect(category.pool_fights.where(pool_number: 1).count).to eq 1
     end
 
-    it "deletes the pool's tiebreakers too" do
+    it "wipes the pool's tiebreakers too and recreates only the round-robin fights" do
       tiebreaker = create(:fight, :tiebreaker, individual_category: category, pool_number: 1,
         fighter_1: k1, fighter_2: k2)
-      post reset_pool_fights_admin_individual_category_path(category), params: {pool_number: 1}
+      post regenerate_pool_fights_admin_individual_category_path(category), params: {pool_number: 1}
       expect(Fight.exists?(tiebreaker.id)).to be false
+      expect(category.pool_fights.where(pool_number: 1, tiebreaker: true)).to be_empty
+    end
+
+    it "generates fights for a pool that had none" do
+      empty_pool_k1 = create(:kenshi, cup: cup)
+      empty_pool_k2 = create(:kenshi, cup: cup)
+      create(:participation, category: category, kenshi: empty_pool_k1, pool_number: 3, pool_position: 1)
+      create(:participation, category: category, kenshi: empty_pool_k2, pool_number: 3, pool_position: 2)
+
+      expect {
+        post regenerate_pool_fights_admin_individual_category_path(category), params: {pool_number: 3}
+      }.to change { category.pool_fights.where(pool_number: 3).count }.from(0).to(1)
     end
   end
 end

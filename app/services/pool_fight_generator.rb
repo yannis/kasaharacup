@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class PoolFightGenerator
-  def initialize(category)
+  def initialize(category, pool_number: nil)
     @category = category
+    @pool_number = pool_number
   end
 
   def call
@@ -11,10 +12,12 @@ class PoolFightGenerator
     end
   end
 
-  private attr_reader :category
+  private attr_reader :category, :pool_number
 
   private def pools_to_generate
-    category.pools.sort_by(&:number).reject do |pool|
+    candidates = category.pools.sort_by(&:number)
+    candidates = candidates.select { |pool| pool.number == pool_number } if pool_number
+    candidates.reject do |pool|
       category.pool_fights.exists?(pool_number: pool.number)
     end
   end

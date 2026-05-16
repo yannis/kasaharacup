@@ -47,7 +47,9 @@
             <td>
               <% if admin %>
                 <%= helpers.best_in_place participation, :pool_number, as: :input,
-                      url: [:admin, participation], class: "best_in_place_short" %>
+                      url: [:admin, participation],
+                      class: "best_in_place_short pool-standings__editable",
+                      placeholder: "—" %>
               <% else %>
                 <%= participation.pool_number %>
               <% end %>
@@ -55,7 +57,9 @@
             <td>
               <% if admin %>
                 <%= helpers.best_in_place participation, :pool_position, as: :input,
-                      url: [:admin, participation], class: "best_in_place_short" %>
+                      url: [:admin, participation],
+                      class: "best_in_place_short pool-standings__editable",
+                      placeholder: "—" %>
               <% else %>
                 <%= participation.pool_position %>
               <% end %>
@@ -78,8 +82,8 @@
               <% if admin %>
                 <%= helpers.best_in_place participation, :pool_rank, as: :input,
                       url: [:admin, participation],
-                      class: "best_in_place_short pool-standings__placeholder",
-                      nil: "—" %>
+                      class: "best_in_place_short pool-standings__editable",
+                      place_holder: "—" %>
               <% else %>
                 <%= participation.pool_rank %>
               <% end %>
@@ -96,11 +100,6 @@
 
     <% if pool_fights.empty? %>
       <p class="pool-card__empty">No pool fights yet.</p>
-      <%= helpers.button_to "Generate pool fights",
-            helpers.generate_pool_fights_admin_individual_category_path(category),
-            method: :post,
-            class: "pool-add-tiebreaker__submit",
-            data: {confirm: "Generate the cyclic match list for this pool?"} %>
     <% else %>
       <ol class="pool-matches">
         <% cyclic_fights.each do |fight| %>
@@ -124,15 +123,17 @@
                 participations.map { |p| [p.kenshi&.poster_name(category: category), p.kenshi_id] } %>
           <%= f.submit "Add tiebreaker", class: "pool-add-tiebreaker__submit" %>
         <% end %>
-
-        <%= helpers.button_to "Reset this pool's fights",
-              helpers.reset_pool_fights_admin_individual_category_path(category),
-              method: :post,
-              params: {pool_number: pool_number},
-              class: "pool-card__reset",
-              form: {class: "pool-card__reset-form"},
-              data: {confirm: "This deletes every fight and tiebreaker for pool #{pool_number}. Continue?"} %>
       <% end %>
+    <% end %>
+
+    <% if admin && participations.size >= 2 %>
+      <%= helpers.button_to regenerate_button_label,
+            helpers.regenerate_pool_fights_admin_individual_category_path(category),
+            method: :post,
+            params: {pool_number: pool_number},
+            class: "pool-card__reset",
+            form: {class: "pool-card__reset-form"},
+            data: regenerate_button_data %>
     <% end %>
   </div>
 <% end %>

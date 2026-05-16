@@ -45,4 +45,14 @@ class PoolComponent < ViewComponent::Base
   private def point_codes
     FightPoint::CODES
   end
+
+  private def regenerate_button_label
+    pool_fights.empty? ? "Generate fights for this pool" : "Regenerate this pool's fights"
+  end
+
+  private def regenerate_button_data
+    return {} if pool_fights.empty?
+
+    {confirm: "This deletes every fight and tiebreaker for pool #{pool_number} and recreates them. Continue?"}
+  end
 end

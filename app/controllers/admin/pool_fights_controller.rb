@@ -49,11 +49,14 @@ module Admin
       respond_with_pool(category, pool_number, notice: "Tiebreaker removed.")
     end
 
-    def reset
+    def regenerate
       category = IndividualCategory.find(params[:id])
       pool_number = Integer(params.fetch(:pool_number))
-      category.pool_fights.where(pool_number: pool_number).destroy_all
-      respond_with_pool(category, pool_number, notice: "Pool fights cleared.")
+      category.transaction do
+        category.pool_fights.where(pool_number: pool_number).destroy_all
+        PoolFightGenerator.new(category, pool_number: pool_number).call
+      end
+      respond_with_pool(category, pool_number, notice: "Pool fights regenerated.")
     end
 
     private def tiebreaker_params(category)

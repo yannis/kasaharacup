@@ -13,13 +13,14 @@ RSpec.describe PoolComponent, type: :component do
     kenshi
   end
 
-  it "renders a generate button when no fights exist" do
+  it "renders an empty-state message when no fights exist" do
     add_kenshi(pool: 1, position: 1)
     add_kenshi(pool: 1, position: 2)
 
     rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
 
-    expect(rendered.to_html).to include("Generate pool fights")
+    expect(rendered.to_html).to include("No pool fights yet.")
+    expect(rendered.to_html).not_to include("Generate pool fights")
   end
 
   it "renders the matches list and standings" do
