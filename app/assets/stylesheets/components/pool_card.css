@@ -7,6 +7,10 @@
   padding: 1rem;
 }
 
+.pool-card button, .pool-card input {
+  text-shadow: none;
+}
+
 .pool-card__title {
   color: #181512;
   font-size: 1rem;
@@ -169,7 +173,7 @@
   padding: 0;
 }
 
-.pool-match__point-remove:hover {
+.pool-match__point-remove:not(.disabled):hover {
   opacity: 1;
 }
 
@@ -195,9 +199,9 @@
   width: 100%;
 }
 
-.pool-match__button:hover {
-  background: #f3f4f6;
-  color: #181512;
+.pool-match__button:not(.disabled):hover {
+  background: #575757;
+  color: #fff;
 }
 
 .pool-match__button--hansoku {
@@ -229,12 +233,12 @@
   color: #44403A;
   cursor: pointer;
   font-size: 0.75rem;
-  font-weight: 600;
   padding: 0.25rem 0.5rem;
 }
 
-.pool-match__outcome-btn:hover {
-  background: #f3f4f6;
+.pool-match__outcome-btn:not(.disabled):hover {
+  background: #575757;
+  color: #fff;
 }
 
 .pool-match__outcome-btn--active {
@@ -299,8 +303,9 @@
   padding: 0.25rem 0.625rem;
 }
 
-.pool-card__reset:hover {
-  background: #fef2f2;
+.pool-card__reset:not(.disabled):hover {
+  background: #575757;
+  color: #fff;
 }
 
 .pool-standings {
@@ -346,7 +351,7 @@
   text-align: center;
 }
 
-.pool-standings__placeholder:hover {
+.pool-standings__placeholder:not(.disabled):hover {
   background: #fef6ef;
   border-bottom-color: #de7012;
   color: #de7012;
@@ -361,7 +366,7 @@
   text-align: center;
 }
 
-.pool-standings__editable:hover {
+.pool-standings__editable:not(.disabled):hover {
   background: #fef6ef;
   border-bottom-color: #de7012;
   color: #de7012;
