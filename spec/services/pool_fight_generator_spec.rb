@@ -23,7 +23,7 @@ RSpec.describe PoolFightGenerator do
     fights = category.pool_fights.where(pool_number: 1).order(:number)
     expect(fights.size).to eq 3
     expect(fights.map { |f| [f.fighter_1_id, f.fighter_2_id] })
-      .to eq [[k1.id, k2.id], [k2.id, k3.id], [k1.id, k3.id]]
+      .to eq [[k1.id, k2.id], [k3.id, k2.id], [k3.id, k1.id]]
     expect(fights.map(&:number)).to eq [1, 2, 3]
     expect(fights).to all(have_attributes(round: nil, position: nil, tiebreaker: false, draw: false))
   end
@@ -68,7 +68,7 @@ RSpec.describe PoolFightGenerator do
     expect(fights.map { |f| [f.fighter_1_id, f.fighter_2_id] })
       .to eq [
         [kenshis[0].id, kenshis[1].id],
-        [kenshis[1].id, kenshis[2].id],
+        [kenshis[2].id, kenshis[1].id],
         [kenshis[2].id, kenshis[3].id],
         [kenshis[0].id, kenshis[3].id]
       ]
