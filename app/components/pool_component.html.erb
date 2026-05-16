@@ -3,7 +3,7 @@
     <%= helpers.turbo_stream_from category, :competition_tree %>
   <% end %>
 
-  <div id="<%= dom_id_for_pool %>" class="pool-card">
+  <div class="pool-card">
     <h3 class="pool-card__title">Pool <%= pool_number %> (total Dan: <%= pool&.total_dan %>)</h3>
 
     <% if helpers.flash[:alert].present? %>
@@ -49,7 +49,7 @@
                 <%= helpers.best_in_place participation, :pool_number, as: :input,
                       url: [:admin, participation],
                       class: "best_in_place_short pool-standings__editable",
-                      placeholder: "—" %>
+                      place_holder: "—" %>
               <% else %>
                 <%= participation.pool_number %>
               <% end %>
@@ -59,7 +59,7 @@
                 <%= helpers.best_in_place participation, :pool_position, as: :input,
                       url: [:admin, participation],
                       class: "best_in_place_short pool-standings__editable",
-                      placeholder: "—" %>
+                      place_holder: "—" %>
               <% else %>
                 <%= participation.pool_position %>
               <% end %>
@@ -113,14 +113,13 @@
       </ol>
 
       <% if admin %>
+        <% tiebreaker_options = participations.filter_map { |p| [p.kenshi.poster_name(category: category), p.kenshi_id] if p.kenshi } %>
         <%= helpers.form_with url: helpers.admin_individual_category_pool_fights_path(category),
               method: :post, class: "pool-add-tiebreaker" do |f| %>
           <%= f.hidden_field "pool_fight[pool_number]", value: pool_number %>
-          <%= f.select "pool_fight[fighter_1_id]",
-                participations.map { |p| [p.kenshi&.poster_name(category: category), p.kenshi_id] } %>
+          <%= f.select "pool_fight[fighter_1_id]", tiebreaker_options %>
           <span>vs</span>
-          <%= f.select "pool_fight[fighter_2_id]",
-                participations.map { |p| [p.kenshi&.poster_name(category: category), p.kenshi_id] } %>
+          <%= f.select "pool_fight[fighter_2_id]", tiebreaker_options %>
           <%= f.submit "Add tiebreaker", class: "pool-add-tiebreaker__submit" %>
         <% end %>
       <% end %>

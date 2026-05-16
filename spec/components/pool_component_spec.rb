@@ -32,7 +32,7 @@ RSpec.describe PoolComponent, type: :component do
     rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
 
     expect(rendered.to_html).to include("Match 1")
-    expect(rendered.to_html).to include("Reset this pool's fights")
+    expect(rendered.to_html).to include("Regenerate this pool's fights")
     expect(rendered.css("table.pool-standings").size).to eq 1
   end
 

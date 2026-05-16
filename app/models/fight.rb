@@ -202,5 +202,8 @@ class Fight < ApplicationRecord
     errors.add(:tiebreaker, "only allowed on pool fights") if pool_number.blank?
     errors.add(:fighter_1, "is required for a tiebreaker") if fighter_1_id.blank?
     errors.add(:fighter_2, "is required for a tiebreaker") if fighter_2_id.blank?
+    if fighter_1_id.present? && fighter_1_id == fighter_2_id
+      errors.add(:fighter_2, "must differ from fighter 1")
+    end
   end
 end

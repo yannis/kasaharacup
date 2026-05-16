@@ -376,6 +376,11 @@
   max-width: none;
 }
 
+.pool-standings__editable[data-bip-placeholder]:empty::before {
+  color: #A6A29D;
+  content: attr(data-bip-placeholder);
+}
+
 .pool-standings__editable input {
   border: 1px solid #de7012;
   border-radius: 0.25rem;

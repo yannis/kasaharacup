@@ -345,6 +345,13 @@ RSpec.describe Fight do
       expect(fight.errors[:fighter_2]).to be_present
     end
 
+    it "rejects a tiebreaker where fighter_1 equals fighter_2" do
+      fight = build(:fight, :tiebreaker, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi1)
+      expect(fight).not_to be_valid
+      expect(fight.errors[:fighter_2]).to include("must differ from fighter 1")
+    end
+
     it "accepts draw=true on a pool fight without a winner" do
       fight = build(:fight, :pool_fight, individual_category: category,
         fighter_1: kenshi1, fighter_2: kenshi2, draw: true)

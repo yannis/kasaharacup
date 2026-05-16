@@ -11,19 +11,27 @@ module Admin
 
     def create
       category = IndividualCategory.find(params[:individual_category_id])
-      attrs = tiebreaker_params(category).merge(tiebreaker: true)
+      permitted = params.expect(pool_fight: [:pool_number, :fighter_1_id, :fighter_2_id])
 
-      unless pool_membership_valid?(category, attrs)
+      unless tiebreaker_fighters_valid?(category, permitted)
         head :unprocessable_content
         return
       end
 
-      fight = category.fights.create(attrs)
-      if fight.persisted?
-        respond_with_pool(category, fight.pool_number, notice: "Tiebreaker created.")
-      else
-        head :unprocessable_content
+      fight = category.with_lock do
+        max_number = category.pool_fights.where(pool_number: permitted[:pool_number]).maximum(:number).to_i
+        category.fights.create!(
+          pool_number: permitted[:pool_number],
+          fighter_1_id: permitted[:fighter_1_id],
+          fighter_2_id: permitted[:fighter_2_id],
+          fighter_type: "Kenshi",
+          number: max_number + 1,
+          tiebreaker: true
+        )
       end
+      respond_with_pool(category, fight.pool_number, notice: "Tiebreaker created.")
+    rescue ActiveRecord::RecordInvalid
+      head :unprocessable_content
     end
 
     def update
@@ -59,20 +67,16 @@ module Admin
       respond_with_pool(category, pool_number, notice: "Pool fights regenerated.")
     end
 
-    private def tiebreaker_params(category)
-      permitted = params.expect(pool_fight: [:pool_number, :fighter_1_id, :fighter_2_id]).to_h
-      pool_number = permitted[:pool_number].to_i
-      max_number = category.pool_fights.where(pool_number: pool_number).maximum(:number).to_i
-      permitted.merge(fighter_type: "Kenshi", number: max_number + 1)
-    end
+    private def tiebreaker_fighters_valid?(category, permitted)
+      fighter_1_id = permitted[:fighter_1_id].to_i
+      fighter_2_id = permitted[:fighter_2_id].to_i
+      return false if fighter_1_id <= 0 || fighter_2_id <= 0
+      return false if fighter_1_id == fighter_2_id
 
-    private def pool_membership_valid?(category, attrs)
       pool_kenshi_ids = category.participations
-        .where(pool_number: attrs[:pool_number])
+        .where(pool_number: permitted[:pool_number])
         .pluck(:kenshi_id)
-      [attrs[:fighter_1_id], attrs[:fighter_2_id]].all? do |id|
-        pool_kenshi_ids.include?(id.to_i)
-      end
+      [fighter_1_id, fighter_2_id].all? { |id| pool_kenshi_ids.include?(id) }
     end
 
     private def outcome_attributes

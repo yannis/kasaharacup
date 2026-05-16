@@ -50,6 +50,14 @@ RSpec.describe "Admin::PoolFights", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(category.pool_fights.where(tiebreaker: true)).to be_empty
     end
+
+    it "rejects a tiebreaker between a kenshi and themself" do
+      post admin_individual_category_pool_fights_path(category),
+        params: {pool_fight: {pool_number: 1, fighter_1_id: k1.id, fighter_2_id: k1.id}}
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(category.pool_fights.where(tiebreaker: true)).to be_empty
+    end
   end
 
   describe "PATCH /admin/individual_categories/:id/pool_fights/:id" do
