@@ -63,7 +63,7 @@
             method: :patch,
             params: {pool_fight: {draw: true}},
             class: ["pool-match__outcome-btn",
-              ("pool-match__outcome-btn--active" if fight.draw)],
+              ("pool-match__outcome-btn--active" if fight.winner_id.blank?)],
             form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
       <%= button_to "#{fight.fighter_2&.poster_name(category: category)} wins",
             admin_individual_category_pool_fight_path(category, fight),

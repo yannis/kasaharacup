@@ -473,4 +473,92 @@ RSpec.describe Fight do
       expect(participation2.reload.pool_rank).to eq 2
     end
   end
+
+  describe "Pool match outcome from points" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup) }
+    let(:kenshi2) { create(:kenshi, cup: cup) }
+    let!(:participation1) do
+      create(:participation, category: category, kenshi: kenshi1, pool_number: 1, pool_position: 1)
+    end
+    let!(:participation2) do
+      create(:participation, category: category, kenshi: kenshi2, pool_number: 1, pool_position: 2)
+    end
+    let(:fight) do
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+    end
+
+    def add_point(side, kind: "men")
+      create(:fight_point, fight: fight, fighter_side: side, kind: kind)
+    end
+
+    it "stays unresolved (the draw default) when there are no points" do
+      fight.recompute_outcome_from_points!
+
+      expect(fight.reload).to have_attributes(winner_id: nil, draw: false)
+    end
+
+    it "marks the side with more points as the winner" do
+      add_point("fighter_1")
+
+      expect(fight.reload).to have_attributes(winner_id: kenshi1.id, draw: false)
+    end
+
+    it "records a draw once both sides have equal points" do
+      add_point("fighter_1")
+      add_point("fighter_2")
+
+      expect(fight.reload).to have_attributes(winner_id: nil, draw: true)
+    end
+
+    it "follows the lead when the score swings back to unequal" do
+      add_point("fighter_1")
+      add_point("fighter_2")
+      add_point("fighter_1")
+
+      expect(fight.reload).to have_attributes(winner_id: kenshi1.id, draw: false)
+    end
+
+    it "reverts to unresolved when the last point is removed" do
+      point = add_point("fighter_1")
+      expect(fight.reload.winner_id).to eq kenshi1.id
+
+      point.destroy!
+
+      expect(fight.reload).to have_attributes(winner_id: nil, draw: false)
+    end
+
+    it "ignores hansoku marks when deciding the winner" do
+      add_point("fighter_1", kind: "men")
+      add_point("fighter_2", kind: "hansoku")
+
+      expect(fight.reload).to have_attributes(winner_id: kenshi1.id, draw: false)
+    end
+
+    it "recomputes over a manual override once a point changes" do
+      fight.update!(winner: kenshi2)
+
+      add_point("fighter_1")
+
+      expect(fight.reload.winner_id).to eq kenshi1.id
+    end
+
+    it "keeps a manual override while no point changes" do
+      add_point("fighter_1") # auto-computed: kenshi1 wins
+      fight.update!(winner_id: nil, draw: true) # admin overrides to a draw
+
+      expect(fight.reload).to have_attributes(winner_id: nil, draw: true)
+    end
+
+    it "does not auto-compute the outcome of a bracket (non-pool) fight" do
+      bracket_fight = create(:fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+
+      create(:fight_point, fight: bracket_fight, fighter_side: "fighter_1", kind: "men")
+
+      expect(bracket_fight.reload.winner_id).to be_nil
+    end
+  end
 end

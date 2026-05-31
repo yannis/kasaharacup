@@ -23,10 +23,18 @@ class FightPoint < ApplicationRecord
 
   before_validation :assign_position, on: :create
 
+  after_commit :recompute_fight_outcome, on: [:create, :destroy]
+
   scope :ordered, -> { order(:position) }
 
   def code
     CODES.fetch(kind)
+  end
+
+  # Pool match outcomes are computed from the points, so any point change
+  # re-derives the owning fight's winner/draw.
+  private def recompute_fight_outcome
+    fight.recompute_outcome_from_points!
   end
 
   private def assign_position
