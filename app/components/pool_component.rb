@@ -3,14 +3,17 @@
 class PoolComponent < ViewComponent::Base
   include ActionView::RecordIdentifier
 
-  def initialize(category:, pool_number:, admin: true)
+  def initialize(category:, pool_number:, admin: true, pool: nil)
     @category = category
     @pool_number = pool_number
     @admin = admin
+    @pool = pool
   end
 
   private attr_reader :category, :pool_number, :admin
 
+  # Callers rendering every pool (the category show page) pass the already-built
+  # Pool in, so we don't re-run category.pools once per component.
   private def pool
     @pool ||= category.pools.find { |p| p.number == pool_number }
   end

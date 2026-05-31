@@ -16,23 +16,18 @@ module ActsAsCategory
 
     translate :description
 
-    # Memoized for the request: a show page renders one PoolComponent per pool,
-    # and each looks up its pool here — without memoization that re-runs the
-    # participations query once per pool.
     def pools
-      @pools ||= begin
-        pools = []
-        if pool_size.to_i > 1
-          grouped_participations = participations.includes(kenshi: [:cup,
-            :club]).where.not(participations: {pool_number: nil}).group_by { |p|
-            p.pool_number
-          }
-          grouped_participations.each do |i, participations|
-            pools << Pool.new(participations: participations, number: i)
-          end
+      pools = []
+      if pool_size.to_i > 1
+        grouped_participations = participations.includes(kenshi: [:cup,
+          :club]).where.not(participations: {pool_number: nil}).group_by { |p|
+          p.pool_number
+        }
+        grouped_participations.each do |i, participations|
+          pools << Pool.new(participations: participations, number: i)
         end
-        pools
       end
+      pools
     end
 
     def set_smart_pools

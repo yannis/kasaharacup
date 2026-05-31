@@ -78,7 +78,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
           end
         end
         category.pools.sort_by(&:number).each do |pool|
-          render PoolComponent.new(category: category, pool_number: pool.number, admin: true)
+          render PoolComponent.new(category: category, pool_number: pool.number, admin: true, pool: pool)
         end
       end
     end
