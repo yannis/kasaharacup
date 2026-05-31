@@ -4,15 +4,17 @@ class CompetitionTreePdf < Prawn::Document
   CARD_WIDTH_MIN = 80
   CARD_WIDTH_MAX = 180
   GAP_RATIO = 18.0 / 110
-  CARD_HEIGHT = 43
-  BYE_CARD_HEIGHT = 26
+  FIGHTER_LINE_HEIGHT = 12
+  CARD_HEIGHT = 30
+  BYE_CARD_HEIGHT = 18
   MATCH_GAP = 5
   HEADER_HEIGHT = 28
   ROUND_LABEL_AREA = 24
-  CARD_TOP_PADDING = 3
-  CARD_TITLE_GAP = 3
   CARD_FIGHTER_GAP = 2
   CARD_TEXT_INDENT = 4
+  NUMBER_BADGE_WIDTH = 22
+  NUMBER_BADGE_SIZE = 16
+  NUMBER_BADGE_COLOR = "C0392B"
 
   FONT_DIR = Rails.root.join("vendor/fonts/inter").freeze
 
@@ -132,21 +134,57 @@ class CompetitionTreePdf < Prawn::Document
       stroke_bounds
       undash
 
-      move_down CARD_TOP_PADDING
-      draw_card_text header_for(fight), size: 6, bold: false, color: "000000"
-      move_down fight.bye? ? 0 : CARD_TITLE_GAP
       if fight.bye?
+        # No "Bye" label or number — the dashed border already marks a bye.
+        move_down vertical_centering(height, rows: 1)
         draw_bye_line(fight)
       else
-        draw_fighter_line(fight, 1)
-        move_down CARD_FIGHTER_GAP
-        draw_fighter_line(fight, 2)
+        draw_number_badge(fight, height)
+        draw_match_fighters(fight, height)
       end
     end
   end
 
-  private def draw_card_text(text, size:, bold: false, color: "000000", italic: false,
-    background: nil, suffix: nil, suffix_fragments: nil)
+  # Top offset that vertically centers `rows` fighter lines within the card.
+  private def vertical_centering(height, rows:)
+    block = rows * FIGHTER_LINE_HEIGHT + (rows - 1) * CARD_FIGHTER_GAP
+    [(height - block) / 2.0, 0].max
+  end
+
+  # The match's display number, rendered large and bold in a column down the
+  # left edge so it stands out on a printed sheet for calling matches.
+  private def draw_number_badge(fight, height)
+    number = display_number(fight)
+    return if number.nil?
+
+    stroke_color "CCCCCC"
+    line_width 0.5
+    stroke do
+      move_to NUMBER_BADGE_WIDTH, 0
+      line_to NUMBER_BADGE_WIDTH, height
+    end
+    formatted_text_box(
+      [{text: number.to_s, color: NUMBER_BADGE_COLOR, styles: [:bold], size: NUMBER_BADGE_SIZE}],
+      at: [0, height],
+      width: NUMBER_BADGE_WIDTH,
+      height: height,
+      align: :center,
+      valign: :center,
+      overflow: :shrink_to_fit
+    )
+  end
+
+  # Top-aligned so the first fighter's highlight sits flush against the top of
+  # the card; the spare space falls below the second name instead.
+  private def draw_match_fighters(fight, height)
+    content_width = card_width - NUMBER_BADGE_WIDTH
+    draw_fighter_line(fight, 1, left: NUMBER_BADGE_WIDTH, width: content_width)
+    move_down CARD_FIGHTER_GAP
+    draw_fighter_line(fight, 2, left: NUMBER_BADGE_WIDTH, width: content_width)
+  end
+
+  private def draw_card_text(text, size:, left: 0, width: card_width, bold: false, color: "000000",
+    italic: false, background: nil, suffix: nil, suffix_fragments: nil)
     line_height = size + 2
     styles = []
     styles << :bold if bold
@@ -154,7 +192,7 @@ class CompetitionTreePdf < Prawn::Document
     if background
       previous_fill = fill_color
       fill_color background
-      fill_rectangle [0, cursor], card_width, line_height + 2
+      fill_rectangle [left, cursor], width, line_height + 2
       fill_color previous_fill
     end
     font_size size do
@@ -162,8 +200,8 @@ class CompetitionTreePdf < Prawn::Document
       reserved = suffix_width.positive? ? suffix_width + CARD_TEXT_INDENT : 0
       formatted_text_box(
         [{text: text, color: color, styles: styles}],
-        at: [CARD_TEXT_INDENT, cursor],
-        width: card_width - 2 * CARD_TEXT_INDENT - reserved,
+        at: [left + CARD_TEXT_INDENT, cursor],
+        width: width - 2 * CARD_TEXT_INDENT - reserved,
         height: line_height,
         single_line: true,
         valign: :center,
@@ -171,9 +209,14 @@ class CompetitionTreePdf < Prawn::Document
       )
       if suffix.present?
         fragments = suffix_fragments || [{text: suffix, color: color, styles: styles}]
+        # Prawn strokes an :underline with the current stroke color/width, so pin
+        # them to black here — otherwise the first-point underline would inherit
+        # whatever the last stroke (e.g. the grey number-badge divider) left set.
+        stroke_color "000000"
+        line_width 0.6
         formatted_text_box(
           fragments,
-          at: [card_width - CARD_TEXT_INDENT - suffix_width, cursor],
+          at: [left + width - CARD_TEXT_INDENT - suffix_width, cursor],
           width: suffix_width,
           height: line_height,
           single_line: true,
@@ -183,10 +226,6 @@ class CompetitionTreePdf < Prawn::Document
       end
     end
     move_down line_height
-  end
-
-  private def header_for(fight)
-    fight.bye? ? "Bye" : "Fight #{display_number(fight)}"
   end
 
   private def display_numbers
@@ -212,7 +251,7 @@ class CompetitionTreePdf < Prawn::Document
     draw_card_text label, size: 10, bold: fighter.present?, italic: fighter.blank?
   end
 
-  private def draw_fighter_line(fight, slot)
+  private def draw_fighter_line(fight, slot, left: 0, width: card_width)
     fighter = fight.public_send(:"resolved_fighter_#{slot}")
     label = (fighter && prefixed_name(fight, fighter)) || fallback_label(fight, slot)
     bold = fighter.present? && fight.winner == fighter
@@ -225,8 +264,8 @@ class CompetitionTreePdf < Prawn::Document
       underline_id: first_scoring_point(fight)&.id)
     suffix = points.any? ? points.map(&:code).join(" ") : nil
     background = (slot == 1) ? "FBA698" : nil
-    draw_card_text label, size: 10, bold: bold, italic: italic, background: background,
-      suffix: suffix, suffix_fragments: suffix_fragments
+    draw_card_text label, size: 10, left: left, width: width, bold: bold, italic: italic,
+      background: background, suffix: suffix, suffix_fragments: suffix_fragments
   end
 
   private def prefixed_name(fight, fighter)
