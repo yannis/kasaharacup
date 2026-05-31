@@ -20,10 +20,13 @@ class PoolComponent < ViewComponent::Base
   end
 
   private def pool_fights
-    @pool_fights ||= category.pool_fights
-      .where(pool_number: pool_number)
-      .includes(:fighter_1, :fighter_2, :winner, :fight_points)
-      .to_a
+    @pool_fights ||= category.pool_fights_by_number.fetch(pool_number, [])
+  end
+
+  private def poster_name(kenshi)
+    return if kenshi.nil?
+
+    category.pool_poster_names[kenshi.id] || kenshi.poster_name(category: category)
   end
 
   private def cyclic_fights

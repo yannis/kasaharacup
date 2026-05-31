@@ -97,16 +97,16 @@
       <ol class="pool-matches">
         <% cyclic_fights.each do |fight| %>
           <%= helpers.render "admin/pool_fights/match", category: category, fight: fight,
-                point_codes: point_codes, admin: admin %>
+                point_codes: point_codes, admin: admin, poster_names: category.pool_poster_names %>
         <% end %>
         <% tiebreaker_fights.each do |fight| %>
           <%= helpers.render "admin/pool_fights/match", category: category, fight: fight,
-                point_codes: point_codes, admin: admin %>
+                point_codes: point_codes, admin: admin, poster_names: category.pool_poster_names %>
         <% end %>
       </ol>
 
       <% if admin %>
-        <% tiebreaker_options = participations.filter_map { |p| [p.kenshi.poster_name(category: category), p.kenshi_id] if p.kenshi } %>
+        <% tiebreaker_options = participations.filter_map { |p| [poster_name(p.kenshi), p.kenshi_id] if p.kenshi } %>
         <%= helpers.form_with url: helpers.admin_individual_category_pool_fights_path(category),
               method: :post, class: "pool-add-tiebreaker" do |f| %>
           <%= f.hidden_field "pool_fight[pool_number]", value: pool_number %>

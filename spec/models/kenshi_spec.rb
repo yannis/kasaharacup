@@ -224,4 +224,37 @@ RSpec.describe Kenshi do
       it { expect(kenshi.fitness).to eq(0.05) }
     end
   end
+
+  describe ".poster_names_for with a category" do
+    let(:category) { create(:individual_category, cup: cup) }
+
+    def qualify(kenshi, in_category: category)
+      create(:participation, category: in_category, kenshi: kenshi)
+      kenshi
+    end
+
+    it "matches #poster_name(category:) and disambiguates namesakes within the category" do
+      tanaka_a = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Tanaka"))
+      tanaka_b = qualify(create(:kenshi, cup: cup, first_name: "Botan", last_name: "Tanaka"))
+      yamada = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Yamada"))
+
+      names = described_class.poster_names_for([tanaka_a, tanaka_b, yamada], category: category)
+
+      expect(names[tanaka_a.id]).to eq tanaka_a.poster_name(category: category)
+      expect(names[tanaka_b.id]).to eq tanaka_b.poster_name(category: category)
+      expect(names[yamada.id]).to eq "YAMADA"
+      expect(names[tanaka_a.id]).not_to eq names[tanaka_b.id]
+    end
+
+    it "ignores namesakes that only participate in another category" do
+      other_category = create(:individual_category, cup: cup)
+      suzuki = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Suzuki"))
+      qualify(create(:kenshi, cup: cup, first_name: "Botan", last_name: "Suzuki"), in_category: other_category)
+
+      names = described_class.poster_names_for([suzuki], category: category)
+
+      expect(names[suzuki.id]).to eq "SUZUKI"
+      expect(names[suzuki.id]).to eq suzuki.poster_name(category: category)
+    end
+  end
 end

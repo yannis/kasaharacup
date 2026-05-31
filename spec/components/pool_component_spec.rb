@@ -13,6 +13,18 @@ RSpec.describe PoolComponent, type: :component do
     kenshi
   end
 
+  def capture_sql(&block)
+    queries = []
+    subscriber = lambda do |_name, _start, _finish, _id, payload|
+      next if payload[:name] == "SCHEMA"
+      next if payload[:sql].match?(/\A\s*(BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE)/i)
+
+      queries << payload[:sql]
+    end
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record", &block)
+    queries
+  end
+
   it "renders an empty-state message when no fights exist" do
     add_kenshi(pool: 1, position: 1)
     add_kenshi(pool: 1, position: 2)
@@ -62,6 +74,26 @@ RSpec.describe PoolComponent, type: :component do
     rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
 
     expect(rendered.css(".pool-standings__rank .pool-standings__tie").size).to eq 2
+  end
+
+  it "renders every pool without per-pool fight queries or per-fighter name lookups" do
+    [1, 2].each do |pool|
+      k1 = add_kenshi(pool: pool, position: 1)
+      k2 = add_kenshi(pool: pool, position: 2)
+      create(:fight, :pool_fight, individual_category: category, pool_number: pool,
+        fighter_1: k1, fighter_2: k2)
+    end
+
+    queries = capture_sql do
+      category.pools.sort_by(&:number).each do |pool|
+        render_inline(described_class.new(category: category, pool_number: pool.number, admin: true))
+      end
+    end
+
+    # The per-fighter namesake check (Kenshi#poster_name) and the per-pool fight
+    # query (pool_number = N) are both gone — batched/shared on the category.
+    expect(queries.grep(/SELECT 1 AS one FROM .kenshis./)).to be_empty
+    expect(queries.grep(/FROM .fights.+"pool_number" = /)).to be_empty
   end
 
   it "labels tiebreakers separately" do

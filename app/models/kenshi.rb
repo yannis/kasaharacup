@@ -142,20 +142,34 @@ class Kenshi < ApplicationRecord
     Kenshi.send(:normalize_poster_name, poster_name.join(" "))
   end
 
-  # Batch-computes poster_name for a collection of cup-scoped kenshis with a
-  # single DB query, avoiding the N+1 that calling #poster_name in a loop
-  # produces. Returns a hash {kenshi.id => poster_name}.
-  def self.poster_names_for(kenshis)
+  # Batch-computes poster_name for a collection of kenshis with a single DB
+  # query, avoiding the N+1 that calling #poster_name in a loop produces.
+  # Returns a hash {kenshi.id => poster_name}. Namesake disambiguation is
+  # cup-scoped by default, matching #poster_name; pass a category to scope it to
+  # that category's participants, matching #poster_name(category:).
+  def self.poster_names_for(kenshis, category: nil)
     return {} if kenshis.empty?
 
-    cup_ids = kenshis.map(&:cup_id).uniq
-    last_names = kenshis.map(&:last_name).uniq
-    same_name_groups = Kenshi.where(cup_id: cup_ids, last_name: last_names).group_by { |k| [k.cup_id, k.last_name] }
+    same_name_groups = category ? category_name_groups(kenshis, category) : cup_name_groups(kenshis)
+    group_key = category ? ->(kenshi) { kenshi.last_name } : ->(kenshi) { [kenshi.cup_id, kenshi.last_name] }
 
     kenshis.each_with_object({}) do |kenshi, hash|
-      group = same_name_groups.fetch([kenshi.cup_id, kenshi.last_name], [])
+      group = same_name_groups.fetch(group_key.call(kenshi), [])
       hash[kenshi.id] = (group.size > 1) ? format_with_initials(kenshi, group) : normalize_poster_name(kenshi.last_name)
     end
+  end
+
+  private_class_method def self.cup_name_groups(kenshis)
+    Kenshi.where(cup_id: kenshis.map(&:cup_id).uniq, last_name: kenshis.map(&:last_name).uniq)
+      .group_by { |kenshi| [kenshi.cup_id, kenshi.last_name] }
+  end
+
+  private_class_method def self.category_name_groups(kenshis, category)
+    Kenshi.joins(:participations)
+      .where(participations: {category: category})
+      .where(last_name: kenshis.map(&:last_name).uniq)
+      .distinct
+      .group_by(&:last_name)
   end
 
   private_class_method def self.format_with_initials(kenshi, same_name_group)
