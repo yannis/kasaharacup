@@ -40,23 +40,25 @@ RSpec.describe "Admin::PoolFights", type: :request do
       expect(tiebreaker.fighter_2_id).to eq k2.id
     end
 
-    it "rejects mismatched pool fighters" do
+    it "rejects mismatched pool fighters with a visible alert and creates nothing" do
       other_kenshi = create(:kenshi, cup: cup)
       create(:participation, category: category, kenshi: other_kenshi, pool_number: 2, pool_position: 1)
 
       post admin_individual_category_pool_fights_path(category),
-        params: {pool_fight: {pool_number: 1, fighter_1_id: k1.id, fighter_2_id: other_kenshi.id}}
+        params: {pool_fight: {pool_number: 1, fighter_1_id: k1.id, fighter_2_id: other_kenshi.id}},
+        as: :turbo_stream
 
-      expect(response).to have_http_status(:unprocessable_content)
       expect(category.pool_fights.where(tiebreaker: true)).to be_empty
+      expect(response.body).to include(I18n.t("admin.pool_fights.create.alert"))
     end
 
-    it "rejects a tiebreaker between a kenshi and themself" do
+    it "rejects a tiebreaker between a kenshi and themself with a visible alert" do
       post admin_individual_category_pool_fights_path(category),
-        params: {pool_fight: {pool_number: 1, fighter_1_id: k1.id, fighter_2_id: k1.id}}
+        params: {pool_fight: {pool_number: 1, fighter_1_id: k1.id, fighter_2_id: k1.id}},
+        as: :turbo_stream
 
-      expect(response).to have_http_status(:unprocessable_content)
       expect(category.pool_fights.where(tiebreaker: true)).to be_empty
+      expect(response.body).to include(I18n.t("admin.pool_fights.create.alert"))
     end
   end
 

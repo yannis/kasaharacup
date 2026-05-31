@@ -32,8 +32,12 @@ class FightPoint < ApplicationRecord
   end
 
   # Pool match outcomes are computed from the points, so any point change
-  # re-derives the owning fight's winner/draw.
+  # re-derives the owning fight's winner/draw. When the fight itself is being
+  # destroyed (its points cascade with it), the post-commit callback fires on
+  # the already-frozen fight — skip it, there is no outcome left to recompute.
   private def recompute_fight_outcome
+    return if fight.destroyed?
+
     fight.recompute_outcome_from_points!
   end
 

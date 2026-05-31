@@ -601,4 +601,45 @@ RSpec.describe Fight do
       expect(final.reload.winner_id).to eq kenshi1.id
     end
   end
+
+  # Regression: destroying a fight cascades to its fight_points, whose
+  # post-commit outcome recompute used to run on the frozen, already-destroyed
+  # fight and raise FrozenError. Covers every user-facing destroy path.
+  describe "destroying a fight that has recorded points" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:kenshi2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+
+    it "destroys a pool fight with a recorded point without raising" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      expect(fight.reload.winner_id).to eq kenshi1.id
+
+      expect { fight.destroy! }.not_to raise_error
+      expect(described_class.exists?(fight.id)).to be false
+    end
+
+    it "regenerates a pool whose fights have recorded points without raising" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+
+      expect {
+        category.transaction do
+          category.pool_fights.where(pool_number: 1).destroy_all
+          PoolFightGenerator.new(category, pool_number: 1).call
+        end
+      }.not_to raise_error
+    end
+
+    it "force-rebuilds a bracket whose fights have recorded points without raising" do
+      fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      expect(fight.reload.winner_id).to eq kenshi1.id
+
+      expect { category.bracket_fights.destroy_all }.not_to raise_error
+    end
+  end
 end

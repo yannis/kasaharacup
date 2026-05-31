@@ -14,7 +14,8 @@ module Admin
       permitted = params.expect(pool_fight: [:pool_number, :fighter_1_id, :fighter_2_id])
 
       unless tiebreaker_fighters_valid?(category, permitted)
-        head :unprocessable_content
+        flash.now[:alert] = t(".alert")
+        respond_with_pool(category, permitted[:pool_number].to_i)
         return
       end
 
@@ -40,6 +41,9 @@ module Admin
       fight.assign_attributes(outcome_attributes)
       fight.save!
       respond_with_pool(category, fight.pool_number, notice: "Pool fight updated.")
+    rescue ActiveRecord::RecordInvalid => e
+      flash.now[:alert] = e.record.errors.full_messages.to_sentence
+      respond_with_pool(category, fight.pool_number)
     end
 
     def destroy
@@ -59,7 +63,11 @@ module Admin
 
     def regenerate
       category = IndividualCategory.find(params[:id])
-      pool_number = Integer(params.fetch(:pool_number))
+      pool_number = Integer(params[:pool_number], exception: false)
+      if pool_number.nil?
+        redirect_to admin_individual_category_path(category), alert: t(".alert")
+        return
+      end
       category.transaction do
         category.pool_fights.where(pool_number: pool_number).destroy_all
         PoolFightGenerator.new(category, pool_number: pool_number).call
