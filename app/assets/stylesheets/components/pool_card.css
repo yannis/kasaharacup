@@ -342,6 +342,13 @@
   font-weight: 700;
 }
 
+.pool-standings__tie {
+  color: #A6A29D;
+  cursor: help;
+  font-weight: 700;
+  margin-left: 0.125rem;
+}
+
 .pool-standings__placeholder {
   border-bottom: 1px dashed #A6A29D;
   color: #A6A29D;

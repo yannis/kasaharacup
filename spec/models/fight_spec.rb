@@ -417,4 +417,60 @@ RSpec.describe Fight do
       expect(broadcast_targets.join).to include(pool_target_substring)
     end
   end
+
+  describe "Pool rank recomputation" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup) }
+    let(:kenshi2) { create(:kenshi, cup: cup) }
+    let!(:participation1) do
+      create(:participation, category: category, kenshi: kenshi1, pool_number: 1, pool_position: 1)
+    end
+    let!(:participation2) do
+      create(:participation, category: category, kenshi: kenshi2, pool_number: 1, pool_position: 2)
+    end
+
+    it "persists distinct pool ranks when a winner is recorded" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+
+      fight.update!(winner: kenshi1)
+
+      expect(participation1.reload.pool_rank).to eq 1
+      expect(participation2.reload.pool_rank).to eq 2
+    end
+
+    it "recomputes pool ranks when a fight point is added (touch)" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2, winner: kenshi2)
+
+      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men")
+
+      expect(participation2.reload.pool_rank).to eq 1
+      expect(participation1.reload.pool_rank).to eq 2
+    end
+
+    it "overwrites a manual pool_rank once a later result changes" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      participation1.update!(pool_rank: 1)
+      participation2.update!(pool_rank: 2)
+
+      fight.update!(winner: kenshi2)
+
+      expect(participation2.reload.pool_rank).to eq 1
+      expect(participation1.reload.pool_rank).to eq 2
+    end
+
+    it "leaves pool ranks untouched while the pool has no recorded result" do
+      participation1.update!(pool_rank: 1)
+      participation2.update!(pool_rank: 2)
+
+      create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+
+      expect(participation1.reload.pool_rank).to eq 1
+      expect(participation2.reload.pool_rank).to eq 2
+    end
+  end
 end

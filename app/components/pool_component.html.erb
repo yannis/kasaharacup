@@ -24,13 +24,12 @@
           <th>H</th>
           <th>Pts+</th>
           <th>Pts−</th>
-          <th>Suggested</th>
           <th>Rank</th>
           <% if admin %><th></th><% end %>
         </tr>
       </thead>
       <tbody>
-        <% standings_rows.each_with_index do |row, index| %>
+        <% standings_rows.each do |row| %>
           <% participation = row.participation # rubocop:disable Lint/UselessAssignment %>
           <% kenshi = participation.kenshi # rubocop:disable Lint/UselessAssignment %>
           <tr>
@@ -70,22 +69,16 @@
             <td><%= row.points_scored %></td>
             <td><%= row.points_conceded %></td>
             <td class="pool-standings__rank">
-              <% if row.suggested_rank.nil? %>
-                <span class="pool-standings__placeholder">—</span>
-              <% else %>
-                <% tied_with_next = standings_rows[index + 1]&.suggested_rank == row.suggested_rank %>
-                <% tied_with_prev = index > 0 && standings_rows[index - 1]&.suggested_rank == row.suggested_rank %>
-                <%= row.suggested_rank %><%= "=" if tied_with_next || tied_with_prev %>
-              <% end %>
-            </td>
-            <td>
               <% if admin %>
                 <%= helpers.best_in_place participation, :pool_rank, as: :input,
                       url: [:admin, participation],
                       class: "best_in_place_short pool-standings__editable",
-                      place_holder: "—" %>
+                      place_holder: "—" %><%= helpers.content_tag :span, "=",
+                      class: "pool-standings__tie", title: "Tied — adjust the rank if needed" if row.tied %>
+              <% elsif participation.pool_rank.present? %>
+                <%= participation.pool_rank %><%= "=" if row.tied %>
               <% else %>
-                <%= participation.pool_rank %>
+                <span class="pool-standings__placeholder">—</span>
               <% end %>
             </td>
             <% if admin %>

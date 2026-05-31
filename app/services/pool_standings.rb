@@ -2,7 +2,7 @@
 
 class PoolStandings
   Row = Data.define(:participation, :wins, :losses, :hikiwake,
-    :points_scored, :points_conceded, :suggested_rank)
+    :points_scored, :points_conceded, :rank, :tied)
 
   CASCADE_KEY = ->(row) {
     [-row.wins, row.losses, -row.hikiwake, -row.points_scored, row.points_conceded]
@@ -12,6 +12,18 @@ class PoolStandings
     new(participations: participations, fights: fights.to_a).rows
   end
 
+  # Recomputes the standings and persists each participation's distinct rank into
+  # its pool_rank column (the value that seeds the elimination bracket). Pools
+  # without any recorded result are left untouched.
+  def self.persist_ranks!(participations:, fights:)
+    self.for(participations: participations, fights: fights).each do |row|
+      next if row.rank.nil?
+      next if row.participation.pool_rank == row.rank
+
+      row.participation.update_column(:pool_rank, row.rank) # rubocop:disable Rails/SkipsModelValidations
+    end
+  end
+
   def initialize(participations:, fights:)
     @participations = participations
     @fights = fights
@@ -19,13 +31,13 @@ class PoolStandings
 
   def rows
     base = build_base_rows
-    return base.map { |row| Row.new(**row.to_h.except(:suggested_rank), suggested_rank: nil) } if no_data?(base)
+    return base if no_data?(base)
 
-    rank_by_participation_id = assign_ranks(base)
+    ranking = assign_ranks(base)
     base.map { |row|
-      Row.new(**row.to_h.except(:suggested_rank),
-        suggested_rank: rank_by_participation_id.fetch(row.participation.id))
-    }.sort_by(&:suggested_rank)
+      info = ranking.fetch(row.participation.id)
+      row.with(rank: info[:rank], tied: info[:tied])
+    }.sort_by(&:rank)
   end
 
   private attr_reader :participations, :fights
@@ -68,7 +80,7 @@ class PoolStandings
 
     Row.new(participation: participation, wins: wins, losses: losses,
       hikiwake: hikiwake, points_scored: points_scored,
-      points_conceded: points_conceded, suggested_rank: nil)
+      points_conceded: points_conceded, rank: nil, tied: false)
   end
 
   private def sanbon_fights
@@ -91,25 +103,26 @@ class PoolStandings
     fight.fight_points.count { |p| p.fighter_side == side && p.kind != "hansoku" }
   end
 
+  # Returns participation_id => {rank:, tied:}. Every participation gets a
+  # distinct sequential rank (so the value can seed a bracket), while `tied`
+  # marks the rows whose order within their standings group is arbitrary —
+  # i.e. a genuine tie that no tiebreaker fight resolved.
   private def assign_ranks(rows)
     sorted = rows.sort_by(&CASCADE_KEY)
     groups = sorted.chunk_while { |a, b| CASCADE_KEY.call(a) == CASCADE_KEY.call(b) }.to_a
 
-    rank_by_participation_id = {}
+    ranking = {}
     cursor = 1
     groups.each do |group|
-      ordered = resolve_pair_with_tiebreaker(group)
-      if ordered
-        ordered.each_with_index do |row, index|
-          rank_by_participation_id[row.participation.id] = cursor + index
-        end
-      else
-        group.each { |row| rank_by_participation_id[row.participation.id] = cursor }
+      resolved = resolve_pair_with_tiebreaker(group)
+      tied = group.size > 1 && resolved.nil?
+      (resolved || group).each do |row|
+        ranking[row.participation.id] = {rank: cursor, tied: tied}
+        cursor += 1
       end
-      cursor += group.size
     end
 
-    rank_by_participation_id
+    ranking
   end
 
   # Returns an ordered [winner, loser] array when a 2-way tie is resolved by

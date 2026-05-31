@@ -36,12 +36,19 @@ class Fight < ApplicationRecord
   after_update_commit :broadcast_competition_tree,
     if: -> { saved_change_to_winner_id? && pool_number.blank? }
 
+  after_commit :recompute_pool_ranks,
+    on: [:create, :destroy],
+    if: -> { pool_number.present? }
+  after_commit :recompute_pool_ranks_on_change,
+    on: :update,
+    if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
   after_commit :broadcast_pool_panel,
     on: [:create, :destroy],
     if: -> { pool_number.present? }
   after_commit :broadcast_pool_panel_on_change,
     on: :update,
     if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
+  after_touch :recompute_pool_ranks, if: -> { pool_number.present? }
   after_touch :broadcast_pool_panel, if: -> { pool_number.present? }
 
   scope :bracket_order, -> { order(:round, :position) }
@@ -125,6 +132,19 @@ class Fight < ApplicationRecord
       attributes: {method: :morph}
     )
   end
+
+  # Re-derives the pool's standings and persists each fighter's distinct rank
+  # into pool_rank, so the merged Rank column (and the bracket it seeds) always
+  # reflects the latest results. Admins can still override pool_rank in place;
+  # the override holds until the next result change recomputes it.
+  private def recompute_pool_ranks
+    pool_participations = individual_category.participations.where(pool_number: pool_number).to_a
+    pool_fights = individual_category.pool_fights.where(pool_number: pool_number)
+      .includes(:fight_points).to_a
+    PoolStandings.persist_ranks!(participations: pool_participations, fights: pool_fights)
+  end
+
+  private alias_method :recompute_pool_ranks_on_change, :recompute_pool_ranks
 
   private def broadcast_pool_panel
     broadcast_replace_later_to(
