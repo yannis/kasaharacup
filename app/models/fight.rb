@@ -123,26 +123,25 @@ class Fight < ApplicationRecord
     winner&.full_name
   end
 
-  # Derives a pool match's outcome from its recorded points: the side with more
-  # non-hansoku points wins, equal points (with at least one scored) is a draw,
-  # and a match with no points is left unresolved. Admins can still override the
-  # result with the Win/Draw buttons; that override holds until the next point
-  # change recomputes it.
+  # Derives a match's outcome from its recorded points: the side with more
+  # non-hansoku points wins. Equal points score a draw in a pool match (where
+  # draws are allowed) and stay unresolved in a bracket match; a match with no
+  # points is left unresolved. The winner is the resolved fighter on the leading
+  # side, so a bracket winner advances to the next round. Admins can still
+  # override the result; the override holds until the next point change.
   def recompute_outcome_from_points!
-    return if pool_number.blank?
-
     scored_1 = scoring_points_count("fighter_1")
     scored_2 = scoring_points_count("fighter_2")
 
     outcome =
-      if scored_1.zero? && scored_2.zero?
-        {winner_id: nil, draw: false}
-      elsif scored_1 > scored_2
-        {winner_id: fighter_1_id, draw: false}
+      if scored_1 > scored_2
+        {winner_id: resolved_fighter_1&.id, draw: false}
       elsif scored_2 > scored_1
-        {winner_id: fighter_2_id, draw: false}
-      else
+        {winner_id: resolved_fighter_2&.id, draw: false}
+      elsif pool_number.present? && (scored_1.positive? || scored_2.positive?)
         {winner_id: nil, draw: true}
+      else
+        {winner_id: nil, draw: false}
       end
 
     return if winner_id == outcome[:winner_id] && draw == outcome[:draw]

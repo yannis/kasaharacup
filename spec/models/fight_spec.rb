@@ -551,14 +551,54 @@ RSpec.describe Fight do
 
       expect(fight.reload).to have_attributes(winner_id: nil, draw: true)
     end
+  end
 
-    it "does not auto-compute the outcome of a bracket (non-pool) fight" do
-      bracket_fight = create(:fight, individual_category: category,
-        fighter_1: kenshi1, fighter_2: kenshi2)
+  describe "Bracket fight outcome from points" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+    let(:kenshi1) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
+    let(:kenshi2) { create(:kenshi, cup: cup, participations: [build(:participation, category: category)]) }
 
-      create(:fight_point, fight: bracket_fight, fighter_side: "fighter_1", kind: "men")
+    it "auto-sets the winner when a point is scored" do
+      fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
 
-      expect(bracket_fight.reload.winner_id).to be_nil
+      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men")
+
+      expect(fight.reload.winner_id).to eq kenshi2.id
+    end
+
+    it "stays unresolved at equal points (bracket fights cannot be a draw)" do
+      fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men")
+
+      expect(fight.reload).to have_attributes(winner_id: nil, draw: false)
+    end
+
+    it "clears the winner when the deciding point is removed" do
+      fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
+      point = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      expect(fight.reload.winner_id).to eq kenshi1.id
+
+      point.destroy!
+
+      expect(fight.reload.winner_id).to be_nil
+    end
+
+    it "awards the win to the resolved fighter advanced from a parent fight" do
+      kenshi3 = create(:kenshi, cup: cup, participations: [build(:participation, category: category)])
+      kenshi4 = create(:kenshi, cup: cup, participations: [build(:participation, category: category)])
+      parent_1 = create(:fight, individual_category: category,
+        fighter_1: kenshi1, fighter_2: kenshi2, winner: kenshi1)
+      parent_2 = create(:fight, individual_category: category,
+        fighter_1: kenshi3, fighter_2: kenshi4, winner: kenshi3)
+      final = create(:fight, individual_category: category, round: 2,
+        fighter_1: nil, fighter_2: nil, parent_fight_1: parent_1, parent_fight_2: parent_2)
+
+      create(:fight_point, fight: final, fighter_side: "fighter_1", kind: "men")
+
+      expect(final.reload.winner_id).to eq kenshi1.id
     end
   end
 end
