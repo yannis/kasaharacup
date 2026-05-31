@@ -186,7 +186,15 @@ class CompetitionTreePdf < Prawn::Document
   end
 
   private def header_for(fight)
-    fight.bye? ? "Fight #{fight.number} Bye" : "Fight #{fight.number}"
+    fight.bye? ? "Bye" : "Fight #{display_number(fight)}"
+  end
+
+  private def display_numbers
+    @display_numbers ||= BracketDisplayNumbering.for(fights)
+  end
+
+  private def display_number(fight)
+    display_numbers[fight.id]
   end
 
   # width_of measures with the current (regular) font, but the suffix may be
@@ -274,7 +282,7 @@ class CompetitionTreePdf < Prawn::Document
 
   private def fallback_label(fight, slot)
     parent_fight = fight.public_send(:"parent_fight_#{slot}")
-    return "Waiting for fight #{parent_fight.number}" if parent_fight.present?
+    return "Waiting for fight #{display_number(parent_fight)}" if parent_fight.present?
 
     pool_number = fight.public_send(:"fighter_#{slot}_pool_number")
     pool_rank = fight.public_send(:"fighter_#{slot}_pool_rank")

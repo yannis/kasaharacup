@@ -15,14 +15,26 @@ class CompetitionTreeComponent < ViewComponent::Base
   MATCH_GAP = 8
   PADDING = 8
 
-  private def rounds
-    @rounds ||= begin
-      fights = category.bracket_fights
+  private def fights
+    @fights ||= begin
+      list = category.bracket_fights
         .includes(:fighter_1, :fighter_2, :winner, :fight_points)
         .bracket_order.to_a
-      Fight.preload_parents(fights)
-      fights.group_by(&:round)
+      Fight.preload_parents(list)
+      list
     end
+  end
+
+  private def rounds
+    @rounds ||= fights.group_by(&:round)
+  end
+
+  private def display_numbers
+    @display_numbers ||= BracketDisplayNumbering.for(fights)
+  end
+
+  private def display_number(fight)
+    display_numbers[fight.id]
   end
 
   private def canvas_width
@@ -108,7 +120,9 @@ class CompetitionTreeComponent < ViewComponent::Base
     return poster_name_for(fighter) if fighter.present?
 
     parent_fight = visible_fighter_parent(fight.public_send(:"parent_fight_#{slot}"))
-    return tag.em("Waiting for fight #{parent_fight.number}", style: "color: #75716C;") if parent_fight.present?
+    if parent_fight.present?
+      return tag.em("Waiting for fight #{display_number(parent_fight)}", style: "color: #75716C;")
+    end
 
     ""
   end
