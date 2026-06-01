@@ -35,10 +35,16 @@ class FightPoint < ApplicationRecord
   # re-derives the owning fight's winner/draw. When the fight itself is being
   # destroyed (its points cascade with it), the post-commit callback fires on
   # the already-frozen fight — skip it, there is no outcome left to recompute.
+  #
+  # When the outcome changes, fight#update! already refreshed and broadcast the
+  # pool standings via its own after_commit. Otherwise (a second point on the
+  # leading side, or a hansoku) refresh here so the panel still updates — and,
+  # crucially, post-commit so a second viewer never receives a stale render.
   private def recompute_fight_outcome
     return if fight.destroyed?
 
-    fight.recompute_outcome_from_points!
+    outcome_changed = fight.recompute_outcome_from_points!
+    fight.refresh_pool_standings unless outcome_changed
   end
 
   private def assign_position

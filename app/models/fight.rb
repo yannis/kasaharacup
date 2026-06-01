@@ -48,8 +48,6 @@ class Fight < ApplicationRecord
   after_commit :broadcast_pool_panel_on_change,
     on: :update,
     if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
-  after_touch :recompute_pool_ranks, if: -> { pool_number.present? }
-  after_touch :broadcast_pool_panel, if: -> { pool_number.present? }
 
   scope :bracket_order, -> { order(:round, :position) }
 
@@ -129,6 +127,9 @@ class Fight < ApplicationRecord
   # points is left unresolved. The winner is the resolved fighter on the leading
   # side, so a bracket winner advances to the next round. Admins can still
   # override the result; the override holds until the next point change.
+  # Returns true when the outcome actually changed (and was persisted), false
+  # when it was already up to date — the caller uses this to avoid a redundant
+  # standings refresh.
   def recompute_outcome_from_points!
     scored_1 = scoring_points_count("fighter_1")
     scored_2 = scoring_points_count("fighter_2")
@@ -144,9 +145,23 @@ class Fight < ApplicationRecord
         {winner_id: nil, draw: false}
       end
 
-    return if winner_id == outcome[:winner_id] && draw == outcome[:draw]
+    return false if winner_id == outcome[:winner_id] && draw == outcome[:draw]
 
     update!(outcome)
+    true
+  end
+
+  # Recomputes/persists the pool standings and broadcasts the refreshed panel.
+  # Driven from FightPoint's after_commit so the refresh always lands
+  # post-commit: an after_touch refresh used to enqueue the broadcast inside the
+  # point's own transaction, letting the job render before the write committed
+  # and push stale data to a second viewer. No-op for bracket fights, which have
+  # no pool panel.
+  def refresh_pool_standings
+    return if pool_number.blank?
+
+    recompute_pool_ranks
+    broadcast_pool_panel
   end
 
   private def scoring_points_count(side)

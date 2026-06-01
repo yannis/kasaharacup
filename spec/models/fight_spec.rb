@@ -407,12 +407,26 @@ RSpec.describe Fight do
       expect(broadcast_targets.join).to include(pool_target_substring)
     end
 
-    it "broadcasts when touched" do
+    it "broadcasts when a point is added" do
       fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: kenshi1, fighter_2: kenshi2)
       ActiveJob::Base.queue_adapter.enqueued_jobs.clear
 
-      fight.touch
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+
+      expect(broadcast_targets.join).to include(pool_target_substring)
+    end
+
+    # The non-deciding point doesn't change the winner, so the fight's own
+    # after_commit doesn't fire — the panel refresh comes from FightPoint's
+    # after_commit instead (post-commit, replacing the old after_touch path).
+    it "broadcasts when a point that does not change the outcome is added" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "kote")
 
       expect(broadcast_targets.join).to include(pool_target_substring)
     end
@@ -440,7 +454,7 @@ RSpec.describe Fight do
       expect(participation2.reload.pool_rank).to eq 2
     end
 
-    it "recomputes pool ranks when a fight point is added (touch)" do
+    it "recomputes pool ranks when a fight point is added" do
       fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: kenshi1, fighter_2: kenshi2, winner: kenshi2)
 

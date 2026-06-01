@@ -88,6 +88,17 @@ RSpec.describe "Admin::PoolFights", type: :request do
         params: {pool_fight: {winner_id: "", draw: "0"}}
       expect(fight.reload).to have_attributes(winner_id: nil, draw: false)
     end
+
+    it "rejects a winner who is not a fighter with an alert instead of 500ing" do
+      outsider = create(:kenshi, cup: cup)
+
+      patch admin_individual_category_pool_fight_path(category, fight),
+        params: {pool_fight: {winner_id: outsider.id}}, as: :turbo_stream
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("must be one of the fighters")
+      expect(fight.reload.winner_id).to be_nil
+    end
   end
 
   describe "DELETE /admin/individual_categories/:id/pool_fights/:id" do
@@ -147,6 +158,26 @@ RSpec.describe "Admin::PoolFights", type: :request do
       expect {
         post regenerate_pool_fights_admin_individual_category_path(category), params: {pool_number: 3}
       }.to change { category.pool_fights.where(pool_number: 3).count }.from(0).to(1)
+    end
+
+    it "redirects with an alert on a non-numeric pool_number instead of 500ing" do
+      expect {
+        post regenerate_pool_fights_admin_individual_category_path(category), params: {pool_number: "nope"}
+      }.not_to change { category.pool_fights.count }
+      expect(response).to redirect_to(admin_individual_category_path(category))
+      expect(flash[:alert]).to eq(I18n.t("admin.pool_fights.regenerate.alert"))
+    end
+  end
+
+  describe "authorization" do
+    before { sign_out admin }
+
+    it "redirects an unauthenticated user away and creates nothing" do
+      expect {
+        post admin_individual_category_pool_fights_path(category),
+          params: {pool_fight: {pool_number: 1, fighter_1_id: k1.id, fighter_2_id: k2.id}}
+      }.not_to change { category.pool_fights.count }
+      expect(response).to have_http_status(:redirect)
     end
   end
 end
