@@ -13,7 +13,7 @@
     "globals": "^17.3.0",
     "jquery": "^4.0.0",
     "postcss": "^8.5.12",
-    "select2": "^4.1.0-rc.0",
+    "select2": "^4.1.0",
     "stimulus-use": "^0.52.2",
     "tailwindcss": "^4.1.6"
   },
