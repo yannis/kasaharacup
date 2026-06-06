@@ -11,13 +11,16 @@
 @import "active_admin/mixins";
 @import "active_admin/base";
 @import "components/competition_tree";
+@import "components/pool_card";
 
 // Overriding any non-variable Sass must be done after the fact.
 // For example, to change the default status-tag color:
 //
 //   .status_tag { background: #6090DB; }
 
-.best_in_place_short {
+span[data-bip-type] input {
   max-width: 4rem;
   display: inline-block;
+  padding: 0;
+  margin: 0;
 }

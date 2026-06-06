@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import './components/button.css';
 @import './components/competition_tree.css';
+@import './components/pool_card.css';
 @import './components/select.css';
 
 @plugin "@tailwindcss/forms";

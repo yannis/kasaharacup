@@ -69,50 +69,23 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     if category.pools.present?
       panel "Pools" do
+        if category.pool_fights.empty?
+          div do
+            span link_to("Generate pool fights",
+              generate_pool_fights_admin_individual_category_path(category),
+              method: :post,
+              data: {confirm: "Generate the cyclic match list for all pools?"})
+          end
+        end
         category.pools.sort_by(&:number).each do |pool|
-          h2 do
-            "Pool #{pool.number} (total Dan: #{pool.total_dan})"
-          end
-          begin
-            table_for pool.participations do |participation|
-              column :full_name do |participation|
-                link_to participation.full_name, admin_kenshi_path(participation.kenshi) if participation.kenshi
-              end
-              column :grade
-              column :club
-              column :age do |participation|
-                participation.kenshi.age_at_cup
-              end
-              column :pool_number do |participation|
-                best_in_place participation, :pool_number, as: :input, url: [:admin, participation],
-                  class: "best_in_place_short"
-              end
-              column :pool_position do |participation|
-                best_in_place participation, :pool_position, as: :input, url: [:admin, participation],
-                  class: "best_in_place_short"
-              end
-              column :pool_rank do |participation|
-                best_in_place participation, :pool_rank, as: :input, url: [:admin, participation],
-                  class: "best_in_place_short"
-              end
-              column :admin_links do |participation|
-                [
-                  link_to("View", admin_participation_path(participation)),
-                  link_to("Edit", edit_admin_participation_path(participation)),
-                  link_to("Destroy", admin_participation_path(participation, method: :delete))
-                ].join(" ").html_safe
-              end
-            end
-          rescue
-            "Pool invalid"
-          end
+          render PoolComponent.new(category: category, pool_number: pool.number, admin: true, pool: pool)
         end
       end
     end
 
     panel "Competition tree" do
       div do
-        if category.fights.none?
+        if category.bracket_fights.none?
           span link_to("Generate tree", generate_bracket_admin_individual_category_path(category), method: :post,
             data: {confirm: "Generate the competition tree from current pool results?"})
         else

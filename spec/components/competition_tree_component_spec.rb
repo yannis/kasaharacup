@@ -26,7 +26,7 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     render_inline(described_class.new(category: local_category.reload, admin: true))
 
-    bye_card = page.find(".competition-tree__match", text: "Fight 1")
+    bye_card = page.find(".competition-tree__match--bye")
     expect(bye_card[:class]).to include("competition-tree__match--bye")
     expect(bye_card).to have_text(bye_kenshi.poster_name)
     expect(bye_card).not_to have_text("Bye", exact: true) unless bye_card.has_css?(".competition-tree__bye-label")
@@ -39,12 +39,15 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     render_inline(described_class.new(category: local_category.reload))
 
-    round_two = page.find(".competition-tree__match", text: "Fight 3")
-    expect(round_two).to have_text(bye_kenshi.poster_name)
+    round_two = local_category.bracket_fights.find_by!(number: 3)
+    round_three = local_category.bracket_fights.find_by!(number: 5)
 
-    round_three = page.find(".competition-tree__match", text: "Fight 5")
-    expect(round_three).to have_text("Waiting for fight 3")
-    expect(round_three).not_to have_text(bye_kenshi.poster_name)
+    round_two_card = page.find(".competition-tree__match", text: "Fight #{display_number_for(round_two)}")
+    expect(round_two_card).to have_text(bye_kenshi.poster_name)
+
+    round_three_card = page.find(".competition-tree__match", text: "Fight #{display_number_for(round_three)}")
+    expect(round_three_card).to have_text("Waiting for fight #{display_number_for(round_two)}")
+    expect(round_three_card).not_to have_text(bye_kenshi.poster_name)
   end
 
   it "renders waiting, active, winner, and bye states" do
@@ -150,16 +153,18 @@ RSpec.describe CompetitionTreeComponent, type: :component do
   end
 
   it "does not render cards for fights without fighters" do
-    empty_fight = create_empty_fight(category, number: 3, round: 1, position: 2)
+    create_empty_fight(category, number: 3, round: 1, position: 2)
 
     render_inline(described_class.new(category: category.reload))
 
-    expect(page).not_to have_css(".competition-tree__match", text: "Fight #{empty_fight.number}")
+    # Only the two real fights (round-1 match and its forecasted final) render;
+    # the fighterless round-1 fight is skipped.
+    expect(page).to have_css(".competition-tree__match", count: 2)
   end
 
   it "renders an unresolved bye as a compact bye card with the slot label" do
     local_category = create(:individual_category)
-    bye_fight = create(:fight,
+    create(:fight,
       individual_category: local_category,
       number: 1, round: 1, position: 1,
       fighter_1: nil, fighter_2: nil,
@@ -167,7 +172,7 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     render_inline(described_class.new(category: local_category.reload))
 
-    card = page.find(".competition-tree__match", text: "Fight #{bye_fight.number}")
+    card = page.find(".competition-tree__match--bye")
     expect(card[:class]).to include("competition-tree__match--bye")
     expect(card).to have_css(".competition-tree__bye-label", text: "Bye")
     expect(card).to have_css(".competition-tree__pool-position", text: "1.1")
@@ -222,8 +227,10 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     render_inline(described_class.new(category: bracket[:category].reload))
 
-    expect(page).not_to have_css(".competition-tree__match", text: "Fight #{bracket[:pass_through_fight].number}")
-    expect(page).to have_css(".competition-tree__match", text: "Fight #{bracket[:final_fight].number}")
+    pass_through_number = display_number_for(bracket[:pass_through_fight])
+    final_number = display_number_for(bracket[:final_fight])
+    expect(page).not_to have_css(".competition-tree__match", text: "Fight #{pass_through_number}")
+    expect(page).to have_css(".competition-tree__match", text: "Fight #{final_number}")
     expect(page).to have_text(bracket[:visible_source].winner.poster_name)
   end
 
@@ -232,10 +239,13 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     render_inline(described_class.new(category: bracket[:category].reload))
 
-    expect(page).not_to have_css(".competition-tree__match", text: "Fight #{bracket[:pass_through_fight].number}")
-    expect(page).to have_css(".competition-tree__match", text: "Fight #{bracket[:final_fight].number}")
-    expect(page).to have_text("Waiting for fight #{bracket[:visible_source].number}")
-    expect(page).not_to have_text("Waiting for fight #{bracket[:pass_through_fight].number}")
+    pass_through_number = display_number_for(bracket[:pass_through_fight])
+    final_number = display_number_for(bracket[:final_fight])
+    visible_source_number = display_number_for(bracket[:visible_source])
+    expect(page).not_to have_css(".competition-tree__match", text: "Fight #{pass_through_number}")
+    expect(page).to have_css(".competition-tree__match", text: "Fight #{final_number}")
+    expect(page).to have_text("Waiting for fight #{visible_source_number}")
+    expect(page).not_to have_text("Waiting for fight #{pass_through_number}")
   end
 
   def create_pass_through_bracket(resolved:)
@@ -265,6 +275,14 @@ RSpec.describe CompetitionTreeComponent, type: :component do
       pass_through_fight: pass_through_fight,
       visible_source: visible_source
     }
+  end
+
+  # Mirrors what the component renders: the viewer-facing display number for a
+  # fight, derived from the same service the component uses.
+  def display_number_for(fight)
+    fights = fight.individual_category.bracket_fights.bracket_order.to_a
+    Fight.preload_parents(fights)
+    BracketDisplayNumbering.for(fights)[fight.id]
   end
 
   def create_empty_fight(category, attributes)
@@ -298,5 +316,19 @@ RSpec.describe CompetitionTreeComponent, type: :component do
         parent_fight_1: round_two, parent_fight_2: sibling_round_two)
     end
     [local_category, bye_kenshi]
+  end
+
+  it "ignores pool fights when computing rounds" do
+    other_category = create(:individual_category)
+    k1 = create(:kenshi, cup: other_category.cup,
+      participations: [build(:participation, category: other_category)])
+    k2 = create(:kenshi, cup: other_category.cup,
+      participations: [build(:participation, category: other_category)])
+    bracket = create(:fight, individual_category: other_category, fighter_1: k1, fighter_2: k2)
+    create(:fight, :pool_fight, individual_category: other_category, fighter_1: k1, fighter_2: k2)
+
+    rendered = render_inline(described_class.new(category: other_category))
+
+    expect(rendered.to_html).to include("Fight #{bracket.number}")
   end
 end

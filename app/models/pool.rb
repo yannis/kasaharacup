@@ -5,7 +5,8 @@ class Pool
 
   def initialize(data = {})
     @number = data.fetch(:number, nil)
-    @participations = [data.fetch(:participations, nil)].flatten.uniq.compact.sort_by(&:pool_position)
+    @participations = [data.fetch(:participations, nil)].flatten.uniq.compact
+      .sort_by { |participation| participation.pool_position || Float::INFINITY }
   end
 
   def contains_high_rank?

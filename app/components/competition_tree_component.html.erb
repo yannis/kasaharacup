@@ -24,7 +24,7 @@
               <% bye_slot = fight.bye_slot %>
               <article class="competition-tree__match competition-tree__match--bye" style="<%= match_style(fight) %>">
                 <div class="competition-tree__match-header">
-                  <span>Fight <%= fight.number %> <span class="competition-tree__bye-label">Bye</span></span>
+                  <span class="competition-tree__bye-label">Bye</span>
                 </div>
                 <ol class="competition-tree__fighters">
                   <li class="competition-tree__fighter competition-tree__fighter--winner">
@@ -42,7 +42,7 @@
                           data-controller="fight-winner"
                           data-fight-winner-url-value="<%= admin_individual_category_fight_path(category, fight) %>">
                     <summary class="competition-tree__match-header">
-                      <span>Fight <%= fight.number %></span>
+                      <span>Fight <%= display_number(fight) %></span>
                       <span class="competition-tree__admin-summary">
                         <span class="competition-tree__admin-summary-label competition-tree__admin-summary-label--edit">Edit result</span>
                         <span class="competition-tree__admin-summary-label competition-tree__admin-summary-label--close">Close</span>
@@ -83,7 +83,7 @@
                   </details>
                 <% else %>
                   <div class="competition-tree__match-header">
-                    <span>Fight <%= fight.number %></span>
+                    <span>Fight <%= display_number(fight) %></span>
                   </div>
                 <% end %>
                 <ol class="competition-tree__fighters">

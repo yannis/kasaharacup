@@ -47,7 +47,12 @@ Rails.application.routes.draw do
     end
     resources :individual_categories do
       post :generate_bracket, on: :member, to: "competition_trees#generate_bracket"
+      post :generate_pool_fights, on: :member, to: "pool_fights#generate"
+      post :regenerate_pool_fights, on: :member, to: "pool_fights#regenerate"
       resources :fights, only: [:update] do
+        resources :fight_points, only: [:create, :destroy]
+      end
+      resources :pool_fights, only: [:create, :update, :destroy] do
         resources :fight_points, only: [:create, :destroy]
       end
       resources :documents

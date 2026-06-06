@@ -13,18 +13,41 @@ class Fight < ApplicationRecord
   has_many :fight_points, -> { order(:position) }, dependent: :destroy
 
   validates :number, presence: true
-  validates :round, presence: true
-  validates :position, presence: true
-  validates :number, uniqueness: {scope: :individual_category_id}
-  validates :position, uniqueness: {scope: [:individual_category_id, :round]}
+  validates :round, presence: true, if: -> { pool_number.blank? }
+  validates :position, presence: true, if: -> { pool_number.blank? }
+  validates :number,
+    uniqueness: {scope: :individual_category_id, conditions: -> { where(pool_number: nil) }},
+    if: -> { pool_number.blank? }
+  validates :number,
+    uniqueness: {scope: [:individual_category_id, :pool_number]},
+    if: -> { pool_number.present? }
+  validates :position,
+    uniqueness: {scope: [:individual_category_id, :round]},
+    if: -> { position.present? }
 
   validate :fighters_participate_in_category
   validate :winner_is_a_fighter
+  validate :draw_constraints
+  validate :tiebreaker_constraints
 
   before_validation :restore_fighter_type
 
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?
-  after_update_commit :broadcast_competition_tree, if: :saved_change_to_winner_id?
+  after_update_commit :broadcast_competition_tree,
+    if: -> { saved_change_to_winner_id? && pool_number.blank? }
+
+  after_commit :recompute_pool_ranks,
+    on: [:create, :destroy],
+    if: -> { pool_number.present? }
+  after_commit :recompute_pool_ranks_on_change,
+    on: :update,
+    if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
+  after_commit :broadcast_pool_panel,
+    on: [:create, :destroy],
+    if: -> { pool_number.present? }
+  after_commit :broadcast_pool_panel_on_change,
+    on: :update,
+    if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
 
   scope :bracket_order, -> { order(:round, :position) }
 
@@ -98,6 +121,53 @@ class Fight < ApplicationRecord
     winner&.full_name
   end
 
+  # Derives a match's outcome from its recorded points: the side with more
+  # non-hansoku points wins. Equal points score a draw in a pool match (where
+  # draws are allowed) and stay unresolved in a bracket match; a match with no
+  # points is left unresolved. The winner is the resolved fighter on the leading
+  # side, so a bracket winner advances to the next round. Admins can still
+  # override the result; the override holds until the next point change.
+  # Returns true when the outcome actually changed (and was persisted), false
+  # when it was already up to date — the caller uses this to avoid a redundant
+  # standings refresh.
+  def recompute_outcome_from_points!
+    scored_1 = scoring_points_count("fighter_1")
+    scored_2 = scoring_points_count("fighter_2")
+
+    outcome =
+      if scored_1 > scored_2
+        {winner_id: resolved_fighter_1&.id, draw: false}
+      elsif scored_2 > scored_1
+        {winner_id: resolved_fighter_2&.id, draw: false}
+      elsif pool_number.present? && (scored_1.positive? || scored_2.positive?)
+        {winner_id: nil, draw: true}
+      else
+        {winner_id: nil, draw: false}
+      end
+
+    return false if winner_id == outcome[:winner_id] && draw == outcome[:draw]
+
+    update!(outcome)
+    true
+  end
+
+  # Recomputes/persists the pool standings and broadcasts the refreshed panel.
+  # Driven from FightPoint's after_commit so the refresh always lands
+  # post-commit: an after_touch refresh used to enqueue the broadcast inside the
+  # point's own transaction, letting the job render before the write committed
+  # and push stale data to a second viewer. No-op for bracket fights, which have
+  # no pool panel.
+  def refresh_pool_standings
+    return if pool_number.blank?
+
+    recompute_pool_ranks
+    broadcast_pool_panel
+  end
+
+  private def scoring_points_count(side)
+    fight_points.where(fighter_side: side).where.not(kind: "hansoku").count
+  end
+
   private def broadcast_competition_tree
     broadcast_replace_later_to(
       [individual_category, :competition_tree],
@@ -107,6 +177,31 @@ class Fight < ApplicationRecord
       attributes: {method: :morph}
     )
   end
+
+  # Re-derives the pool's standings and persists each fighter's distinct rank
+  # into pool_rank, so the merged Rank column (and the bracket it seeds) always
+  # reflects the latest results. Admins can still override pool_rank in place;
+  # the override holds until the next result change recomputes it.
+  private def recompute_pool_ranks
+    pool_participations = individual_category.participations.where(pool_number: pool_number).to_a
+    pool_fights = individual_category.pool_fights.where(pool_number: pool_number)
+      .includes(:fight_points).to_a
+    PoolStandings.persist_ranks!(participations: pool_participations, fights: pool_fights)
+  end
+
+  private alias_method :recompute_pool_ranks_on_change, :recompute_pool_ranks
+
+  private def broadcast_pool_panel
+    broadcast_replace_later_to(
+      [individual_category, :competition_tree],
+      target: "pool_#{pool_number}_#{dom_id(individual_category)}",
+      partial: "admin/pool_fights/pool",
+      locals: {category: individual_category, pool_number: pool_number, admin: true},
+      attributes: {method: :morph}
+    )
+  end
+
+  private alias_method :broadcast_pool_panel_on_change, :broadcast_pool_panel
 
   private def fighters_participate_in_category
     validate_fighter_participates(:fighter_1, fighter_1)
@@ -157,5 +252,23 @@ class Fight < ApplicationRecord
     return unless fighter_1_id || fighter_2_id || winner_id
 
     self.fighter_type = "Kenshi"
+  end
+
+  private def draw_constraints
+    return unless draw
+
+    errors.add(:draw, "only allowed on pool fights") if pool_number.blank?
+    errors.add(:draw, "cannot coexist with a winner") if winner_id.present?
+  end
+
+  private def tiebreaker_constraints
+    return unless tiebreaker
+
+    errors.add(:tiebreaker, "only allowed on pool fights") if pool_number.blank?
+    errors.add(:fighter_1, "is required for a tiebreaker") if fighter_1_id.blank?
+    errors.add(:fighter_2, "is required for a tiebreaker") if fighter_2_id.blank?
+    if fighter_1_id.present? && fighter_1_id == fighter_2_id
+      errors.add(:fighter_2, "must differ from fighter 1")
+    end
   end
 end

@@ -123,6 +123,15 @@ fr:
     fights:
       update:
         notice: Combat mis à jour
+    pool_fights:
+      create:
+        alert: Choisissez deux kenshis différents de cette poule pour le barrage.
+      destroy:
+        alert: Seuls les combats de barrage peuvent être supprimés. Utilisez Regénérer pour recréer les combats réguliers d'une poule.
+      generate:
+        notice: Combats de poule générés
+      regenerate:
+        alert: Numéro de poule invalide.
   categories:
     from: de
     to: à

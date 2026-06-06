@@ -18,7 +18,7 @@ module ActsAsCategory
 
     def pools
       pools = []
-      if pool_size > 1
+      if pool_size.to_i > 1
         grouped_participations = participations.includes(kenshi: [:cup,
           :club]).where.not(participations: {pool_number: nil}).group_by { |p|
           p.pool_number
@@ -36,7 +36,7 @@ module ActsAsCategory
 
     def data
       {
-        fights: fights.bracket_order.to_a
+        fights: fights.where(pool_number: nil).bracket_order.to_a
       }
     end
   end

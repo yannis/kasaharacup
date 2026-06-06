@@ -119,6 +119,15 @@ en:
     fights:
       update:
         notice: Fight updated
+    pool_fights:
+      create:
+        alert: Pick two different kenshis from this pool for the tiebreaker.
+      destroy:
+        alert: Only tiebreaker fights can be deleted. Use Regenerate to recreate a pool's regular fights.
+      generate:
+        notice: Pool fights generated
+      regenerate:
+        alert: Invalid pool number.
   categories:
     from: from
     to: to

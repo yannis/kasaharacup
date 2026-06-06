@@ -25,25 +25,24 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
       cup_name_and_logo(category: individual_category)
 
       font_size 12
-      kenshis = Kenshi.joins(:participations).merge(pool.participations)
 
       bounding_box [bounds.left, bounds.top - 200], width: 580, align: :center do
         fill_color "000000"
         data = []
-        kenshis = pool.participations.map(&:kenshi)
+        participations = pool.participations
         data << [nil, nil, nil, nil, nil, nil]
-        kenshis.each_with_index do |kenshi, i|
-          f = kenshi
-          next if kenshis.size == 2 && kenshi == kenshis.last
+        Pools::CyclicPairing.pairs_for(participations.size).each_with_index do |(low, high), i|
+          p_low = participations[low - 1]
+          p_high = participations[high - 1]
+          next if p_low.nil? || p_high.nil?
 
-          o = ((kenshi == kenshis.last) ? kenshis.first : kenshis[i + 1])
+          name_low = p_low.kenshi.poster_name(category: individual_category)
+          name_high = p_high.kenshi.poster_name(category: individual_category)
 
           data << if i.even?
-            ["#{i + 1}.", f.poster_name(category: individual_category), nil, "x", nil,
-              o.poster_name(category: individual_category)]
+            ["#{i + 1}.", name_low, nil, "x", nil, name_high]
           else
-            ["#{i + 1}.", o.poster_name(category: individual_category), nil, "x", nil,
-              f.poster_name(category: individual_category)]
+            ["#{i + 1}.", name_high, nil, "x", nil, name_low]
           end
         end
         table(data, cell_style: {inline_format: true, size: 12}) do
@@ -79,7 +78,7 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
 
       bounding_box [bounds.left, bounds.top - 500], width: 580, align: :center do
         data = [[nil, "Rank", "Wins", "Losses", "Hikiwake", "Pts scored", "Pts conceded"]]
-        kenshis.each_with_index do |kenshi, i|
+        pool.participations.map(&:kenshi).each do |kenshi|
           data << [kenshi.poster_name, nil, nil, nil, nil, nil, nil]
         end
         table(data, cell_style: {inline_format: true}) do

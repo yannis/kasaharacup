@@ -225,4 +225,58 @@ RSpec.describe Participation do
       expect(participation.purchase.product).to eq(product_individual_adult)
     end
   end
+
+  describe "auto pool_position" do
+    let(:cup) { create(:cup) }
+    let(:category) { create(:individual_category, cup: cup) }
+
+    it "assigns the first free position when a new participation joins a pool" do
+      existing = create(:participation, category: category, pool_number: 1, pool_position: 1,
+        kenshi: create(:kenshi, cup: cup))
+      newcomer = create(:participation, category: category, pool_number: 1,
+        kenshi: create(:kenshi, cup: cup))
+
+      expect(existing.pool_position).to eq 1
+      expect(newcomer.pool_position).to eq 2
+    end
+
+    it "uses max + 1 even when there are gaps" do
+      create(:participation, category: category, pool_number: 1, pool_position: 1,
+        kenshi: create(:kenshi, cup: cup))
+      create(:participation, category: category, pool_number: 1, pool_position: 3,
+        kenshi: create(:kenshi, cup: cup))
+
+      newcomer = create(:participation, category: category, pool_number: 1,
+        kenshi: create(:kenshi, cup: cup))
+
+      expect(newcomer.pool_position).to eq 4
+    end
+
+    it "reassigns pool_position when moved to a different pool via single-field update" do
+      create(:participation, category: category, pool_number: 2, pool_position: 1,
+        kenshi: create(:kenshi, cup: cup))
+      participation = create(:participation, category: category, pool_number: 1, pool_position: 2,
+        kenshi: create(:kenshi, cup: cup))
+
+      participation.update!(pool_number: 2)
+
+      expect(participation.pool_position).to eq 2
+    end
+
+    it "respects pool_position when both fields are updated at once" do
+      participation = create(:participation, category: category, pool_number: 1, pool_position: 7,
+        kenshi: create(:kenshi, cup: cup))
+      participation.update!(pool_number: 2, pool_position: 5)
+
+      expect(participation.pool_position).to eq 5
+    end
+
+    it "does not touch pool_position when pool_number is unchanged" do
+      participation = create(:participation, category: category, pool_number: 1, pool_position: 3,
+        kenshi: create(:kenshi, cup: cup))
+      participation.update!(ronin: true)
+
+      expect(participation.reload.pool_position).to eq 3
+    end
+  end
 end
