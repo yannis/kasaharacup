@@ -27,6 +27,7 @@ AllCops:
   Exclude:
     - "app/vendor/**/*"
     - "db/**/*"
+    - "docs/**/*"
     - "node_modules/**/*"
     - "bin/**/*"
     - "vendor/**/*"

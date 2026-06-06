@@ -3,14 +3,14 @@
 module Admin
   class PoolFightsController < BaseController
     def generate
-      category = IndividualCategory.find(params[:id])
+      category = IndividualCategory.find(params.expect(:id))
       PoolFightGenerator.new(category).call
       redirect_to admin_individual_category_path(category),
         notice: t(".notice")
     end
 
     def create
-      category = IndividualCategory.find(params[:individual_category_id])
+      category = IndividualCategory.find(params.expect(:individual_category_id))
       permitted = params.expect(pool_fight: [:pool_number, :fighter_1_id, :fighter_2_id])
 
       unless tiebreaker_fighters_valid?(category, permitted)
@@ -36,8 +36,8 @@ module Admin
     end
 
     def update
-      category = IndividualCategory.find(params[:individual_category_id])
-      fight = category.pool_fights.find(params[:id])
+      category = IndividualCategory.find(params.expect(:individual_category_id))
+      fight = category.pool_fights.find(params.expect(:id))
       fight.assign_attributes(outcome_attributes)
       fight.save!
       respond_with_pool(category, fight.pool_number, notice: "Pool fight updated.")
@@ -47,8 +47,8 @@ module Admin
     end
 
     def destroy
-      category = IndividualCategory.find(params[:individual_category_id])
-      fight = category.pool_fights.find(params[:id])
+      category = IndividualCategory.find(params.expect(:individual_category_id))
+      fight = category.pool_fights.find(params.expect(:id))
 
       unless fight.tiebreaker
         redirect_to admin_individual_category_path(category),
@@ -62,7 +62,7 @@ module Admin
     end
 
     def regenerate
-      category = IndividualCategory.find(params[:id])
+      category = IndividualCategory.find(params.expect(:id))
       pool_number = Integer(params[:pool_number], exception: false)
       if pool_number.nil?
         redirect_to admin_individual_category_path(category), alert: t(".alert")

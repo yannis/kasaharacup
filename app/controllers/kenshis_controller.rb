@@ -49,7 +49,7 @@ class KenshisController < ApplicationController
         @title = t(".yourself")
       end
     elsif params[:id]
-      origin_kenshi = Kenshi.find(params[:id])
+      origin_kenshi = Kenshi.find(params.expect(:id))
       @kenshi = origin_kenshi.dup
       @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
       @title = t(".duplicate", full_name: origin_kenshi.full_name)
@@ -92,7 +92,7 @@ class KenshisController < ApplicationController
           @title = t("kenshis.new.yourself")
         end
       elsif params[:id]
-        origin_kenshi = Kenshi.find(params[:id])
+        origin_kenshi = Kenshi.find(params.expect(:id))
         @kenshi = origin_kenshi.dup
         @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
         @title = t("kenshis.new.duplicate", full_name: origin_kenshi.full_name)

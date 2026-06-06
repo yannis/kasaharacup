@@ -3,7 +3,7 @@
 module Admin
   class CompetitionTreesController < BaseController
     def generate_bracket
-      category = IndividualCategory.find(params[:id])
+      category = IndividualCategory.find(params.expect(:id))
       IndividualCategoryBracketBuilder.new(category, rebuild_started: truthy_param?(:rebuild_started)).call
       redirect_to admin_individual_category_path(category), notice: t(".notice")
     end
