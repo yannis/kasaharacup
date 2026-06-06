@@ -15,8 +15,9 @@
 #
 # Pools number ceil(N / pool_size), so each holds either pool_size or
 # pool_size - 1 participants with the fewest short pools possible. The short
-# pools take the lowest pool numbers, which the bracket builder seeds at the top
-# of the quarter/semi tree.
+# pools are spread evenly across the pool numbers (#1, then the head of each
+# half/quarter) so the byes and easier pools the bracket builder derives from
+# them are distributed across the bracket instead of clustered at the top.
 class SmartPooler
   attr_reader :category, :participants, :poules, :pool_size
 
@@ -46,10 +47,19 @@ class SmartPooler
 
   private def build_empty_pools
     base, full_pools = participants.size.divmod(pool_count)
-    short_pools = pool_count - full_pools
+    short = short_pool_indices(pool_count - full_pools, pool_count)
     @poules = Array.new(pool_count) { Pool.new }
-    # Short pools first so they take the lowest pool numbers (top of the bracket).
-    @target_sizes = Array.new(pool_count) { |i| (i < short_pools) ? base : base + 1 }
+    @target_sizes = Array.new(pool_count) { |i| short.include?(i) ? base : base + 1 }
+  end
+
+  # Zero-based indices of the short pools, spread evenly across the pool numbers
+  # so they head the bracket's halves/quarters instead of clustering at the top.
+  # With P pools and k short pools the i-th sits at round(i * P / k): e.g. 12
+  # pools with 2 short -> indices 0 and 6 -> pool numbers 1 and 7.
+  private def short_pool_indices(count, total)
+    return [] if count.zero?
+
+    Array.new(count) { |i| (i * total.to_f / count).round }
   end
 
   # Strongest first so LPT balancing spreads the top fighters across pools;

@@ -31,6 +31,11 @@ RSpec.describe SmartPooler do
       .each_with_object({}) { |p, h| h[p.kenshi_id] = p.pool_number }
   end
 
+  # Sorted pool numbers of the short pools (fewer than pool_size participants).
+  def short_pool_numbers
+    pooled.select { |_number, participations| participations.size < pool_size }.keys.sort
+  end
+
   describe "#set_pools" do
     context "pool sizing with 13 participants and pool_size 4" do
       let(:pool_size) { 4 }
@@ -53,10 +58,35 @@ RSpec.describe SmartPooler do
       it "fills every participant into exactly one pool" do
         expect(pooled.values.sum(&:size)).to eq 13
       end
+    end
 
-      it "places the short (pool_size - 1) pools at the lowest pool numbers" do
-        sizes_by_number = pooled.transform_values(&:size)
-        expect(sizes_by_number).to eq({1 => 3, 2 => 3, 3 => 3, 4 => 4})
+    # Short pools head the bracket's halves/quarters rather than clustering at
+    # the top, so the byes/easier pools are spread evenly across the bracket.
+    context "spreading short pools across the bracket" do
+      context "with 2 short pools among 8" do
+        let(:pool_size) { 4 }
+
+        before do
+          30.times { add_participant } # 8 pools: 6 of size 4, 2 of size 3
+          described_class.new(category).set_pools
+        end
+
+        it "heads each half (pools #1 and #5)" do
+          expect(short_pool_numbers).to eq [1, 5]
+        end
+      end
+
+      context "with 4 short pools among 8" do
+        let(:pool_size) { 5 }
+
+        before do
+          36.times { add_participant } # 8 pools: 4 of size 5, 4 of size 4
+          described_class.new(category).set_pools
+        end
+
+        it "heads each quarter (pools #1, #3, #5 and #7)" do
+          expect(short_pool_numbers).to eq [1, 3, 5, 7]
+        end
       end
     end
 
