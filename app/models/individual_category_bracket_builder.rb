@@ -108,19 +108,20 @@ class IndividualCategoryBracketBuilder
     build_half_units(top) + build_half_units(bottom)
   end
 
-  # Split entries into a top and bottom half. For the i-th pool (0-based, sorted
-  # by number) and a qualifier of rank r, the entry goes to the top half when
-  # (i + r) is even, otherwise the bottom half. rank-1 and rank-2 differ by one
-  # in parity, so they always land in opposite halves; the per-pool starting
-  # side alternates, mixing winners and runners-up into both halves.
+  # Split entries into a top and bottom half. The pools are cut into a low block
+  # (the first half of pool numbers) and a high block. A low-block pool sends its
+  # rank-1 to the top half and rank-2 to the bottom; a high-block pool does the
+  # reverse (odd ranks follow rank-1, even ranks follow rank-2). This keeps each
+  # pool's rank-1 and rank-2 in opposite halves, and — because the low/high cut
+  # spans the whole pool-number range — lets evenly-spaced byes (see select_byes)
+  # fall one per half.
   private def assign_halves(entries)
+    low_block = pool_numbers.first((pool_numbers.size / 2.0).ceil)
     top = []
     bottom = []
-    sorted_pools = entries.group_by(&:pool_number).sort_by { |pool_number, _| pool_number }
-    sorted_pools.each_with_index do |(_pool_number, slots), pool_index|
-      slots.sort_by(&:pool_rank).each do |slot|
-        ((pool_index + slot.pool_rank).even? ? top : bottom) << slot
-      end
+    entries.each do |slot|
+      in_low_block = low_block.include?(slot.pool_number)
+      ((slot.pool_rank.odd? == in_low_block) ? top : bottom) << slot
     end
     [sort_by_strength(top), sort_by_strength(bottom)]
   end
@@ -139,22 +140,18 @@ class IndividualCategoryBracketBuilder
     units.sort_by { |pair| [pair.first.pool_number, pair.first.pool_rank] }
   end
 
-  # Byes go to the strongest entries, but each pool must keep at most
-  # fighters_per_pool fighters so the rest can be matched cross-pool, so an
-  # over-represented pool is forced to give up its strongest entries as byes
-  # first. Never force a bye when there are none to give (byes_count <= 0) — that
-  # would drop a fighter; the matcher handles same-pool pairs instead.
+  # Byes go to evenly-spaced pool winners (rank-1s) within the half, so the bye
+  # advantage is distributed across the pool-number range rather than always
+  # landing on the lowest-numbered pools. When a half has more byes than winners
+  # (a small field in a large bracket), the spread spills over the half's entries
+  # in rank-major order, so a pool may then receive more than one bye. Returns []
+  # when there are no byes — never forces one, which would drop a fighter.
   private def select_byes(slots, byes_count)
     return [] if byes_count <= 0
 
-    fighters_per_pool = (slots.size - byes_count) / 2
-    byes = slots.group_by(&:pool_number).flat_map do |_pool_number, pool_slots|
-      forced = pool_slots.size - fighters_per_pool
-      forced.positive? ? sort_by_strength(pool_slots).first(forced) : []
-    end
-    return sort_by_strength(slots).first(byes_count) if byes.size > byes_count
-
-    byes + sort_by_strength(slots - byes).first(byes_count - byes.size)
+    winners = slots.select { |slot| slot.pool_rank == 1 }.sort_by(&:pool_number)
+    source = (byes_count <= winners.size) ? winners : sort_by_strength(slots)
+    Array.new(byes_count) { |j| source[j * source.size / byes_count] }
   end
 
   # Match the (even-sized, strength-sorted) `rest` into cross-pool fights. The

@@ -22,10 +22,10 @@ RSpec.describe IndividualCategoryBracketBuilder do
         round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
 
         expect(round_one.map { |f| [f.fighter_1, f.fighter_2] }).to eq([
-          [p2_1.kenshi, p1_2.kenshi],
-          [p4_1.kenshi, p3_2.kenshi],
-          [p1_1.kenshi, p2_2.kenshi],
-          [p3_1.kenshi, p4_2.kenshi]
+          [p1_1.kenshi, p3_2.kenshi],
+          [p2_1.kenshi, p4_2.kenshi],
+          [p3_1.kenshi, p1_2.kenshi],
+          [p4_1.kenshi, p2_2.kenshi]
         ])
       end
 
@@ -174,23 +174,23 @@ RSpec.describe IndividualCategoryBracketBuilder do
       let!(:p3_1) { create_qualified_participation(pool_number: 3, pool_rank: 1) }
       let!(:p3_2) { create_qualified_participation(pool_number: 3, pool_rank: 2) }
 
-      it "byes the strongest (one per half) and draws the rest cross-pool" do
+      it "byes the first winner of each pool-block and draws the rest cross-pool" do
         fights = described_class.new(category).call
         round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
 
         expect(round_one.map { |f| [f.fighter_1, f.fighter_2] }).to eq([
-          [p1_2.kenshi, p3_2.kenshi],
-          [p2_1.kenshi, nil],
           [p1_1.kenshi, nil],
-          [p3_1.kenshi, p2_2.kenshi]
+          [p2_1.kenshi, p3_2.kenshi],
+          [p1_2.kenshi, p2_2.kenshi],
+          [p3_1.kenshi, nil]
         ])
       end
 
-      it "advances bye fighters via winner_or_bye under the spread layout" do
+      it "spreads byes across the pool range (pools 1 and 3, not 1 and 2)" do
         fights = described_class.new(category).call
         byes = fights.select { |f| f.round == 1 && f.bye? }
 
-        expect(byes.map(&:winner_or_bye)).to contain_exactly(p1_1.kenshi, p2_1.kenshi)
+        expect(byes.map(&:winner_or_bye)).to contain_exactly(p1_1.kenshi, p3_1.kenshi)
       end
     end
 
