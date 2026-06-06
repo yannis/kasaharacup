@@ -179,8 +179,8 @@ RSpec.describe IndividualCategoryBracketBuilder do
         round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
 
         expect(round_one.map { |f| [f.fighter_1, f.fighter_2] }).to eq([
-          [p2_1.kenshi, nil],
           [p1_2.kenshi, p3_2.kenshi],
+          [p2_1.kenshi, nil],
           [p1_1.kenshi, nil],
           [p3_1.kenshi, p2_2.kenshi]
         ])

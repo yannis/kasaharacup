@@ -125,18 +125,18 @@ class IndividualCategoryBracketBuilder
     [sort_by_strength(top), sort_by_strength(bottom)]
   end
 
-  # Build the round-1 units (pairs; [slot, nil] for byes) for one half, spread
-  # across that half's B/4 positions via canonical placement. half_size is an
-  # even power of two (the B == 2 case returns earlier), so the post-bye `rest`
-  # cross_pool_match receives is always even-sized. Slots are unique by
-  # (pool_number, pool_rank), so `half_slots - byes` removes exactly the byes.
+  # Build the round-1 units (pairs; [slot, nil] for byes) for one half, ordered
+  # by leading fighter so the round-1 column reads in pool-number order within
+  # the half. half_size is an even power of two (the B == 2 case returns
+  # earlier), so the post-bye `rest` cross_pool_match receives is always
+  # even-sized. Slots are unique by (pool_number, pool_rank), so
+  # `half_slots - byes` removes exactly the byes.
   private def build_half_units(half_slots)
     half_size = bracket_size / 2
     byes = select_byes(half_slots, half_size - half_slots.size)
     fights = cross_pool_match(sort_by_strength(half_slots - byes))
     units = byes.map { |slot| [slot, nil] } + fights
-    ordered = units.sort_by { |pair| pair.compact.map { |slot| strength_key(slot) }.min }
-    canonical_seed_placement(half_size / 2).map { |seed| ordered[seed - 1] }
+    units.sort_by { |pair| [pair.first.pool_number, pair.first.pool_rank] }
   end
 
   # Byes go to the strongest entries, but each pool must keep at most
@@ -205,17 +205,6 @@ class IndividualCategoryBracketBuilder
     return 0 if slot_specs.empty?
 
     2**Math.log2(slot_specs.size).ceil
-  end
-
-  private def canonical_seed_placement(size)
-    return [] if size < 1
-
-    placement = [1]
-    while placement.size < size
-      total = placement.size * 2
-      placement = placement.flat_map { |seed| [seed, total + 1 - seed] }
-    end
-    placement
   end
 
   private def slot_specs
