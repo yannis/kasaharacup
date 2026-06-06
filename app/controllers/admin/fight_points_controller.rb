@@ -11,7 +11,7 @@ module Admin
     end
 
     def destroy
-      point = fight.fight_points.find(params[:id])
+      point = fight.fight_points.find(params.expect(:id))
       point.destroy!
       respond_after_change
     end
@@ -22,7 +22,7 @@ module Admin
     end
 
     private def category
-      @category ||= IndividualCategory.find(params[:individual_category_id])
+      @category ||= IndividualCategory.find(params.expect(:individual_category_id))
     end
 
     private def fight
