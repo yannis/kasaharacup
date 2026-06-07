@@ -20,9 +20,15 @@ class Encounter < ApplicationRecord
   # post-commit (from TeamFight), so its own write never lands mid-transaction.
   def recompute_winner!
     derived = result.winner
-    return if winner_id == derived&.id
+    update!(winner: derived) unless winner_id == derived&.id
+    recompute_pool_standings! if pool_number.present?
+  end
 
-    update!(winner: derived)
+  def recompute_pool_standings!
+    pool_teams = team_category.teams.where(pool_number: pool_number).to_a
+    pool_encounters = team_category.encounters.where(pool_number: pool_number)
+      .includes(team_fights: :fight_points).to_a
+    TeamPoolStandings.persist_ranks!(teams: pool_teams, encounters: pool_encounters)
   end
 
   private def teams_differ

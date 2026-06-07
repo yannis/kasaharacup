@@ -70,5 +70,14 @@ class TeamFight < ApplicationRecord
       locals: {encounter: encounter, admin: true},
       attributes: {method: :morph}
     )
+    return if encounter.pool_number.blank?
+
+    broadcast_replace_later_to(
+      [encounter.team_category, :team_pools],
+      target: "team_pool_#{encounter.team_category_id}_#{encounter.pool_number}",
+      partial: "admin/team_categories/team_pool",
+      locals: {team_category: encounter.team_category, pool_number: encounter.pool_number},
+      attributes: {method: :morph}
+    )
   end
 end
