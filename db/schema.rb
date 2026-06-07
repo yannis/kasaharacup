@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_142259) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_143057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
@@ -118,14 +118,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_142259) do
 
   create_table "fight_points", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "fight_id", null: false
     t.string "fighter_side", null: false
     t.string "kind", null: false
     t.integer "position", null: false
+    t.bigint "scorable_id", null: false
+    t.string "scorable_type", null: false
     t.datetime "updated_at", null: false
-    t.index ["fight_id", "fighter_side"], name: "index_fight_points_on_fight_id_and_fighter_side"
-    t.index ["fight_id", "position"], name: "index_fight_points_on_fight_id_and_position", unique: true
-    t.index ["fight_id"], name: "index_fight_points_on_fight_id"
+    t.index ["scorable_type", "scorable_id", "fighter_side"], name: "index_fight_points_on_scorable_and_side"
+    t.index ["scorable_type", "scorable_id", "position"], name: "index_fight_points_on_scorable_and_position", unique: true
+    t.index ["scorable_type", "scorable_id"], name: "index_fight_points_on_scorable_type_and_scorable_id"
   end
 
   create_table "fights", id: :serial, force: :cascade do |t|
@@ -365,7 +366,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_142259) do
   add_foreign_key "cups", "products", column: "product_individual_junior_id"
   add_foreign_key "cups", "products", column: "product_team_id"
   add_foreign_key "events", "cups"
-  add_foreign_key "fight_points", "fights"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"
   add_foreign_key "kenshis", "clubs"

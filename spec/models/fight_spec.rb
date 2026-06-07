@@ -412,7 +412,7 @@ RSpec.describe Fight do
         fighter_1: kenshi1, fighter_2: kenshi2)
       ActiveJob::Base.queue_adapter.enqueued_jobs.clear
 
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
 
       expect(broadcast_targets.join).to include(pool_target_substring)
     end
@@ -423,10 +423,10 @@ RSpec.describe Fight do
     it "broadcasts when a point that does not change the outcome is added" do
       fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: kenshi1, fighter_2: kenshi2)
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
       ActiveJob::Base.queue_adapter.enqueued_jobs.clear
 
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "kote")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "kote")
 
       expect(broadcast_targets.join).to include(pool_target_substring)
     end
@@ -458,7 +458,7 @@ RSpec.describe Fight do
       fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: kenshi1, fighter_2: kenshi2, winner: kenshi2)
 
-      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "men")
 
       expect(participation2.reload.pool_rank).to eq 1
       expect(participation1.reload.pool_rank).to eq 2
@@ -505,7 +505,7 @@ RSpec.describe Fight do
     end
 
     def add_point(side, kind: "men")
-      create(:fight_point, fight: fight, fighter_side: side, kind: kind)
+      create(:fight_point, scorable: fight, fighter_side: side, kind: kind)
     end
 
     it "stays unresolved (the draw default) when there are no points" do
@@ -576,7 +576,7 @@ RSpec.describe Fight do
     it "auto-sets the winner when a point is scored" do
       fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
 
-      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "men")
 
       expect(fight.reload.winner_id).to eq kenshi2.id
     end
@@ -584,15 +584,15 @@ RSpec.describe Fight do
     it "stays unresolved at equal points (bracket fights cannot be a draw)" do
       fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
 
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "men")
 
       expect(fight.reload).to have_attributes(winner_id: nil, draw: false)
     end
 
     it "clears the winner when the deciding point is removed" do
       fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
-      point = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      point = create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
       expect(fight.reload.winner_id).to eq kenshi1.id
 
       point.destroy!
@@ -610,7 +610,7 @@ RSpec.describe Fight do
       final = create(:fight, individual_category: category, round: 2,
         fighter_1: nil, fighter_2: nil, parent_fight_1: parent_1, parent_fight_2: parent_2)
 
-      create(:fight_point, fight: final, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: final, fighter_side: "fighter_1", kind: "men")
 
       expect(final.reload.winner_id).to eq kenshi1.id
     end
@@ -628,7 +628,7 @@ RSpec.describe Fight do
     it "destroys a pool fight with a recorded point without raising" do
       fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: kenshi1, fighter_2: kenshi2)
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
       expect(fight.reload.winner_id).to eq kenshi1.id
 
       expect { fight.destroy! }.not_to raise_error
@@ -638,7 +638,7 @@ RSpec.describe Fight do
     it "regenerates a pool whose fights have recorded points without raising" do
       fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: kenshi1, fighter_2: kenshi2)
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
 
       expect {
         category.transaction do
@@ -650,7 +650,7 @@ RSpec.describe Fight do
 
     it "force-rebuilds a bracket whose fights have recorded points without raising" do
       fight = create(:fight, individual_category: category, fighter_1: kenshi1, fighter_2: kenshi2)
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
       expect(fight.reload.winner_id).to eq kenshi1.id
 
       expect { category.bracket_fights.destroy_all }.not_to raise_error

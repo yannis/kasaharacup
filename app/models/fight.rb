@@ -10,7 +10,7 @@ class Fight < ApplicationRecord
   belongs_to :fighter_1, polymorphic: true, foreign_type: "fighter_type", optional: true
   belongs_to :fighter_2, polymorphic: true, foreign_type: "fighter_type", optional: true
 
-  has_many :fight_points, -> { order(:position) }, dependent: :destroy
+  has_many :fight_points, -> { order(:position) }, as: :scorable, dependent: :destroy
 
   validates :number, presence: true
   validates :round, presence: true, if: -> { pool_number.blank? }
@@ -162,6 +162,12 @@ class Fight < ApplicationRecord
 
     recompute_pool_ranks
     broadcast_pool_panel
+  end
+
+  # Refresh downstream state when a point did not change the outcome. For an
+  # individual fight this is the pool-standings panel (a no-op for bracket fights).
+  def refresh_after_points
+    refresh_pool_standings
   end
 
   private def scoring_points_count(side)

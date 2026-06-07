@@ -70,8 +70,8 @@ RSpec.describe "Admin individual category brackets" do
       create_qualified_participation(pool_number: 2, pool_rank: 1)
       IndividualCategoryBracketBuilder.new(category).call
       fight = category.fights.first
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "hansoku")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "hansoku")
 
       get competition_tree_pdf_admin_individual_category_path(category)
 

@@ -25,8 +25,8 @@ RSpec.describe "Admin fight points" do
     end
 
     it "rejects a third non-hansoku point on the same side" do
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "kote")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "kote")
 
       post admin_individual_category_fight_fight_points_path(category, fight), params: {
         fight_point: {fighter_side: "fighter_1", kind: "ippon"}
@@ -48,7 +48,7 @@ RSpec.describe "Admin fight points" do
 
   describe "DELETE /admin/individual_categories/:cat/fights/:fight/fight_points/:id" do
     it "removes the point" do
-      point = create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "do")
+      point = create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "do")
 
       delete admin_individual_category_fight_fight_point_path(category, fight, point)
 
@@ -66,8 +66,8 @@ RSpec.describe "Admin fight points" do
     }
 
     it "renders the pool with a flash alert instead of raising" do
-      create(:fight_point, fight: pool_fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: pool_fight, fighter_side: "fighter_1", kind: "kote")
+      create(:fight_point, scorable: pool_fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: pool_fight, fighter_side: "fighter_1", kind: "kote")
 
       post admin_individual_category_pool_fight_fight_points_path(category, pool_fight),
         params: {fight_point: {fighter_side: "fighter_1", kind: "ippon"}},
