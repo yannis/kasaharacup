@@ -96,4 +96,44 @@ RSpec.describe "Admin encounters" do
     expect(response.body).to include("#{t1.name} vs #{t2.name}")
     expect(response.body).to include("lineup") # the lineup forms render
   end
+
+  describe "the encounter _summary partial" do
+    def render_summary(encounter)
+      ApplicationController.render(partial: "admin/encounters/summary", locals: {encounter: encounter})
+    end
+
+    def bout(encounter, pos, result)
+      tf = encounter.team_fights.create!(position: pos,
+        kenshi_1: create(:kenshi, cup: cup), kenshi_2: create(:kenshi, cup: cup))
+      case result
+      when 1 then create(:fight_point, scorable: tf, fighter_side: "fighter_1", kind: "men")
+      when 2 then create(:fight_point, scorable: tf, fighter_side: "fighter_2", kind: "men")
+      when :draw then tf.update!(draw: true)
+      end
+    end
+
+    it "reads 'not yet scored' before the encounter is complete" do
+      encounter = create(:encounter, team_category: tc, pool_number: 1, team_1: t1, team_2: t2)
+      bout(encounter, 1, 1) # one bout scored, lineups not flagged complete
+      expect(render_summary(encounter.reload)).to include("not yet scored")
+    end
+
+    it "shows the winner once complete" do
+      encounter = create(:encounter, team_category: tc, pool_number: 1, team_1: t1, team_2: t2)
+      bout(encounter, 1, 1)
+      bout(encounter, 2, 1)
+      bout(encounter, 3, 2)
+      encounter.update!(lineup_1_set: true, lineup_2_set: true)
+      expect(render_summary(encounter.reload)).to include("→ #{t1.name}")
+    end
+
+    it "shows hikiwake on a completed tie" do
+      encounter = create(:encounter, team_category: tc, pool_number: 1, team_1: t1, team_2: t2)
+      bout(encounter, 1, 1)
+      bout(encounter, 2, 2)
+      bout(encounter, 3, :draw)
+      encounter.update!(lineup_1_set: true, lineup_2_set: true)
+      expect(render_summary(encounter.reload)).to include("hikiwake")
+    end
+  end
 end

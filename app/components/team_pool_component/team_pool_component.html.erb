@@ -7,6 +7,13 @@
 
   <% if encounters.empty? %>
     <p class="pool-card__empty">No pool encounters yet.</p>
+  <% elsif admin %>
+    <% encounters.each do |encounter| %>
+      <details class="pool-encounter">
+        <%= helpers.render "admin/encounters/summary", encounter: encounter %>
+        <%= helpers.render "admin/encounters/editor", encounter: encounter %>
+      </details>
+    <% end %>
   <% else %>
     <ul class="pool-encounters">
       <% encounters.each do |encounter| %>

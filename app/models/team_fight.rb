@@ -79,5 +79,15 @@ class TeamFight < ApplicationRecord
       locals: {team_category: encounter.team_category, pool_number: encounter.pool_number, admin: true},
       attributes: {method: :morph}
     )
+    # The <summary> is pool-view content, so it rides the pool stream (which the
+    # pool card subscribes to) rather than the encounter's own panel stream —
+    # keeps the standalone encounter page from receiving an irrelevant morph.
+    broadcast_replace_later_to(
+      [encounter.team_category, :team_pools],
+      target: ActionView::RecordIdentifier.dom_id(encounter, :summary),
+      partial: "admin/encounters/summary",
+      locals: {encounter: encounter},
+      attributes: {method: :morph}
+    )
   end
 end
