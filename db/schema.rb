@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_145338) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_145340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
@@ -108,6 +108,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_145338) do
     t.datetime "created_at", null: false
     t.boolean "lineup_1_set", default: false, null: false
     t.boolean "lineup_2_set", default: false, null: false
+    t.integer "pool_number"
     t.bigint "team_1_id", null: false
     t.bigint "team_2_id", null: false
     t.bigint "team_category_id", null: false
@@ -115,6 +116,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_145338) do
     t.bigint "winner_id"
     t.index ["team_1_id"], name: "index_encounters_on_team_1_id"
     t.index ["team_2_id"], name: "index_encounters_on_team_2_id"
+    t.index ["team_category_id", "pool_number"], name: "index_encounters_on_team_category_id_and_pool_number"
     t.index ["team_category_id"], name: "index_encounters_on_team_category_id"
     t.index ["winner_id"], name: "index_encounters_on_winner_id"
   end
@@ -340,11 +342,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_145338) do
   create_table "teams", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.string "name", limit: 255, null: false
+    t.integer "pool_number"
+    t.integer "pool_position"
+    t.integer "pool_rank"
     t.integer "rank"
+    t.integer "seed"
     t.integer "team_category_id", null: false
     t.datetime "updated_at", precision: nil
     t.index ["rank"], name: "index_teams_on_rank"
     t.index ["team_category_id", "name"], name: "index_teams_on_team_category_id_and_name", unique: true
+    t.index ["team_category_id", "pool_number"], name: "index_teams_on_team_category_id_and_pool_number"
     t.index ["team_category_id"], name: "index_teams_on_team_category_id"
   end
 
