@@ -121,4 +121,19 @@ RSpec.describe TeamCategory do
       end
     end
   end
+
+  describe "#team_pools" do
+    it "groups teams by pool_number, ordered by pool_position, ignoring unpooled teams" do
+      tc = create(:team_category, pool_size: 3)
+      a = create(:team, team_category: tc, pool_number: 1, pool_position: 2)
+      b = create(:team, team_category: tc, pool_number: 1, pool_position: 1)
+      c = create(:team, team_category: tc, pool_number: 2, pool_position: 1)
+      create(:team, team_category: tc) # unpooled
+
+      pools = tc.team_pools
+      expect(pools.map(&:number)).to eq [1, 2]
+      expect(pools.first.teams).to eq [b, a]
+      expect(pools.last.teams).to eq [c]
+    end
+  end
 end
