@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_14_154525) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_142259) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
@@ -298,6 +298,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_154525) do
     t.string "name", limit: 255, null: false
     t.integer "out_of_pool"
     t.integer "pool_size"
+    t.integer "team_size", default: 5, null: false
     t.datetime "updated_at", precision: nil
     t.index ["cup_id", "name"], name: "index_team_categories_on_cup_id_and_name", unique: true
     t.index ["cup_id"], name: "index_team_categories_on_cup_id"

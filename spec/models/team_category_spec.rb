@@ -53,6 +53,23 @@ RSpec.describe TeamCategory do
     end
   end
 
+  describe "team_size" do
+    let(:cup) { create(:cup) }
+
+    it "defaults team_size to 5" do
+      expect(build(:team_category).team_size).to eq 5
+    end
+
+    it "accepts a team_size of 3 or 5" do
+      expect(build(:team_category, cup: cup, team_size: 3)).to be_valid
+      expect(build(:team_category, cup: cup, team_size: 5)).to be_valid
+    end
+
+    it "rejects any other team_size" do
+      expect(build(:team_category, cup: cup, team_size: 4)).not_to be_valid
+    end
+  end
+
   describe "A team_category team" do
     let!(:team_category) {
       create(:team_category, name: "team", pool_size: 3, out_of_pool: 2,

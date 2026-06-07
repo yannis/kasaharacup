@@ -10,6 +10,8 @@ class TeamCategory < ApplicationRecord
   has_many :documents, as: :category, dependent: :destroy
   has_many :kenshis, through: :teams
 
+  validates :team_size, inclusion: {in: [3, 5]}
+
   delegate :year, to: :cup
 
   def full_name
