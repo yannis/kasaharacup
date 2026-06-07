@@ -120,6 +120,13 @@ fr:
     competition_trees:
       generate_bracket:
         notice: Arbre de compétition généré
+    encounters:
+      create:
+        notice: Rencontre créée.
+      daihyosen:
+        notice: Daihyōsen ajouté.
+      lineup:
+        notice: Alignement enregistré.
     fights:
       update:
         notice: Combat mis à jour

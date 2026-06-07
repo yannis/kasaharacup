@@ -116,6 +116,13 @@ en:
     competition_trees:
       generate_bracket:
         notice: Competition tree generated
+    encounters:
+      create:
+        notice: Encounter created.
+      daihyosen:
+        notice: "Daihyōsen added."
+      lineup:
+        notice: Lineup set.
     fights:
       update:
         notice: Fight updated

@@ -9,6 +9,7 @@ class TeamCategory < ApplicationRecord
   has_many :videos, as: :category, dependent: :destroy
   has_many :documents, as: :category, dependent: :destroy
   has_many :kenshis, through: :teams
+  has_many :encounters, dependent: :destroy
 
   validates :team_size, inclusion: {in: [3, 5]}
 
