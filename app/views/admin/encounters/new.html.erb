@@ -1,0 +1,6 @@
+<%# app/views/admin/encounters/new.html.erb %>
+<%= form_with url: admin_team_category_encounters_path(@team_category), method: :post do |f| %>
+  <%= select_tag "encounter[team_1_id]", options_from_collection_for_select(@team_category.teams, :id, :name) %>
+  <%= select_tag "encounter[team_2_id]", options_from_collection_for_select(@team_category.teams, :id, :name) %>
+  <%= f.submit "Create encounter" %>
+<% end %>

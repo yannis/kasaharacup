@@ -55,11 +55,14 @@ class TeamFight < ApplicationRecord
     refresh_encounter
   end
 
-  # Layer A: recompute only. (A post-commit Turbo broadcast is added in a later
-  # task once the encounter panel partial exists.) recompute_winner! is itself a
-  # write, but this method runs only from after_update_commit and from FightPoint's
-  # after_commit, so it is always post-commit.
   private def refresh_encounter
     encounter.recompute_winner!
+    broadcast_replace_later_to(
+      [encounter, :panel],
+      target: ActionView::RecordIdentifier.dom_id(encounter),
+      partial: "admin/encounters/panel",
+      locals: {encounter: encounter, admin: true},
+      attributes: {method: :morph}
+    )
   end
 end

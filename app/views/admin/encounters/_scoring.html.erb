@@ -1,0 +1,23 @@
+<%# app/views/admin/encounters/_scoring.html.erb %>
+<div class="scoring">
+  <% [["fighter_1", fight.kenshi_1], ["fighter_2", fight.kenshi_2]].each do |side, kenshi| %>
+    <% next unless kenshi %>
+    <span class="side">
+      <% %w[men kote do tsuki ippon hansoku].each do |kind| %>
+        <%= button_to kind.first.upcase,
+              admin_team_category_encounter_team_fight_team_fight_points_path(
+                encounter.team_category, encounter, fight
+              ),
+              params: {team_fight_point: {fighter_side: side, kind: kind}},
+              form: {data: {turbo_stream: true}} %>
+      <% end %>
+    </span>
+  <% end %>
+  <% fight.fight_points.each do |point| %>
+    <%= button_to point.code,
+          admin_team_category_encounter_team_fight_team_fight_point_path(
+            encounter.team_category, encounter, fight, point
+          ),
+          method: :delete, form: {data: {turbo_stream: true}} %>
+  <% end %>
+</div>

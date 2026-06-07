@@ -1,0 +1,49 @@
+<%# app/components/encounter_component/encounter_component.html.erb %>
+<div id="<%= dom_id(encounter) %>" class="encounter">
+  <header class="flex items-center justify-between">
+    <h2 class="font-bold">
+      <%= encounter.team_1.name %> vs <%= encounter.team_2.name %>
+    </h2>
+    <span class="tally">
+      wins <%= result.team_1_wins %>–<%= result.team_2_wins %>,
+      ippons <%= result.team_1_ippons %>–<%= result.team_2_ippons %>
+    </span>
+  </header>
+
+  <% if result.winner %>
+    <p class="winner font-bold">Winner: <%= result.winner.name %></p>
+  <% elsif tied? %>
+    <p class="tie">Tied — a daihyōsen is required.</p>
+  <% end %>
+
+  <ol class="fights">
+    <% regular_fights.each do |fight| %>
+      <li id="<%= dom_id(fight) %>" class="fight">
+        <span><%= fighter_name(fight.kenshi_1) %></span>
+        <span>vs</span>
+        <span><%= fighter_name(fight.kenshi_2) %></span>
+        <% if fight.draw %>
+          <span class="result">hikiwake</span>
+        <% elsif fight.winner %>
+          <span class="result"><%= fight.winner.full_name %></span>
+        <% end %>
+
+        <% if admin %>
+          <%= render "admin/encounters/scoring", encounter: encounter, fight: fight %>
+        <% end %>
+      </li>
+    <% end %>
+
+    <% if daihyosen %>
+      <li id="<%= dom_id(daihyosen) %>" class="fight daihyosen">
+        daihyōsen:
+        <span><%= fighter_name(daihyosen.kenshi_1) %></span> vs
+        <span><%= fighter_name(daihyosen.kenshi_2) %></span>
+        <% if daihyosen.winner %><span class="result"><%= daihyosen.winner.full_name %></span><% end %>
+        <% if admin %>
+          <%= render "admin/encounters/scoring", encounter: encounter, fight: daihyosen %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</div>
