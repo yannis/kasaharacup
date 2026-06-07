@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_143057) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_145338) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
@@ -102,6 +102,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_143057) do
     t.datetime "updated_at", null: false
     t.index ["category_type", "category_id"], name: "index_documents_on_category"
     t.index ["name", "category_type", "category_id"], name: "index_documents_on_name_and_category_type_and_category_id", unique: true
+  end
+
+  create_table "encounters", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "lineup_1_set", default: false, null: false
+    t.boolean "lineup_2_set", default: false, null: false
+    t.bigint "team_1_id", null: false
+    t.bigint "team_2_id", null: false
+    t.bigint "team_category_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "winner_id"
+    t.index ["team_1_id"], name: "index_encounters_on_team_1_id"
+    t.index ["team_2_id"], name: "index_encounters_on_team_2_id"
+    t.index ["team_category_id"], name: "index_encounters_on_team_category_id"
+    t.index ["winner_id"], name: "index_encounters_on_winner_id"
   end
 
   create_table "events", id: :serial, force: :cascade do |t|
@@ -305,6 +320,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_143057) do
     t.index ["cup_id"], name: "index_team_categories_on_cup_id"
   end
 
+  create_table "team_fights", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "daihyosen", default: false, null: false
+    t.boolean "draw", default: false, null: false
+    t.bigint "encounter_id", null: false
+    t.bigint "kenshi_1_id"
+    t.bigint "kenshi_2_id"
+    t.integer "position", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "winner_id"
+    t.index ["encounter_id", "position"], name: "index_team_fights_on_encounter_id_and_position", unique: true
+    t.index ["encounter_id"], name: "index_team_fights_on_encounter_id"
+    t.index ["kenshi_1_id"], name: "index_team_fights_on_kenshi_1_id"
+    t.index ["kenshi_2_id"], name: "index_team_fights_on_kenshi_2_id"
+    t.index ["winner_id"], name: "index_team_fights_on_winner_id"
+  end
+
   create_table "teams", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil
     t.string "name", limit: 255, null: false
@@ -365,6 +397,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_143057) do
   add_foreign_key "cups", "products", column: "product_individual_adult_id"
   add_foreign_key "cups", "products", column: "product_individual_junior_id"
   add_foreign_key "cups", "products", column: "product_team_id"
+  add_foreign_key "encounters", "team_categories"
+  add_foreign_key "encounters", "teams", column: "team_1_id"
+  add_foreign_key "encounters", "teams", column: "team_2_id"
+  add_foreign_key "encounters", "teams", column: "winner_id"
   add_foreign_key "events", "cups"
   add_foreign_key "headlines", "cups"
   add_foreign_key "individual_categories", "cups"
@@ -379,6 +415,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_143057) do
   add_foreign_key "purchases", "kenshis"
   add_foreign_key "purchases", "products"
   add_foreign_key "team_categories", "cups"
+  add_foreign_key "team_fights", "encounters"
+  add_foreign_key "team_fights", "kenshis", column: "kenshi_1_id"
+  add_foreign_key "team_fights", "kenshis", column: "kenshi_2_id"
+  add_foreign_key "team_fights", "kenshis", column: "winner_id"
   add_foreign_key "teams", "team_categories"
   add_foreign_key "users", "clubs"
 end
