@@ -120,7 +120,7 @@ en:
       create:
         notice: Encounter created.
       daihyosen:
-        notice: "Daihyōsen added."
+        notice: Daihyōsen added.
       lineup:
         notice: Lineup set.
     fights:
