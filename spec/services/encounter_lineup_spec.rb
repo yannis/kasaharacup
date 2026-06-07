@@ -81,6 +81,21 @@ RSpec.describe EncounterLineup do
     }.to raise_error(EncounterLineup::InvalidLineup)
   end
 
+  it "refuses to change a bout that already has points" do
+    a = members(t1, 3)
+    b = members(t2, 3)
+    described_class.new(encounter).assign(t1, a.map(&:id))
+    described_class.new(encounter).assign(t2, b.map(&:id))
+    scored = encounter.team_fights.order(:position).first
+    create(:fight_point, scorable: scored, fighter_side: "fighter_1", kind: "men")
+
+    replacement = members(t1, 3)
+    expect {
+      described_class.new(encounter).assign(t1, replacement.map(&:id))
+    }.to raise_error(EncounterLineup::InvalidLineup)
+    expect(scored.reload.kenshi_1_id).to eq a.first.id # unchanged
+  end
+
   it "re-assigning a side leaves the other side's kenshi untouched" do
     a = members(t1, 3)
     b = members(t2, 3)
