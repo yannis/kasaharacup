@@ -17,16 +17,34 @@ RSpec.describe IndividualCategoryBracketBuilder do
       let!(:p4_1) { create_qualified_participation(pool_number: 4, pool_rank: 1) }
       let!(:p4_2) { create_qualified_participation(pool_number: 4, pool_rank: 2) }
 
-      it "places R1 fights via canonical 1-vs-N seeding" do
+      it "lays out R1 as a cross-pool draw with same-pool fighters split across halves" do
         fights = described_class.new(category).call
         round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
 
         expect(round_one.map { |f| [f.fighter_1, f.fighter_2] }).to eq([
-          [p1_1.kenshi, p4_2.kenshi],
-          [p4_1.kenshi, p1_2.kenshi],
-          [p2_1.kenshi, p3_2.kenshi],
-          [p3_1.kenshi, p2_2.kenshi]
+          [p1_1.kenshi, p3_2.kenshi],
+          [p2_1.kenshi, p4_2.kenshi],
+          [p3_1.kenshi, p1_2.kenshi],
+          [p4_1.kenshi, p2_2.kenshi]
         ])
+      end
+
+      it "splits each pool's rank-1 and rank-2 into opposite halves" do
+        fights = described_class.new(category).call
+        round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
+        midpoint = round_one.size / 2 # B/4: positions [0, midpoint) = top half
+
+        half_of = lambda do |pool, rank|
+          index = round_one.index do |f|
+            (f.fighter_1_pool_number == pool && f.fighter_1_pool_rank == rank) ||
+              (f.fighter_2_pool_number == pool && f.fighter_2_pool_rank == rank)
+          end
+          (index < midpoint) ? :top : :bottom
+        end
+
+        (1..4).each do |pool|
+          expect(half_of.call(pool, 1)).not_to eq(half_of.call(pool, 2))
+        end
       end
 
       it "wires round 2 fights to their parents in canonical bracket order" do
@@ -81,12 +99,15 @@ RSpec.describe IndividualCategoryBracketBuilder do
 
       it "fills in the slots whose pool_rank is known and leaves the rest empty" do
         fights = described_class.new(category).call
-        round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
+        round_one = fights.select { |f| f.round == 1 }
 
-        expect(round_one.first.fighter_1).to eq p1_1.kenshi
-        expect(round_one.first.fighter_2).to be_nil
-        expect(round_one.last.fighter_1).to eq p2_1.kenshi
-        expect(round_one.last.fighter_2).to be_nil
+        slot_1_1 = round_one.find { |f| f.fighter_1_pool_number == 1 && f.fighter_1_pool_rank == 1 }
+        slot_2_1 = round_one.find { |f| f.fighter_1_pool_number == 2 && f.fighter_1_pool_rank == 1 }
+
+        expect(slot_1_1.fighter_1).to eq p1_1.kenshi
+        expect(slot_1_1.fighter_2).to be_nil
+        expect(slot_2_1.fighter_1).to eq p2_1.kenshi
+        expect(slot_2_1.fighter_2).to be_nil
       end
     end
 
@@ -105,9 +126,11 @@ RSpec.describe IndividualCategoryBracketBuilder do
         described_class.new(category).call
 
         expect(category.fights.order(:id).pluck(:id)).to eq fight_ids_before
-        round_one = category.fights.where(round: 1).order(:position)
-        expect(round_one.first.fighter_2).to eq p2_2.kenshi
-        expect(round_one.last.fighter_2).to eq p1_2.kenshi
+        round_one = category.fights.where(round: 1)
+        slot_1_2 = round_one.find { |f| f.fighter_2_pool_number == 1 && f.fighter_2_pool_rank == 2 }
+        slot_2_2 = round_one.find { |f| f.fighter_2_pool_number == 2 && f.fighter_2_pool_rank == 2 }
+        expect(slot_1_2.fighter_2).to eq p1_2.kenshi
+        expect(slot_2_2.fighter_2).to eq p2_2.kenshi
       end
 
       it "preserves recorded winners when filling in new slots" do
@@ -143,9 +166,36 @@ RSpec.describe IndividualCategoryBracketBuilder do
       end
     end
 
-    describe "rank-1 fighters never face each other in round 1" do
+    context "with 3 pools fully ranked" do
+      let!(:p1_1) { create_qualified_participation(pool_number: 1, pool_rank: 1) }
+      let!(:p1_2) { create_qualified_participation(pool_number: 1, pool_rank: 2) }
+      let!(:p2_1) { create_qualified_participation(pool_number: 2, pool_rank: 1) }
+      let!(:p2_2) { create_qualified_participation(pool_number: 2, pool_rank: 2) }
+      let!(:p3_1) { create_qualified_participation(pool_number: 3, pool_rank: 1) }
+      let!(:p3_2) { create_qualified_participation(pool_number: 3, pool_rank: 2) }
+
+      it "byes the first winner of each pool-block and draws the rest cross-pool" do
+        fights = described_class.new(category).call
+        round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
+
+        expect(round_one.map { |f| [f.fighter_1, f.fighter_2] }).to eq([
+          [p1_1.kenshi, nil],
+          [p2_1.kenshi, p3_2.kenshi],
+          [p1_2.kenshi, p2_2.kenshi],
+          [p3_1.kenshi, nil]
+        ])
+      end
+
+      it "spreads byes across the pool range (pools 1 and 3, not 1 and 2)" do
+        fights = described_class.new(category).call
+        byes = fights.select { |f| f.round == 1 && f.bye? }
+
+        expect(byes.map(&:winner_or_bye)).to contain_exactly(p1_1.kenshi, p3_1.kenshi)
+      end
+    end
+
+    describe "no two fighters from the same pool meet in round 1" do
       [
-        {pool_count: 1, out_of_pool: 2},
         {pool_count: 2, out_of_pool: 2},
         {pool_count: 3, out_of_pool: 2},
         {pool_count: 4, out_of_pool: 2},
@@ -170,11 +220,12 @@ RSpec.describe IndividualCategoryBracketBuilder do
 
           fights = described_class.new(category).call
           round_one = fights.select { |f| f.round == 1 }
-          rank_one_vs_rank_one = round_one.select { |f|
-            f.fighter_1_pool_rank == 1 && f.fighter_2_pool_rank == 1
+          same_pool = round_one.select { |f|
+            f.fighter_1_pool_number.present? &&
+              f.fighter_1_pool_number == f.fighter_2_pool_number
           }
 
-          expect(rank_one_vs_rank_one).to be_empty
+          expect(same_pool).to be_empty
         end
       end
     end
@@ -216,6 +267,31 @@ RSpec.describe IndividualCategoryBracketBuilder do
 
       expect(category.fights.where.not(winner_id: nil)).to be_empty
     end
+
+    it "builds a single one-fighter fight for one qualifier" do
+      solo = create(:individual_category, cup: cup, pool_size: 3, out_of_pool: 1)
+      participation = create(:participation, solo_attrs_for(solo, pool_number: 1, pool_rank: 1))
+
+      fights = described_class.new(solo).call
+
+      expect(fights.size).to eq 1
+      expect(fights.first.round).to eq 1
+      expect(fights.first.fighter_1).to eq participation.kenshi
+      expect(fights.first.fighter_2).to be_nil
+    end
+
+    it "places every qualifier for a single pool with out_of_pool 3 (clash unavoidable)" do
+      single = create(:individual_category, cup: cup, pool_size: 4, out_of_pool: 3)
+      (1..3).each do |pool_rank|
+        create(:participation, solo_attrs_for(single, pool_number: 1, pool_rank: pool_rank))
+      end
+
+      fights = described_class.new(single).call
+      round_one = fights.select { |f| f.round == 1 }
+      placed = round_one.flat_map { |f| [f.fighter_1_pool_rank, f.fighter_2_pool_rank] }.compact
+
+      expect(placed.sort).to eq [1, 2, 3]
+    end
   end
 
   context "when the category has pool fights" do
@@ -235,11 +311,40 @@ RSpec.describe IndividualCategoryBracketBuilder do
     end
   end
 
+  describe "cross-pool matching fallback" do
+    # The greedy pass is a heuristic that can leave a same-pool pair even when a
+    # valid cross-pool matching exists; grouped_cross_pool is the guaranteed
+    # fallback. The half-split keeps such a `rest` from arising through the
+    # public path (a pool's ranks are spread across halves), so this exercises
+    # the safety net directly.
+    it "resolves a rest the greedy pass cannot pair without a clash" do
+      builder = described_class.new(category)
+      slot = lambda do |pool, rank|
+        IndividualCategoryBracketBuilder::Slot.new(pool_number: pool, pool_rank: rank, participation: nil)
+      end
+      # pools [1, 2, 3, 2]: greedy pairs 2.1 vs 2.2 (same pool); grouped resolves it.
+      rest = [slot.call(1, 1), slot.call(2, 1), slot.call(3, 1), slot.call(2, 2)]
+
+      greedy = builder.send(:greedy_cross_pool, rest.dup)
+      expect(builder.send(:same_pool?, greedy)).to be(true) # greedy alone clashes
+
+      fights = builder.send(:cross_pool_match, rest)
+
+      expect(fights.flatten.map { |s| [s.pool_number, s.pool_rank] })
+        .to contain_exactly([1, 1], [2, 1], [3, 1], [2, 2])
+      expect(fights.any? { |a, b| a.pool_number == b.pool_number }).to be(false)
+    end
+  end
+
   def create_qualified_participation(pool_number:, pool_rank:)
     create(:participation,
       category: category,
       pool_number: pool_number,
       pool_position: pool_rank,
       pool_rank: pool_rank)
+  end
+
+  def solo_attrs_for(category, pool_number:, pool_rank:)
+    {category: category, pool_number: pool_number, pool_position: pool_rank, pool_rank: pool_rank}
   end
 end

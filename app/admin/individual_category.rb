@@ -48,7 +48,8 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     actions do |category|
       [
-        link_to("Smart reset", reset_smart_pools_admin_individual_category_path(category), confirm: "Are you sure?"),
+        link_to("Smart reset", reset_smart_pools_admin_individual_category_path(category),
+          data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}),
         link_to("PDF", pdf_admin_individual_category_path(category)),
         link_to("PDF recap", pdf_recap_admin_individual_category_path(category)),
         link_to("Match sheet", sheet_admin_individual_category_path(category)),
@@ -127,7 +128,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
               link_to("Destroy",
                 admin_participation_path(participation),
                 method: :delete,
-                confirm: "Are you extra sure?")
+                data: {confirm: "Are you extra sure?"})
             ].join(" ").html_safe
           end
         end
@@ -163,7 +164,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   end
   action_item :smart_pool_reset, only: :show do
     link_to "Smart pool reset", reset_smart_pools_admin_individual_category_path(individual_category),
-      confirm: "Are you sure?"
+      data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}
   end
 
   member_action :pdf do
