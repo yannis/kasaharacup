@@ -106,6 +106,10 @@ ActiveAdmin.register TeamCategory do
     link_to("New document", new_admin_team_category_document_path(team_category))
   end
 
+  action_item :encounters, only: :show do
+    link_to "Encounters", admin_team_category_encounters_path(team_category)
+  end
+
   # collection_action :pdfs do
   #   @team_categories = TeamCategory.order(:name)
   #   pdf = TeamCategoryPdf.new(@team_categories)
