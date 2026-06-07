@@ -86,4 +86,14 @@ RSpec.describe "Admin encounters" do
     expect(response).to redirect_to(root_url)
     expect(Encounter.count).to eq 0
   end
+
+  it "renders the standalone encounter page" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+
+    get admin_team_category_encounter_path(tc, encounter)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("#{t1.name} vs #{t2.name}")
+    expect(response.body).to include("lineup") # the lineup forms render
+  end
 end
