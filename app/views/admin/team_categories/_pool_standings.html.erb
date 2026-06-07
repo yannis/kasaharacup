@@ -1,7 +1,4 @@
 <%# app/views/admin/team_categories/_pool_standings.html.erb %>
-<% pool = team_category.team_pools.find { |p| p.number == pool_number } %>
-<% rows = TeamPoolStandings.for(teams: pool&.teams || [],
-     encounters: team_category.encounters_by_pool_number.fetch(pool_number, [])) %>
 <div id="team_pool_standings_<%= team_category.id %>_<%= pool_number %>">
   <table class="pool-standings">
     <thead>
@@ -13,7 +10,11 @@
       </tr>
     </thead>
     <tbody>
-      <% rows.each do |row| %>
+      <% _pool = team_category.team_pools.find { |p| p.number == pool_number } %>
+      <% TeamPoolStandings.for(
+           teams: _pool&.teams || [],
+           encounters: team_category.encounters_by_pool_number.fetch(pool_number, [])
+         ).each do |row| %>
         <tr>
           <td class="pool-standings__rank">
             <% if admin %>

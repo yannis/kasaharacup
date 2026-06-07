@@ -54,4 +54,16 @@ RSpec.describe "Admin team pools" do
     expect(html).to include("team_pool_standings_#{tc.id}_1")
     expect(html).to include("data-bip-attribute=\"pool_rank\"") # best_in_place admin variant
   end
+
+  it "renders the non-admin standings partial without best_in_place" do
+    create(:team, team_category: tc, pool_number: 1, pool_position: 1)
+
+    html = ApplicationController.render(
+      partial: "admin/team_categories/pool_standings",
+      locals: {team_category: tc, pool_number: 1, admin: false}
+    )
+
+    expect(html).to include("team_pool_standings_#{tc.id}_1")
+    expect(html).not_to include("data-bip-attribute") # plain ranks, no inline editing
+  end
 end
