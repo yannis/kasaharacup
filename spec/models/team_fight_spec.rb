@@ -56,4 +56,16 @@ RSpec.describe TeamFight do
     point(tf, "fighter_2")
     expect(tf.reload).to have_attributes(winner_id: k2.id, draw: false)
   end
+
+  describe "#void?" do
+    it "is true only when both kenshi slots are empty" do
+      both_empty = create(:team_fight, encounter: encounter, kenshi_1: nil, kenshi_2: nil)
+      one_side = create(:team_fight, encounter: encounter, kenshi_1: k1, kenshi_2: nil)
+      both = create(:team_fight, encounter: encounter, kenshi_1: k1, kenshi_2: k2)
+
+      expect(both_empty.void?).to be true
+      expect(one_side.void?).to be false
+      expect(both.void?).to be false
+    end
+  end
 end

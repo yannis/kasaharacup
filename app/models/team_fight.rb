@@ -36,6 +36,12 @@ class TeamFight < ApplicationRecord
     public_send(:"kenshi_#{slot}")
   end
 
+  # Both slots empty — a position neither short team filled. Counts for no one
+  # and must not block encounter completeness.
+  def void?
+    kenshi_1_id.nil? && kenshi_2_id.nil?
+  end
+
   # Exactly one side empty => that side forfeits; the present kenshi wins.
   def forfeit
     return nil if kenshi_1_id.present? == kenshi_2_id.present?

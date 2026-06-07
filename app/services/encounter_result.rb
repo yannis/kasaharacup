@@ -27,6 +27,30 @@ class EncounterResult
     daihyosen_winner_team
   end
 
+  def team_1_losses = team_2_wins
+
+  def team_2_losses = team_1_wins
+
+  # Bout-level hikiwake count (not the encounter-level draw outcome).
+  def draws = regular.count(&:draw)
+
+  # Anchored on the lineup-submission flags (not bout presence): an empty
+  # encounter is NOT a draw, and a void trailing bout does not block completeness.
+  def complete?
+    @encounter.lineup_1_set? && @encounter.lineup_2_set? &&
+      regular.all? { |tf| tf.winner_id.present? || tf.draw || tf.void? }
+  end
+
+  def outcome_for(team)
+    return nil unless complete?
+    return nil unless [@encounter.team_1_id, @encounter.team_2_id].include?(team.id)
+
+    w = winner
+    return :draw if w.nil?
+
+    (w.id == team.id) ? :win : :loss
+  end
+
   private def regular = @fights.reject(&:daihyosen?)
 
   private def won_by?(team_fight, slot)
