@@ -27,7 +27,7 @@ class TeamCategory < ApplicationRecord
 
   def encounters_by_pool_number
     @encounters_by_pool_number ||= encounters.where.not(pool_number: nil)
-      .includes(team_fights: :fight_points)
+      .includes(:team_1, :team_2, :winner, team_fights: :fight_points)
       .group_by(&:pool_number)
   end
 

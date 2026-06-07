@@ -84,6 +84,37 @@ ActiveAdmin.register TeamCategory do
         end
       end
     end
+    category_team_pools = category.team_pools
+    if category.pool_size.to_i > 1 && category_team_pools.any?
+      panel "Pools" do
+        category_team_pools.each do |pool|
+          div do
+            render TeamPoolComponent.new(team_category: category, pool_number: pool.number, pool: pool, admin: true)
+          end
+        end
+      end
+    end
+  end
+
+  member_action :generate_pools, method: :post do
+    TeamCategory.find(params[:id]).set_team_pools
+    redirect_to admin_team_category_path(params[:id]), notice: "Pools generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  member_action :generate_pool_encounters, method: :post do
+    category = TeamCategory.find(params[:id])
+    PoolEncounterGenerator.new(category).call
+    redirect_to admin_team_category_path(category), notice: "Pool encounters generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  action_item :generate_pools, only: :show do
+    link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
+      method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
+  end
+
+  action_item :generate_pool_encounters, only: :show do
+    link_to "Generate pool encounters", generate_pool_encounters_admin_team_category_path(team_category),
+      method: :post
   end
 
   member_action :pdf do

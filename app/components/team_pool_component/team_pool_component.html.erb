@@ -1,0 +1,53 @@
+<div id="<%= dom_id_for_pool %>" class="pool-card">
+  <% if admin %><%= helpers.turbo_stream_from team_category, :team_pools %><% end %>
+  <h3 class="pool-card__title">Pool <%= pool_number %></h3>
+
+  <table class="pool-standings">
+    <thead>
+      <tr>
+        <th>Rank</th><th>Team</th>
+        <th>W</th><th>L</th><th>D</th>
+        <th>iW</th><th>iL</th><th>iD</th>
+        <th>Pts+</th><th>Pts−</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% standings_rows.each do |row| %>
+        <tr>
+          <td class="pool-standings__rank">
+            <% if admin %>
+              <%= helpers.best_in_place row.team, :pool_rank, as: :input,
+                    url: [:admin, row.team],
+                    class: "best_in_place_short pool-standings__editable", place_holder: "—" %><%= helpers.content_tag(:span, "=", class: "pool-standings__tie", title: "Tied — adjust the rank if needed") if row.tied %>
+            <% else %>
+              <%= row.team.pool_rank %><%= "=" if row.tied %>
+            <% end %>
+          </td>
+          <td><%= helpers.link_to row.team.name, [:admin, row.team] %></td>
+          <td><%= row.team_wins %></td>
+          <td><%= row.team_losses %></td>
+          <td><%= row.team_draws %></td>
+          <td><%= row.individual_wins %></td>
+          <td><%= row.individual_losses %></td>
+          <td><%= row.individual_draws %></td>
+          <td><%= row.points_scored %></td>
+          <td><%= row.points_conceded %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if encounters.empty? %>
+    <p class="pool-card__empty">No pool encounters yet.</p>
+  <% else %>
+    <ul class="pool-encounters">
+      <% encounters.each do |encounter| %>
+        <li>
+          <%= helpers.link_to "#{encounter.team_1.name} vs #{encounter.team_2.name}",
+                helpers.admin_team_category_encounter_path(team_category, encounter) %>
+          <%= "→ #{encounter.winner.name}" if encounter.winner %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
