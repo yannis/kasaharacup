@@ -89,7 +89,7 @@ ActiveAdmin.register TeamCategory do
       panel "Pools" do
         category_team_pools.each do |pool|
           div do
-            render TeamPoolComponent.new(team_category: category, pool_number: pool.number, pool: pool, admin: true)
+            render TeamPoolComponent.new(team_category: category, pool_number: pool.number, admin: true)
           end
         end
       end

@@ -42,4 +42,16 @@ RSpec.describe "Admin team pools" do
     post generate_pools_admin_team_category_path(tc)
     expect(response).to redirect_to(root_url)
   end
+
+  it "renders the admin standings partial (best_in_place) without raising" do
+    create(:team, team_category: tc, pool_number: 1, pool_position: 1)
+
+    html = ApplicationController.render(
+      partial: "admin/team_categories/pool_standings",
+      locals: {team_category: tc, pool_number: 1, admin: true}
+    )
+
+    expect(html).to include("team_pool_standings_#{tc.id}_1")
+    expect(html).to include("data-bip-attribute=\"pool_rank\"") # best_in_place admin variant
+  end
 end

@@ -1,0 +1,40 @@
+<%# app/views/admin/team_categories/_pool_standings.html.erb %>
+<% pool = team_category.team_pools.find { |p| p.number == pool_number } %>
+<% rows = TeamPoolStandings.for(teams: pool&.teams || [],
+     encounters: team_category.encounters_by_pool_number.fetch(pool_number, [])) %>
+<div id="team_pool_standings_<%= team_category.id %>_<%= pool_number %>">
+  <table class="pool-standings">
+    <thead>
+      <tr>
+        <th>Rank</th><th>Team</th>
+        <th>W</th><th>L</th><th>D</th>
+        <th>iW</th><th>iL</th><th>iD</th>
+        <th>Pts+</th><th>Pts−</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% rows.each do |row| %>
+        <tr>
+          <td class="pool-standings__rank">
+            <% if admin %>
+              <%= best_in_place row.team, :pool_rank, as: :input,
+                    url: [:admin, row.team],
+                    class: "best_in_place_short pool-standings__editable", place_holder: "—" %><%= content_tag(:span, "=", class: "pool-standings__tie", title: "Tied — adjust the rank if needed") if row.tied %>
+            <% else %>
+              <%= row.team.pool_rank %><%= "=" if row.tied %>
+            <% end %>
+          </td>
+          <td><%= link_to row.team.name, [:admin, row.team] %></td>
+          <td><%= row.team_wins %></td>
+          <td><%= row.team_losses %></td>
+          <td><%= row.team_draws %></td>
+          <td><%= row.individual_wins %></td>
+          <td><%= row.individual_losses %></td>
+          <td><%= row.individual_draws %></td>
+          <td><%= row.points_scored %></td>
+          <td><%= row.points_conceded %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
