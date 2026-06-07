@@ -38,6 +38,18 @@ RSpec.describe EncounterComponent, type: :component do
     expect(page).to have_text("Tied")
   end
 
+  it "does not show the tie/daihyosen banner for a pool encounter" do
+    encounter.update!(pool_number: 1)
+    a = roster(t1)
+    b = roster(t2)
+    EncounterLineup.new(encounter).assign(t1, a.map(&:id))
+    EncounterLineup.new(encounter).assign(t2, b.map(&:id))
+
+    render_inline(described_class.new(encounter: encounter.reload))
+
+    expect(page).not_to have_text("Tied")
+  end
+
   def roster(team)
     Array.new(tc.team_size) do
       create(:kenshi, cup: tc.cup).tap { |k| create(:participation, category: tc, team: team, kenshi: k) }

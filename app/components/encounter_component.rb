@@ -24,7 +24,7 @@ class EncounterComponent < ViewComponent::Base
   end
 
   def tied?
-    result.winner.nil? && both_lineups_in?
+    result.winner.nil? && both_lineups_in? && encounter.pool_number.blank?
   end
 
   # Use the authoritative submission flags — NOT fight presence. With only team 1

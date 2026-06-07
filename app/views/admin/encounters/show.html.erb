@@ -18,7 +18,7 @@
   <% end %>
 </section>
 
-<% if @encounter.lineup_1_set? && @encounter.lineup_2_set? && @encounter.result.winner.nil? %>
+<% if @encounter.pool_number.blank? && @encounter.lineup_1_set? && @encounter.lineup_2_set? && @encounter.result.winner.nil? %>
   <%= form_with url: daihyosen_admin_team_category_encounter_path(@encounter.team_category, @encounter),
         method: :post do |f| %>
     <h3>Daihyōsen</h3>
