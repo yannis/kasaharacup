@@ -441,63 +441,55 @@
   padding: 0.5rem 0.75rem;
 }
 
+/* The <summary> is the encounter's header on the pool page, so it carries the
+   same prominent style as the panel title. */
 .pool-encounter > summary {
-  color: #44403A;
+  color: #181512;
   cursor: pointer;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   list-style-position: inside;
 }
 
-/* Once open, the panel below shows the full scoreboard (team names + tally),
-   so collapse the summary to just its disclosure toggle to avoid repeating
-   that line. */
 .pool-encounter[open] > summary {
-  margin-bottom: 0.5rem;
-}
-
-.pool-encounter[open] > summary .pool-encounter__summary-text {
-  display: none;
+  border-bottom: 1px solid #E8E5E3;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
 }
 
 .encounter {
   margin: 0;
 }
 
-/* The header reads as a scoreboard — each team name sits above its own column
-   of fighters, with the running tally between them. The horizontal padding
-   matches a card's content box (1px border + 0.75rem padding) so the names
-   line up with the side columns below. */
 .encounter__header {
   align-items: baseline;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem 0.75rem;
   justify-content: space-between;
   margin-bottom: 0.5rem;
-  padding: 0 calc(0.75rem + 1px);
 }
 
-.encounter__team {
+/* On the pool page the <summary> is the encounter's header, so the panel's own
+   title would duplicate it — hide it there. The standalone encounter page has
+   no summary, so the title still shows. */
+.pool-encounter .encounter__header {
+  display: none;
+}
+
+.encounter__title {
   color: #181512;
   font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.encounter__team--right {
-  text-align: right;
+  margin: 0;
 }
 
 .encounter__tally {
   color: #75716C;
-  flex-shrink: 0;
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 .encounter__alert {

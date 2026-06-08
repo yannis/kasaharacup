@@ -1,12 +1,11 @@
 <%# app/components/encounter_component/encounter_component.html.erb %>
 <div id="<%= dom_id(encounter) %>" class="encounter" data-controller="lineup">
   <header class="encounter__header">
-    <span class="encounter__team"><%= encounter.team_1.name %></span>
+    <h2 class="encounter__title"><%= encounter.team_1.name %> vs <%= encounter.team_2.name %></h2>
     <span class="encounter__tally">
       wins <%= result.team_1_wins %>–<%= result.team_2_wins %>,
       ippons <%= result.team_1_ippons %>–<%= result.team_2_ippons %>
     </span>
-    <span class="encounter__team encounter__team--right"><%= encounter.team_2.name %></span>
   </header>
 
   <% if alert.present? %>
