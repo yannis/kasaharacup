@@ -449,10 +449,15 @@
   list-style-position: inside;
 }
 
+/* Once open, the panel below shows the full scoreboard (team names + tally),
+   so collapse the summary to just its disclosure toggle to avoid repeating
+   that line. */
 .pool-encounter[open] > summary {
-  border-bottom: 1px solid #E8E5E3;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.pool-encounter[open] > summary .pool-encounter__summary-text {
+  display: none;
 }
 
 .encounter {
