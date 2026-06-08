@@ -44,7 +44,7 @@ describe "Admin team lineup via in-table dropdowns", :js do
     signin_and_visit(admin, admin_team_category_path(tc))
     page.driver.browser.manage.window.resize_to(1024, 500)
 
-    find("summary", text: "#{t1.name} vs #{t2.name}").click
+    find("summary", text: t1.name).click
     side = "#encounter_#{encounter.id}_position_1 .pool-match__side--fighter_1"
     scroll_to(find("#{side} select"))
     scrolled = page.evaluate_script("window.scrollY").to_i

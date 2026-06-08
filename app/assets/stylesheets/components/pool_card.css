@@ -441,15 +441,61 @@
   padding: 0.5rem 0.75rem;
 }
 
-/* The <summary> is the encounter's header on the pool page, so it carries the
-   same prominent style as the panel title. */
+/* The <summary> is the encounter's header on the pool page and reads as a
+   scoreboard: each team name heads its column of fighters, with the score and
+   outcome centered beneath. The horizontal padding matches a card's content box
+   (1px border + 0.75rem padding) so the names line up with the columns below. */
 .pool-encounter > summary {
-  color: #181512;
+  column-gap: 0.5rem;
   cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+  padding: 0 calc(0.75rem + 1px);
+  position: relative;
+  row-gap: 0.125rem;
+}
+
+.pool-encounter > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Disclosure caret, positioned out of the grid flow so it never shifts the
+   team names off their columns. */
+.pool-encounter > summary::before {
+  color: #75716C;
+  content: "▸";
+  font-size: 0.75rem;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.pool-encounter[open] > summary::before {
+  content: "▾";
+}
+
+.encounter-summary__team {
+  color: #181512;
   font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  list-style-position: inside;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.encounter-summary__team--right {
+  text-align: right;
+}
+
+.encounter-summary__status {
+  color: #75716C;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  grid-column: 1 / -1;
+  text-align: center;
 }
 
 .pool-encounter[open] > summary {
