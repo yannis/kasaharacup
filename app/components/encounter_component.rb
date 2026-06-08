@@ -37,12 +37,16 @@ class EncounterComponent < ViewComponent::Base
   end
 
   def teams
-    @teams ||= [encounter.team_1, encounter.team_2]
+    @teams ||= [encounter.resolved_team_1, encounter.resolved_team_2]
+  end
+
+  def both_teams_resolved?
+    teams.all?(&:present?)
   end
 
   # Kenshis selectable for each side's dropdown, keyed by team id and loaded once.
   def team_kenshis
-    @team_kenshis ||= teams.to_h { |team| [team.id, team.kenshis.to_a] }
+    @team_kenshis ||= teams.compact.to_h { |team| [team.id, team.kenshis.to_a] }
   end
 
   def tied?

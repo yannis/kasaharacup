@@ -31,6 +31,19 @@ RSpec.describe TeamCategory do
     end
   end
 
+  describe "#bracket_encounters" do
+    it "returns only encounters with no pool_number" do
+      tc = create(:team_category)
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      pool = create(:encounter, team_category: tc, team_1: a, team_2: b, pool_number: 1)
+      bracket = create(:encounter, team_category: tc, team_1: a, team_2: b, round: 1, position: 1)
+
+      expect(tc.bracket_encounters).to include(bracket)
+      expect(tc.bracket_encounters).not_to include(pool)
+    end
+  end
+
   describe "Validations" do
     let(:cup) { create(:cup) }
 

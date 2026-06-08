@@ -1,6 +1,6 @@
 <%# app/views/admin/encounters/_summary.html.erb %>
 <summary id="<%= dom_id(encounter, :summary) %>" class="encounter-summary">
-  <span class="encounter-summary__team"><%= encounter.team_1.name %></span>
-  <span class="encounter-summary__team encounter-summary__team--right"><%= encounter.team_2.name %></span>
+  <span class="encounter-summary__team"><%= encounter.team_display_name(1) %></span>
+  <span class="encounter-summary__team encounter-summary__team--right"><%= encounter.team_display_name(2) %></span>
   <span class="encounter-summary__status"><%= encounter_summary_status(encounter) %></span>
 </summary>

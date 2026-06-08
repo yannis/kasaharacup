@@ -107,6 +107,12 @@ ActiveAdmin.register TeamCategory do
     redirect_to admin_team_category_path(category), notice: "Pool encounters generated." # rubocop:disable Rails/I18nLocaleTexts
   end
 
+  member_action :generate_bracket, method: :post do
+    category = TeamCategory.find(params[:id])
+    TeamCategoryBracketBuilder.new(category).call
+    redirect_to admin_team_category_path(category), notice: "Bracket generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
   action_item :generate_pools, only: :show do
     link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
       method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
@@ -114,6 +120,11 @@ ActiveAdmin.register TeamCategory do
 
   action_item :generate_pool_encounters, only: :show do
     link_to "Generate pool encounters", generate_pool_encounters_admin_team_category_path(team_category),
+      method: :post
+  end
+
+  action_item :generate_bracket, only: :show do
+    link_to "Generate bracket", generate_bracket_admin_team_category_path(team_category),
       method: :post
   end
 

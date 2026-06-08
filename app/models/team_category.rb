@@ -10,6 +10,8 @@ class TeamCategory < ApplicationRecord
   has_many :documents, as: :category, dependent: :destroy
   has_many :kenshis, through: :teams
   has_many :encounters, dependent: :destroy
+  has_many :bracket_encounters, -> { where(pool_number: nil) },
+    class_name: "Encounter", inverse_of: :team_category
 
   validates :team_size, inclusion: {in: [3, 5]}
 

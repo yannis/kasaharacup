@@ -50,6 +50,20 @@ RSpec.describe EncounterComponent, type: :component do
     expect(page).not_to have_text("Tied")
   end
 
+  describe "unresolved bracket slots" do
+    let(:a) { create(:team, team_category: tc) }
+
+    it "renders a placeholder instead of crashing when a side is unresolved" do
+      parent = create(:encounter, team_category: tc, team_1: a, team_2: create(:team, team_category: tc))
+      encounter = create(:encounter, team_category: tc, team_1: nil, team_2: nil,
+        round: 2, position: 1, parent_encounter_1: parent)
+
+      render_inline(described_class.new(encounter: encounter, admin: true))
+
+      expect(page).to have_text("To be decided")
+    end
+  end
+
   def roster(team)
     Array.new(tc.team_size) do
       create(:kenshi, cup: tc.cup).tap { |k| create(:participation, category: tc, team: team, kenshi: k) }
