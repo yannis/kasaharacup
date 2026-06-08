@@ -45,15 +45,13 @@ gem "prawn-table"
 gem "bootsnap", require: false
 gem "rack-cors"
 
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
-
 # activeadmin
 gem "activeadmin"
 
 # ActiveStorage and Image processing
 gem "aws-sdk-s3"
 gem "image_processing"
+gem "ruby-vips"
 
 # ViewComponent
 gem "view_component"
