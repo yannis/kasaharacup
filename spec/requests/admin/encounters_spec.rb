@@ -93,7 +93,8 @@ RSpec.describe "Admin encounters" do
     get admin_team_category_encounter_path(tc, encounter)
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("#{t1.name} vs #{t2.name}")
+    expect(response.body).to include(t1.name) # team names head their columns
+    expect(response.body).to include(t2.name)
     expect(response.body).to include("lineup") # the lineup forms render
   end
 

@@ -459,27 +459,40 @@
   margin: 0;
 }
 
+/* The header reads as a scoreboard — each team name sits above its own column
+   of fighters, with the running tally between them. The horizontal padding
+   matches a card's content box (1px border + 0.75rem padding) so the names
+   line up with the side columns below. */
 .encounter__header {
   align-items: baseline;
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem 0.75rem;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+  padding: 0 calc(0.75rem + 1px);
 }
 
-.encounter__title {
+.encounter__team {
   color: #181512;
   font-size: 1.0625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.encounter__team--right {
+  text-align: right;
 }
 
 .encounter__tally {
   color: #75716C;
+  flex-shrink: 0;
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .encounter__alert {
