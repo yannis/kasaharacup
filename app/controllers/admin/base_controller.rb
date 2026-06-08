@@ -39,7 +39,7 @@ module Admin
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
             helpers.dom_id(encounter),
-            EncounterComponent.new(encounter: encounter, admin: true),
+            EncounterComponent.new(encounter: encounter, admin: true, alert: flash[:alert]),
             method: :morph
           )
         end

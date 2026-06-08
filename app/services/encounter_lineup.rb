@@ -20,13 +20,16 @@ class EncounterLineup
     @encounter.transaction do
       (1..@team_size).each do |position|
         fight = @encounter.team_fights.find_or_create_by!(position: position)
+        current_kenshi_id = fight.public_send("kenshi_#{slot}_id")
         new_kenshi_id = kenshi_ids[position - 1]
-        next if new_kenshi_id == fight.public_send("kenshi_#{slot}_id")
+        next if new_kenshi_id == current_kenshi_id
 
-        # A bout is locked once it has points: changing a side after scoring would
-        # orphan the recorded winner and points (rule: re-enter only until a bout
-        # has points). Unscored bouts can still be re-entered freely.
-        if fight.fight_points.exists?
+        # A populated side that has scored is locked: replacing or removing that
+        # kenshi would orphan the recorded winner and points (rule: re-enter only
+        # until a bout has points). Filling an empty side (current is nil) only
+        # adds the opponent and can't orphan anyone, so a team can still enter its
+        # lineup late — e.g. after the other side already took a forfeit point.
+        if current_kenshi_id.present? && fight.fight_points.exists?
           raise InvalidLineup, "cannot change a bout that already has points"
         end
 

@@ -96,6 +96,22 @@ RSpec.describe EncounterLineup do
     expect(scored.reload.kenshi_1_id).to eq a.first.id # unchanged
   end
 
+  it "fills the empty opposing side even after the present side has scored" do
+    a = members(t1, 3)
+    described_class.new(encounter).assign(t1, a.map(&:id))
+    scored = encounter.team_fights.order(:position).first
+    create(:fight_point, scorable: scored, fighter_side: "fighter_1", kind: "men")
+
+    b = members(t2, 3)
+    expect {
+      described_class.new(encounter).assign(t2, b.map(&:id))
+    }.not_to raise_error
+
+    expect(scored.reload.kenshi_2_id).to eq b.first.id # opponent entered late
+    expect(scored.fight_points.size).to eq 1 # the existing point is preserved
+    expect(scored.winner_id).to eq a.first.id # and so is the recorded winner
+  end
+
   it "re-assigning a side leaves the other side's kenshi untouched" do
     a = members(t1, 3)
     b = members(t2, 3)

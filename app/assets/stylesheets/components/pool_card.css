@@ -114,6 +114,29 @@
   white-space: nowrap;
 }
 
+/* The fighter name slot doubles as the lineup picker: selecting a fighter
+   auto-submits that team's lineup. */
+.pool-match__select {
+  background: #fff;
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  color: #181512;
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 0;
+  padding: 0.1875rem 0.375rem;
+}
+
+.pool-match__select:hover {
+  border-color: #A6A29D;
+}
+
+.pool-match__select:focus {
+  border-color: #de7012;
+  outline: none;
+}
+
 .pool-match__points {
   display: flex;
   flex-wrap: wrap;
@@ -404,4 +427,198 @@
 
 .pool-standings__actions a {
   color: #de7012;
+}
+
+/* --- Team encounter panel ----------------------------------------------- */
+/* Reuses the .pool-match scoring layout above so a team encounter scores with
+   the same two-sided cards as an individual category pool. */
+
+.pool-encounter {
+  background: #fff;
+  border: 1px solid #E8E5E3;
+  border-radius: 0.375rem;
+  margin-block: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.pool-encounter > summary {
+  color: #44403A;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  list-style-position: inside;
+}
+
+.pool-encounter[open] > summary {
+  border-bottom: 1px solid #E8E5E3;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+}
+
+.encounter {
+  margin: 0;
+}
+
+.encounter__header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.encounter__title {
+  color: #181512;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.encounter__tally {
+  color: #75716C;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.encounter__alert {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 0.375rem;
+  color: #991b1b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.encounter__verdict {
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  padding: 0.375rem 0.625rem;
+}
+
+.encounter__verdict--win {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.encounter__verdict--tie {
+  background: #fef6ef;
+  color: #de7012;
+}
+
+.pool-match__verdict {
+  color: #75716C;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0.375rem 0 0;
+  text-align: center;
+}
+
+.pool-match__verdict--win {
+  color: #15803d;
+}
+
+.lineups {
+  display: grid;
+  gap: 0.625rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  margin-top: 0.75rem;
+}
+
+.lineup {
+  background: #fcfaf8;
+  border: 1px solid #E8E5E3;
+  border-radius: 0.375rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+}
+
+.lineup__title {
+  color: #75716C;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.lineup__slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.lineup__select {
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.375rem;
+  width: 100%;
+}
+
+.lineup__submit {
+  background: #de7012;
+  border: 1px solid #de7012;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3125rem 0.75rem;
+}
+
+.lineup__submit:not(.disabled):hover {
+  background: #d16a0f;
+}
+
+.daihyosen-form {
+  align-items: center;
+  background: #fef6ef;
+  border: 1px dashed #eb862e;
+  border-radius: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.daihyosen-form__title {
+  color: #44403A;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0 0.25rem 0 0;
+}
+
+.daihyosen-form__select {
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.daihyosen-form__vs {
+  color: #75716C;
+  font-size: 0.8125rem;
+}
+
+.daihyosen-form__submit {
+  background: #de7012;
+  border: 1px solid #de7012;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3125rem 0.625rem;
+}
+
+.daihyosen-form__submit:not(.disabled):hover {
+  background: #d16a0f;
 }

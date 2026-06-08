@@ -97,6 +97,63 @@ RSpec.describe "Admin encounters" do
     expect(response.body).to include("lineup") # the lineup forms render
   end
 
+  it "pre-selects the assigned fighters in the in-table dropdowns" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    members = Array.new(3) { member(t1) }
+    EncounterLineup.new(encounter).assign(t1, members.map(&:id))
+
+    get admin_team_category_encounter_path(tc, encounter)
+
+    expect(response).to have_http_status(:ok)
+    members.each do |kenshi|
+      expect(response.body).to include(%(<option selected="selected" value="#{kenshi.id}">))
+    end
+  end
+
+  it "shows a fighter dropdown for every position before any lineup is set" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    member(t1)
+    member(t2)
+    expect(encounter.team_fights).to be_empty # pool encounters start without bouts
+
+    get admin_team_category_encounter_path(tc, encounter)
+
+    expect(response).to have_http_status(:ok)
+    # team_size positions × 2 sides, each an auto-submitting kenshi dropdown.
+    expect(response.body.scan('name="kenshi_ids[]"').size).to eq(tc.team_size * 2)
+    form_id = "lineup_#{ActionView::RecordIdentifier.dom_id(encounter)}_team_#{t1.id}"
+    expect(response.body).to include(%(form="#{form_id}"))
+    expect(response.body).to include(%(<form id="#{form_id}"))
+  end
+
+  it "surfaces a lineup error in the panel instead of failing silently" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    a = Array.new(3) { member(t1) }
+    EncounterLineup.new(encounter).assign(t1, a.map(&:id))
+    scored = encounter.team_fights.order(:position).first
+    create(:fight_point, scorable: scored, fighter_side: "fighter_1", kind: "men")
+
+    # Re-assigning the scored side is a genuine, blocked change.
+    replacement = Array.new(3) { member(t1) }
+    post lineup_admin_team_category_encounter_path(tc, encounter),
+      params: {team_id: t1.id, kenshi_ids: replacement.map(&:id)}, as: :turbo_stream
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("cannot change a bout that already has points")
+  end
+
+  it "renders the pool-match scoring layout for a bout" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    create(:team_fight, encounter: encounter, kenshi_1: member(t1), kenshi_2: member(t2))
+
+    get admin_team_category_encounter_path(tc, encounter)
+
+    expect(response).to have_http_status(:ok)
+    # Reuses the same two-sided scoring card as the individual category pools.
+    expect(response.body).to include("pool-match__sides")
+    expect(response.body).to include("pool-match__button")
+  end
+
   describe "the encounter _summary partial" do
     def render_summary(encounter)
       ApplicationController.render(partial: "admin/encounters/summary", locals: {encounter: encounter})

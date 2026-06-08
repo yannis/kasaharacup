@@ -2,28 +2,25 @@
 <%= turbo_stream_from [encounter, :panel] %>
 <%= render "admin/encounters/panel", encounter: encounter, admin: true %>
 
-<section class="lineups">
-  <% [encounter.team_1, encounter.team_2].each do |team| %>
-    <%= form_with url: lineup_admin_team_category_encounter_path(encounter.team_category, encounter),
-          method: :post do |f| %>
-      <%= f.hidden_field :team_id, value: team.id %>
-      <h3><%= team.name %> lineup</h3>
-      <% encounter.team_size.times do |i| %>
-        <%= select_tag "kenshi_ids[]",
-              options_from_collection_for_select(team.kenshis, :id, :full_name),
-              include_blank: true %>
-      <% end %>
-      <%= f.submit "Set lineup" %>
-    <% end %>
+<%# Hidden targets for the in-table fighter dropdowns: each side's <select> in the
+    match table carries form="<lineup_form_id>" and name="kenshi_ids[]", so picking
+    a fighter auto-submits that team's whole lineup (see lineup_controller.js). %>
+<% [encounter.team_1, encounter.team_2].each do |team| %>
+  <%= form_with url: lineup_admin_team_category_encounter_path(encounter.team_category, encounter),
+        method: :post, id: lineup_form_id(encounter, team) do |f| %>
+    <%= f.hidden_field :team_id, value: team.id %>
   <% end %>
-</section>
+<% end %>
 
 <% if encounter.pool_number.blank? && encounter.lineup_1_set? && encounter.lineup_2_set? && encounter.result.winner.nil? %>
   <%= form_with url: daihyosen_admin_team_category_encounter_path(encounter.team_category, encounter),
-        method: :post do |f| %>
-    <h3>Daihyōsen</h3>
-    <%= select_tag :kenshi_1_id, options_from_collection_for_select(encounter.team_1.kenshis, :id, :full_name) %>
-    <%= select_tag :kenshi_2_id, options_from_collection_for_select(encounter.team_2.kenshis, :id, :full_name) %>
-    <%= f.submit "Add daihyōsen" %>
+        method: :post, class: "daihyosen-form" do |f| %>
+    <h3 class="daihyosen-form__title">Daihyōsen</h3>
+    <%= select_tag :kenshi_1_id, options_from_collection_for_select(encounter.team_1.kenshis, :id, :full_name),
+          class: "daihyosen-form__select" %>
+    <span class="daihyosen-form__vs">vs</span>
+    <%= select_tag :kenshi_2_id, options_from_collection_for_select(encounter.team_2.kenshis, :id, :full_name),
+          class: "daihyosen-form__select" %>
+    <%= f.submit "Add daihyōsen", class: "daihyosen-form__submit" %>
   <% end %>
 <% end %>
