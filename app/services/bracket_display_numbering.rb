@@ -1,50 +1,50 @@
 # frozen_string_literal: true
 
-# Assigns each bracket fight a display number: a secondary, viewer-facing
-# numbering distinct from the canonical `number`. BYE fights are skipped (they
-# are never contested), and real matches are numbered to the highest round
-# possible — a parent (later round) is numbered as soon as both of its feeder
-# subtrees are exhausted. This is a post-order depth-first traversal of the
-# tree rooted at the final, so the resulting order matches how the matches will
-# actually be fought.
-#
-# Returns a Hash of { fight_id => display_number }; BYE fights are absent.
+# Assigns each bracket node a stable, leaf-first display number (byes skipped),
+# matching the order results are entered. Works on any node type that defines a
+# PARENT_ASSOCIATIONS constant ([:parent_fight_1, :parent_fight_2] for Fight,
+# [:parent_encounter_1, :parent_encounter_2] for Encounter) and responds to
+# #bye?, #round, #position, #id. Parents must be preloaded (Fight.preload_parents
+# / Encounter.preload_parents) so traversal does not re-query.
 class BracketDisplayNumbering
-  def self.for(fights)
-    new(fights).numbers
+  def self.for(records)
+    new(records).numbers
   end
 
-  def initialize(fights)
-    @fights = fights
+  def initialize(records)
+    @records = records
   end
 
   def numbers
     @numbers = {}
     @counter = 0
-    root_fights.each { |fight| assign(fight) }
+    root_records.each { |record| assign(record) }
     @numbers
   end
 
-  private attr_reader :fights
+  private attr_reader :records
 
-  private def assign(fight)
-    return if fight.nil?
+  private def assign(record)
+    return if record.nil?
 
-    assign(fight.parent_fight_1)
-    assign(fight.parent_fight_2)
-    return if fight.bye?
+    parents(record).each { |parent| assign(parent) }
+    return if record.bye?
 
     @counter += 1
-    @numbers[fight.id] = @counter
+    @numbers[record.id] = @counter
   end
 
-  # The roots are the fights no other fight feeds into — a complete bracket has
-  # exactly one (the final). Sorted so disconnected trees number top-to-bottom.
-  private def root_fights
-    parent_ids = fights.flat_map { |fight|
-      [fight.parent_fight_1_id, fight.parent_fight_2_id]
-    }.compact.to_set
-    fights.reject { |fight| parent_ids.include?(fight.id) }
-      .sort_by { |fight| [fight.round.to_i, fight.position.to_i] }
+  private def parents(record)
+    record.class::PARENT_ASSOCIATIONS.map { |name| record.public_send(name) }
+  end
+
+  private def parent_ids_of(record)
+    record.class::PARENT_ASSOCIATIONS.map { |name| record.public_send(:"#{name}_id") }
+  end
+
+  private def root_records
+    referenced = records.flat_map { |record| parent_ids_of(record) }.compact.to_set
+    records.reject { |record| referenced.include?(record.id) }
+      .sort_by { |record| [record.round.to_i, record.position.to_i] }
   end
 end
