@@ -94,6 +94,18 @@ ActiveAdmin.register TeamCategory do
         end
       end
     end
+    if category.bracket_encounters.any?
+      panel "Bracket" do
+        div do
+          span(link_to("Update bracket", generate_bracket_admin_team_category_path(category), method: :post))
+          span " | "
+          rebuild_confirm = "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
+          span(link_to("Force rebuild", generate_bracket_admin_team_category_path(category, rebuild: 1),
+            method: :post, data: {confirm: rebuild_confirm}))
+        end
+        render EncounterTreeComponent.new(team_category: category, admin: true)
+      end
+    end
   end
 
   member_action :generate_pools, method: :post do
@@ -109,7 +121,7 @@ ActiveAdmin.register TeamCategory do
 
   member_action :generate_bracket, method: :post do
     category = TeamCategory.find(params[:id])
-    TeamCategoryBracketBuilder.new(category).call
+    TeamCategoryBracketBuilder.new(category, rebuild_started: params[:rebuild].present?).call
     redirect_to admin_team_category_path(category), notice: "Bracket generated." # rubocop:disable Rails/I18nLocaleTexts
   end
 

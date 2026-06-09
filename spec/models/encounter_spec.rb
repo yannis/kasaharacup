@@ -101,6 +101,44 @@ RSpec.describe Encounter do
     end
   end
 
+  describe "bracket tree broadcast" do
+    # broadcast_replace_later_to enqueues a Turbo::Streams::ActionBroadcastJob, so
+    # we drive the job and assert on the underlying ActionCable broadcast (mirrors
+    # the Fight competition-tree broadcast spec).
+    it "broadcasts a tree replace when a bracket encounter's winner changes" do
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      encounter = create(:encounter, team_category: tc, team_1: a, team_2: b, round: 1, position: 1)
+      allow(ActionCable.server).to receive(:broadcast)
+
+      ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
+      begin
+        encounter.update!(winner: a)
+      ensure
+        ActiveJob::Base.queue_adapter.perform_enqueued_jobs = false
+      end
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        kind_of(String),
+        include("encounter_tree_team_category_#{tc.id}")
+      )
+    end
+
+    it "does not broadcast the tree for a pool encounter" do
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      encounter = create(:encounter, team_category: tc, team_1: a, team_2: b, pool_number: 1)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      encounter.update!(winner: a)
+
+      tree_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.select { |job|
+        job[:args].to_s.include?("encounter_tree_team_category_")
+      }
+      expect(tree_jobs).to be_empty
+    end
+  end
+
   describe "advancement and invalidation" do
     let(:a) { create(:team, team_category: tc) }
     let(:b) { create(:team, team_category: tc) }

@@ -17,6 +17,8 @@ class Encounter < ApplicationRecord
 
   after_update :propagate_winner_to_children, if: :saved_change_to_winner_id?
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?
+  after_update_commit :broadcast_bracket_tree,
+    if: -> { saved_change_to_winner_id? && pool_number.blank? }
 
   delegate :team_size, to: :team_category
 
@@ -123,6 +125,16 @@ class Encounter < ApplicationRecord
       fight.recompute_outcome_from_points!
     end
     update!("lineup_#{slot}_set": false)
+  end
+
+  private def broadcast_bracket_tree
+    broadcast_replace_later_to(
+      [team_category, :encounter_tree],
+      target: ActionView::RecordIdentifier.dom_id(team_category, :encounter_tree),
+      partial: "team_bracket_trees/team_bracket_tree",
+      locals: {team_category: team_category},
+      attributes: {method: :morph}
+    )
   end
 
   private def children

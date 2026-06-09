@@ -10,7 +10,11 @@ class TeamCategory < ApplicationRecord
   has_many :documents, as: :category, dependent: :destroy
   has_many :kenshis, through: :teams
   has_many :encounters, dependent: :destroy
-  has_many :bracket_encounters, -> { where(pool_number: nil) },
+  # Bracket encounters are the elimination-tree nodes: no pool_number AND a round.
+  # The round guard excludes ad-hoc encounters created via the manual "new
+  # encounter" form (pool_number nil, round nil), which otherwise pollute the
+  # bracket and break the tree layout / builder idempotency.
+  has_many :bracket_encounters, -> { where(pool_number: nil).where.not(round: nil) },
     class_name: "Encounter", inverse_of: :team_category
 
   validates :team_size, inclusion: {in: [3, 5]}

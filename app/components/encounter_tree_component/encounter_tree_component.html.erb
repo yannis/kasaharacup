@@ -1,0 +1,57 @@
+<%# app/components/encounter_tree_component/encounter_tree_component.html.erb %>
+<%= helpers.turbo_frame_tag tree_dom_id do %>
+  <% if admin %>
+    <%= helpers.turbo_stream_from team_category, :encounter_tree %>
+  <% end %>
+  <div id="<%= tree_dom_id %>" class="competition-tree">
+    <% if rounds.empty? %>
+      <p class="competition-tree__empty">No bracket yet.</p>
+    <% else %>
+      <div class="competition-tree__viewport" style="width: <%= canvas_width %>px; height: <%= canvas_height %>px;">
+        <svg class="competition-tree__svg" width="<%= canvas_width %>" height="<%= canvas_height %>">
+          <% connector_paths.each do |path| %>
+            <path class="competition-tree__line" d="<%= path %>" fill="none" />
+          <% end %>
+        </svg>
+
+        <% rounds.each_value do |round_encounters| %>
+          <% round_encounters.each do |encounter| %>
+            <% next unless render_node?(encounter) %>
+
+            <% if encounter.bye? %>
+              <article class="competition-tree__match competition-tree__match--bye" style="<%= match_style(encounter) %>">
+                <div class="competition-tree__match-header">
+                  <span class="competition-tree__bye-label">Bye</span>
+                </div>
+                <ol class="competition-tree__fighters">
+                  <li class="competition-tree__fighter competition-tree__fighter--winner">
+                    <span class="competition-tree__fighter-name"><%= team_name(encounter, encounter.bye_slot) %></span>
+                  </li>
+                </ol>
+              </article>
+            <% else %>
+              <article class="competition-tree__match" style="<%= match_style(encounter) %>">
+                <div class="competition-tree__match-header">
+                  <%= link_to "Encounter #{display_number(encounter)}", encounter_path(encounter) %>
+                  <% if (line = score_line(encounter)) %>
+                    <span class="competition-tree__admin-summary"><%= line %></span>
+                  <% end %>
+                </div>
+                <ol class="competition-tree__fighters">
+                  <% [1, 2].each do |slot| %>
+                    <li class="competition-tree__fighter <%= "competition-tree__fighter--winner" if team_winner?(encounter, slot) %>">
+                      <% if (seed = seed_label(encounter, slot)) && encounter.public_send(:"resolved_team_#{slot}").blank? %>
+                        <span class="competition-tree__pool-position"><%= seed %></span>
+                      <% end %>
+                      <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
+                    </li>
+                  <% end %>
+                </ol>
+              </article>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

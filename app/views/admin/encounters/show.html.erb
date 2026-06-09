@@ -1,2 +1,12 @@
 <%# app/views/admin/encounters/show.html.erb %>
-<%= render "admin/encounters/editor", encounter: @encounter %>
+<% if @encounter.pool_number.blank? %>
+  <%# Bracket encounter: render inside the tree's turbo-frame so clicking a tree
+      card swaps the encounter in place, with a link back to the tree. %>
+  <%= turbo_frame_tag dom_id(@encounter.team_category, :encounter_tree) do %>
+    <%= link_to "← Back to tree", admin_team_category_path(@encounter.team_category),
+          class: "encounter__back-to-tree" %>
+    <%= render "admin/encounters/editor", encounter: @encounter %>
+  <% end %>
+<% else %>
+  <%= render "admin/encounters/editor", encounter: @encounter %>
+<% end %>

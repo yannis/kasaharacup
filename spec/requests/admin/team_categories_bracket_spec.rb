@@ -30,4 +30,43 @@ RSpec.describe "Admin team category brackets" do
       expect(category.bracket_encounters).to be_empty
     end
   end
+
+  describe "GET /admin/team_categories/:id (bracket panel)" do
+    it "renders the bracket tree once encounters exist" do
+      create(:team, team_category: category, pool_number: 1, pool_rank: 1)
+      create(:team, team_category: category, pool_number: 2, pool_rank: 1)
+      TeamCategoryBracketBuilder.new(category).call
+
+      get admin_team_category_path(category)
+
+      expect(response.body).to include("encounter_tree_team_category_#{category.id}")
+    end
+  end
+
+  describe "GET a bracket encounter (framed in the tree)" do
+    it "renders the encounter inside the tree frame with a back-to-tree link" do
+      create(:team, team_category: category, pool_number: 1, pool_rank: 1)
+      create(:team, team_category: category, pool_number: 2, pool_rank: 1)
+      TeamCategoryBracketBuilder.new(category).call
+      encounter = category.bracket_encounters.first
+
+      get admin_team_category_encounter_path(category, encounter)
+
+      expect(response.body).to include("encounter_tree_team_category_#{category.id}")
+      expect(response.body).to include("Back to tree")
+    end
+  end
+
+  describe "POST /admin/team_categories/:id/generate_bracket?rebuild=1" do
+    it "force-rebuilds the bracket" do
+      create(:team, team_category: category, pool_number: 1, pool_rank: 1)
+      create(:team, team_category: category, pool_number: 2, pool_rank: 1)
+      TeamCategoryBracketBuilder.new(category).call
+      original_ids = category.bracket_encounters.pluck(:id)
+
+      post generate_bracket_admin_team_category_path(category, rebuild: 1)
+
+      expect(category.bracket_encounters.pluck(:id)).not_to match_array(original_ids)
+    end
+  end
 end

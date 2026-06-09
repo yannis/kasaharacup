@@ -5,7 +5,7 @@
 <%# Hidden targets for the in-table fighter dropdowns: each side's <select> in the
     match table carries form="<lineup_form_id>" and name="kenshi_ids[]", so picking
     a fighter auto-submits that team's whole lineup (see lineup_controller.js). %>
-<% [encounter.team_1, encounter.team_2].each do |team| %>
+<% [encounter.team_1, encounter.team_2].compact.each do |team| %>
   <%= form_with url: lineup_admin_team_category_encounter_path(encounter.team_category, encounter),
         method: :post, id: lineup_form_id(encounter, team) do |f| %>
     <%= f.hidden_field :team_id, value: team.id %>
