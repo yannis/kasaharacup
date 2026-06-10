@@ -51,6 +51,15 @@ module Admin
       respond_with_encounter(encounter)
     end
 
+    def swap_team
+      encounter = @team_category.encounters.find(params.expect(:id))
+      team = @team_category.teams.find(params.expect(:team_id))
+      EncounterTeamSwap.new(encounter).swap(params.expect(:slot).to_i, team)
+      redirect_to admin_team_category_encounter_path(@team_category, encounter), notice: t(".notice")
+    rescue EncounterTeamSwap::InvalidSwap => e
+      redirect_to admin_team_category_encounter_path(@team_category, encounter), alert: e.message
+    end
+
     # The lineup form selects use include_blank, so unselected (forfeit) positions
     # arrive as empty strings; drop them so a short lineup is treated as trailing
     # forfeits rather than failing the team-membership check on a "0" id.

@@ -6,6 +6,9 @@
     <%= link_to "← Back to tree", admin_team_category_path(@encounter.team_category),
           class: "encounter__back-to-tree" %>
     <%= render "admin/encounters/editor", encounter: @encounter %>
+    <% if @encounter.team_category.bracket_only? && @encounter.round == 1 %>
+      <%= render "admin/encounters/swap_team", encounter: @encounter %>
+    <% end %>
   <% end %>
 <% else %>
   <%= render "admin/encounters/editor", encounter: @encounter %>

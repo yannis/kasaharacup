@@ -1,0 +1,23 @@
+<%# Draw-correction controls for a bracket-only round-1 encounter: swap a
+    slot's occupant with any other round-1 occupant. data: {turbo: false}
+    forces a full page load so the persistent flash renders outside the
+    encounter tree frame. %>
+<% swap = EncounterTeamSwap.new(encounter) # rubocop:disable Lint/UselessAssignment %>
+<% swappable_slots = [1, 2].select { |slot| swap.swappable?(slot) } # rubocop:disable Lint/UselessAssignment %>
+<% if swappable_slots.any? %>
+  <div class="swap-team">
+    <% swappable_slots.each do |slot| %>
+      <% current = encounter.public_send(:"team_#{slot}") # rubocop:disable Lint/UselessAssignment %>
+      <%= form_with url: swap_team_admin_team_category_encounter_path(encounter.team_category, encounter),
+            method: :post, class: "swap-team__form swap-team__form--slot_#{slot}",
+            data: {turbo: false} do |f| %>
+        <%= f.hidden_field :slot, value: slot %>
+        <%= label_tag "team_id_#{slot}", "Swap #{current.name} with", class: "swap-team__label" %>
+        <%= select_tag :team_id,
+              options_from_collection_for_select(swap.candidates(slot), :id, :name),
+              include_blank: true, id: "team_id_#{slot}", required: true, class: "swap-team__select" %>
+        <%= f.submit "Swap", class: "swap-team__submit" %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

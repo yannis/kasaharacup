@@ -127,6 +127,8 @@ fr:
         notice: Daihyōsen ajouté.
       lineup:
         notice: Alignement enregistré.
+      swap_team:
+        notice: Équipes échangées.
     fights:
       update:
         notice: Combat mis à jour

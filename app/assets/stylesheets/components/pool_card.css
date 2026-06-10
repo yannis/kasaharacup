@@ -678,3 +678,61 @@
 .daihyosen-form__submit:not(.disabled):hover {
   background: #d16a0f;
 }
+
+/* Slot-swap forms: one per occupied side, aligned under that team's column
+   (same 1fr/1fr grid as .pool-match__sides). */
+.swap-team {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0.75rem;
+}
+
+.swap-team__form {
+  align-items: center;
+  background: #fef6ef;
+  border: 1px dashed #eb862e;
+  border-radius: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.swap-team__form--slot_1 {
+  grid-column: 1;
+}
+
+.swap-team__form--slot_2 {
+  grid-column: 2;
+  justify-content: flex-end;
+}
+
+.swap-team__label {
+  color: #44403A;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.swap-team__select {
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.swap-team__submit {
+  background: #de7012;
+  border: 1px solid #de7012;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3125rem 0.625rem;
+}
+
+.swap-team__submit:not(.disabled):hover {
+  background: #d16a0f;
+}

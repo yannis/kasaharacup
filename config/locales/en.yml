@@ -123,6 +123,8 @@ en:
         notice: Daihyōsen added.
       lineup:
         notice: Lineup set.
+      swap_team:
+        notice: Teams swapped.
     fights:
       update:
         notice: Fight updated

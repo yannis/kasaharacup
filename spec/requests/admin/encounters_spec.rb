@@ -155,6 +155,66 @@ RSpec.describe "Admin encounters" do
     expect(response.body).to include("pool-match__button")
   end
 
+  describe "POST swap_team" do
+    let(:bracket_only) { create(:team_category, cup: cup, pool_size: nil) }
+
+    before do
+      create_list(:team, 4, team_category: bracket_only)
+      TeamCategoryBracketBuilder.new(bracket_only, random: Random.new(1)).call
+    end
+
+    def round_one
+      bracket_only.bracket_encounters.where(round: 1).order(:position).to_a
+    end
+
+    it "swaps two round-1 occupants and redirects with a notice" do
+      first, second = round_one
+      moving_in = second.team_1
+
+      post swap_team_admin_team_category_encounter_path(bracket_only, first),
+        params: {slot: 1, team_id: moving_in.id}
+
+      expect(response).to redirect_to(admin_team_category_encounter_path(bracket_only, first))
+      expect(flash[:notice]).to be_present
+      expect(first.reload.team_1).to eq moving_in
+    end
+
+    it "redirects with an alert on an invalid swap" do
+      first, second = round_one
+      second.update!(winner: second.team_1)
+
+      post swap_team_admin_team_category_encounter_path(bracket_only, first),
+        params: {slot: 1, team_id: second.team_1.id}
+
+      expect(response).to redirect_to(admin_team_category_encounter_path(bracket_only, first))
+      expect(flash[:alert]).to include("recorded results")
+      expect(first.reload.team_1).not_to eq second.team_1
+    end
+
+    it "renders swap selects on a pristine bracket-only round-1 encounter" do
+      get admin_team_category_encounter_path(bracket_only, round_one.first)
+
+      expect(response.body).to include("swap-team__form")
+    end
+
+    it "renders no swap controls once the encounter has results" do
+      encounter = round_one.first
+      encounter.update!(winner: encounter.team_1)
+
+      get admin_team_category_encounter_path(bracket_only, encounter)
+
+      expect(response.body).not_to include("swap-team__form")
+    end
+
+    it "renders no swap controls on a final (round 2)" do
+      final = bracket_only.bracket_encounters.find_by(round: 2)
+
+      get admin_team_category_encounter_path(bracket_only, final)
+
+      expect(response.body).not_to include("swap-team__form")
+    end
+  end
+
   describe "the encounter _summary partial" do
     def render_summary(encounter)
       ApplicationController.render(partial: "admin/encounters/summary", locals: {encounter: encounter})

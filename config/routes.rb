@@ -48,6 +48,7 @@ Rails.application.routes.draw do
         member do
           post :lineup
           post :daihyosen
+          post :swap_team
         end
         resources :team_fights, only: [] do
           resources :team_fight_points, only: [:create, :destroy]
