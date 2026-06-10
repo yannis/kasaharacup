@@ -124,6 +124,25 @@ RSpec.describe Encounter do
       )
     end
 
+    it "broadcasts a tree replace when a bracket encounter's team changes" do
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      encounter = create(:encounter, team_category: tc, team_1: a, team_2: b, round: 1, position: 1)
+      allow(ActionCable.server).to receive(:broadcast)
+
+      ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
+      begin
+        encounter.update!(team_2: create(:team, team_category: tc))
+      ensure
+        ActiveJob::Base.queue_adapter.perform_enqueued_jobs = false
+      end
+
+      expect(ActionCable.server).to have_received(:broadcast).with(
+        kind_of(String),
+        include("encounter_tree_team_category_#{tc.id}")
+      )
+    end
+
     it "does not broadcast the tree for a pool encounter" do
       a = create(:team, team_category: tc)
       b = create(:team, team_category: tc)
@@ -136,6 +155,34 @@ RSpec.describe Encounter do
         job[:args].to_s.include?("encounter_tree_team_category_")
       }
       expect(tree_jobs).to be_empty
+    end
+  end
+
+  describe "bye propagation to children" do
+    let(:category) { create(:team_category, pool_size: nil) }
+    let(:bye) { category.bracket_encounters.where(round: 1).detect(&:bye?) }
+    let(:fight) { category.bracket_encounters.where(round: 1).detect { |e| !e.bye? } }
+    let(:final) { category.bracket_encounters.find_by(round: 2) }
+
+    before do
+      create_list(:team, 3, team_category: category)
+      TeamCategoryBracketBuilder.new(category, random: Random.new(1)).call
+    end
+
+    it "re-seeds the round-2 slot when the bye occupant changes" do
+      replacement = fight.team_1
+      bye.assign_team_to_slot(bye.bye_slot, replacement)
+
+      slot = (final.parent_encounter_1_id == bye.id) ? 1 : 2
+      expect(final.reload.public_send(:"team_#{slot}_id")).to eq replacement.id
+    end
+
+    it "does not touch the child slot when a non-bye encounter's team changes" do
+      outsider = create(:team, team_category: category)
+      slot = (final.parent_encounter_1_id == fight.id) ? 1 : 2
+      fight.assign_team_to_slot(1, outsider)
+
+      expect(final.reload.public_send(:"team_#{slot}_id")).to be_nil
     end
   end
 

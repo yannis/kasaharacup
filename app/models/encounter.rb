@@ -17,8 +17,13 @@ class Encounter < ApplicationRecord
 
   after_update :propagate_winner_to_children, if: :saved_change_to_winner_id?
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?
-  after_update_commit :broadcast_bracket_tree,
-    if: -> { saved_change_to_winner_id? && pool_number.blank? }
+  after_update :propagate_bye_to_children, if: :bye_occupant_changed?
+  # Winner changes AND slot-occupant changes (admin swaps, bye re-seeding)
+  # redraw the tree; pool encounters never do.
+  after_update_commit :broadcast_bracket_tree, if: -> {
+    pool_number.blank? &&
+      (saved_change_to_winner_id? || saved_change_to_team_1_id? || saved_change_to_team_2_id?)
+  }
 
   delegate :team_size, to: :team_category
 
@@ -114,6 +119,11 @@ class Encounter < ApplicationRecord
     TeamPoolStandings.persist_ranks!(teams: pool_teams, encounters: pool_encounters)
   end
 
+  def children
+    self.class.where(team_category_id: team_category_id)
+      .where("parent_encounter_1_id = :id OR parent_encounter_2_id = :id", id: id)
+  end
+
   # Wipe the previous occupant's data on side `slot`: kenshi, that side's
   # fight_points (they are keyed by fighter_side, NOT by kenshi, so they would
   # otherwise be counted for the new team), and the now-stale per-bout outcome.
@@ -137,15 +147,24 @@ class Encounter < ApplicationRecord
     )
   end
 
-  private def children
-    self.class.where(team_category_id: team_category_id)
-      .where("parent_encounter_1_id = :id OR parent_encounter_2_id = :id", id: id)
-  end
-
   private def propagate_winner_to_children
     children.find_each do |child|
       slot = (child.parent_encounter_1_id == id) ? 1 : 2
       child.assign_team_to_slot(slot, winner)
+    end
+  end
+
+  # A bye advances via bye_team, never winner_id, so the winner-propagation
+  # callback can't keep round 2 current when a bye's occupant changes (admin
+  # slot swap, or a pooled re-resolve). Mirror it for byes.
+  private def bye_occupant_changed?
+    (saved_change_to_team_1_id? || saved_change_to_team_2_id?) && winner_id.nil? && bye?
+  end
+
+  private def propagate_bye_to_children
+    children.find_each do |child|
+      slot = (child.parent_encounter_1_id == id) ? 1 : 2
+      child.assign_team_to_slot(slot, bye_team)
     end
   end
 
