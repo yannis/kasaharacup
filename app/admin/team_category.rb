@@ -11,8 +11,8 @@ ActiveAdmin.register TeamCategory do
       f.input :name
       f.input :description_en
       f.input :description_fr
-      f.input :pool_size
-      f.input :out_of_pool
+      f.input :pool_size, hint: "Blank or 1 = bracket-only (teams go straight to the elimination bracket)."
+      f.input :out_of_pool, hint: "Qualifiers per pool; ignored for bracket-only categories."
       f.input :min_age
       f.input :max_age
       f.input :gender_restriction,
@@ -97,9 +97,15 @@ ActiveAdmin.register TeamCategory do
     if category.bracket_encounters.any?
       panel "Bracket" do
         div do
-          span(link_to("Update bracket", generate_bracket_admin_team_category_path(category), method: :post))
-          span " | "
-          rebuild_confirm = "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
+          unless category.bracket_only?
+            span(link_to("Update bracket", generate_bracket_admin_team_category_path(category), method: :post))
+            span " | "
+          end
+          rebuild_confirm = if category.bracket_only?
+            "Redraw the bracket? Scores are lost."
+          else
+            "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
+          end
           span(link_to("Force rebuild", generate_bracket_admin_team_category_path(category, rebuild: 1),
             method: :post, data: {confirm: rebuild_confirm}))
         end
@@ -109,12 +115,21 @@ ActiveAdmin.register TeamCategory do
   end
 
   member_action :generate_pools, method: :post do
-    TeamCategory.find(params[:id]).set_team_pools
-    redirect_to admin_team_category_path(params[:id]), notice: "Pools generated." # rubocop:disable Rails/I18nLocaleTexts
+    category = TeamCategory.find(params[:id])
+    if category.bracket_only?
+      return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
+    end
+
+    category.set_team_pools
+    redirect_to admin_team_category_path(category), notice: "Pools generated." # rubocop:disable Rails/I18nLocaleTexts
   end
 
   member_action :generate_pool_encounters, method: :post do
     category = TeamCategory.find(params[:id])
+    if category.bracket_only?
+      return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
+    end
+
     PoolEncounterGenerator.new(category).call
     redirect_to admin_team_category_path(category), notice: "Pool encounters generated." # rubocop:disable Rails/I18nLocaleTexts
   end
@@ -125,12 +140,12 @@ ActiveAdmin.register TeamCategory do
     redirect_to admin_team_category_path(category), notice: "Bracket generated." # rubocop:disable Rails/I18nLocaleTexts
   end
 
-  action_item :generate_pools, only: :show do
+  action_item :generate_pools, only: :show, if: proc { !resource.bracket_only? } do
     link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
       method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
   end
 
-  action_item :generate_pool_encounters, only: :show do
+  action_item :generate_pool_encounters, only: :show, if: proc { !resource.bracket_only? } do
     link_to "Generate pool encounters", generate_pool_encounters_admin_team_category_path(team_category),
       method: :post
   end

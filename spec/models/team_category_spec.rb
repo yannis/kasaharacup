@@ -44,6 +44,14 @@ RSpec.describe TeamCategory do
     end
   end
 
+  describe "#bracket_only?" do
+    it "is true when pool_size is nil or 1, false above" do
+      expect(build(:team_category, pool_size: nil).bracket_only?).to be true
+      expect(build(:team_category, pool_size: 1).bracket_only?).to be true
+      expect(build(:team_category, pool_size: 2).bracket_only?).to be false
+    end
+  end
+
   describe "Validations" do
     let(:cup) { create(:cup) }
 

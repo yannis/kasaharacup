@@ -25,6 +25,12 @@ class TeamCategory < ApplicationRecord
     "#{name} (#{cup.year})"
   end
 
+  # No pool phase: teams go straight into the elimination bracket. The <= 1
+  # threshold matches TeamPooler, which clears pools for these categories.
+  def bracket_only?
+    pool_size.to_i <= 1
+  end
+
   def team_pools
     teams.where.not(pool_number: nil).group_by(&:pool_number).sort.map do |number, pool_teams|
       TeamPool.new(number: number, teams: pool_teams)

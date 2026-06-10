@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe "Admin team category brackets" do
   let(:cup) { create(:cup) }
-  let(:category) { create(:team_category, cup: cup, pool_size: 1, out_of_pool: 1) }
+  let(:category) { create(:team_category, cup: cup, pool_size: 3, out_of_pool: 1) }
   let(:admin) { create(:user, :admin) }
 
   before { sign_in admin }
@@ -67,6 +67,53 @@ RSpec.describe "Admin team category brackets" do
       post generate_bracket_admin_team_category_path(category, rebuild: 1)
 
       expect(category.bracket_encounters.pluck(:id)).not_to match_array(original_ids)
+    end
+  end
+
+  describe "bracket-only category" do
+    let(:bracket_only) { create(:team_category, cup: cup, pool_size: nil) }
+
+    it "generates a bracket straight from teams" do
+      create_list(:team, 4, team_category: bracket_only)
+
+      post generate_bracket_admin_team_category_path(bracket_only)
+
+      expect(bracket_only.bracket_encounters.where(round: 1).count).to eq 2
+      expect(bracket_only.bracket_encounters.where(round: 1).pluck(:team_1_pool_number).uniq).to eq [nil]
+    end
+
+    it "refuses pool generation server-side" do
+      post generate_pools_admin_team_category_path(bracket_only)
+
+      expect(response).to redirect_to(admin_team_category_path(bracket_only))
+      expect(flash[:alert]).to be_present
+    end
+
+    it "refuses pool encounter generation server-side" do
+      post generate_pool_encounters_admin_team_category_path(bracket_only)
+
+      expect(response).to redirect_to(admin_team_category_path(bracket_only))
+      expect(flash[:alert]).to be_present
+      expect(bracket_only.encounters).to be_empty
+    end
+
+    it "hides pool action items and the Update bracket link" do
+      create_list(:team, 4, team_category: bracket_only)
+      TeamCategoryBracketBuilder.new(bracket_only).call
+
+      get admin_team_category_path(bracket_only)
+
+      expect(response.body).not_to include("Generate pools")
+      expect(response.body).not_to include("Generate pool encounters")
+      expect(response.body).not_to include("Update bracket")
+      expect(response.body).to include("Force rebuild")
+    end
+
+    it "keeps pool actions for a pooled category" do
+      get admin_team_category_path(category)
+
+      expect(response.body).to include("Generate pools")
+      expect(response.body).to include("Generate pool encounters")
     end
   end
 end

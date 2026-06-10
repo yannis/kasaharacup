@@ -4,6 +4,11 @@
 # rank-major list of Slot(pool_number, pool_rank, payload), returns the round-1
 # pairing as [slot_or_nil, slot_or_nil] pairs (nil = a bye). Domain-agnostic:
 # callers build the slots and turn the resulting pairs into their own records.
+#
+# ASSUMES complete rank layers: every pool_number it is fed appears at every
+# pool_rank in the input (the pooled builder guarantees this). Sparse input —
+# e.g. bracket-only slot lists — breaks assign_halves balance and select_byes
+# uniqueness; that mode uses BracketOnlySeeder instead.
 class BracketSeeder
   Slot = Data.define(:pool_number, :pool_rank, :payload)
 

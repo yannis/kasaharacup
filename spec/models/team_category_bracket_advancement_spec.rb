@@ -6,7 +6,7 @@ require "rails_helper"
 RSpec.describe "Team bracket advancement past round 1" do # rubocop:disable RSpec/DescribeClass
   let(:cup) { create(:cup) }
   # team_size must be in [3, 5] (TeamCategory validation), so teams field 3 members.
-  let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 1, out_of_pool: 1) }
+  let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 3, out_of_pool: 1) }
 
   def ranked_team(pool_number)
     team = create(:team, team_category: category, pool_number: pool_number, pool_rank: 1)

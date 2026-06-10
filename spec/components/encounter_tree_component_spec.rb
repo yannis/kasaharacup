@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe EncounterTreeComponent, type: :component do
-  let(:tc) { create(:team_category, pool_size: 1, out_of_pool: 1) }
+  let(:tc) { create(:team_category, pool_size: 3, out_of_pool: 1) }
 
   def ranked_team(pool_number)
     create(:team, team_category: tc, pool_number: pool_number, pool_rank: 1)

@@ -1,24 +1,28 @@
 # frozen_string_literal: true
 
-# Builds a single-elimination bracket of Encounters for a TeamCategory from its
-# pool standings (teams.pool_number / pool_rank, populated by
-# TeamPoolStandings#persist_ranks!). Mirrors IndividualCategoryBracketBuilder but
-# operates on Teams/Encounters, and FORWARD-PROPAGATES resolved teams into child
-# slots (see Encounter#assign_team_to_slot) rather than resolving lazily on read.
+# Builds a single-elimination bracket of Encounters for a TeamCategory. Pooled
+# categories seed from pool standings (teams.pool_number / pool_rank via
+# BracketSeeder); bracket-only categories (TeamCategory#bracket_only?) draw
+# directly from teams via BracketOnlySeeder, fully resolved at creation with
+# no pool metadata. Mirrors IndividualCategoryBracketBuilder but operates on
+# Teams/Encounters, and FORWARD-PROPAGATES resolved teams into child slots
+# (see Encounter#assign_team_to_slot) rather than resolving lazily on read.
 class TeamCategoryBracketBuilder
-  def initialize(category, rebuild_started: false)
+  def initialize(category, rebuild_started: false, random: Random.new)
     @category = category
     @rebuild_started = rebuild_started
+    @random = random
   end
 
   def call
-    return [] if slot_specs.empty?
+    return [] if first_round_pairs.empty?
 
     category.transaction do
       if category.bracket_encounters.empty?
         create_new_bracket
       elsif rebuild_started
-        category.bracket_encounters.destroy_all
+        # Higher rounds hold FKs to their parents; destroy children first.
+        category.bracket_encounters.order(round: :desc).destroy_all
         create_new_bracket
       else
         update_existing_bracket
@@ -27,7 +31,7 @@ class TeamCategoryBracketBuilder
     category.bracket_encounters.bracket_order.to_a
   end
 
-  private attr_reader :category, :rebuild_started
+  private attr_reader :category, :rebuild_started, :random
 
   private def create_new_bracket
     first_round = create_first_round_encounters
@@ -35,7 +39,7 @@ class TeamCategoryBracketBuilder
   end
 
   private def create_first_round_encounters
-    BracketSeeder.new(slot_specs).first_round_pairs.map.with_index(1) do |(slot_1, slot_2), position|
+    first_round_pairs.map.with_index(1) do |(slot_1, slot_2), position|
       attrs = {
         number: position,
         round: 1,
@@ -91,6 +95,22 @@ class TeamCategoryBracketBuilder
 
     team = teams_by_slot[[pool_number, pool_rank]]
     encounter.assign_team_to_slot(slot, team)
+  end
+
+  private def first_round_pairs
+    @first_round_pairs ||= if category.bracket_only?
+      bracket_only_pairs
+    else
+      BracketSeeder.new(slot_specs).first_round_pairs
+    end
+  end
+
+  # Bracket-only round-1 slots carry no pool metadata; wrapping teams in
+  # nil-filled Slots keeps create_first_round_encounters shared between modes.
+  private def bracket_only_pairs
+    BracketOnlySeeder.new(category.teams.order(:id), random: random).first_round_pairs.map do |pair|
+      pair.map { |team| team && BracketSeeder::Slot.new(pool_number: nil, pool_rank: nil, payload: team) }
+    end
   end
 
   private def slot_specs
