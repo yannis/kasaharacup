@@ -43,6 +43,18 @@ RSpec.describe "Admin encounters" do
     expect(encounter.team_fights.order(:position).map(&:kenshi_1_id)).to eq members.map(&:id)
   end
 
+  it "keeps a blank middle slot at its position instead of moving it last" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    members = Array.new(3) { member(t1) }
+
+    # The middle dropdown is left unselected ("—"), so it arrives as an empty string.
+    post lineup_admin_team_category_encounter_path(tc, encounter),
+      params: {team_id: t1.id, kenshi_ids: [members[0].id, "", members[2].id]}
+
+    expect(encounter.team_fights.order(:position).map(&:kenshi_1_id))
+      .to eq [members[0].id, nil, members[2].id]
+  end
+
   it "scores a bout and re-derives the encounter winner" do
     encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
     fight = create(:team_fight, encounter: encounter, kenshi_1: member(t1), kenshi_2: member(t2))

@@ -60,11 +60,12 @@ module Admin
       redirect_to admin_team_category_path(@team_category), alert: e.message
     end
 
-    # The lineup form selects use include_blank, so unselected (forfeit) positions
-    # arrive as empty strings; drop them so a short lineup is treated as trailing
-    # forfeits rather than failing the team-membership check on a "0" id.
+    # The lineup form sends one value per position in order, so the array index
+    # IS the position. Unselected (forfeit) slots use include_blank and arrive as
+    # empty strings; map them to nil rather than dropping them, so a blank keeps
+    # its position instead of letting later fighters shift up to fill the gap.
     private def lineup_kenshi_ids
-      Array(params[:kenshi_ids]).compact_blank
+      Array(params[:kenshi_ids]).map(&:presence)
     end
 
     private def set_team_category

@@ -46,6 +46,23 @@ RSpec.describe EncounterLineup do
     expect(last.reload.winner_id).to eq a.last.id # forfeit win
   end
 
+  it "keeps a blank middle position in place instead of shifting fighters up" do
+    m = members(t1, 3)
+    described_class.new(encounter).assign(t1, [m[0].id, nil, m[2].id])
+
+    fights = encounter.team_fights.order(:position)
+    expect(fights.map(&:kenshi_1_id)).to eq [m[0].id, nil, m[2].id]
+  end
+
+  it "clears a previously filled position when it is re-submitted blank" do
+    m = members(t1, 3)
+    described_class.new(encounter).assign(t1, m.map(&:id))
+    described_class.new(encounter).assign(t1, [m[0].id, nil, m[2].id])
+
+    fights = encounter.team_fights.order(:position)
+    expect(fights.map(&:kenshi_1_id)).to eq [m[0].id, nil, m[2].id]
+  end
+
   it "selects a subset when a team has more members than team_size" do
     six = members(t1, 6) # team_size is 3
     chosen = six.first(3)

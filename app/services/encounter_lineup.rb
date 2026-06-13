@@ -13,7 +13,10 @@ class EncounterLineup
   end
 
   def assign(team, kenshi_ids)
-    kenshi_ids = kenshi_ids.compact.map(&:to_i)
+    # Index i maps to position i+1; a nil/blank entry is a forfeit at THAT
+    # position, so keep it (don't compact) — compacting would slide every later
+    # fighter up a slot and push the gap to the end.
+    kenshi_ids = kenshi_ids.map { |id| id.presence&.to_i }
     slot = slot_for(team)
     validate!(team, kenshi_ids)
 
@@ -54,9 +57,13 @@ class EncounterLineup
 
   private def validate!(team, kenshi_ids)
     raise InvalidLineup, "too many members" if kenshi_ids.size > @team_size
-    raise InvalidLineup, "duplicate members" if kenshi_ids.uniq.size != kenshi_ids.size
 
-    on_team = team.kenshis.where(id: kenshi_ids).pluck(:id)
-    raise InvalidLineup, "member not on team" if (kenshi_ids - on_team).any?
+    # Blank slots (nil) are forfeits, not fighters: exclude them from the
+    # duplicate and membership checks so several gaps don't read as duplicates.
+    present = kenshi_ids.compact
+    raise InvalidLineup, "duplicate members" if present.uniq.size != present.size
+
+    on_team = team.kenshis.where(id: present).pluck(:id)
+    raise InvalidLineup, "member not on team" if (present - on_team).any?
   end
 end
