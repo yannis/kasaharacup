@@ -69,7 +69,11 @@ class EncounterComponent < ViewComponent::Base
   # blanks — are never overridden by a suggestion.
   def suggestions
     @suggestions ||= [1, 2].index_with do |slot|
-      next nil unless admin # only the editable (admin) dropdowns use a prefill
+      # A prefill only appears where we also persist it (auto_seed) — otherwise
+      # picking the already-suggested fighter would no-op (no change event) and
+      # the bout would never be saved. The pool list, which renders editors but
+      # does not auto-seed, keeps its dropdowns blank as before.
+      next nil unless admin && @auto_seed
       next nil if encounter.public_send(:"lineup_#{slot}_set?")
 
       EncounterLineupSuggestion.new(encounter).for_slot(slot)

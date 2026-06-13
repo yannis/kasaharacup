@@ -59,7 +59,7 @@ RSpec.describe EncounterComponent, type: :component do
       EncounterLineup.new(previous).assign(t1, order.map(&:id))
 
       fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
-      render_inline(described_class.new(encounter: fresh, admin: true))
+      render_inline(described_class.new(encounter: fresh, admin: true, auto_seed: true))
 
       pos1 = page.find("#encounter_#{fresh.id}_position_1 .pool-match__side--fighter_1 select")
       expect(pos1.find("option[selected]").text).to eq order.first.full_name
@@ -74,7 +74,7 @@ RSpec.describe EncounterComponent, type: :component do
       fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
       # This encounter's own lineup sets position 2 to a deliberate forfeit.
       EncounterLineup.new(fresh).assign(t1, [roster[0].id, nil, roster[2].id])
-      render_inline(described_class.new(encounter: fresh.reload, admin: true))
+      render_inline(described_class.new(encounter: fresh.reload, admin: true, auto_seed: true))
 
       pos2 = page.find("#encounter_#{fresh.id}_position_2 .pool-match__side--fighter_1 select")
       expect(pos2).to have_no_css("option[selected]") # stays the blank "—"
