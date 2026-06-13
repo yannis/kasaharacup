@@ -23,6 +23,15 @@ RSpec.describe "Admin encounters" do
     expect(response).to redirect_to(admin_team_category_encounter_path(tc, encounter))
   end
 
+  it "renders a pool encounter without the bracket panel frame or Close button" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2, pool_number: 1)
+
+    get admin_team_category_encounter_path(tc, encounter)
+
+    expect(response.body).not_to include("encounter_panel_team_category_")
+    expect(response.body).not_to include("encounter-panel#close")
+  end
+
   it "sets a team's lineup, creating bouts" do
     encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
     members = Array.new(3) { member(t1) }
@@ -174,7 +183,7 @@ RSpec.describe "Admin encounters" do
       post swap_team_admin_team_category_encounter_path(bracket_only, first),
         params: {slot: 1, team_id: moving_in.id}
 
-      expect(response).to redirect_to(admin_team_category_encounter_path(bracket_only, first))
+      expect(response).to redirect_to(admin_team_category_path(bracket_only))
       expect(flash[:notice]).to be_present
       expect(first.reload.team_1).to eq moving_in
     end
@@ -186,7 +195,7 @@ RSpec.describe "Admin encounters" do
       post swap_team_admin_team_category_encounter_path(bracket_only, first),
         params: {slot: 1, team_id: second.team_1.id}
 
-      expect(response).to redirect_to(admin_team_category_encounter_path(bracket_only, first))
+      expect(response).to redirect_to(admin_team_category_path(bracket_only))
       expect(flash[:alert]).to include("recorded results")
       expect(first.reload.team_1).not_to eq second.team_1
     end

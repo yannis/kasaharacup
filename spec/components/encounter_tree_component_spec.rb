@@ -18,10 +18,23 @@ RSpec.describe EncounterTreeComponent, type: :component do
 
     expect(page).to have_text(a.name)
     expect(page).to have_text(b.name)
-    # The link targets the enclosing tree frame (no _top) so the encounter swaps
-    # in place; the encounter show renders a matching frame + "Back to tree".
+    # The link targets the encounter panel frame below the tree (no _top) so the
+    # editor opens beneath the bracket; the encounter show renders that frame.
     expect(page).to have_link("Encounter 1")
     expect(page).to have_no_css('a[data-turbo-frame="_top"]')
+  end
+
+  it "targets the encounter panel frame so the bracket stays visible on click" do
+    ranked_team(1)
+    ranked_team(2)
+    TeamCategoryBracketBuilder.new(tc).call
+
+    render_inline(described_class.new(team_category: tc, admin: true))
+
+    expect(page).to have_css(
+      %(a[data-turbo-frame="encounter_panel_team_category_#{tc.id}"]),
+      text: "Encounter 1"
+    )
   end
 
   it "shows a 'Waiting for encounter N' placeholder for an unresolved round-2 slot" do

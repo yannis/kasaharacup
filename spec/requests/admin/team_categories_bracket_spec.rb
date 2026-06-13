@@ -41,10 +41,24 @@ RSpec.describe "Admin team category brackets" do
 
       expect(response.body).to include("encounter_tree_team_category_#{category.id}")
     end
+
+    it "renders an empty encounter panel frame below the tree" do
+      create(:team, team_category: category, pool_number: 1, pool_rank: 1)
+      create(:team, team_category: category, pool_number: 2, pool_rank: 1)
+      TeamCategoryBracketBuilder.new(category).call
+
+      get admin_team_category_path(category)
+
+      # Assert the frame element itself, not just the id string — the tree's
+      # card links already carry it as a data-turbo-frame attribute value.
+      expect(response.body).to match(
+        %r{<turbo-frame [^>]*id="encounter_panel_team_category_#{category.id}"\s*>}
+      )
+    end
   end
 
-  describe "GET a bracket encounter (framed in the tree)" do
-    it "renders the encounter inside the tree frame with a back-to-tree link" do
+  describe "GET a bracket encounter (framed in the panel below the tree)" do
+    it "renders the encounter inside the panel frame with a Close button" do
       create(:team, team_category: category, pool_number: 1, pool_rank: 1)
       create(:team, team_category: category, pool_number: 2, pool_rank: 1)
       TeamCategoryBracketBuilder.new(category).call
@@ -52,8 +66,13 @@ RSpec.describe "Admin team category brackets" do
 
       get admin_team_category_encounter_path(category, encounter)
 
-      expect(response.body).to include("encounter_tree_team_category_#{category.id}")
-      expect(response.body).to include("Back to tree")
+      expect(response.body).to match(
+        %r{<turbo-frame [^>]*id="encounter_panel_team_category_#{category.id}"}
+      )
+      expect(response.body).to match(
+        %r{<button[^>]*data-action="encounter-panel#close"[^>]*>Close</button>}
+      )
+      expect(response.body).not_to include("Back to tree")
     end
   end
 

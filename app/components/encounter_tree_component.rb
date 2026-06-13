@@ -95,4 +95,8 @@ class EncounterTreeComponent < ViewComponent::Base
   private def tree_dom_id
     helpers.dom_id(team_category, :encounter_tree)
   end
+
+  private def panel_dom_id
+    helpers.dom_id(team_category, :encounter_panel)
+  end
 end

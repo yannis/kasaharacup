@@ -1,7 +1,7 @@
 <%# Draw-correction controls for a bracket-only round-1 encounter: swap a
     slot's occupant with any other round-1 occupant. data: {turbo: false}
-    forces a full page load so the persistent flash renders outside the
-    encounter tree frame. %>
+    forces a full page load back to the category page, where the flash renders
+    above the updated bracket (the form sits inside the encounter panel frame). %>
 <% swap = EncounterTeamSwap.new(encounter) # rubocop:disable Lint/UselessAssignment %>
 <% swappable_slots = [1, 2].select { |slot| swap.swappable?(slot) } # rubocop:disable Lint/UselessAssignment %>
 <% if swappable_slots.any? %>

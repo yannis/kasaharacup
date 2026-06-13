@@ -110,6 +110,11 @@ ActiveAdmin.register TeamCategory do
             method: :post, data: {confirm: rebuild_confirm}))
         end
         render EncounterTreeComponent.new(team_category: category, admin: true)
+        # Encounter editors load here (tree cards target this frame); kept as a
+        # sibling of the tree frame so tree broadcasts can't wipe an open editor.
+        text_node helpers.turbo_frame_tag(
+          helpers.dom_id(category, :encounter_panel), autoscroll: true
+        )
       end
     end
   end

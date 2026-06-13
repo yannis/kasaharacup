@@ -32,7 +32,8 @@
             <% else %>
               <article class="competition-tree__match" style="<%= match_style(encounter) %>">
                 <div class="competition-tree__match-header">
-                  <%= link_to "Encounter #{display_number(encounter)}", encounter_path(encounter) %>
+                  <%= link_to "Encounter #{display_number(encounter)}", encounter_path(encounter),
+                        data: {turbo_frame: panel_dom_id} %>
                   <% if (line = score_line(encounter)) %>
                     <span class="competition-tree__admin-summary"><%= line %></span>
                   <% end %>
