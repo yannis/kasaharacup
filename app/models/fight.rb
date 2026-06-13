@@ -2,6 +2,7 @@
 
 class Fight < ApplicationRecord
   include ActionView::RecordIdentifier
+  include Scorable
 
   belongs_to :individual_category
   belongs_to :winner, polymorphic: true, foreign_type: "fighter_type", optional: true
@@ -9,8 +10,6 @@ class Fight < ApplicationRecord
   belongs_to :parent_fight_2, class_name: "Fight", optional: true
   belongs_to :fighter_1, polymorphic: true, foreign_type: "fighter_type", optional: true
   belongs_to :fighter_2, polymorphic: true, foreign_type: "fighter_type", optional: true
-
-  has_many :fight_points, -> { order(:position) }, dependent: :destroy
 
   validates :number, presence: true
   validates :round, presence: true, if: -> { pool_number.blank? }
@@ -74,15 +73,6 @@ class Fight < ApplicationRecord
     [fighter_1, fighter_2, resolved_fighter_1, resolved_fighter_2, winner, bye_fighter].compact
   end
 
-  def points_for(slot)
-    side = (slot == 1) ? "fighter_1" : "fighter_2"
-    fight_points.select { |point| point.fighter_side == side }
-  end
-
-  def first_scoring_point
-    fight_points.reject { |point| point.kind == "hansoku" }.min_by(&:position)
-  end
-
   def resolved_fighter_1
     fighter_1 || parent_fight_1&.winner_or_bye
   end
@@ -121,35 +111,25 @@ class Fight < ApplicationRecord
     winner&.full_name
   end
 
-  # Derives a match's outcome from its recorded points: the side with more
-  # non-hansoku points wins. Equal points score a draw in a pool match (where
-  # draws are allowed) and stay unresolved in a bracket match; a match with no
-  # points is left unresolved. The winner is the resolved fighter on the leading
-  # side, so a bracket winner advances to the next round. Admins can still
-  # override the result; the override holds until the next point change.
-  # Returns true when the outcome actually changed (and was persisted), false
-  # when it was already up to date — the caller uses this to avoid a redundant
-  # standings refresh.
-  def recompute_outcome_from_points!
-    scored_1 = scoring_points_count("fighter_1")
-    scored_2 = scoring_points_count("fighter_2")
-
-    outcome =
-      if scored_1 > scored_2
-        {winner_id: resolved_fighter_1&.id, draw: false}
-      elsif scored_2 > scored_1
-        {winner_id: resolved_fighter_2&.id, draw: false}
-      elsif pool_number.present? && (scored_1.positive? || scored_2.positive?)
-        {winner_id: nil, draw: true}
-      else
-        {winner_id: nil, draw: false}
-      end
-
-    return false if winner_id == outcome[:winner_id] && draw == outcome[:draw]
-
-    update!(outcome)
-    true
+  # --- Scorable hooks (preserve current individual-fight behavior) ---
+  def scoring_fighter(slot)
+    public_send(:"resolved_fighter_#{slot}")
   end
+
+  def forfeit
+    nil # individual fights have no default/forfeit concept
+  end
+
+  def tie_outcome(scored_1, scored_2)
+    if pool_number.present? && (scored_1.positive? || scored_2.positive?)
+      {winner_id: nil, draw: true}
+    else
+      {winner_id: nil, draw: false}
+    end
+  end
+
+  # refresh_after_points is also a Scorable hook (defined below alongside
+  # refresh_pool_standings).
 
   # Recomputes/persists the pool standings and broadcasts the refreshed panel.
   # Driven from FightPoint's after_commit so the refresh always lands
@@ -164,8 +144,10 @@ class Fight < ApplicationRecord
     broadcast_pool_panel
   end
 
-  private def scoring_points_count(side)
-    fight_points.where(fighter_side: side).where.not(kind: "hansoku").count
+  # Refresh downstream state when a point did not change the outcome. For an
+  # individual fight this is the pool-standings panel (a no-op for bracket fights).
+  def refresh_after_points
+    refresh_pool_standings
   end
 
   private def broadcast_competition_tree

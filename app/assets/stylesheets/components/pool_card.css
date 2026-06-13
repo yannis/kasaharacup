@@ -103,6 +103,29 @@
   flex-direction: row-reverse;
 }
 
+/* Drag handle for swapping fighters between positions within one team column.
+   The dropdowns stay the primary (and accessible) way to set a lineup; this is
+   a shortcut on top. */
+.pool-match__grip {
+  color: #A6A29D;
+  cursor: grab;
+  flex: none;
+  font-size: 0.875rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.pool-match__grip:active {
+  cursor: grabbing;
+}
+
+/* Highlight the card a dragged fighter would land on. */
+.pool-match__row--drop {
+  border-radius: 0.25rem;
+  outline: 2px dashed #de7012;
+  outline-offset: 1px;
+}
+
 .pool-match__name {
   color: #181512;
   flex: 1;
@@ -112,6 +135,29 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* The fighter name slot doubles as the lineup picker: selecting a fighter
+   auto-submits that team's lineup. */
+.pool-match__select {
+  background: #fff;
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  color: #181512;
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 0;
+  padding: 0.1875rem 0.375rem;
+}
+
+.pool-match__select:hover {
+  border-color: #A6A29D;
+}
+
+.pool-match__select:focus {
+  border-color: #de7012;
+  outline: none;
 }
 
 .pool-match__points {
@@ -404,4 +450,312 @@
 
 .pool-standings__actions a {
   color: #de7012;
+}
+
+/* --- Team encounter panel ----------------------------------------------- */
+/* Reuses the .pool-match scoring layout above so a team encounter scores with
+   the same two-sided cards as an individual category pool. */
+
+.pool-encounter {
+  background: #fff;
+  border: 1px solid #E8E5E3;
+  border-radius: 0.375rem;
+  margin-block: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* The <summary> is the encounter's header on the pool page and reads as a
+   scoreboard: each team name heads its column of fighters, with the score and
+   outcome centered beneath. The horizontal padding matches a card's content box
+   (1px border + 0.75rem padding) so the names line up with the columns below. */
+.pool-encounter > summary {
+  column-gap: 0.5rem;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+  padding: 0 calc(0.75rem + 1px);
+  position: relative;
+  row-gap: 0.125rem;
+}
+
+.pool-encounter > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Disclosure caret, positioned out of the grid flow so it never shifts the
+   team names off their columns. */
+.pool-encounter > summary::before {
+  color: #75716C;
+  content: "▸";
+  font-size: 0.75rem;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.pool-encounter[open] > summary::before {
+  content: "▾";
+}
+
+.encounter-summary__team {
+  color: #181512;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.encounter-summary__team--right {
+  text-align: right;
+}
+
+.encounter-summary__status {
+  color: #75716C;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.pool-encounter[open] > summary {
+  border-bottom: 1px solid #E8E5E3;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+}
+
+.encounter {
+  margin: 0;
+}
+
+.encounter__header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+/* On the pool page the <summary> is the encounter's header, so the panel's own
+   title would duplicate it — hide it there. The standalone encounter page has
+   no summary, so the title still shows. */
+.pool-encounter .encounter__header {
+  display: none;
+}
+
+.encounter__title {
+  color: #181512;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.encounter__tally {
+  color: #75716C;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.encounter__alert {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 0.375rem;
+  color: #991b1b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.encounter__verdict {
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+  padding: 0.375rem 0.625rem;
+}
+
+.encounter__verdict--win {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.encounter__verdict--tie {
+  background: #fef6ef;
+  color: #de7012;
+}
+
+.pool-match__verdict {
+  color: #75716C;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0.375rem 0 0;
+  text-align: center;
+}
+
+.pool-match__verdict--win {
+  color: #15803d;
+}
+
+.lineups {
+  display: grid;
+  gap: 0.625rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  margin-top: 0.75rem;
+}
+
+.lineup {
+  background: #fcfaf8;
+  border: 1px solid #E8E5E3;
+  border-radius: 0.375rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+}
+
+.lineup__title {
+  color: #75716C;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.lineup__slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.lineup__select {
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.375rem;
+  width: 100%;
+}
+
+.lineup__submit {
+  background: #de7012;
+  border: 1px solid #de7012;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3125rem 0.75rem;
+}
+
+.lineup__submit:not(.disabled):hover {
+  background: #d16a0f;
+}
+
+.daihyosen-form {
+  align-items: center;
+  background: #fef6ef;
+  border: 1px dashed #eb862e;
+  border-radius: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.daihyosen-form__title {
+  color: #44403A;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0 0.25rem 0 0;
+}
+
+.daihyosen-form__select {
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.daihyosen-form__vs {
+  color: #75716C;
+  font-size: 0.8125rem;
+}
+
+.daihyosen-form__submit {
+  background: #de7012;
+  border: 1px solid #de7012;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3125rem 0.625rem;
+}
+
+.daihyosen-form__submit:not(.disabled):hover {
+  background: #d16a0f;
+}
+
+/* Slot-swap forms: one per occupied side, aligned under that team's column
+   (same 1fr/1fr grid as .pool-match__sides). */
+.swap-team {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0.75rem;
+}
+
+.swap-team__form {
+  align-items: center;
+  background: #fef6ef;
+  border: 1px dashed #eb862e;
+  border-radius: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.swap-team__form--slot_1 {
+  grid-column: 1;
+}
+
+.swap-team__form--slot_2 {
+  grid-column: 2;
+  justify-content: flex-end;
+}
+
+.swap-team__label {
+  color: #44403A;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.swap-team__select {
+  border: 1px solid #D6D4D0;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.swap-team__submit {
+  background: #de7012;
+  border: 1px solid #de7012;
+  border-radius: 0.25rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3125rem 0.625rem;
+}
+
+.swap-team__submit:not(.disabled):hover {
+  background: #d16a0f;
 }

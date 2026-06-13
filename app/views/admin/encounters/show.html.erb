@@ -1,0 +1,17 @@
+<%# app/views/admin/encounters/show.html.erb %>
+<% if @encounter.pool_number.blank? %>
+  <%# Bracket encounter: render inside the panel frame that sits below the tree
+      on the category page, so the bracket stays visible while editing. The
+      encounter_panel controller scrolls this into view on load and the Close
+      button empties the frame client-side. %>
+  <%= turbo_frame_tag dom_id(@encounter.team_category, :encounter_panel) do %>
+    <button type="button" class="encounter__close-panel"
+        data-controller="encounter-panel" data-action="encounter-panel#close">Close</button>
+    <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>
+    <% if @encounter.team_category.bracket_only? && @encounter.round == 1 %>
+      <%= render "admin/encounters/swap_team", encounter: @encounter %>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>
+<% end %>

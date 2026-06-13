@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Team, as: "Team" do
-  permit_params :name, :cup, :team_category_id, :rank
+  permit_params :name, :cup, :team_category_id, :rank, :seed, :pool_number, :pool_position, :pool_rank
 
   controller do
     def scoped_collection
@@ -87,6 +87,7 @@ ActiveAdmin.register Team, as: "Team" do
       f.input :team_category, collection: TeamCategory.all.map { |tc| ["#{tc.name} (#{tc.cup})", tc.id] }
       f.input :name
       f.input :rank
+      f.input :seed, hint: "1 = champion … 4 = fourth medal; leave blank for unseeded"
     end
     f.actions
   end

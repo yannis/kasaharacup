@@ -11,8 +11,8 @@ ActiveAdmin.register TeamCategory do
       f.input :name
       f.input :description_en
       f.input :description_fr
-      f.input :pool_size
-      f.input :out_of_pool
+      f.input :pool_size, hint: "Blank or 1 = bracket-only (teams go straight to the elimination bracket)."
+      f.input :out_of_pool, hint: "Qualifiers per pool; ignored for bracket-only categories."
       f.input :min_age
       f.input :max_age
       f.input :gender_restriction,
@@ -84,6 +84,79 @@ ActiveAdmin.register TeamCategory do
         end
       end
     end
+    category_team_pools = category.team_pools
+    if category.pool_size.to_i > 1 && category_team_pools.any?
+      panel "Pools" do
+        category_team_pools.each do |pool|
+          div do
+            render TeamPoolComponent.new(team_category: category, pool_number: pool.number, admin: true)
+          end
+        end
+      end
+    end
+    if category.bracket_encounters.any?
+      panel "Bracket" do
+        div do
+          unless category.bracket_only?
+            span(link_to("Update bracket", generate_bracket_admin_team_category_path(category), method: :post))
+            span " | "
+          end
+          rebuild_confirm = if category.bracket_only?
+            "Redraw the bracket? Scores are lost."
+          else
+            "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
+          end
+          span(link_to("Force rebuild", generate_bracket_admin_team_category_path(category, rebuild: 1),
+            method: :post, data: {confirm: rebuild_confirm}))
+        end
+        render EncounterTreeComponent.new(team_category: category, admin: true)
+        # Encounter editors load here (tree cards target this frame); kept as a
+        # sibling of the tree frame so tree broadcasts can't wipe an open editor.
+        # The editor scrolls itself into view on load (encounter_panel controller).
+        text_node helpers.turbo_frame_tag(helpers.dom_id(category, :encounter_panel))
+      end
+    end
+  end
+
+  member_action :generate_pools, method: :post do
+    category = TeamCategory.find(params[:id])
+    if category.bracket_only?
+      return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
+    end
+
+    category.set_team_pools
+    redirect_to admin_team_category_path(category), notice: "Pools generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  member_action :generate_pool_encounters, method: :post do
+    category = TeamCategory.find(params[:id])
+    if category.bracket_only?
+      return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
+    end
+
+    PoolEncounterGenerator.new(category).call
+    redirect_to admin_team_category_path(category), notice: "Pool encounters generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  member_action :generate_bracket, method: :post do
+    category = TeamCategory.find(params[:id])
+    TeamCategoryBracketBuilder.new(category, rebuild_started: params[:rebuild].present?).call
+    redirect_to admin_team_category_path(category), notice: "Bracket generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  action_item :generate_pools, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
+      method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
+  end
+
+  action_item :generate_pool_encounters, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "Generate pool encounters", generate_pool_encounters_admin_team_category_path(team_category),
+      method: :post
+  end
+
+  action_item :generate_bracket, only: :show do
+    link_to "Generate bracket", generate_bracket_admin_team_category_path(team_category),
+      method: :post
   end
 
   member_action :pdf do
@@ -104,6 +177,10 @@ ActiveAdmin.register TeamCategory do
 
   action_item :new_document, only: :show do
     link_to("New document", new_admin_team_category_document_path(team_category))
+  end
+
+  action_item :encounters, only: :show do
+    link_to "Encounters", admin_team_category_encounters_path(team_category)
   end
 
   # collection_action :pdfs do

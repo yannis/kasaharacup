@@ -44,6 +44,17 @@ Rails.application.routes.draw do
     resources :team_categories do
       resources :documents
       resources :videos
+      resources :encounters, only: [:index, :new, :create, :show] do
+        member do
+          post :lineup
+          post :daihyosen
+          post :swap_team
+        end
+        resource :lineup_seed, only: :create, module: :encounters
+        resources :team_fights, only: [] do
+          resources :team_fight_points, only: [:create, :destroy]
+        end
+      end
     end
     resources :individual_categories do
       post :generate_bracket, on: :member, to: "competition_trees#generate_bracket"
