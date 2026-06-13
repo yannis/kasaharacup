@@ -63,6 +63,16 @@ RSpec.describe EncounterLineup do
     expect(fights.map(&:kenshi_1_id)).to eq [m[0].id, nil, m[2].id]
   end
 
+  it "swaps two fighters when their positions are re-submitted exchanged" do
+    m = members(t1, 3)
+    described_class.new(encounter).assign(t1, m.map(&:id))
+    # Drag-to-reorder posts the same ids with positions 1 and 3 exchanged.
+    described_class.new(encounter).assign(t1, [m[2].id, m[1].id, m[0].id])
+
+    expect(encounter.team_fights.order(:position).map(&:kenshi_1_id))
+      .to eq [m[2].id, m[1].id, m[0].id]
+  end
+
   it "selects a subset when a team has more members than team_size" do
     six = members(t1, 6) # team_size is 3
     chosen = six.first(3)

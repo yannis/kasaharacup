@@ -19,8 +19,23 @@
 
       <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
             ("pool-match__side--winner" if winner_here)] do %>
-        <div class="pool-match__row">
-          <% if admin && !fight.daihyosen? %>
+        <% reorderable = admin && !fight.daihyosen? # rubocop:disable Lint/UselessAssignment %>
+        <%# A side is locked once the bout has points and this side holds a fighter:
+            swapping would rewrite that side and orphan the recorded result (same
+            rule EncounterLineup enforces). Locked sides get no drag handle and
+            reject drops; blank sides stay valid drop targets. %>
+        <% side_locked = kenshi && fight.fight_points.any? # rubocop:disable Lint/UselessAssignment %>
+        <%= tag.div class: "pool-match__row",
+              data: (reorderable ? {
+                reorder_form: lineup_form_id(encounter, team),
+                reorder_locked: side_locked.to_s,
+                action: "dragover->lineup#dragOver dragleave->lineup#dragLeave drop->lineup#drop"
+              } : {}) do %>
+          <% if reorderable %>
+            <% if kenshi && !side_locked %>
+              <span class="pool-match__grip" draggable="true" aria-hidden="true" title="Drag to swap fighters"
+                    data-action="dragstart->lineup#dragStart dragend->lineup#dragEnd">⠿</span>
+            <% end %>
             <%= select_tag "kenshi_ids[]",
                   options_from_collection_for_select(team_kenshis[team.id], :id, :full_name, kenshi&.id),
                   include_blank: "—",
@@ -47,7 +62,7 @@
               <% end %>
             <% end %>
           </ol>
-        </div>
+        <% end %>
         <% if admin && kenshi %>
           <div class="pool-match__buttons">
             <% point_codes.each do |kind, code| %>

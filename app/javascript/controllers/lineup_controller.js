@@ -35,4 +35,59 @@ export default class extends Controller {
       console.error('lineup submit error:', error);
     }
   }
+
+  // --- Drag-to-reorder (swap) ----------------------------------------------
+  // Each fighter card has a drag handle. Dropping one fighter onto another card
+  // IN THE SAME TEAM COLUMN swaps just those two picks — swap, not insert: only
+  // the two slots change, everyone else stays put. We exchange the two <select>
+  // values and fire one change; both selects share the team's form, so submit()
+  // posts the whole reordered lineup in a single request.
+  dragStart(event) {
+    this.source = event.target.closest('[data-reorder-form]');
+    const { dataTransfer } = event;
+    dataTransfer.effectAllowed = 'move';
+    dataTransfer.setData('text/plain', ''); // Firefox needs a payload to drag
+  }
+
+  dragEnd() {
+    this.source = null;
+    this.element
+      .querySelectorAll('.pool-match__row--drop')
+      .forEach((row) => row.classList.remove('pool-match__row--drop'));
+  }
+
+  dragOver(event) {
+    if (!this.canDrop(event.currentTarget)) return;
+    event.preventDefault(); // a preventDefault'd dragover is what permits the drop
+    event.currentTarget.classList.add('pool-match__row--drop');
+  }
+
+  dragLeave(event) {
+    event.currentTarget.classList.remove('pool-match__row--drop');
+  }
+
+  drop(event) {
+    const target = event.currentTarget;
+    target.classList.remove('pool-match__row--drop');
+    if (!this.canDrop(target)) return;
+    event.preventDefault();
+
+    const from = this.source.querySelector('select');
+    const to = target.querySelector('select');
+    this.source = null;
+    if (!from || !to) return;
+
+    [from.value, to.value] = [to.value, from.value];
+    from.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  // A drop is valid only onto another, unlocked card of the same team column.
+  canDrop(target) {
+    return (
+      this.source
+      && target !== this.source
+      && target.dataset.reorderLocked !== 'true'
+      && target.dataset.reorderForm === this.source.dataset.reorderForm
+    );
+  }
 }

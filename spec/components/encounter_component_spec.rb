@@ -50,6 +50,49 @@ RSpec.describe EncounterComponent, type: :component do
     expect(page).not_to have_text("Tied")
   end
 
+  describe "drag-to-reorder handles" do
+    it "gives each filled admin fighter card a drag handle and a same-team drop zone" do
+      a = roster(t1)
+      EncounterLineup.new(encounter).assign(t1, a.map(&:id))
+
+      render_inline(described_class.new(encounter: encounter.reload, admin: true))
+
+      # One drop-zone row per fighter_1 slot, all tagged with that team's form id.
+      expect(page).to have_css(
+        ".pool-match__side--fighter_1 .pool-match__row[data-reorder-form][data-reorder-locked='false']",
+        count: tc.team_size
+      )
+      expect(page).to have_css(
+        ".pool-match__side--fighter_1 .pool-match__grip[draggable='true']",
+        count: tc.team_size
+      )
+    end
+
+    it "omits the handle and locks the drop zone once a side has scored" do
+      a = roster(t1)
+      b = roster(t2)
+      EncounterLineup.new(encounter).assign(t1, a.map(&:id))
+      EncounterLineup.new(encounter).assign(t2, b.map(&:id))
+      scored = encounter.team_fights.order(:position).first
+      create(:fight_point, scorable: scored, fighter_side: "fighter_1", kind: "men")
+
+      render_inline(described_class.new(encounter: encounter.reload, admin: true))
+
+      scored_row = "#encounter_#{encounter.id}_position_1 .pool-match__side--fighter_1"
+      expect(page).to have_css("#{scored_row} .pool-match__row[data-reorder-locked='true']")
+      expect(page).to have_no_css("#{scored_row} .pool-match__grip")
+    end
+
+    it "shows no drag handles to non-admins" do
+      a = roster(t1)
+      EncounterLineup.new(encounter).assign(t1, a.map(&:id))
+
+      render_inline(described_class.new(encounter: encounter.reload, admin: false))
+
+      expect(page).to have_no_css(".pool-match__grip")
+    end
+  end
+
   describe "unresolved bracket slots" do
     let(:a) { create(:team, team_category: tc) }
 

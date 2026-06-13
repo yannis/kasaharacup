@@ -103,6 +103,29 @@
   flex-direction: row-reverse;
 }
 
+/* Drag handle for swapping fighters between positions within one team column.
+   The dropdowns stay the primary (and accessible) way to set a lineup; this is
+   a shortcut on top. */
+.pool-match__grip {
+  color: #A6A29D;
+  cursor: grab;
+  flex: none;
+  font-size: 0.875rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.pool-match__grip:active {
+  cursor: grabbing;
+}
+
+/* Highlight the card a dragged fighter would land on. */
+.pool-match__row--drop {
+  border-radius: 0.25rem;
+  outline: 2px dashed #de7012;
+  outline-offset: 1px;
+}
+
 .pool-match__name {
   color: #181512;
   flex: 1;
