@@ -33,7 +33,7 @@ class EncounterLineupSeeder
   end
 
   private def populated?(slot)
-    @encounter.team_fights.where(daihyosen: false)
-      .where.not("kenshi_#{slot}_id" => nil).exists?
+    column = (slot == 1) ? :kenshi_1_id : :kenshi_2_id
+    @encounter.team_fights.where(daihyosen: false).where.not(column => nil).exists?
   end
 end
