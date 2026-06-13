@@ -112,9 +112,8 @@ ActiveAdmin.register TeamCategory do
         render EncounterTreeComponent.new(team_category: category, admin: true)
         # Encounter editors load here (tree cards target this frame); kept as a
         # sibling of the tree frame so tree broadcasts can't wipe an open editor.
-        text_node helpers.turbo_frame_tag(
-          helpers.dom_id(category, :encounter_panel), autoscroll: true
-        )
+        # The editor scrolls itself into view on load (encounter_panel controller).
+        text_node helpers.turbo_frame_tag(helpers.dom_id(category, :encounter_panel))
       end
     end
   end
