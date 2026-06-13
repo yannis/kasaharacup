@@ -80,6 +80,37 @@ RSpec.describe EncounterLineup do
     expect(encounter.team_fights.order(:position).map(&:kenshi_1_id)).to eq chosen.map(&:id)
   end
 
+  describe "#seed" do
+    it "places the fighters without confirming the side" do
+      m = members(t1, 3)
+      described_class.new(encounter).seed(t1, m.map(&:id))
+
+      expect(encounter.team_fights.order(:position).map(&:kenshi_1_id)).to eq m.map(&:id)
+      expect(encounter.reload.lineup_1_set?).to be false
+    end
+
+    it "does not resolve forfeits even when both sides are seeded" do
+      a = members(t1, 3)
+      short = members(t2, 2)
+      described_class.new(encounter).seed(t1, a.map(&:id))
+      described_class.new(encounter).seed(t2, short.map(&:id))
+
+      # An unconfirmed seed must not hand out forfeit wins for the empty slot.
+      last = encounter.team_fights.order(:position).last
+      expect(last.winner_id).to be_nil
+      expect(encounter.reload.lineup_1_set?).to be false
+      expect(encounter.lineup_2_set?).to be false
+    end
+
+    it "still keeps a blank middle slot in place" do
+      m = members(t1, 3)
+      described_class.new(encounter).seed(t1, [m[0].id, nil, m[2].id])
+
+      expect(encounter.team_fights.order(:position).map(&:kenshi_1_id))
+        .to eq [m[0].id, nil, m[2].id]
+    end
+  end
+
   it "rejects a kenshi who is not on the team" do
     outsider = create(:kenshi, cup: tc.cup)
     expect {

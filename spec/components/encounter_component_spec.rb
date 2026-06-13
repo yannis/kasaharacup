@@ -50,6 +50,71 @@ RSpec.describe EncounterComponent, type: :component do
     expect(page).not_to have_text("Tied")
   end
 
+  describe "lineup prefill suggestions" do
+    it "pre-selects an unset side's dropdowns with the team's previous order" do
+      roster = roster(t1)
+      roster(t2)
+      order = [roster[2], roster[0], roster[1]]
+      previous = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+      EncounterLineup.new(previous).assign(t1, order.map(&:id))
+
+      fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+      render_inline(described_class.new(encounter: fresh, admin: true))
+
+      pos1 = page.find("#encounter_#{fresh.id}_position_1 .pool-match__side--fighter_1 select")
+      expect(pos1.find("option[selected]").text).to eq order.first.full_name
+    end
+
+    it "does not override a side whose lineup is already set, blanks included" do
+      roster = roster(t1)
+      roster(t2)
+      previous = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+      EncounterLineup.new(previous).assign(t1, roster.map(&:id))
+
+      fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+      # This encounter's own lineup sets position 2 to a deliberate forfeit.
+      EncounterLineup.new(fresh).assign(t1, [roster[0].id, nil, roster[2].id])
+      render_inline(described_class.new(encounter: fresh.reload, admin: true))
+
+      pos2 = page.find("#encounter_#{fresh.id}_position_2 .pool-match__side--fighter_1 select")
+      expect(pos2).to have_no_css("option[selected]") # stays the blank "—"
+    end
+  end
+
+  describe "auto-seed on open" do
+    it "emits a seed URL for a fresh, unset side when opened as an editor" do
+      roster(t1)
+      roster(t2)
+      fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+
+      render_inline(described_class.new(encounter: fresh, admin: true, auto_seed: true))
+
+      expect(page).to have_css(".encounter[data-lineup-seed-url-value]")
+    end
+
+    it "does not emit a seed URL when auto_seed is off (e.g. the pool list)" do
+      roster(t1)
+      roster(t2)
+      fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+
+      render_inline(described_class.new(encounter: fresh, admin: true, auto_seed: false))
+
+      expect(page).to have_no_css(".encounter[data-lineup-seed-url-value]")
+    end
+
+    it "does not emit a seed URL once the lineup is already populated" do
+      a = roster(t1)
+      b = roster(t2)
+      fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+      EncounterLineup.new(fresh).seed(t1, a.map(&:id)) # populated, not confirmed
+      EncounterLineup.new(fresh).assign(t2, b.map(&:id))
+
+      render_inline(described_class.new(encounter: fresh.reload, admin: true, auto_seed: true))
+
+      expect(page).to have_no_css(".encounter[data-lineup-seed-url-value]")
+    end
+  end
+
   describe "drag-to-reorder handles" do
     it "gives each filled admin fighter card a drag handle and a same-team drop zone" do
       a = roster(t1)

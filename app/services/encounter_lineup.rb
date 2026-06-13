@@ -12,7 +12,21 @@ class EncounterLineup
     @team_size = encounter.team_size
   end
 
+  # Confirm a side's lineup: write the fighters AND mark the side set, which is
+  # what lets the tie/daihyōsen prompt and forfeit resolution kick in.
   def assign(team, kenshi_ids)
+    write_side(team, kenshi_ids, confirm: true)
+  end
+
+  # Pre-fill a side's order without confirming it: the fighters land in their
+  # bouts (so they can be reordered or scored) but lineup_#{slot}_set stays
+  # false, so an unfought encounter doesn't read as a complete (tied) one. The
+  # admin confirms later by editing, dragging, or scoring.
+  def seed(team, kenshi_ids)
+    write_side(team, kenshi_ids, confirm: false)
+  end
+
+  private def write_side(team, kenshi_ids, confirm:)
     # Index i maps to position i+1; a nil/blank entry is a forfeit at THAT
     # position, so keep it (don't compact) — compacting would slide every later
     # fighter up a slot and push the gap to the end.
@@ -38,6 +52,8 @@ class EncounterLineup
 
         fight.update!("kenshi_#{slot}_id": new_kenshi_id)
       end
+      next unless confirm
+
       @encounter.update!("lineup_#{slot}_set": true)
       resolve_forfeits if @encounter.lineup_1_set? && @encounter.lineup_2_set?
     end

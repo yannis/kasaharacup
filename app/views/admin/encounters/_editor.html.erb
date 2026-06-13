@@ -1,6 +1,7 @@
 <%# app/views/admin/encounters/_editor.html.erb %>
 <%= turbo_stream_from [encounter, :panel] %>
-<%= render "admin/encounters/panel", encounter: encounter, admin: true %>
+<%= render "admin/encounters/panel", encounter: encounter, admin: true,
+      auto_seed: local_assigns.fetch(:auto_seed, false) %>
 
 <%# Hidden targets for the in-table fighter dropdowns: each side's <select> in the
     match table carries form="<lineup_form_id>" and name="kenshi_ids[]", so picking

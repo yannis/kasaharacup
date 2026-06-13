@@ -1,5 +1,5 @@
 <%# app/components/encounter_component/encounter_component.html.erb %>
-<div id="<%= dom_id(encounter) %>" class="encounter" data-controller="lineup">
+<%= tag.div id: dom_id(encounter), class: "encounter", data: container_data do %>
   <header class="encounter__header">
     <h2 class="encounter__title"><%= encounter.team_display_name(1) %> vs <%= encounter.team_display_name(2) %></h2>
     <span class="encounter__tally">
@@ -22,15 +22,17 @@
     <ol class="pool-matches">
       <% position_rows.each do |fight| %>
         <%= render "admin/encounters/match", encounter: encounter, fight: fight,
-              admin: admin, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis %>
+              admin: admin, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis,
+              suggestions: suggestions %>
       <% end %>
 
       <% if daihyosen %>
         <%= render "admin/encounters/match", encounter: encounter, fight: daihyosen,
-              admin: admin, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis %>
+              admin: admin, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis,
+              suggestions: suggestions %>
       <% end %>
     </ol>
   <% else %>
     <p class="encounter__waiting">Waiting for both teams to be decided.</p>
   <% end %>
-</div>
+<% end %>

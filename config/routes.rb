@@ -50,6 +50,7 @@ Rails.application.routes.draw do
           post :daihyosen
           post :swap_team
         end
+        resource :lineup_seed, only: :create, module: :encounters
         resources :team_fights, only: [] do
           resources :team_fight_points, only: [:create, :destroy]
         end

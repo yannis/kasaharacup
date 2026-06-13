@@ -6,11 +6,11 @@
   <%= turbo_frame_tag dom_id(@encounter.team_category, :encounter_panel), autoscroll: true do %>
     <button type="button" class="encounter__close-panel"
         data-controller="encounter-panel" data-action="encounter-panel#close">Close</button>
-    <%= render "admin/encounters/editor", encounter: @encounter %>
+    <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>
     <% if @encounter.team_category.bracket_only? && @encounter.round == 1 %>
       <%= render "admin/encounters/swap_team", encounter: @encounter %>
     <% end %>
   <% end %>
 <% else %>
-  <%= render "admin/encounters/editor", encounter: @encounter %>
+  <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>
 <% end %>

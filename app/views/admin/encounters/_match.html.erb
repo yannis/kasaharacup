@@ -36,8 +36,12 @@
               <span class="pool-match__grip" draggable="true" aria-hidden="true" title="Drag to swap fighters"
                     data-action="dragstart->lineup#dragStart dragend->lineup#dragEnd">⠿</span>
             <% end %>
+            <%# Fall back to the suggested pick only when this side has no real
+                kenshi yet, so a saved lineup (even a deliberate blank) is shown
+                as-is. The suggestion is unsaved until the admin edits a slot. %>
+            <% selected_id = kenshi&.id || suggestions&.dig(slot)&.[](fight.position - 1) # rubocop:disable Lint/UselessAssignment %>
             <%= select_tag "kenshi_ids[]",
-                  options_from_collection_for_select(team_kenshis[team.id], :id, :full_name, kenshi&.id),
+                  options_from_collection_for_select(team_kenshis[team.id], :id, :full_name, selected_id),
                   include_blank: "—",
                   form: lineup_form_id(encounter, team),
                   class: "pool-match__select",

@@ -11,6 +11,39 @@ import { Turbo } from '@hotwired/turbo-rails';
 // FormData(form) includes the <select>s that the table associates with this
 // form via their `form=` attribute, plus the hidden team_id and CSRF token.
 export default class extends Controller {
+  static values = { seedUrl: String };
+
+  // A freshly-opened editor with an unset side carries a seed URL: POST once to
+  // lay down the suggested order (persisted but unconfirmed) so the fighters
+  // become real and draggable. The response morphs the panel without the seed
+  // URL, so a reconnect after the morph won't fire again; clearing the value is
+  // a belt-and-braces guard against re-entrancy before the morph lands.
+  connect() {
+    if (this.hasSeedUrlValue && this.seedUrlValue) this.seed();
+  }
+
+  async seed() {
+    const url = this.seedUrlValue;
+    this.seedUrlValue = '';
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'text/vnd.turbo-stream.html',
+          'X-CSRF-Token': csrfToken || '',
+        },
+      });
+      if (!response.ok) {
+        console.error('lineup seed failed:', response.status, await response.text());
+        return;
+      }
+      Turbo.renderStreamMessage(await response.text());
+    } catch (error) {
+      console.error('lineup seed error:', error);
+    }
+  }
+
   async submit(event) {
     const { form } = event.target;
     if (!form) return;
