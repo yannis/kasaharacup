@@ -218,7 +218,7 @@ GEM
     hashdiff (1.2.1)
     highline (3.1.2)
       reline
-    honeybadger (6.7.0)
+    honeybadger (6.9.0)
       logger
       ostruct
     htmlbeautifier (1.4.3)
