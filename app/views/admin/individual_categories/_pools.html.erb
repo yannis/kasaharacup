@@ -1,0 +1,12 @@
+<%# The pools container — extracted so the admin show page and the
+    pool-membership controller render it identically. Replacing the whole
+    container (rather than appending a single card) keeps the new-pool stream
+    idempotent: the acting admin is subscribed to the same broadcast stream it
+    renders to, and an append would otherwise be applied twice. %>
+<%= tag.div id: "individual_pools_#{category.id}" do %>
+  <% category.pools.sort_by(&:number).each do |pool| %>
+    <div>
+      <%= render PoolComponent.new(category: category, pool_number: pool.number, admin: true, pool: pool) %>
+    </div>
+  <% end %>
+<% end %>

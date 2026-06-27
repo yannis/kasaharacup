@@ -87,8 +87,8 @@ class PoolStandings
     @sanbon_fights ||= fights.reject(&:tiebreaker)
   end
 
-  private def tiebreaker_fights
-    @tiebreaker_fights ||= fights.select(&:tiebreaker)
+  private def kettei_sen_fights
+    @kettei_sen_fights ||= fights.select(&:tiebreaker)
   end
 
   private def fighter_slot(fight, kenshi_id)
@@ -106,7 +106,7 @@ class PoolStandings
   # Returns participation_id => {rank:, tied:}. Every participation gets a
   # distinct sequential rank (so the value can seed a bracket), while `tied`
   # marks the rows whose order within their standings group is arbitrary —
-  # i.e. a genuine tie that no tiebreaker fight resolved.
+  # i.e. a genuine tie that no kettei-sen fight resolved.
   private def assign_ranks(rows)
     sorted = rows.sort_by(&CASCADE_KEY)
     groups = sorted.chunk_while { |a, b| CASCADE_KEY.call(a) == CASCADE_KEY.call(b) }.to_a
@@ -114,7 +114,7 @@ class PoolStandings
     ranking = {}
     cursor = 1
     groups.each do |group|
-      resolved = resolve_pair_with_tiebreaker(group)
+      resolved = resolve_pair_with_kettei_sen(group)
       tied = group.size > 1 && resolved.nil?
       (resolved || group).each do |row|
         ranking[row.participation.id] = {rank: cursor, tied: tied}
@@ -126,20 +126,20 @@ class PoolStandings
   end
 
   # Returns an ordered [winner, loser] array when a 2-way tie is resolved by
-  # a tiebreaker fight with a winner; returns nil otherwise (including for
-  # groups of 3+ and unresolved/draw tiebreakers).
-  private def resolve_pair_with_tiebreaker(group)
+  # a kettei-sen fight with a winner; returns nil otherwise (including for
+  # groups of 3+ and unresolved/draw kettei-sen).
+  private def resolve_pair_with_kettei_sen(group)
     return nil unless group.size == 2
 
     a, b = group
-    fight = tiebreaker_between(a.participation.kenshi_id, b.participation.kenshi_id)
+    fight = kettei_sen_between(a.participation.kenshi_id, b.participation.kenshi_id)
     return nil if fight.nil? || fight.winner_id.blank?
 
     (fight.winner_id == a.participation.kenshi_id) ? [a, b] : [b, a]
   end
 
-  private def tiebreaker_between(kenshi_a_id, kenshi_b_id)
-    tiebreaker_fights.find { |fight|
+  private def kettei_sen_between(kenshi_a_id, kenshi_b_id)
+    kettei_sen_fights.find { |fight|
       ids = [fight.fighter_1_id, fight.fighter_2_id]
       ids.include?(kenshi_a_id) && ids.include?(kenshi_b_id)
     }

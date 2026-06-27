@@ -3,9 +3,24 @@
     <%= helpers.turbo_stream_from category, :competition_tree %>
   <% end %>
 
-  <div class="pool-card">
-    <h3 class="pool-card__title">Pool <%= pool_number %> (total Dan: <%= pool&.total_dan %>)</h3>
+  <%= tag.div class: "pool-card", data: container_data do %>
+    <div class="pool-card__header">
+      <h3 class="pool-card__title">Pool <%= pool_number %> (total Dan: <%= pool&.total_dan %>)</h3>
+      <% if admin && participations.size >= 2 %>
+        <%= helpers.button_to regenerate_button_label,
+              helpers.regenerate_pool_fights_admin_individual_category_path(category),
+              method: :post,
+              params: {pool_number: pool_number},
+              class: "pool-card__reset",
+              form: {class: "pool-card__reset-form"},
+              data: regenerate_button_data %>
+      <% end %>
+    </div>
 
+    <%# Inline alert: the pool_fights / fight_points error flow re-renders THIS
+        card via Turbo Stream and surfaces its validation message here, so it must
+        stay in the card (a full-page load with an ambient flash shows it per card,
+        but those flows are all XHR). %>
     <% if helpers.flash[:alert].present? %>
       <p class="pool-card__alert" role="alert"><%= helpers.flash[:alert] %></p>
     <% end %>
@@ -25,15 +40,22 @@
           <th>Pts+</th>
           <th>Pts−</th>
           <th>Rank</th>
-          <% if admin %><th></th><% end %>
+          <% if admin %><th><span class="pool-standings__sr-only">Move</span></th><th></th><% end %>
         </tr>
       </thead>
       <tbody>
         <% standings_rows.each do |row| %>
           <% participation = row.participation # rubocop:disable Lint/UselessAssignment %>
           <% kenshi = participation.kenshi # rubocop:disable Lint/UselessAssignment %>
-          <tr>
+          <tr<% if admin %> data-participation-id="<%= participation.id %>"
+              data-move-url="<%= move_url(participation) %>"
+              data-from-pool="<%= pool_number %>"<% end %>>
             <td>
+              <% if admin %>
+                <span class="pool-standings__grip pool-match__grip" draggable="true"
+                      title="Drag to another pool"
+                      data-action="dragstart->pool-membership#dragStart">⠿</span>
+              <% end %>
               <% if kenshi %>
                 <%= helpers.link_to participation.full_name, helpers.admin_kenshi_path(kenshi) %>
               <% else %>
@@ -43,26 +65,11 @@
             <td><%= participation.grade %></td>
             <td><%= participation.club %></td>
             <td><%= kenshi&.age_at_cup %></td>
-            <td>
-              <% if admin %>
-                <%= helpers.best_in_place participation, :pool_number, as: :input,
-                      url: [:admin, participation],
-                      class: "best_in_place_short pool-standings__editable",
-                      place_holder: "—" %>
-              <% else %>
-                <%= participation.pool_number %>
-              <% end %>
-            </td>
-            <td>
-              <% if admin %>
-                <%= helpers.best_in_place participation, :pool_position, as: :input,
-                      url: [:admin, participation],
-                      class: "best_in_place_short pool-standings__editable",
-                      place_holder: "—" %>
-              <% else %>
-                <%= participation.pool_position %>
-              <% end %>
-            </td>
+            <%# pool_number / pool_position are read-only: the drag-and-drop move
+                tool (PoolMembershipMove) owns them and rebuilds the derived
+                fights/bracket. Inline editing here would bypass that. %>
+            <td><%= participation.pool_number %></td>
+            <td><%= participation.pool_position %></td>
             <td><%= row.wins %></td>
             <td><%= row.losses %></td>
             <td><%= row.hikiwake %></td>
@@ -82,6 +89,21 @@
               <% end %>
             </td>
             <% if admin %>
+              <td class="pool-standings__move">
+                <% others = other_pool_numbers # rubocop:disable Lint/UselessAssignment %>
+                <% if others.any? %>
+                  <select class="pool-standings__move-select"
+                          aria-label="Move <%= participation.full_name %> to another pool"
+                          data-action="change->pool-membership#moveViaSelect">
+                    <option value="">Move to…</option>
+                    <% others.each do |n| %>
+                      <option value="<%= n %>">Pool <%= n %></option>
+                    <% end %>
+                  </select>
+                <% end %>
+              </td>
+            <% end %>
+            <% if admin %>
               <td class="pool-standings__actions">
                 <%= helpers.link_to "Edit", helpers.edit_admin_participation_path(participation), data: {turbo_frame: "_top"} %>
               </td>
@@ -99,33 +121,23 @@
           <%= helpers.render "admin/pool_fights/match", category: category, fight: fight,
                 point_codes: point_codes, admin: admin, poster_names: category.pool_poster_names %>
         <% end %>
-        <% tiebreaker_fights.each do |fight| %>
+        <% kettei_sen_fights.each do |fight| %>
           <%= helpers.render "admin/pool_fights/match", category: category, fight: fight,
                 point_codes: point_codes, admin: admin, poster_names: category.pool_poster_names %>
         <% end %>
       </ol>
 
       <% if admin %>
-        <% tiebreaker_options = participations.filter_map { |p| [poster_name(p.kenshi), p.kenshi_id] if p.kenshi } %>
+        <% kettei_sen_options = participations.filter_map { |p| [poster_name(p.kenshi), p.kenshi_id] if p.kenshi } %>
         <%= helpers.form_with url: helpers.admin_individual_category_pool_fights_path(category),
               method: :post, class: "pool-add-tiebreaker" do |f| %>
           <%= f.hidden_field "pool_fight[pool_number]", value: pool_number %>
-          <%= f.select "pool_fight[fighter_1_id]", tiebreaker_options %>
+          <%= f.select "pool_fight[fighter_1_id]", kettei_sen_options %>
           <span>vs</span>
-          <%= f.select "pool_fight[fighter_2_id]", tiebreaker_options %>
-          <%= f.submit "Add tiebreaker", class: "pool-add-tiebreaker__submit" %>
+          <%= f.select "pool_fight[fighter_2_id]", kettei_sen_options %>
+          <%= f.submit "Add kettei-sen", class: "pool-add-tiebreaker__submit" %>
         <% end %>
       <% end %>
     <% end %>
-
-    <% if admin && participations.size >= 2 %>
-      <%= helpers.button_to regenerate_button_label,
-            helpers.regenerate_pool_fights_admin_individual_category_path(category),
-            method: :post,
-            params: {pool_number: pool_number},
-            class: "pool-card__reset",
-            form: {class: "pool-card__reset-form"},
-            data: regenerate_button_data %>
-    <% end %>
-  </div>
+  <% end %>
 <% end %>

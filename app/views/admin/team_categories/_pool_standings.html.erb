@@ -1,0 +1,70 @@
+<%# app/views/admin/team_categories/_pool_standings.html.erb %>
+<div id="team_pool_standings_<%= team_category.id %>_<%= pool_number %>">
+  <table class="pool-standings">
+    <thead>
+      <tr>
+        <th>Team</th><th>Rank</th>
+        <th>W</th><th>L</th><th>H</th>
+        <th>iW</th><th>iL</th><th>iH</th>
+        <th>Pts+</th><th>Pts−</th>
+        <% if admin %><th><span class="pool-standings__sr-only">Move</span></th><% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <%# Load team_pools once per render: it was previously re-queried on every
+          standings row (the move-select below), turning one card into K+1
+          grouping queries. The per-row move list derives from _pools in memory. %>
+      <% _pools = team_category.team_pools %>
+      <% _pool = _pools.find { |p| p.number == pool_number } %>
+      <% TeamPoolStandings.for(
+           teams: _pool&.teams || [],
+           encounters: team_category.encounters_by_pool_number.fetch(pool_number, [])
+         ).each do |row| %>
+        <tr<% if admin %> data-team-id="<%= row.team.id %>"
+            data-move-url="<%= admin_team_category_pool_membership_path(team_category, row.team) %>"
+            data-from-pool="<%= pool_number %>"<% end %>>
+          <td>
+            <% if admin %>
+              <span class="pool-standings__grip pool-match__grip" draggable="true"
+                    title="Drag to another pool"
+                    data-action="dragstart->pool-membership#dragStart">⠿</span>
+            <% end %>
+            <%= link_to row.team.name, [:admin, row.team] %>
+          </td>
+          <td class="pool-standings__rank">
+            <% if admin %>
+              <%= best_in_place row.team, :pool_rank, as: :input,
+                    url: [:admin, row.team],
+                    class: "best_in_place_short pool-standings__editable", place_holder: "—" %><%= content_tag(:span, "=", class: "pool-standings__tie", title: "Tied — adjust the rank if needed") if row.tied %>
+            <% else %>
+              <%= row.team.pool_rank %><%= "=" if row.tied %>
+            <% end %>
+          </td>
+          <td><%= row.team_wins %></td>
+          <td><%= row.team_losses %></td>
+          <td><%= row.team_hikiwake %></td>
+          <td><%= row.individual_wins %></td>
+          <td><%= row.individual_losses %></td>
+          <td><%= row.individual_hikiwake %></td>
+          <td><%= row.points_scored %></td>
+          <td><%= row.points_conceded %></td>
+          <% if admin %>
+            <td class="pool-standings__move">
+              <% others = _pools.map(&:number) - [pool_number] # rubocop:disable Lint/UselessAssignment %>
+              <% if others.any? %>
+                <select class="pool-standings__move-select"
+                        aria-label="Move <%= row.team.name %> to another pool"
+                        data-action="change->pool-membership#moveViaSelect">
+                  <option value="">Move to…</option>
+                  <% others.each do |n| %>
+                    <option value="<%= n %>">Pool <%= n %></option>
+                  <% end %>
+                </select>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

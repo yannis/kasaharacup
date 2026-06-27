@@ -106,6 +106,49 @@ RSpec.describe PoolComponent, type: :component do
 
     rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
 
-    expect(rendered.to_html).to include("Tiebreaker —")
+    expect(rendered.to_html).to include("Kettei-sen —")
+  end
+
+  describe "drag-and-drop wiring (admin)" do
+    it "makes the card a pool-membership drop target" do
+      add_kenshi(pool: 1, position: 1)
+
+      rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
+
+      expect(rendered.css(".pool-card[data-controller='pool-membership']")).to be_present
+      expect(rendered.to_html).to include("drop->pool-membership#drop")
+    end
+
+    it "marks each standings row draggable with its move URL and source pool" do
+      kenshi = add_kenshi(pool: 1, position: 1)
+      participation = category.participations.find_by(kenshi: kenshi)
+
+      rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
+
+      row = rendered.css("tr[data-participation-id='#{participation.id}']").first
+      expect(row).to be_present
+      expect(row["data-from-pool"]).to eq "1"
+      expect(row["data-move-url"]).to include("/pool_memberships/#{participation.id}")
+      expect(row.css(".pool-standings__grip[draggable='true']")).to be_present
+    end
+
+    it "offers a Move-to select listing the other pools" do
+      add_kenshi(pool: 1, position: 1)
+      add_kenshi(pool: 2, position: 1)
+
+      rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: true))
+
+      expect(rendered.css("select.pool-standings__move-select")).to be_present
+      expect(rendered.to_html).to include("Pool 2")
+    end
+
+    it "renders no drag wiring for the public view" do
+      add_kenshi(pool: 1, position: 1)
+
+      rendered = render_inline(described_class.new(category: category, pool_number: 1, admin: false))
+
+      expect(rendered.css("[data-controller='pool-membership']")).to be_empty
+      expect(rendered.css(".pool-standings__grip")).to be_empty
+    end
   end
 end

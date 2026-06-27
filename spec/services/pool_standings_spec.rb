@@ -17,8 +17,8 @@ RSpec.describe PoolStandings do
     fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
       fighter_1: kenshi_a, fighter_2: kenshi_b,
       tiebreaker: tiebreaker, draw: draw, winner: winner)
-    points_a.times { create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men") }
-    points_b.times { create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "men") }
+    points_a.times { create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men") }
+    points_b.times { create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "men") }
     fight
   end
 
