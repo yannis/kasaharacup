@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :fight_point do
-    fight
+    association :scorable, factory: :fight
     fighter_side { "fighter_1" }
     kind { "men" }
   end
