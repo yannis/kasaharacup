@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register TeamCategory do
-  permit_params :name, :pool_size, :out_of_pool, :min_age, :max_age, :gender_restriction,
+  permit_params :name, :team_size, :pool_size, :out_of_pool, :min_age, :max_age, :gender_restriction,
     :description_en, :description_fr, :cup_id
 
   form do |f|
@@ -11,8 +11,10 @@ ActiveAdmin.register TeamCategory do
       f.input :name
       f.input :description_en
       f.input :description_fr
-      f.input :pool_size
-      f.input :out_of_pool
+      f.input :team_size, as: :select, collection: [3, 5], include_blank: false,
+        hint: "Fighters per team (positional bouts per encounter)."
+      f.input :pool_size, hint: "Blank or 1 = bracket-only (teams go straight to the elimination bracket)."
+      f.input :out_of_pool, hint: "Qualifiers per pool; ignored for bracket-only categories."
       f.input :min_age
       f.input :max_age
       f.input :gender_restriction,
@@ -50,6 +52,7 @@ ActiveAdmin.register TeamCategory do
       row :cup
       row :description_en
       row :description_fr
+      row :team_size
       row :pool_size
       row :out_of_pool
       row :gender_restriction
@@ -84,6 +87,108 @@ ActiveAdmin.register TeamCategory do
         end
       end
     end
+    # Render the Pools panel for every pooled category, even before pools exist,
+    # so the unpooled-team / new-pool UI stays reachable for late registrants and
+    # initial pool creation. The _pools partial renders nothing when empty.
+    if category.pool_size.to_i > 1
+      panel "Pools" do
+        render partial: "admin/team_categories/pools", locals: {team_category: category}
+        # Late registrants (pool_number nil): drag onto a pool or use the
+        # per-row "Add to…" select. Renders an empty container when there are none.
+        render TeamPoolUnpooledComponent.new(team_category: category)
+      end
+    end
+    if category.bracket_encounters.any?
+      panel "Bracket" do
+        div do
+          # stream-link POSTs via fetch and renders the returned Turbo Stream in
+          # place, so the bracket rebuilds without a full-page navigation that
+          # would scroll back to the top. (A plain link here would be turned into
+          # a full-page form submit by ActiveAdmin's jquery_ujs.)
+          unless category.bracket_only?
+            span(link_to("Update bracket", generate_bracket_admin_team_category_path(category),
+              data: {controller: "stream-link", action: "stream-link#submit"}))
+            span " | "
+          end
+          rebuild_confirm = if category.bracket_only?
+            "Redraw the bracket? Scores are lost."
+          else
+            "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
+          end
+          span(link_to("Force rebuild", generate_bracket_admin_team_category_path(category, rebuild: 1),
+            data: {controller: "stream-link", action: "stream-link#submit",
+                   stream_link_confirm_value: rebuild_confirm}))
+          span " | "
+          span(link_to("Download PDF", bracket_pdf_admin_team_category_path(category)))
+        end
+        render EncounterTreeComponent.new(team_category: category, admin: true)
+        # Encounter editors load here (tree cards target this frame); kept as a
+        # sibling of the tree frame so tree broadcasts can't wipe an open editor.
+        # The editor scrolls itself into view on load (encounter_panel controller).
+        text_node helpers.turbo_frame_tag(helpers.dom_id(category, :encounter_panel))
+      end
+    end
+  end
+
+  member_action :generate_pools, method: :post do
+    category = TeamCategory.find(params[:id])
+    if category.bracket_only?
+      return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
+    end
+
+    category.set_team_pools
+    redirect_to admin_team_category_path(category), notice: "Pools generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  member_action :generate_pool_encounters, method: :post do
+    category = TeamCategory.find(params[:id])
+    if category.bracket_only?
+      return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
+    end
+
+    PoolEncounterGenerator.new(category).call
+    redirect_to admin_team_category_path(category), notice: "Pool encounters generated." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  member_action :generate_bracket, method: :post do
+    category = TeamCategory.find(params[:id])
+    TeamCategoryBracketBuilder.new(category, rebuild_started: params[:rebuild].present?).call
+    respond_to do |format|
+      # Swap just the bracket tree in place (stream-link fetches this) so the
+      # admin keeps their scroll position instead of a full-page redirect.
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          helpers.dom_id(category, :encounter_tree),
+          partial: "team_bracket_trees/team_bracket_tree",
+          locals: {team_category: category}
+        )
+      end
+      format.html { redirect_to admin_team_category_path(category), notice: "Bracket generated." } # rubocop:disable Rails/I18nLocaleTexts
+    end
+  end
+
+  action_item :generate_pools, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
+      method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
+  end
+
+  action_item :generate_pool_encounters, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "Generate pool encounters", generate_pool_encounters_admin_team_category_path(team_category),
+      method: :post
+  end
+
+  action_item :generate_bracket, only: :show do
+    link_to "Generate bracket", generate_bracket_admin_team_category_path(team_category),
+      method: :post
+  end
+
+  member_action :bracket_pdf do
+    @team_category = TeamCategory.find params[:id]
+    pdf = TeamCategoryBracketPdf.new(@team_category)
+    send_data pdf.render,
+      filename: "#{@team_category.name.parameterize(separator: "_")}_bracket.pdf",
+      type: "application/pdf",
+      disposition: "inline"
   end
 
   member_action :pdf do
@@ -104,6 +209,10 @@ ActiveAdmin.register TeamCategory do
 
   action_item :new_document, only: :show do
     link_to("New document", new_admin_team_category_document_path(team_category))
+  end
+
+  action_item :encounters, only: :show do
+    link_to "Encounters", admin_team_category_encounters_path(team_category)
   end
 
   # collection_action :pdfs do

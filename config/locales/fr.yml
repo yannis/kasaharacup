@@ -120,14 +120,23 @@ fr:
     competition_trees:
       generate_bracket:
         notice: Arbre de compétition généré
+    encounters:
+      create:
+        notice: Rencontre créée.
+      lineups:
+        update:
+          notice: Alignement enregistré.
+      team_swaps:
+        create:
+          notice: Équipes échangées.
     fights:
       update:
         notice: Combat mis à jour
     pool_fights:
       create:
-        alert: Choisissez deux kenshis différents de cette poule pour le barrage.
+        alert: Choisissez deux kenshis différents de cette poule pour le kettei-sen.
       destroy:
-        alert: Seuls les combats de barrage peuvent être supprimés. Utilisez Regénérer pour recréer les combats réguliers d'une poule.
+        alert: Seuls les combats de kettei-sen peuvent être supprimés. Utilisez Regénérer pour recréer les combats réguliers d'une poule.
       generate:
         notice: Combats de poule générés
       regenerate:

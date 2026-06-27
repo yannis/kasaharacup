@@ -44,6 +44,16 @@ Rails.application.routes.draw do
     resources :team_categories do
       resources :documents
       resources :videos
+      resources :pool_memberships, only: :update, module: :team_categories
+      resources :encounters, only: [:index, :new, :create, :show] do
+        resource :lineup, only: :update, module: :encounters
+        resource :team_swap, only: :create, module: :encounters
+        resource :lineup_seed, only: :create, module: :encounters
+        resource :daihyosen, only: :update, module: :encounters
+        resources :team_fights, only: [:update] do
+          resources :team_fight_points, only: [:create, :destroy]
+        end
+      end
     end
     resources :individual_categories do
       post :generate_bracket, on: :member, to: "competition_trees#generate_bracket"
@@ -55,6 +65,7 @@ Rails.application.routes.draw do
       resources :pool_fights, only: [:create, :update, :destroy] do
         resources :fight_points, only: [:create, :destroy]
       end
+      resources :pool_memberships, only: :update, module: :individual_categories
       resources :documents
       resources :videos
     end

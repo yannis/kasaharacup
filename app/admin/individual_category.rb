@@ -68,9 +68,9 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       row :out_of_pool
       row :gender_restriction
     end
-    if category.pools.present?
+    if category.pool_size.to_i > 1
       panel "Pools" do
-        if category.pool_fights.empty?
+        if category.pools.any? && category.pool_fights.empty?
           div do
             span link_to("Generate pool fights",
               generate_pool_fights_admin_individual_category_path(category),
@@ -78,9 +78,14 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
               data: {confirm: "Generate the cyclic match list for all pools?"})
           end
         end
-        category.pools.sort_by(&:number).each do |pool|
-          render PoolComponent.new(category: category, pool_number: pool.number, admin: true, pool: pool)
-        end
+        # Always rendered (even with zero pools) so the first new pool card can
+        # land. The pool-membership controller re-renders this same partial to
+        # add a new pool, so the container markup lives in one place.
+        render partial: "admin/individual_categories/pools", locals: {category: category}
+        # Late registrants (pool_number nil): drag onto a pool or use the
+        # per-row "Add to…" select. Renders an empty container when there are
+        # none, and lists every participant before any pool is generated.
+        render IndividualPoolUnpooledComponent.new(category: category)
       end
     end
 
@@ -106,7 +111,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       render CompetitionTreeComponent.new(category: category, admin: true)
     end
 
-    if category.participations.no_pool.present?
+    if category.pool_size.to_i <= 1 && category.participations.no_pool.present?
       panel "Participations without pool number" do
         table_for category.participations.no_pool do |participation|
           column :full_name do |participation|

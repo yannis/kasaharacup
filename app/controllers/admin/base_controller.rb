@@ -29,5 +29,31 @@ module Admin
         end
       end
     end
+
+    private def respond_with_encounter(encounter, notice: nil)
+      respond_to do |format|
+        format.html do
+          redirect_to admin_team_category_encounter_path(encounter.team_category, encounter),
+            notice: notice
+        end
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            helpers.dom_id(encounter),
+            EncounterComponent.new(encounter: encounter, admin: true, alert: flash[:alert]),
+            method: :morph
+          )
+        end
+      end
+    end
+
+    # Shared finders for the encounter-scoped controllers (daihyōsens, team
+    # fights, team-fight points), which are all nested under an encounter.
+    private def team_category
+      @team_category ||= TeamCategory.find(params.expect(:team_category_id))
+    end
+
+    private def encounter
+      @encounter ||= team_category.encounters.find(params.expect(:encounter_id))
+    end
   end
 end

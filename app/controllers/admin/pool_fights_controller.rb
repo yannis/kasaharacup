@@ -13,7 +13,7 @@ module Admin
       category = IndividualCategory.find(params.expect(:individual_category_id))
       permitted = params.expect(pool_fight: [:pool_number, :fighter_1_id, :fighter_2_id])
 
-      unless tiebreaker_fighters_valid?(category, permitted)
+      unless kettei_sen_fighters_valid?(category, permitted)
         flash.now[:alert] = t(".alert")
         respond_with_pool(category, permitted[:pool_number].to_i)
         return
@@ -75,7 +75,7 @@ module Admin
       respond_with_pool(category, pool_number, notice: "Pool fights regenerated.")
     end
 
-    private def tiebreaker_fighters_valid?(category, permitted)
+    private def kettei_sen_fighters_valid?(category, permitted)
       fighter_1_id = permitted[:fighter_1_id].to_i
       fighter_2_id = permitted[:fighter_2_id].to_i
       return false if fighter_1_id <= 0 || fighter_2_id <= 0
