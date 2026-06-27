@@ -16,6 +16,9 @@ module ActsAsCategory
 
     translate :description
 
+    # NOT memoized: regeneration paths (PoolMembershipMove -> PoolFightGenerator)
+    # reuse one category instance and re-read this after mutating pool
+    # membership, so a cached snapshot would regenerate from stale membership.
     def pools
       pools = []
       if pool_size.to_i > 1

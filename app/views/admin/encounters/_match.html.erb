@@ -1,0 +1,108 @@
+<%# app/views/admin/encounters/_match.html.erb %>
+<% first_scoring_point_id = fight.first_scoring_point&.id # rubocop:disable Lint/UselessAssignment %>
+<% row_id = fight.daihyosen? ? dom_id(fight) : "#{dom_id(encounter)}_position_#{fight.position}" # rubocop:disable Lint/UselessAssignment %>
+<li id="<%= row_id %>" class="pool-match <%= "pool-match--tiebreaker" if fight.daihyosen? %>">
+  <header class="pool-match__header">
+    <span class="pool-match__position">
+      <% if fight.daihyosen? %>
+        Daihyōsen
+      <% else %>
+        <%= TeamPosition.label(fight.position, encounter.team_size) %>
+      <% end %>
+    </span>
+    <%# Result rides the header line to save vertical space. The active Hikiwake
+        toggle already reads as the draw verdict, so only fall through to the
+        textual "hikiwake" when that button isn't shown (a points-tie, or a
+        non-admin viewer). %>
+    <% if admin && fight.hikiwake_eligible? %>
+      <%= button_to fight.draw ? "Hikiwake ✓" : "Hikiwake",
+            admin_team_category_encounter_team_fight_path(encounter.team_category, encounter, fight),
+            method: :patch,
+            params: {team_fight: {draw: !fight.draw}},
+            class: ["pool-match__hikiwake", ("pool-match__hikiwake--active" if fight.draw)],
+            form: {class: "pool-match__hikiwake-form", data: {turbo_stream: true}} %>
+    <% elsif fight.draw %>
+      <span class="pool-match__verdict">hikiwake</span>
+    <% elsif fight.winner %>
+      <span class="pool-match__verdict pool-match__verdict--win"><%= fight.winner.full_name %></span>
+    <% end %>
+  </header>
+
+  <div class="pool-match__sides">
+    <% [1, 2].each do |slot| %>
+      <% kenshi = fight.public_send(:"kenshi_#{slot}") # rubocop:disable Lint/UselessAssignment %>
+      <% side = (slot == 1) ? "fighter_1" : "fighter_2" # rubocop:disable Lint/UselessAssignment %>
+      <% team = teams[slot - 1] # rubocop:disable Lint/UselessAssignment %>
+      <% winner_here = kenshi && fight.winner_id == kenshi.id # rubocop:disable Lint/UselessAssignment %>
+
+      <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
+            ("pool-match__side--winner" if winner_here)] do %>
+        <% reorderable = admin && !fight.daihyosen? # rubocop:disable Lint/UselessAssignment %>
+        <%# Any present fighter is draggable, even one whose bout already has
+            points: reordering a scored bout resets it (EncounterLineup clears its
+            points). Blank sides stay valid drop targets. %>
+        <%= tag.div class: "pool-match__row",
+              data: (reorderable ? {
+                reorder_form: lineup_form_id(encounter, team),
+                action: "dragover->lineup#dragOver dragleave->lineup#dragLeave drop->lineup#drop"
+              } : {}) do %>
+          <% if reorderable %>
+            <% if kenshi %>
+              <span class="pool-match__grip" draggable="true" aria-hidden="true" title="Drag to swap fighters"
+                    data-action="dragstart->lineup#dragStart dragend->lineup#dragEnd">⠿</span>
+            <% end %>
+            <%# Fall back to the suggested pick only when this side has no real
+                kenshi yet, so a saved lineup (even a deliberate blank) is shown
+                as-is. The suggestion is unsaved until the admin edits a slot. %>
+            <% selected_id = kenshi&.id || suggestions&.dig(slot)&.[](fight.position - 1) # rubocop:disable Lint/UselessAssignment %>
+            <%= select_tag "kenshi_ids[]",
+                  options_from_collection_for_select(team_kenshis[team.id], :id, :full_name, selected_id),
+                  include_blank: "—",
+                  form: lineup_form_id(encounter, team),
+                  class: "pool-match__select",
+                  data: {action: "change->lineup#submit"} %>
+          <% elsif admin && fight.daihyosen? %>
+            <%= select_tag "kenshi_#{slot}_id",
+                  options_from_collection_for_select(team_kenshis[team.id], :id, :full_name, kenshi&.id),
+                  include_blank: "—",
+                  form: daihyosen_form_id(encounter),
+                  class: "pool-match__select",
+                  data: {action: "change->lineup#submit"} %>
+          <% else %>
+            <span class="pool-match__name"><%= kenshi&.full_name || "—" %></span>
+          <% end %>
+          <ol class="pool-match__points">
+            <% fight.points_for(slot).each do |point| %>
+              <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}",
+                    ("pool-match__point--first" if point.id == first_scoring_point_id)] do %>
+                <%= point.code %>
+                <% if admin %>
+                  <%= button_to "×",
+                        admin_team_category_encounter_team_fight_team_fight_point_path(
+                          encounter.team_category, encounter, fight, point
+                        ),
+                        method: :delete,
+                        class: "pool-match__point-remove",
+                        form: {class: "pool-match__point-remove-form", data: {turbo_stream: true}} %>
+                <% end %>
+              <% end %>
+            <% end %>
+          </ol>
+        <% end %>
+        <% if admin && kenshi %>
+          <div class="pool-match__buttons">
+            <% point_codes.each do |kind, code| %>
+              <%= button_to code,
+                    admin_team_category_encounter_team_fight_team_fight_points_path(
+                      encounter.team_category, encounter, fight
+                    ),
+                    params: {team_fight_point: {fighter_side: side, kind: kind}},
+                    class: ["pool-match__button", "pool-match__button--#{kind}"],
+                    form: {class: "pool-match__button-form", data: {turbo_stream: true}} %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</li>

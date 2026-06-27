@@ -1,0 +1,22 @@
+<%# app/views/admin/encounters/_editor.html.erb %>
+<%= turbo_stream_from [encounter, :panel] %>
+<%= render "admin/encounters/panel", encounter: encounter, admin: true,
+      auto_seed: local_assigns.fetch(:auto_seed, false) %>
+
+<%# Hidden targets for the in-table fighter dropdowns: each side's <select> in the
+    match table carries form="<lineup_form_id>" and name="kenshi_ids[]", so picking
+    a fighter auto-submits that team's whole lineup (see lineup_controller.js). %>
+<% [encounter.team_1, encounter.team_2].compact.each do |team| %>
+  <%= form_with url: admin_team_category_encounter_lineup_path(encounter.team_category, encounter),
+        method: :patch, id: lineup_form_id(encounter, team) do |f| %>
+    <%= f.hidden_field :team_id, value: team.id %>
+  <% end %>
+<% end %>
+
+<%# Hidden target the in-table daihyōsen rep dropdowns associate with via
+    form="<daihyosen_form_id>": picking a rep auto-PATCHes it (see
+    lineup_controller.js). Rendered only once the daihyōsen bout exists. %>
+<% if encounter.team_fights.any?(&:daihyosen?) %>
+  <%= form_with url: admin_team_category_encounter_daihyosen_path(encounter.team_category, encounter),
+        method: :patch, id: daihyosen_form_id(encounter) %>
+<% end %>

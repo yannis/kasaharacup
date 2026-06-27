@@ -7,7 +7,7 @@ RSpec.describe FightPoint do
     let(:fight_point) { build(:fight_point) }
 
     it do
-      expect(fight_point).to belong_to(:fight)
+      expect(fight_point).to belong_to(:scorable)
 
       side_values = {fighter_1: "fighter_1", fighter_2: "fighter_2"}
       expect(fight_point)
@@ -30,21 +30,21 @@ RSpec.describe FightPoint do
     let(:fight) { create(:fight) }
 
     it "starts at 1 for the first point on a fight" do
-      point = create(:fight_point, fight: fight)
+      point = create(:fight_point, scorable: fight)
 
       expect(point.position).to eq 1
     end
 
     it "increments per point across both sides to preserve the match timeline" do
-      first = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      second = create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "kote")
-      third = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "hansoku")
+      first = create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      second = create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "kote")
+      third = create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
 
       expect([first.position, second.position, third.position]).to eq [1, 2, 3]
     end
 
     it "respects an explicitly supplied position" do
-      point = create(:fight_point, fight: fight, position: 42)
+      point = create(:fight_point, scorable: fight, position: 42)
 
       expect(point.position).to eq 42
     end
@@ -54,28 +54,28 @@ RSpec.describe FightPoint do
     let(:fight) { create(:fight) }
 
     it "rejects a third non-hansoku point on the same side" do
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "kote")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "kote")
 
-      third = build(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "ippon")
+      third = build(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "ippon")
 
       expect(third).not_to be_valid
       expect(third.errors[:base]).to include("Fighter already has 2 non-hansoku points")
     end
 
     it "does not count hansoku toward the limit" do
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "hansoku")
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "hansoku")
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "hansoku")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
 
-      expect(described_class.where(fight: fight, fighter_side: "fighter_1").count).to eq 3
+      expect(described_class.where(scorable: fight, fighter_side: "fighter_1").count).to eq 3
     end
 
     it "tracks the limit independently for each side" do
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "kote")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "kote")
 
-      opponent_point = build(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "do")
+      opponent_point = build(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "do")
 
       expect(opponent_point).to be_valid
     end
@@ -94,13 +94,13 @@ RSpec.describe FightPoint do
     it "touches the fight when a point is created" do
       original = fight.updated_at
       travel(1.second) do
-        create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+        create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
       end
       expect(fight.reload.updated_at).to be > original
     end
 
     it "touches the fight when a point is destroyed" do
-      point = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+      point = create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
       original = fight.reload.updated_at
       travel(1.second) do
         point.destroy!

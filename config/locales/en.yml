@@ -116,14 +116,23 @@ en:
     competition_trees:
       generate_bracket:
         notice: Competition tree generated
+    encounters:
+      create:
+        notice: Encounter created.
+      lineups:
+        update:
+          notice: Lineup set.
+      team_swaps:
+        create:
+          notice: Teams swapped.
     fights:
       update:
         notice: Fight updated
     pool_fights:
       create:
-        alert: Pick two different kenshis from this pool for the tiebreaker.
+        alert: Pick two different kenshis from this pool for the kettei-sen.
       destroy:
-        alert: Only tiebreaker fights can be deleted. Use Regenerate to recreate a pool's regular fights.
+        alert: Only kettei-sen fights can be deleted. Use Regenerate to recreate a pool's regular fights.
       generate:
         notice: Pool fights generated
       regenerate:

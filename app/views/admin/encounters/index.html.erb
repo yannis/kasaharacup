@@ -1,0 +1,11 @@
+<%# app/views/admin/encounters/index.html.erb %>
+<%= link_to "New encounter", new_admin_team_category_encounter_path(@team_category) %>
+<ul>
+  <% @encounters.each do |encounter| %>
+    <li>
+      <%= link_to "#{encounter.team_display_name(1)} vs #{encounter.team_display_name(2)}",
+            admin_team_category_encounter_path(@team_category, encounter) %>
+      <%= "→ #{encounter.winner.name}" if encounter.winner %>
+    </li>
+  <% end %>
+</ul>

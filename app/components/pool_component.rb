@@ -36,7 +36,7 @@ class PoolComponent < ViewComponent::Base
     pool_fights.reject(&:tiebreaker).sort_by(&:number)
   end
 
-  private def tiebreaker_fights
+  private def kettei_sen_fights
     pool_fights.select(&:tiebreaker).sort_by { |f| [f.created_at.to_f, f.id] }
   end
 
@@ -46,6 +46,27 @@ class PoolComponent < ViewComponent::Base
 
   private def dom_id_for_pool
     helpers.pool_dom_id(category, pool_number)
+  end
+
+  # Admin cards are drop targets for the pool-membership drag-and-drop: a
+  # participation row dragged from another card drops here to join this pool.
+  private def container_data
+    return {} unless admin
+
+    {
+      controller: "pool-membership",
+      pool_membership_pool_number_value: pool_number,
+      action: "dragover->pool-membership#dragOver " \
+        "dragleave->pool-membership#dragLeave drop->pool-membership#drop"
+    }
+  end
+
+  private def move_url(participation)
+    helpers.admin_individual_category_pool_membership_path(category, participation)
+  end
+
+  private def other_pool_numbers
+    category.pools.map(&:number).sort - [pool_number]
   end
 
   private def point_codes
@@ -59,6 +80,6 @@ class PoolComponent < ViewComponent::Base
   private def regenerate_button_data
     return {} if pool_fights.empty?
 
-    {confirm: "This deletes every fight and tiebreaker for pool #{pool_number} and recreates them. Continue?"}
+    {confirm: "This deletes every fight and kettei-sen for pool #{pool_number} and recreates them. Continue?"}
   end
 end

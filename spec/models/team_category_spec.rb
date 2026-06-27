@@ -31,6 +31,27 @@ RSpec.describe TeamCategory do
     end
   end
 
+  describe "#bracket_encounters" do
+    it "returns only encounters with no pool_number" do
+      tc = create(:team_category)
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      pool = create(:encounter, team_category: tc, team_1: a, team_2: b, pool_number: 1)
+      bracket = create(:encounter, team_category: tc, team_1: a, team_2: b, round: 1, position: 1)
+
+      expect(tc.bracket_encounters).to include(bracket)
+      expect(tc.bracket_encounters).not_to include(pool)
+    end
+  end
+
+  describe "#bracket_only?" do
+    it "is true when pool_size is nil or 1, false above" do
+      expect(build(:team_category, pool_size: nil).bracket_only?).to be true
+      expect(build(:team_category, pool_size: 1).bracket_only?).to be true
+      expect(build(:team_category, pool_size: 2).bracket_only?).to be false
+    end
+  end
+
   describe "Validations" do
     let(:cup) { create(:cup) }
 
@@ -50,6 +71,23 @@ RSpec.describe TeamCategory do
       expect {
         build(:team_category, cup: cup, gender_restriction: "other")
       }.to raise_error(ArgumentError, /not a valid gender_restriction/)
+    end
+  end
+
+  describe "team_size" do
+    let(:cup) { create(:cup) }
+
+    it "defaults team_size to 5" do
+      expect(build(:team_category).team_size).to eq 5
+    end
+
+    it "accepts a team_size of 3 or 5" do
+      expect(build(:team_category, cup: cup, team_size: 3)).to be_valid
+      expect(build(:team_category, cup: cup, team_size: 5)).to be_valid
+    end
+
+    it "rejects any other team_size" do
+      expect(build(:team_category, cup: cup, team_size: 4)).not_to be_valid
     end
   end
 
@@ -102,6 +140,21 @@ RSpec.describe TeamCategory do
 
         it { expect(team_category.pools.size).to eq 8 }
       end
+    end
+  end
+
+  describe "#team_pools" do
+    it "groups teams by pool_number, ordered by pool_position, ignoring unpooled teams" do
+      tc = create(:team_category, pool_size: 3)
+      a = create(:team, team_category: tc, pool_number: 1, pool_position: 2)
+      b = create(:team, team_category: tc, pool_number: 1, pool_position: 1)
+      c = create(:team, team_category: tc, pool_number: 2, pool_position: 1)
+      create(:team, team_category: tc) # unpooled
+
+      pools = tc.team_pools
+      expect(pools.map(&:number)).to eq [1, 2]
+      expect(pools.first.teams).to eq [b, a]
+      expect(pools.last.teams).to eq [c]
     end
   end
 end

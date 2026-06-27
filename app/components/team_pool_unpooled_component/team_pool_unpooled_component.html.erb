@@ -1,0 +1,30 @@
+<%# Always-visible staging area: lists late registrants, and is itself a drop
+    zone — dropping a pooled team here removes it from its pool (see
+    pool_membership_controller#dropUnpool). %>
+<%= tag.div id: dom_id_for_unpooled, class: "pool-unpooled",
+      data: {controller: "pool-membership",
+             action: "dragover->pool-membership#dragOver " \
+               "dragleave->pool-membership#dragLeave drop->pool-membership#dropUnpool"} do %>
+  <h3 class="pool-unpooled__title">Unpooled teams</h3>
+  <% if teams.any? %>
+    <ul class="pool-unpooled__list">
+      <% teams.each do |team| %>
+        <li class="pool-unpooled__team" data-team-id="<%= team.id %>" data-move-url="<%= move_url(team) %>">
+          <span class="pool-unpooled__grip pool-match__grip" draggable="true"
+                title="Drag onto a pool" data-action="dragstart->pool-membership#dragStart">⠿</span>
+          <%= link_to team.name, [:admin, team], class: "pool-unpooled__name" %>
+          <select class="pool-standings__move-select" aria-label="Add <%= team.name %> to a pool"
+                  data-action="change->pool-membership#moveViaSelect">
+            <option value="">Add to…</option>
+            <% pool_numbers.each do |number| %>
+              <option value="<%= number %>">Pool <%= number %></option>
+            <% end %>
+            <option value="<%= next_pool_number %>">New pool (Pool <%= next_pool_number %>)</option>
+          </select>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="pool-unpooled__hint">Drag a team here to remove it from its pool.</p>
+  <% end %>
+<% end %>
