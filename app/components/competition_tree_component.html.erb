@@ -18,7 +18,7 @@
           <h3 class="competition-tree__round competition-tree__round-title" style="left: <%= match_left(fights.first) %>px;">Round <%= round_number %></h3>
 
           <% fights.each do |fight| %>
-            <% next unless render_fight?(fight) %>
+            <% next unless render_node?(fight) %>
 
             <% if fight.bye? %>
               <% bye_slot = fight.bye_slot %>

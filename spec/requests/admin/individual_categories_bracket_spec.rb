@@ -10,13 +10,15 @@ RSpec.describe "Admin individual category brackets" do
   before { sign_in admin }
 
   describe "GET /admin/individual_categories/:id" do
-    it "renders pool positions and pool ranks as editable in place" do
+    it "renders pool ranks as editable in place and pool positions read-only" do
       create_qualified_participation(pool_number: 1, pool_rank: 1)
 
       get admin_individual_category_path(category)
 
-      expect(response.body).to include("data-bip-attribute=\"pool_position\"")
+      # pool_rank stays inline-editable; pool_position is owned by the
+      # drag-and-drop move tool and is rendered read-only.
       expect(response.body).to include("data-bip-attribute=\"pool_rank\"")
+      expect(response.body).not_to include("data-bip-attribute=\"pool_position\"")
       expect(response.body).to include("/assets/admin-")
       expect(response.body).to include("type=\"module\"")
     end
@@ -70,8 +72,8 @@ RSpec.describe "Admin individual category brackets" do
       create_qualified_participation(pool_number: 2, pool_rank: 1)
       IndividualCategoryBracketBuilder.new(category).call
       fight = category.fights.first
-      create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-      create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "hansoku")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "hansoku")
 
       get competition_tree_pdf_admin_individual_category_path(category)
 

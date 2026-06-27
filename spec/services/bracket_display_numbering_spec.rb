@@ -57,6 +57,27 @@ RSpec.describe BracketDisplayNumbering do
     end
   end
 
+  describe "with team encounters" do
+    let(:tc) { create(:team_category) }
+
+    def team = create(:team, team_category: tc)
+
+    it "numbers encounters leaf-first, skipping byes" do
+      r1a = create(:encounter, team_category: tc, team_1: team, team_2: team, round: 1, position: 1, number: 1)
+      r1b = create(:encounter, team_category: tc, team_1: team, team_2: nil, round: 1, position: 2, number: 2)
+      final = create(:encounter, team_category: tc, round: 2, position: 1, number: 3,
+        parent_encounter_1: r1a, parent_encounter_2: r1b)
+
+      list = [r1a, r1b, final]
+      Encounter.preload_parents(list)
+      numbers = described_class.for(list)
+
+      expect(numbers[r1b.id]).to be_nil
+      expect(numbers[r1a.id]).to eq 1
+      expect(numbers[final.id]).to eq 2
+    end
+  end
+
   def loaded_fights
     fights = category.bracket_fights.bracket_order.to_a
     Fight.preload_parents(fights)

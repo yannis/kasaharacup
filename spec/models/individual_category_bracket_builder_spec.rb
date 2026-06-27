@@ -318,17 +318,17 @@ RSpec.describe IndividualCategoryBracketBuilder do
     # public path (a pool's ranks are spread across halves), so this exercises
     # the safety net directly.
     it "resolves a rest the greedy pass cannot pair without a clash" do
-      builder = described_class.new(category)
+      seeder = BracketSeeder.new([])
       slot = lambda do |pool, rank|
-        IndividualCategoryBracketBuilder::Slot.new(pool_number: pool, pool_rank: rank, participation: nil)
+        BracketSeeder::Slot.new(pool_number: pool, pool_rank: rank, payload: nil)
       end
       # pools [1, 2, 3, 2]: greedy pairs 2.1 vs 2.2 (same pool); grouped resolves it.
       rest = [slot.call(1, 1), slot.call(2, 1), slot.call(3, 1), slot.call(2, 2)]
 
-      greedy = builder.send(:greedy_cross_pool, rest.dup)
-      expect(builder.send(:same_pool?, greedy)).to be(true) # greedy alone clashes
+      greedy = seeder.send(:greedy_cross_pool, rest.dup)
+      expect(seeder.send(:same_pool?, greedy)).to be(true) # greedy alone clashes
 
-      fights = builder.send(:cross_pool_match, rest)
+      fights = seeder.send(:cross_pool_match, rest)
 
       expect(fights.flatten.map { |s| [s.pool_number, s.pool_rank] })
         .to contain_exactly([1, 1], [2, 1], [3, 1], [2, 2])

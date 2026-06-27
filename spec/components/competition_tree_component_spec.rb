@@ -129,7 +129,7 @@ RSpec.describe CompetitionTreeComponent, type: :component do
   end
 
   it "lists each existing point with a remove button in admin mode" do
-    point = create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
+    point = create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
 
     render_inline(described_class.new(category: category.reload, admin: true))
 
@@ -140,9 +140,9 @@ RSpec.describe CompetitionTreeComponent, type: :component do
   end
 
   it "shows each fighter's points as code chips next to their name on the card" do
-    create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "men")
-    create(:fight_point, fight: fight, fighter_side: "fighter_1", kind: "kote")
-    create(:fight_point, fight: fight, fighter_side: "fighter_2", kind: "hansoku")
+    create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+    create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "kote")
+    create(:fight_point, scorable: fight, fighter_side: "fighter_2", kind: "hansoku")
 
     render_inline(described_class.new(category: category.reload))
 

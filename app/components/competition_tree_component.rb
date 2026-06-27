@@ -1,19 +1,14 @@
 # frozen_string_literal: true
 
 class CompetitionTreeComponent < ViewComponent::Base
+  include BracketLayout
+
   def initialize(category:, admin: false)
     @category = category
     @admin = admin
   end
 
   private attr_reader :category, :admin
-
-  CARD_WIDTH = 224
-  CARD_HEIGHT = 80
-  BYE_CARD_HEIGHT = 40
-  ROUND_GAP = 48
-  MATCH_GAP = 8
-  PADDING = 8
 
   private def fights
     @fights ||= begin
@@ -25,8 +20,17 @@ class CompetitionTreeComponent < ViewComponent::Base
     end
   end
 
-  private def rounds
-    @rounds ||= fights.group_by(&:round)
+  private def bracket_nodes
+    fights
+  end
+
+  private def node_parents(fight)
+    [fight.parent_fight_1, fight.parent_fight_2]
+  end
+
+  private def node_has_own_identity?(fight)
+    fight.fighter_1.present? || fight.fighter_2.present? ||
+      (fight.round == 1 && (fight.fighter_1_pool_number.present? || fight.fighter_2_pool_number.present?))
   end
 
   private def display_numbers
@@ -35,80 +39,6 @@ class CompetitionTreeComponent < ViewComponent::Base
 
   private def display_number(fight)
     display_numbers[fight.id]
-  end
-
-  private def canvas_width
-    return 0 if rounds.empty?
-
-    PADDING * 2 + rounds.keys.max * CARD_WIDTH + (rounds.keys.max - 1) * ROUND_GAP
-  end
-
-  private def canvas_height
-    return 0 if rounds.empty?
-
-    PADDING * 2 + first_round_slots * (CARD_HEIGHT + MATCH_GAP) - MATCH_GAP
-  end
-
-  private def first_round_slots
-    [rounds.fetch(1, []).size, 1].max
-  end
-
-  private def match_style(fight)
-    "left: #{match_left(fight)}px; top: #{match_top(fight)}px;"
-  end
-
-  private def match_left(fight)
-    PADDING + (fight.round - 1) * (CARD_WIDTH + ROUND_GAP)
-  end
-
-  private def match_top(fight)
-    height = fight.bye? ? BYE_CARD_HEIGHT : CARD_HEIGHT
-    PADDING + (fight_center_y(fight) - height / 2.0).round
-  end
-
-  private def fight_center_y(fight)
-    slot_height = CARD_HEIGHT + MATCH_GAP
-    span = 2**(fight.round - 1)
-    first_slot = (fight.position - 1) * span
-
-    slot_height * (first_slot + (span / 2.0)) - MATCH_GAP / 2.0
-  end
-
-  private def connector_paths
-    rounds.values.flatten.filter_map do |fight|
-      next unless render_fight?(fight)
-
-      parent_paths(fight)
-    end.flatten
-  end
-
-  private def parent_paths(fight)
-    connector_parents(fight).map do |parent_fight|
-      connector_path(parent_fight, fight)
-    end
-  end
-
-  private def connector_parents(fight)
-    parent_fights(fight).flat_map do |parent_fight|
-      visible_connector_parent(parent_fight)
-    end
-  end
-
-  private def visible_connector_parent(fight)
-    return [fight] if render_fight?(fight)
-    return connector_parents(fight) if hidden_pass_through_fight?(fight)
-
-    []
-  end
-
-  private def connector_path(parent_fight, fight)
-    start_x = match_left(parent_fight) + CARD_WIDTH
-    start_y = PADDING + fight_center_y(parent_fight).round
-    end_x = match_left(fight)
-    end_y = PADDING + fight_center_y(fight).round
-    elbow_x = start_x + (end_x - start_x) / 2
-
-    "M #{start_x} #{start_y} H #{elbow_x} V #{end_y} H #{end_x}"
   end
 
   private def tree_dom_id
@@ -173,62 +103,9 @@ class CompetitionTreeComponent < ViewComponent::Base
 
   private def visible_fighter_parent(fight)
     return if fight.blank?
-    return fight if render_fight?(fight)
+    return fight if render_node?(fight)
 
-    visible_connector_parent(fight).first if hidden_pass_through_fight?(fight)
-  end
-
-  private def render_fight?(fight)
-    rendered_fight_ids.fetch(fight.id) do
-      rendered_fight_ids[fight.id] = fight_has_direct_fighter?(fight) ||
-        fight_has_slot_identity?(fight) ||
-        render_forecasted_fight?(fight)
-    end
-  end
-
-  private def rendered_fight_ids
-    @rendered_fight_ids ||= {}
-  end
-
-  private def fight_has_direct_fighter?(fight)
-    fight.fighter_1.present? || fight.fighter_2.present?
-  end
-
-  private def fight_has_slot_identity?(fight)
-    fight.round == 1 &&
-      (fight.fighter_1_pool_number.present? || fight.fighter_2_pool_number.present?)
-  end
-
-  private def render_forecasted_fight?(fight)
-    parent_fights(fight).any? &&
-      parent_fights(fight).any? { |parent_fight| render_fight?(parent_fight) } &&
-      !hidden_pass_through_fight?(fight)
-  end
-
-  private def hidden_pass_through_fight?(fight)
-    pass_through_fight?(fight) && child_fights.fetch(fight.id, []).any?
-  end
-
-  private def pass_through_fight?(fight)
-    parents = parent_fights(fight)
-    return false unless parents.size > 1
-
-    parents.one? { |parent_fight| render_fight?(parent_fight) } &&
-      parents.any? { |parent_fight| !render_fight?(parent_fight) }
-  end
-
-  private def parent_fights(fight)
-    [fight.parent_fight_1, fight.parent_fight_2].compact
-  end
-
-  private def child_fights
-    @child_fights ||= rounds.values.flatten.each_with_object(Hash.new { |hash, key|
-      hash[key] = []
-    }) do |fight, children|
-      parent_fights(fight).each do |parent_fight|
-        children[parent_fight.id] << fight
-      end
-    end
+    visible_connector_parent(fight).first if hidden_pass_through_node?(fight)
   end
 
   private def points_for(fight, slot)
