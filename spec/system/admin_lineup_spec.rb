@@ -46,7 +46,10 @@ describe "Admin team lineup via in-table dropdowns", :js do
 
     find("summary", text: t1.name).click
     side = "#encounter_#{encounter.id}_position_1 .pool-match__side--fighter_1"
-    scroll_to(find("#{side} select"))
+    # Wait for the select, then scroll by re-querying in JS: holding the element
+    # reference across the details/morph settle can leave us with a stale node.
+    expect(page).to have_css("#{side} select")
+    page.execute_script("document.querySelector(arguments[0]).scrollIntoView({block: 'center'})", "#{side} select")
     scrolled = page.evaluate_script("window.scrollY").to_i
     expect(scrolled).to be > 0 # the dropdown sits below the fold
 

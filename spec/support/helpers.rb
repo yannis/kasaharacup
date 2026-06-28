@@ -8,12 +8,12 @@ RSpec.configure do |config|
 
   def should_not_be_authorized
     expect(response).to redirect_to(root_path)
-    expect(flash[:alert]).to match(/You are not authorized to access this page/)
+    expect(flash[:alert]).to include("You are not authorized to access this page")
   end
 
   def should_not_find_model
     it { expect(response).to have_http_status :unprocessable_content }
-    it { expect(response.body).to match(/Couldn't find/) }
+    it { expect(response.body).to include("Couldn't find") }
   end
 
   def signin(user)
