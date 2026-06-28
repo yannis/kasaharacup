@@ -121,7 +121,7 @@ RSpec.describe KenshisController do
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
         it { expect(assigns(:kenshi)).to be_valid_verbose }
         it { expect(response).to redirect_to(cup_user_path(cup)) }
-        it { expect(flash[:notice]).to match(/Kenshi inscrit avec succès/) }
+        it { expect(flash[:notice]).to include("Kenshi inscrit avec succès") }
         it { expect(assigns(:kenshi).user_id).to eql basic_user.id }
       end
 
@@ -132,7 +132,7 @@ RSpec.describe KenshisController do
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
         it { expect(assigns(:kenshi)).not_to be_valid_verbose }
         it { expect(response).to render_template(:new) }
-        it { expect(flash.now[:alert]).to match(/Erreur lors de l'inscription du kenshi/) }
+        it { expect(flash.now[:alert]).to include("Erreur lors de l'inscription du kenshi") }
       end
 
       describe "on GET to :edit with :id = basic_user_kenshi.to_param," do
@@ -154,7 +154,7 @@ RSpec.describe KenshisController do
 
         it { expect(assigns(:kenshi)).to eql basic_user_kenshi }
         it { expect(response).to redirect_to(cup_user_path(cup)) }
-        it { expect(flash[:notice]).to match(/Inscription modifiée avec succès/) }
+        it { expect(flash[:notice]).to include("Inscription modifiée avec succès") }
         it { expect(basic_user_kenshi.reload.last_name).to eql "Alanma2" }
       end
 
@@ -180,7 +180,7 @@ RSpec.describe KenshisController do
           expect { delete(cup_kenshi_path(cup, basic_user_kenshi)) }
             .to change(Kenshi, :count).by(-1)
           expect(assigns(:kenshi)).to eql basic_user_kenshi
-          expect(flash[:notice]).to match(/Kenshi détruit avec succès/)
+          expect(flash[:notice]).to include("Kenshi détruit avec succès")
           expect(response).to redirect_to(cup_user_path(cup))
         end
       end
