@@ -15,7 +15,7 @@
     "postcss": "^8.5.15",
     "select2": "^4.1.0",
     "stimulus-use": "^0.52.2",
-    "tailwindcss": "^4.1.6"
+    "tailwindcss": "^4.3.2"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds",
