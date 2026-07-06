@@ -14,7 +14,7 @@
     "jquery": "^4.0.0",
     "postcss": "^8.5.15",
     "select2": "^4.1.0",
-    "stimulus-use": "^0.52.2",
+    "stimulus-use": "^0.53.0",
     "tailwindcss": "^4.1.6"
   },
   "scripts": {
