@@ -220,7 +220,7 @@ GEM
       activesupport (>= 7.0)
     hashdiff (1.2.1)
     highline (3.0.1)
-    honeybadger (6.9.0)
+    honeybadger (6.9.1)
       logger
       ostruct
     htmlbeautifier (1.4.3)
