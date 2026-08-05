@@ -160,6 +160,7 @@ en:
         prepayment_recommended: Recommended
         prepayment_reference: KasaharaCup2026 + name of the participant
         prepayment_reference_label: Payment reference
+        prepayment_transfer_fees: Any bank transfer fees are at the sender's charge.
         title: Registration fees
         variable: Price variable
       over: The tournament is over! Thanks to all for participating and see you next year!
