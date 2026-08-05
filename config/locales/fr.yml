@@ -164,6 +164,7 @@ fr:
         prepayment_recommended: Recommandé
         prepayment_reference: KasaharaCup2026 + nom du participant
         prepayment_reference_label: Référence de paiement
+        prepayment_transfer_fees: Les éventuels frais de virement sont à la charge de l'expéditeur.
         title: Combien ça coûte?
         variable: Prix variable
       over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
