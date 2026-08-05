@@ -31,6 +31,17 @@ RSpec.describe UsersController do
       it { expect(response).to render_template "show" }
       it { expect(assigns(:user)).to eq(basic_user) }
     end
+
+    describe "GET show with purchases" do
+      let!(:product) { create(:product, cup: cup, fee_chf: 10, fee_eu: 8) }
+      let!(:kenshi) { create(:kenshi, cup: cup, user: basic_user) }
+      let!(:purchase) { create(:purchase, product: product, kenshi: kenshi) }
+
+      before { get cup_user_path(cup) }
+
+      it { expect(response.body).to include("10 CHF") }
+      it { expect(response.body).not_to include("€") }
+    end
   end
 
   describe "When logged in as admin" do

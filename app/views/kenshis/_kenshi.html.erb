@@ -46,7 +46,6 @@
               </td>
               <td class="pl-4">
                 <%= purchase.product.fee_chf %> CHF
-                <%= purchase.product.fee_eu %> €
               </td>
             </tr>
           <% end %>
@@ -56,7 +55,6 @@
             </td>
             <td class="pl-4">
               <%= purchases.sum { |purchase| purchase.product.fee_chf } %> CHF
-              <%= purchases.sum { |purchase| purchase.product.fee_eu } %> €
             </td>
           </tr>
         </tbody>
