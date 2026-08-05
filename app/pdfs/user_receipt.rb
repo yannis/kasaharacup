@@ -26,7 +26,7 @@ class UserReceipt < Prawn::Document
     end
 
     bounding_box [bounds.left + 10, bounds.top - 300], width: 600 do
-      text "Nous certifions avoir reçu la somme de #{@user.bill(:chf)} CHF / #{@user.bill(:eur)} EUR.".html_safe
+      text "Nous certifions avoir reçu la somme de #{@user.bill(:chf)} CHF.".html_safe
       data = [
         ["Nom",
           "Compétition",
@@ -38,12 +38,12 @@ class UserReceipt < Prawn::Document
       @user.enrollments.each do |enrollment|
         data << [
           enrollment.last_name.titleize,
-          "#{enrollment.dinner_fee(:chf)} CHF / #{enrollment.dinner_fee(:eur)} €",
-          "#{enrollment.dormitory_fee(:chf)} CHF / #{enrollment.dormitory_fee(:eur)} €",
-          "<b>#{enrollment.bill(:chf)} CHF / #{enrollment.bill(:eur)} EUR</b>"
+          "#{enrollment.dinner_fee(:chf)} CHF",
+          "#{enrollment.dormitory_fee(:chf)} CHF",
+          "<b>#{enrollment.bill(:chf)} CHF</b>"
         ]
       end
-      data << [nil, nil, nil, nil, "<b>#{@user.bill(:chf)} CHF / #{@user.bill(:eur)} EUR</b>"]
+      data << [nil, nil, nil, nil, "<b>#{@user.bill(:chf)} CHF</b>"]
 
       table(data, cell_style: {inline_format: true, size: 12}, width: 550) do
         cells.borders = []

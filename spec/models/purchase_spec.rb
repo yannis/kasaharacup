@@ -84,6 +84,6 @@ RSpec.describe Purchase do
     let(:purchase) { build(:purchase, product: product) }
     let(:product) { build(:product, name_en: "Saturday dinner", name_fr: "Dîner du samedi", fee_chf: 8, fee_eu: 10) }
 
-    it { expect(purchase.descriptive_name).to eq("Dîner du samedi (8 CHF / 10 €)") }
+    it { expect(purchase.descriptive_name).to eq("Dîner du samedi (8 CHF)") }
   end
 end

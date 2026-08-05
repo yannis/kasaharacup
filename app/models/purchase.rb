@@ -7,7 +7,7 @@ class Purchase < ApplicationRecord
   validate :in_quota
 
   def descriptive_name
-    "#{product.name} (#{product.fee_chf} CHF / #{product.fee_eu} €)"
+    "#{product.name} (#{product.fee_chf} CHF)"
   end
 
   private def in_quota
