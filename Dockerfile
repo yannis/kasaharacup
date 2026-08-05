@@ -2,27 +2,29 @@
 # Optimized multi-stage build
 
 # Stage 1: Base image with system dependencies
-FROM ruby:4.0.3-alpine AS base
+FROM ruby:4.0.6-alpine AS base
+ENV RUBYGEMS_VERSION=4.0.16
 
 LABEL maintainer="yannisjaquet@mac.com"
 LABEL org.opencontainers.image.source="https://github.com/yannis/kasaharacup"
 
 # Install runtime dependencies only
-RUN apk add --no-cache \
-  bash \
-  git \
-  postgresql-client \
-  postgresql-dev \
-  nodejs \
-  npm \
-  vips \
-  tzdata \
-  gcompat \
-  graphviz \
-  font-noto \
-  fontconfig \
-  yaml-dev \
-  && rm -rf /var/cache/apk/*
+RUN gem update --system $RUBYGEMS_VERSION && \
+  apk add --no-cache --update build-base \
+    bash \
+    git \
+    postgresql-client \
+    postgresql-dev \
+    nodejs \
+    npm \
+    vips \
+    tzdata \
+    gcompat \
+    graphviz \
+    font-noto \
+    fontconfig \
+    yaml-dev \
+    && rm -rf /var/cache/apk/*
 
 RUN fc-cache -f
 
@@ -36,8 +38,6 @@ FROM base AS dependencies
 RUN apk add --no-cache --virtual .build-deps \
   build-base \
   linux-headers
-
-ENV RUBYGEMS_VERSION=4.0.3
 
 # Copy only dependency files first (better layer caching)
 COPY Gemfile Gemfile.lock ./
