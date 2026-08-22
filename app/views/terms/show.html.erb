@@ -1,0 +1,31 @@
+<div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+  <div class="prose prose-red-900 prose-lg text-gray-900 py-10">
+    <h1>
+      <%= t(".title") %>
+    </h1>
+    <h2>
+      <%= t(".payment_title") %>
+    </h2>
+    <p>
+      <%= t(".payment_body") %>
+    </p>
+    <h2>
+      <%= t(".cancellation_title") %>
+    </h2>
+    <p>
+      <%= t(".cancellation_notify_html", email: mail_to(ENV.fetch("CONTACT_EMAIL"))) %>
+    </p>
+    <p>
+      <%= t(".cancellation_before_html", deadline: l(@cup.deadline, format: :long)) %>
+    </p>
+    <p>
+      <%= t(".cancellation_after_html") %>
+    </p>
+    <h2>
+      <%= t(".event_cancellation_title") %>
+    </h2>
+    <p>
+      <%= t(".event_cancellation_body") %>
+    </p>
+  </div>
+</div>

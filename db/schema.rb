@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_27_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_22_073000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
@@ -239,6 +239,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_27_120100) do
     t.string "last_name", limit: 255, null: false
     t.text "remarks"
     t.boolean "shinpan", default: false, null: false
+    t.datetime "terms_accepted_at"
     t.datetime "updated_at", precision: nil
     t.integer "user_id", null: false
     t.index ["club_id"], name: "index_kenshis_on_club_id"

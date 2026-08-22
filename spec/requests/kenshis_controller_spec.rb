@@ -116,13 +116,92 @@ RSpec.describe KenshisController do
       end
 
       describe "when POST to :create with valid data," do
-        before { post(cup_user_kenshis_path(cup), params: {kenshi: valid_params}) }
+        before { post(cup_user_kenshis_path(cup), params: {kenshi: valid_params.merge(terms_acceptance: "1")}) }
 
         it { expect(assigns(:kenshi)).to be_an_instance_of Kenshi }
         it { expect(assigns(:kenshi)).to be_valid_verbose }
         it { expect(response).to redirect_to(cup_user_path(cup)) }
         it { expect(flash[:notice]).to include("Kenshi inscrit avec succès") }
         it { expect(assigns(:kenshi).user_id).to eql basic_user.id }
+        it { expect(assigns(:kenshi).terms_accepted_at).to be_within(5.seconds).of(Time.current) }
+      end
+
+      describe "terms acceptance" do
+        describe "on POST to :create with an unticked checkbox," do
+          it "does not create the kenshi and re-renders the form" do
+            expect {
+              post(cup_user_kenshis_path(cup), params: {kenshi: valid_params.merge(terms_acceptance: "0")})
+            }.not_to change(Kenshi, :count)
+
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(response).to render_template(:new)
+          end
+        end
+
+        describe "on POST to :create omitting the acceptance param entirely," do
+          it "does not create the kenshi" do
+            expect {
+              post(cup_user_kenshis_path(cup), params: {kenshi: valid_params})
+            }.not_to change(Kenshi, :count)
+
+            expect(response).to have_http_status(:unprocessable_content)
+          end
+        end
+
+        describe "on POST to :create with tampered acceptance fields," do
+          it "stamps the server time and ignores the submitted timestamp and gate" do
+            post(cup_user_kenshis_path(cup), params: {kenshi: valid_params.merge(
+              terms_acceptance: "1",
+              terms_accepted_at: 10.years.ago.iso8601,
+              terms_acceptance_required: "0"
+            )})
+
+            expect(assigns(:kenshi)).to be_persisted
+            expect(assigns(:kenshi).terms_accepted_at).to be_within(5.seconds).of(Time.current)
+          end
+        end
+
+        describe "on GET to :new," do
+          it "renders a required acceptance checkbox linking to the terms page" do
+            get(new_cup_user_kenshi_path(cup))
+
+            expect(response.body).to include("kenshi[terms_acceptance]")
+            expect(response.body).to include(cup_terms_path(cup))
+          end
+        end
+
+        describe "on GET to :edit," do
+          it "renders no acceptance checkbox" do
+            get(edit_cup_kenshi_path(cup, basic_user_kenshi))
+
+            expect(response.body).not_to include("kenshi[terms_acceptance]")
+          end
+        end
+
+        describe "on PUT to :update," do
+          it "does not require re-acceptance and keeps the original stamp" do
+            accepted = create(:kenshi, user_id: basic_user.id, cup:,
+              terms_acceptance_required: true, terms_acceptance: "1")
+            original = accepted.terms_accepted_at
+
+            put(cup_kenshi_path(cup, accepted), params: {kenshi: {last_name: "Updated"}})
+
+            expect(response).to redirect_to(cup_user_path(cup))
+            expect(accepted.reload.terms_accepted_at).to be_within(1.second).of(original)
+          end
+        end
+
+        describe "on GET to :duplicate," do
+          it "clears the source's acceptance stamp and re-requires acceptance" do
+            source = create(:kenshi, user_id: basic_user.id, cup:)
+            Kenshi.where(id: source.id).update_all(terms_accepted_at: 2.years.ago)
+
+            get(duplicate_cup_user_kenshi_path(cup, source))
+
+            expect(assigns(:kenshi).terms_accepted_at).to be_nil
+            expect(response.body).to include("kenshi[terms_acceptance]")
+          end
+        end
       end
 
       describe "when POST to :create with invalid data," do

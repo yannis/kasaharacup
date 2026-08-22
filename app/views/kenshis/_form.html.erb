@@ -231,6 +231,37 @@
       </div>
     </div>
   </div>
+  <% if kenshi.new_record? %>
+    <div>
+      <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+        <div class="pt-6 sm:pt-5">
+          <div role="group" aria-labelledby="label-terms">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-baseline">
+              <div>
+                <div class="text-base font-medium text-gray-900 sm:text-sm sm:text-gray-700" id="label-terms">
+                  <%= t(".terms.title") %>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-0 sm:col-span-2">
+                <div class="relative flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= f.check_box :terms_acceptance, required: true, class: "focus:ring-red-500 h-4 w-4 text-red-600 border-gray-300 rounded-xs" %>
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <%= f.label :terms_acceptance, t(".terms.label"), class: "font-medium text-gray-700" %>
+                    <p class="helper-text">
+                      <%= t(".terms.info_html", link: link_to(t(".terms.link"), cup_terms_path(cup), class: "text-brand hover:underline", target: "_blank", rel: "noopener")) %>
+                    </p>
+                    <%= tag.p(safe_join(kenshi.errors.messages_for(:terms_acceptance), "<br>"), class: "mt-2 text-sm text-red-600") if kenshi.errors.messages_for(:terms_acceptance).any? %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
   <% if products.present? %>
     <div>
       <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">

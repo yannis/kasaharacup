@@ -52,6 +52,8 @@ class KenshisController < ApplicationController
       origin_kenshi = Kenshi.find(params.expect(:id))
       @kenshi = origin_kenshi.dup
       @kenshi.first_name = @kenshi.last_name = @kenshi.email = @kenshi.dob = nil
+      # A duplicate must never carry the source's acceptance evidence.
+      @kenshi.terms_accepted_at = nil
       @title = t(".duplicate", full_name: origin_kenshi.full_name)
       origin_kenshi.participations.each do |participation|
         @kenshi.participations << Participation.new(category: participation.category, team: participation.team,
@@ -77,6 +79,7 @@ class KenshisController < ApplicationController
       return
     end
     @kenshi.cup = @cup
+    @kenshi.terms_acceptance_required = true
     if @kenshi.save
       notice = t("kenshis.create.flash.notice")
       redirect_to cup_user_path(@cup), notice: notice
@@ -144,8 +147,12 @@ class KenshisController < ApplicationController
     params[:kenshi][:participations_attributes]&.reject! { |k, v|
       v["category_type"] == "IndividualCategory" && v["category_id"].blank?
     }
+    scalars = %i[first_name last_name email dob female club_id club_name grade]
+    # Terms acceptance is only meaningful (and only permitted) on create;
+    # updates and admin flows never touch it.
+    scalars << :terms_acceptance if action_name == "create"
     params.expect(kenshi: [
-      :first_name, :last_name, :email, :dob, :female, :club_id, :club_name, :grade, :club_name,
+      *scalars,
       purchases_attributes: [[:id, :product_id, :_destroy]],
       individual_category_ids: [],
       participations_attributes: [[:id, :category_type, :category_id, :ronin, :team_name, :_destroy]],

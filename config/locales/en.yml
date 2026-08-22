@@ -19,6 +19,7 @@ en:
         name: Name
         salutations: Salutations
         team: Team
+        terms_acceptance: Registration terms
       participation:
         category: Category
         team_name: Team name
@@ -71,6 +72,8 @@ en:
               blank: Date of birth (DOB) is required for junior registrations
             female:
               inclusion: Salutation is required
+            terms_acceptance:
+              accepted: You must accept the registration terms
         participation:
           attributes:
             category:
@@ -161,6 +164,8 @@ en:
         prepayment_reference: KasaharaCup2026 + name of the participant
         prepayment_reference_label: Payment reference
         prepayment_transfer_fees: Any bank transfer fees are at the sender's charge.
+        refund_policy_html: 'Refund policy: see the %{link}.'
+        refund_policy_link: registration terms
         title: Registration fees
         variable: Price variable
       over: The tournament is over! Thanks to all for participating and see you next year!
@@ -491,6 +496,11 @@ en:
       not_available: Sorry, “%{product_name}“ is not available for the time being. Please come back later to check for any availability.
       ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
       team_info: Choose here the team you plan to participate in with your teammates. If the team does not exist yet create it by entering its name followed by ↩︎ in the search field.
+      terms:
+        info_html: Please read the %{link} before registering.
+        label: I accept the registration terms
+        link: registration terms
+        title: Registration terms
       waiver:
         info: 'Juniors under the age of 18 who are participating in the Team category must present a liability waiver signed by a legal guardian. Please download and complete the following document and present it on the day of the competition:'
         title: Liability waiver
@@ -547,6 +557,7 @@ en:
         placeholder: Email
         subtitle: Receive occasional news about the tournament.
         title: Subscribe to our newsletter
+      terms: Registration terms
     navigation:
       about: About
       account: Account
@@ -666,6 +677,17 @@ en:
       incomplete: Incomplete
       invalid: Invalid
       valid: Valid
+  terms:
+    show:
+      cancellation_after_html: If your cancellation is received <strong>after the registration deadline</strong>, or in case of no-show, <strong>no refund will be made</strong>. Registrations are final after this date, as the organizing committee commits expenses on the basis of confirmed entries.
+      cancellation_before_html: If your cancellation is received <strong>before the registration deadline (%{deadline})</strong>, the registration fees already paid will be refunded in full, less any bank transfer charges.
+      cancellation_notify_html: Cancellations must be notified by email to %{email}.
+      cancellation_title: Cancellation by the participant
+      event_cancellation_body: Should the event be cancelled by the organizers, registration fees already paid will be refunded in full.
+      event_cancellation_title: Cancellation of the event
+      payment_body: Registration fees are payable in advance by bank transfer, using the account details and payment reference indicated on the event page. Any bank transfer fees are at the sender's charge.
+      payment_title: Payment
+      title: Registration terms
   time:
     am: am
     formats:
