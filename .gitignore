@@ -47,3 +47,5 @@
 
 spec/support/capybara.dev.rb
 spec/examples.txt
+
+docs/*
