@@ -190,7 +190,7 @@ class Kenshi < ApplicationRecord
   end
 
   private_class_method def self.normalize_poster_name(text)
-    text.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase
+    text.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/, "").upcase
   end
 
   def logs
