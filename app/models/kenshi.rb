@@ -17,6 +17,12 @@ class Kenshi < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_many :products, through: :purchases
 
+  # Virtual registration-terms acceptance (issue #1239). The gate is set only
+  # by the public registration flow, so ActiveAdmin and factories stay exempt.
+  attr_accessor :terms_acceptance_required
+  attribute :terms_acceptance, :boolean
+  attr_readonly :terms_accepted_at
+
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :grade, presence: true
@@ -24,6 +30,10 @@ class Kenshi < ApplicationRecord
   validates :last_name, uniqueness: {scope: [:cup_id, :first_name], case_sensitive: true}
   validates :grade, inclusion: {in: GRADES}
   validates :female, inclusion: {in: [true, false]}
+  # allow_nil: false because AcceptanceValidator skips nil by default — a
+  # crafted POST omitting the param entirely must not bypass the acceptance.
+  validates :terms_acceptance, acceptance: {allow_nil: false},
+    on: :create, if: :terms_acceptance_required
 
   accepts_nested_attributes_for :participations, allow_destroy: true
   accepts_nested_attributes_for :purchases, allow_destroy: true
@@ -31,6 +41,10 @@ class Kenshi < ApplicationRecord
 
   before_validation :format
   after_validation :logs
+  # Requires both the server-set gate and a verified true acceptance, so no
+  # flow can stamp an acceptance it never validated.
+  before_create :record_terms_acceptance,
+    if: -> { terms_acceptance_required && terms_acceptance == true }
   after_create_commit :notify_slack
   after_commit :update_purchase
 
@@ -225,6 +239,10 @@ class Kenshi < ApplicationRecord
     self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
     self.first_name = first_name.to_s.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
     self.email = email.downcase if email
+  end
+
+  private def record_terms_acceptance
+    self.terms_accepted_at = Time.current
   end
 
   private def notify_slack

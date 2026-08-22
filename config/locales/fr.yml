@@ -21,6 +21,7 @@ fr:
         name: Nom
         salutations: Salutations
         team: Équipe
+        terms_acceptance: Conditions d'inscription
       participation:
         category: Catégorie
         team_name: Nom de l'équipe
@@ -74,6 +75,8 @@ fr:
               blank: requise pour les juniors
             female:
               inclusion: requise
+            terms_acceptance:
+              accepted: Vous devez accepter les conditions d'inscription
         participation:
           attributes:
             category:
@@ -165,6 +168,8 @@ fr:
         prepayment_reference: KasaharaCup2026 + nom du participant
         prepayment_reference_label: Référence de paiement
         prepayment_transfer_fees: Les éventuels frais de virement sont à la charge de l'expéditeur.
+        refund_policy_html: 'Politique de remboursement : voir les %{link}.'
+        refund_policy_link: conditions d'inscription
         title: Combien ça coûte?
         variable: Prix variable
       over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
@@ -494,6 +499,11 @@ fr:
       not_available: Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir  plus tard vérifier une disponibilité éventuelle.
       ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
       team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers. Si l'équipe n'existe pas encore créez-là en entrant son nom suivi de ↩︎ dans le champs de recherche.
+      terms:
+        info_html: Veuillez lire les %{link} avant de vous inscrire.
+        label: J'accepte les conditions d'inscription
+        link: conditions d'inscription
+        title: Conditions d'inscription
       waiver:
         info: 'Les juniors de moins de 18 ans qui participent à la catégorie Team doivent présenter une décharge de responsabilité signée par un responsable légal. Merci de télécharger et compléter le document suivant et de le présenter le jour de la compétition:'
         title: Décharge de responsabilité
@@ -550,6 +560,7 @@ fr:
         placeholder: Email
         subtitle: Recevez des informations occasionnelles sur le tournoi.
         title: Abonnez-vous à notre newsletter
+      terms: Conditions d'inscription
     navigation:
       about: A propos
       account: Compte
@@ -669,6 +680,17 @@ fr:
       incomplete: Incomplète
       invalid: Invalide
       valid: Valide
+  terms:
+    show:
+      cancellation_after_html: Si votre annulation nous parvient <strong>après la date limite d'inscription</strong>, ou en cas de non-présentation, <strong>aucun remboursement ne sera effectué</strong>. Passé cette date, les inscriptions sont définitives, le comité d'organisation engageant des dépenses sur la base des inscriptions confirmées.
+      cancellation_before_html: Si votre annulation nous parvient <strong>avant la date limite d'inscription (%{deadline})</strong>, les frais d'inscription déjà versés seront intégralement remboursés, déduction faite des éventuels frais bancaires.
+      cancellation_notify_html: Toute annulation doit être annoncée par e-mail à %{email}.
+      cancellation_title: Annulation par le participant
+      event_cancellation_body: En cas d'annulation de l'événement par les organisateurs, les frais d'inscription déjà versés seront intégralement remboursés.
+      event_cancellation_title: Annulation de l'événement
+      payment_body: Les frais d'inscription sont payables à l'avance par virement bancaire, en utilisant les coordonnées et la référence de paiement indiquées sur la page de l'événement. Les éventuels frais de virement sont à la charge du donneur d'ordre.
+      payment_title: Paiement
+      title: Conditions d'inscription
   time:
     am: am
     formats:

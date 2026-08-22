@@ -257,4 +257,60 @@ RSpec.describe Kenshi do
       expect(names[suzuki.id]).to eq suzuki.poster_name(category: category)
     end
   end
+
+  describe "terms acceptance" do
+    context "when the public registration flow sets the gate" do
+      it "is valid with a ticked checkbox and stamps terms_accepted_at on create" do
+        kenshi = build(:kenshi, terms_acceptance_required: true, terms_acceptance: "1")
+
+        expect(kenshi).to be_valid
+        kenshi.save!
+        expect(kenshi.terms_accepted_at).to be_within(5.seconds).of(Time.current)
+      end
+
+      it "is invalid with an unticked checkbox" do
+        kenshi = build(:kenshi, terms_acceptance_required: true, terms_acceptance: "0")
+
+        expect(kenshi).not_to be_valid
+        expect(kenshi.errors[:terms_acceptance]).to be_present
+      end
+
+      it "is invalid when the acceptance attribute was never assigned" do
+        kenshi = build(:kenshi, terms_acceptance_required: true)
+
+        expect(kenshi).not_to be_valid
+        expect(kenshi.errors[:terms_acceptance]).to be_present
+      end
+    end
+
+    context "without the gate (as ActiveAdmin creates kenshis)" do
+      it "is valid and records no acceptance time" do
+        kenshi = create(:kenshi)
+
+        expect(kenshi.terms_accepted_at).to be_nil
+      end
+    end
+
+    context "for a persisted kenshi" do
+      let!(:kenshi) { create(:kenshi, terms_acceptance_required: true, terms_acceptance: "1") }
+
+      it "does not require re-acceptance on update and keeps the original stamp" do
+        fresh = described_class.find(kenshi.id)
+
+        expect { fresh.update!(remarks: "updated later") }
+          .not_to change { fresh.reload.terms_accepted_at }
+      end
+
+      it "refuses direct writes to terms_accepted_at" do
+        fresh = described_class.find(kenshi.id)
+
+        expect { fresh.terms_accepted_at = Time.current }
+          .to raise_error(ActiveRecord::ReadonlyAttributeError)
+      end
+
+      it "still allows assigning terms_accepted_at on a new record" do
+        expect { build(:kenshi, terms_accepted_at: nil) }.not_to raise_error
+      end
+    end
+  end
 end

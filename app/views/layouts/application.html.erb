@@ -37,7 +37,7 @@
         <%= render "layouts/flash" %>
         <%= content_for?(:content) ? yield(:content) : yield %>
       </main>
-      <%= render "layouts/footer" %>
+      <%= render "layouts/footer", current_cup: @current_cup %>
     </div>
   </body>
 </html>

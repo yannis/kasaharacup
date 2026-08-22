@@ -29,6 +29,21 @@ RSpec.describe CupsController do
       it "states that bank transfer fees are at the sender's charge" do
         expect(response.body).to include(CGI.escapeHTML(I18n.t("cups.show.fees.prepayment_transfer_fees")))
       end
+
+      it "links to the registration terms from the bank-transfer card" do
+        expect(response.body).to include(cup_terms_path(cup4))
+      end
+    end
+
+    describe "when GET to :show for a cup with products in English" do
+      let!(:cup4) { create(:cup, events: create_list(:event, 1)) }
+      let!(:product) { create(:product, cup: cup4) }
+
+      before { get(cup_path(cup4, locale: :en)) }
+
+      it "scopes the terms link href to the current locale" do
+        expect(response.body).to include(cup_terms_path(cup4, locale: :en))
+      end
     end
   end
 end
