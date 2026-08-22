@@ -73,7 +73,7 @@ class Team < ApplicationRecord
   end
 
   def poster_name
-    name.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/n, "").upcase
+    name.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/, "").upcase
   end
 
   def fitness
