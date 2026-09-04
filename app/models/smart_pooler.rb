@@ -11,7 +11,9 @@
 #
 # Strategy: order participants strongest-first (randomised within equal grades),
 # then drop each into the weakest pool that still has room and does not already
-# hold their club (LPT balancing + club-aware placement).
+# hold their club (LPT balancing + club-aware placement). That single pass is
+# greedy, so a final repair pass trades clubmates apart where it painted itself
+# into a corner.
 #
 # Pools number ceil(N / pool_size), so each holds either pool_size or
 # pool_size - 1 participants with the fewest short pools possible. The short
@@ -36,6 +38,7 @@ class SmartPooler
 
     build_empty_pools
     ordered_participants.each { |participation| pick_pool(participation).participations << participation }
+    repair_club_spread!
     persist!
   end
 
@@ -72,8 +75,70 @@ class SmartPooler
     open = open_pools
     club = participation.kenshi.club
     candidates = club.present? ? open.reject { |pool| pool.contains_club?(club) } : open
-    candidates = open if candidates.empty? # club collision unavoidable
+    # No room left away from their club. The repair pass sorts out the ones that
+    # only look unavoidable because of where earlier fighters already went.
+    candidates = open if candidates.empty?
     candidates.min_by { |pool| [pool.total_dan, pool.participations.size, random.rand] }
+  end
+
+  # Placing fighters one at a time can paint the pass into a corner: once the
+  # only pool with room already holds a fighter's club they collide, even though
+  # trading places with someone in another pool would have separated them.
+  # Trading rather than moving keeps every pool the size it was meant to be.
+  private def repair_club_spread!
+    while (trade = best_club_trade)
+      crowded, duplicate, roomy, partner = trade
+      crowded.participations[crowded.participations.index(duplicate)] = partner
+      roomy.participations[roomy.participations.index(partner)] = duplicate
+    end
+  end
+
+  # The trade that separates a badly spread club at the least cost to pool
+  # strength. Weighing every available trade rather than taking the first one
+  # found protects the balance the placing pass worked for.
+  private def best_club_trade
+    trades = poules.flat_map { |crowded|
+      crowded_clubmates(crowded).flat_map { |duplicate|
+        club = duplicate.kenshi.club
+        poules.reject { |roomy| roomy.equal?(crowded) || roomy.contains_club?(club) }
+          .flat_map { |roomy|
+            trade_partners(roomy, crowded, duplicate).map { |partner| [crowded, duplicate, roomy, partner] }
+          }
+      }
+    }
+    trades.min_by { |crowded, duplicate, roomy, partner|
+      [dan_spread_after(crowded, roomy, duplicate, partner), random.rand]
+    }
+  end
+
+  # Everyone in this pool whose club another of its members also belongs to.
+  private def crowded_clubmates(pool)
+    pool.participations
+      .select { |participation| participation.kenshi.club.present? }
+      .group_by { |participation| participation.kenshi.club }
+      .select { |_club, members| members.size > 1 }
+      .flat_map { |_club, members| members }
+  end
+
+  # Who the duplicate can trade with: anyone whose own club is absent from the
+  # crowded pool once the duplicate leaves it, so the trade cannot introduce a
+  # fresh collision of its own.
+  private def trade_partners(roomy, crowded, duplicate)
+    staying = crowded.participations - [duplicate]
+    roomy.participations.reject { |candidate|
+      candidate.kenshi.club.present? &&
+        staying.any? { |other| other.kenshi.club == candidate.kenshi.club }
+    }
+  end
+
+  # How uneven the pools' strength would be after a trade. Only the two pools
+  # involved move, by the difference between the two fighters' grades.
+  private def dan_spread_after(crowded, roomy, duplicate, candidate)
+    shift = candidate.kenshi.grade.to_i - duplicate.kenshi.grade.to_i
+    totals = poules.map(&:total_dan)
+    totals[poules.index(crowded)] += shift
+    totals[poules.index(roomy)] -= shift
+    totals.max - totals.min
   end
 
   private def open_pools
