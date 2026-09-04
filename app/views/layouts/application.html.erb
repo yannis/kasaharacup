@@ -2,12 +2,12 @@
 <html lang="<%= I18n.locale %>">
   <head>
     <title>
-      Kasahara Cup <%= @current_cup.year %>
+      <%= page_title(@current_cup) %>
     </title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="language" content="<%= I18n.locale %>" data-turbo-track="reload"><%# without this, html lang won’t update %>
     <meta name="description" content="<%= cup_description(@current_cup) %>">
-    <meta property="og:title" content="Kasahara Cup <%= @current_cup.year %>">
+    <meta property="og:title" content="<%= page_title(@current_cup) %>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://<%= [ENV["APP_HOST"], ENV["APP_PORT"]].compact.join(":") %>">
     <meta property="og:image" content="<%= image_url("2026/hero-2026.png") %>">

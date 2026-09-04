@@ -10,6 +10,14 @@ module ApplicationHelper
     content_for(:header_title) { content_tag(:header, content_tag(:h1, content)) } if options[:meta_title]
   end
 
+  # The browser and Open Graph title: whatever the view declared through
+  # `title`, ahead of the cup, and the cup alone for pages that declare nothing.
+  def page_title(cup)
+    return "Kasahara Cup #{cup.year}" unless content_for?(:title)
+
+    "#{content_for(:title)} — Kasahara Cup #{cup.year}"
+  end
+
   def cup_description(cup)
     return t("layout.description_short") if cup.blank? || cup.canceled?
 

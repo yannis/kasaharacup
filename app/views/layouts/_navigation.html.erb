@@ -1,7 +1,7 @@
 <nav class="bg-red-700" data-controller="navigation">
   <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
     <div class="relative flex items-center justify-between h-16">
-      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+      <div class="absolute inset-y-0 left-0 flex items-center lg:hidden">
         <!-- Mobile menu button-->
         <button type="button"
           data-action="navigation#toggle"
@@ -31,15 +31,16 @@
           </svg>
         </button>
       </div>
-      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+      <div class="flex-1 flex items-center justify-center lg:items-stretch lg:justify-start">
         <div class="shrink-0 flex items-center">
           <%= link_to root_path do %>
             <%= image_tag "logo/logo.png", class: "block h-9 w-auto", alt: "logo" %>
           <% end %>
         </div>
-        <div class="hidden sm:block sm:ml-6">
+        <div class="hidden lg:block lg:ml-6">
           <div class="flex space-x-4">
             <%= link_to t(".about"), about_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
+            <%= link_to t(".rules"), rules_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
             <%=
               link_to(
                 t("navigation.kenshis.text", kenshis: current_cup.kenshis.not_shinpans.joins(:participations).distinct.count),
@@ -69,12 +70,12 @@
           </div>
         </div>
       </div>
-      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+      <div class="absolute inset-y-0 right-0 flex items-center pr-2 lg:static lg:inset-auto lg:ml-6 lg:pr-0">
         <%=
           render(NavigationDropdownComponent.new(
             name: "locale",
             text: I18n.locale.to_s.upcase,
-            css_class: "hidden sm:block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
+            css_class: "hidden lg:block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
             links: I18n.available_locales.map { |locale| {text: locale.to_s.upcase, url: {locale: locale}} }
           ))
         %>
@@ -112,6 +113,7 @@
     <div class="px-2 pt-2 pb-3 space-y-1">
       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
       <%= link_to t(".about"), about_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" %>
+      <%= link_to t(".rules"), rules_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium" %>
       <%=
         link_to(
           t("navigation.kenshis.text", kenshis: current_cup.kenshis.not_shinpans.joins(:participations).distinct.count),

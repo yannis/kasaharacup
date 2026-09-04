@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       get "log_out", to: "devise/sessions#destroy"
     end
     get "/about", to: "static_pages#about"
+    resource :rules, only: %i[show]
     resources :cups, only: [:index, :show] do
       resources :headlines, only: [:index, :show]
       resources :kenshis do
