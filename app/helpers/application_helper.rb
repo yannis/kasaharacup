@@ -11,15 +11,29 @@ module ApplicationHelper
   end
 
   def cup_description(cup)
-    if @current_cup.end_on
+    return t("layout.description_short") if cup.blank? || cup.canceled?
+
+    t("layout.description.#{cup.past? ? "past" : "upcoming"}", dates: cup_dates(cup))
+  end
+
+  # "les 26 et 27 septembre 2026", or "le 27 septembre 2014" for a single-day cup.
+  def cup_dates(cup)
+    if cup.end_on
       t(
-        "layout.description",
-        start_on: l(@current_cup.start_on, format: :day_only),
-        end_on: l(@current_cup.end_on, format: :day_month_year)
+        "cups.dates.two_days",
+        start_on: l(cup.start_on, format: :day_only),
+        end_on: l(cup.end_on, format: :day_month_year)
       )
     else
-      t("layout.description_short")
+      t("cups.dates.one_day", start_on: l(cup.start_on, format: :long))
     end
+  end
+
+  # Integer#ordinalize only speaks English.
+  def ordinal(number)
+    return number.ordinalize unless I18n.locale == :fr
+
+    (number == 1) ? "#{number}er" : "#{number}ème"
   end
 
   def submit_or_cancel_form(f, text = nil)

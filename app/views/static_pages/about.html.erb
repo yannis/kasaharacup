@@ -34,15 +34,22 @@
           </div>
         </div>
         <div class="mt-8 lg:mt-0">
-          <div class="text-base max-w-prose mx-auto lg:max-w-none">
-            <p class="text-lg text-gray-500">
+          <div class="prose prose-red text-gray-500 mx-auto lg:max-w-none">
+            <p>
               <%= t("static_pages.about.a_html") %>
             </p>
-          </div>
-          <div class="mt-5 prose prose-red text-gray-500 mx-auto lg:max-w-none lg:row-start-1 lg:col-start-1">
             <p>
               <%= t("static_pages.about.b_html") %>
             </p>
+            <% if @current_cup.edition %>
+              <p>
+                <%= t(
+                      "static_pages.about.edition_html.#{@current_cup.past? ? "past" : "upcoming"}",
+                      edition: ordinal(@current_cup.edition),
+                      dates: cup_dates(@current_cup)
+                    ) %>
+              </p>
+            <% end %>
           </div>
         </div>
       </div>

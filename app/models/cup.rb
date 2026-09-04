@@ -18,11 +18,16 @@ class Cup < ApplicationRecord
 
   translate :description
 
+  # Editions held between the first cup (1984) and the earliest one recorded in
+  # this database (2014). Anchored on the two edition numbers the about page has
+  # always quoted: the 33rd edition in 2019 and the 34th in 2022.
+  EDITIONS_BEFORE_FIRST_RECORDED = 27
+
   validates :deadline, presence: true
   validates :start_on, presence: true, uniqueness: {allow_blank: true}
   validates :year, presence: true, uniqueness: {allow_blank: true}
 
-  before_validation :set_deadline, :set_year
+  before_validation :set_deadline, :set_year, :set_edition
 
   has_one_attached :header_image
 
@@ -31,6 +36,10 @@ class Cup < ApplicationRecord
   end
 
   validate :header_image_is_image
+
+  def self.held
+    where(cups: {canceled_at: nil})
+  end
 
   def self.past
     where(cups: {start_on: ...Date.current})
@@ -75,6 +84,15 @@ class Cup < ApplicationRecord
     return if year.present?
 
     self.year = start_on.try(:year)
+  end
+
+  # A canceled edition never happened, so it takes no number and the next cup
+  # reuses the one it would have had.
+  private def set_edition
+    return if edition.present? || canceled? || start_on.blank?
+
+    previous = self.class.held.where(cups: {start_on: ...start_on}).maximum(:edition)
+    self.edition = (previous || EDITIONS_BEFORE_FIRST_RECORDED) + 1
   end
 
   private def header_image_is_image

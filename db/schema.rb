@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_27_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_03_090000) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -75,6 +75,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_27_120100) do
     t.datetime "deadline", precision: nil, null: false
     t.text "description_en"
     t.text "description_fr"
+    t.integer "edition"
     t.date "end_on"
     t.bigint "product_full_adult_id"
     t.bigint "product_full_junior_id"

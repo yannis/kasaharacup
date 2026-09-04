@@ -142,6 +142,9 @@ en:
     to: to
     yo: year old
   cups:
+    dates:
+      one_day: on %{start_on}
+      two_days: on %{start_on} and %{end_on}
     show:
       accomodation:
         hotels_html: You can chose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
@@ -524,9 +527,9 @@ en:
       flash:
         notice: Registration successfully updated
   layout:
-    description: 'The Kasahara Cup is an international kendo tournament organized by the Geneva Kendo Club. It will take place on the %{start_on} and %{end_on} in Geneva, Switzerland.
-
-      '
+    description:
+      past: The Kasahara Cup is an international kendo tournament organized by the Geneva Kendo Club. It took place %{dates} in Geneva, Switzerland.
+      upcoming: The Kasahara Cup is an international kendo tournament organized by the Geneva Kendo Club. It will take place %{dates} in Geneva, Switzerland.
     description_short: 'The Kasahara Cup is an international kendo tournament organized every year by the Geneva Kendo Club.
 
       '
@@ -643,8 +646,11 @@ en:
     about:
       a_html: |
         The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
-        <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly send by the ZNKR.
-      b_html: The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href='http://www.kendo-geneve.ch'>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe. In 2019, the 33rd edition gathered French, Italian, Japanese, English and of course Swiss kenshis. After a two-year hiatus due to COVID, the 34th edition of the Kasahara Cup will take place this year on September 24 and 25 at the Bout-du-Monde stadium, near the city center.
+        <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly sent by the ZNKR.
+      b_html: 'The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href=''http://www.kendo-geneve.ch''>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe: French, Italian, Japanese, English and of course Swiss kenshis.'
+      edition_html:
+        past: The %{edition} edition of the Kasahara Cup took place %{dates} at the Bout-du-Monde stadium, near the city center.
+        upcoming: The %{edition} edition of the Kasahara Cup will take place %{dates} at the Bout-du-Monde stadium, near the city center.
       title: The tournament
   support:
     array:
