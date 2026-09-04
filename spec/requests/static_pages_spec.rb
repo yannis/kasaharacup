@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "StaticPages" do
+RSpec.describe "StaticPages", :fr do
   let!(:cup) { create(:cup, start_on: Date.new(2026, 9, 26), end_on: Date.new(2026, 9, 27)) }
 
   describe "GET /about" do
@@ -27,7 +27,7 @@ RSpec.describe "StaticPages" do
       end
     end
 
-    context "in English" do
+    context "in English", :en do
       it "announces the upcoming edition and its dates" do
         get about_path(locale: :en)
         expect(response.body).to include(

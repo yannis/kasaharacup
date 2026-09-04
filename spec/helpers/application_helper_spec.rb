@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe ApplicationHelper do
+RSpec.describe ApplicationHelper, :fr do
   describe "#cup_dates" do
     it "names both days of a two-day cup" do
       cup = build(:cup, start_on: Date.new(2026, 9, 26), end_on: Date.new(2026, 9, 27))
