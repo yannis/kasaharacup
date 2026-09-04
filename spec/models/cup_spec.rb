@@ -96,6 +96,38 @@ RSpec.describe Cup do
     it { expect(described_class.future).to contain_exactly(cup3, cup4) }
   end
 
+  describe "#edition" do
+    before { described_class.destroy_all }
+
+    let!(:first_recorded) { create(:cup, start_on: Date.new(2014, 9, 27)) }
+    let!(:second_recorded) { create(:cup, start_on: Date.new(2015, 9, 26)) }
+
+    it "numbers the earliest recorded cup after the editions held before it" do
+      expect(first_recorded.edition).to be Cup::EDITIONS_BEFORE_FIRST_RECORDED + 1
+    end
+
+    it "increments from the previous edition" do
+      expect(second_recorded.edition).to be first_recorded.edition + 1
+    end
+
+    it "keeps an explicitly assigned edition" do
+      expect(create(:cup, start_on: Date.new(2016, 9, 17), edition: 12).edition).to be 12
+    end
+
+    context "with a canceled cup in between" do
+      let!(:canceled) { create(:cup, start_on: Date.new(2016, 9, 17), canceled_at: Time.zone.local(2016, 5, 8)) }
+      let!(:after_canceled) { create(:cup, start_on: Date.new(2017, 9, 30)) }
+
+      it "assigns no edition to the canceled cup" do
+        expect(canceled.edition).to be_nil
+      end
+
+      it "does not let the canceled cup consume an edition number" do
+        expect(after_canceled.edition).to be second_recorded.edition + 1
+      end
+    end
+  end
+
   describe "#canceled?" do
     let(:cup) { build(:cup) }
 
