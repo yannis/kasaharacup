@@ -108,6 +108,32 @@ RSpec.describe SmartPooler do
       end
     end
 
+    context "club separation the greedy pass cannot reach unaided" do
+      let(:pool_size) { 4 }
+
+      # Two pools of four and one club with two members, so a separating layout
+      # always exists. Seed 20 orders the pair so the second pool fills before
+      # the greedy pass reaches the second clubmate, leaving only the pool the
+      # first already sits in - a corner the pass cannot back out of on its own.
+      before do
+        shared = create(:club)
+        2.times { add_participant(club: shared) }
+        6.times { add_participant }
+        described_class.new(category, random: Random.new(20)).set_pools
+      end
+
+      it "never places two members of the same club in one pool" do
+        pooled.each_value do |participations|
+          club_ids = participations.map { |p| p.kenshi.club_id }
+          expect(club_ids).to eq club_ids.uniq
+        end
+      end
+
+      it "keeps the pools evenly sized" do
+        expect(pooled.values.map(&:size).sort).to eq [4, 4]
+      end
+    end
+
     context "club separation when a club has more members than pools" do
       let(:pool_size) { 3 }
       let!(:big_club) { create(:club) }
