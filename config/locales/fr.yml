@@ -398,6 +398,31 @@ fr:
       send_paranoid_instructions: Si votre compte existe, vous allez bientôt recevoir un email contenant les instructions pour le déverrouiller.
       title: Renvoyer les instructions de déverrouillage
       unlocked: Votre compte a été déverrouillé avec succès, vous êtes maintenant connecté.
+  error_pages:
+    links:
+      contact: Nous contacter
+      home: Retour à l’accueil
+      rules: Règlement de la compétition
+    statuses:
+      '400':
+        message: La requête n’a pas pu être comprise. Vérifiez l’adresse et réessayez.
+        title: Requête incorrecte
+      '403':
+        message: Votre compte n’a pas accès à cette page.
+        title: Accès refusé
+      '404':
+        message: Cette adresse n’existe pas, ou la page a été déplacée.
+        title: Page introuvable
+      '406':
+        message: Cette page ne peut pas être servie dans le format demandé.
+        title: Format non disponible
+      '422':
+        message: La requête a été rejetée. Rechargez la page et réessayez.
+        title: Requête rejetée
+      default:
+        message: Une erreur est survenue. Merci de réessayer dans un instant.
+        title: Une erreur est survenue
+    switch_locale: English
   errors:
     format: "%{attribute} %{message}"
     messages:

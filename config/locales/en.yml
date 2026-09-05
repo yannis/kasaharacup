@@ -394,6 +394,31 @@ en:
       send_paranoid_instructions: If your account exists, you will receive an email with instructions for how to unlock it in a few minutes.
       title: Resend unlock instructions
       unlocked: Your account has been unlocked successfully. Please sign in to continue.
+  error_pages:
+    links:
+      contact: Contact us
+      home: Back to the home page
+      rules: Competition rules
+    statuses:
+      '400':
+        message: The request could not be understood. Check the address and try again.
+        title: Bad request
+      '403':
+        message: Your account does not have access to this page.
+        title: Access denied
+      '404':
+        message: This address does not exist, or the page has moved.
+        title: Page not found
+      '406':
+        message: This page cannot be served in the format that was requested.
+        title: Unsupported format
+      '422':
+        message: The request was rejected. Reload the page and try again.
+        title: Request rejected
+      default:
+        message: Something went wrong. Please try again in a moment.
+        title: Something went wrong
+    switch_locale: Français
   errors:
     format: "%{attribute} %{message}"
     messages:

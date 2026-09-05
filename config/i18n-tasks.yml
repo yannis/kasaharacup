@@ -110,6 +110,7 @@ ignore_unused:
   - 'simple_form.*'
   - '{date,datetime,time,number,support}.*'
   - 'errors.*'
+  - 'error_pages.statuses.*'
   - 'helpers.{submit,select,page_entries_info,are_you_sure,cancel}*'
   - 'views.pagination.*'
   - 'roles.*'
