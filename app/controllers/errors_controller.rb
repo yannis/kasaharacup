@@ -25,6 +25,6 @@ class ErrorsController < ActionController::Base # rubocop:disable Rails/Applicat
   # The i18n railtie has no per-request reset hook, so assigning I18n.locale
   # directly would leave the value on the Puma thread after the response.
   private def switch_locale(&action)
-    I18n.with_locale(ErrorPages::Locale.new(request).to_sym, &action)
+    I18n.with_locale(ErrorPages::Locale.new(request).resolve, &action)
   end
 end

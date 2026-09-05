@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe ErrorPages::Locale do
   def resolve(env = {})
-    described_class.new(ActionDispatch::TestRequest.create(env)).to_sym
+    described_class.new(ActionDispatch::TestRequest.create(env)).resolve
   end
 
   it "falls back to the default locale when the request says nothing" do
@@ -19,12 +19,38 @@ RSpec.describe ErrorPages::Locale do
     expect(resolve("action_dispatch.original_path" => "/de/cups/2026")).to eq :fr
   end
 
+  it "prefers the failed request's path over Accept-Language" do
+    expect(
+      resolve("action_dispatch.original_path" => "/fr/x", "HTTP_ACCEPT_LANGUAGE" => "en-GB,en;q=0.9")
+    ).to eq :fr
+  end
+
   it "falls back to Accept-Language when the path carries no locale" do
     expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en-GB,en;q=0.9")).to eq :en
   end
 
   it "skips unavailable languages in Accept-Language" do
     expect(resolve("HTTP_ACCEPT_LANGUAGE" => "de-DE,de;q=0.9,en;q=0.8")).to eq :en
+  end
+
+  # RFC 9110 language tags are case-insensitive.
+  it "matches Accept-Language regardless of case" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "EN-US,EN;q=0.9")).to eq :en
+  end
+
+  # Header order is not preference order, and both locales are available here,
+  # so reading the header left to right would pick the one deprioritised 9:1.
+  it "honours q-values rather than header order" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "de-DE,en;q=0.1,fr;q=0.9")).to eq :fr
+  end
+
+  it "keeps header order when q-values tie" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en,fr")).to eq :en
+  end
+
+  # "fry" is West Frisian, not French.
+  it "does not match a two-letter run inside a longer subtag" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "fry")).to eq :fr
   end
 
   it "lets an explicit ?locale= override the path, so the pages can be previewed" do
@@ -35,12 +61,14 @@ RSpec.describe ErrorPages::Locale do
     expect(resolve("QUERY_STRING" => "locale=de")).to eq :fr
   end
 
-  # A malformed query string is itself a 400. Parsing it again here would raise
-  # inside the error page and drop the visitor to Rails' plain-text failsafe.
+  # A malformed query string is itself a 400: Request#GET re-raises it as
+  # ActionController::BadRequest. Parsing it again here would raise inside the
+  # error page and drop the visitor to Rails' plain-text failsafe.
   it "does not raise when the query string cannot be parsed" do
-    request = ActionDispatch::TestRequest.create
-    allow(request).to receive(:GET).and_raise(Rack::QueryParser::ParameterTypeError)
+    expect(resolve("QUERY_STRING" => "locale=%")).to eq :fr
+  end
 
-    expect(described_class.new(request).to_sym).to eq :fr
+  it "ignores a ?locale= that is not a string" do
+    expect(resolve("QUERY_STRING" => "locale[]=en")).to eq :fr
   end
 end
