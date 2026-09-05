@@ -71,4 +71,15 @@ Rails.application.routes.draw do
       resources :videos
     end
   end
+
+  # Error pages. `config.exceptions_app` rewrites PATH_INFO to "/<status>", so
+  # these must be top level and outside the :locale scope. Order matters.
+  #
+  # /500 is served straight from public/500.html: a file read with no
+  # controller, no view and no database, so it still renders when the app
+  # itself is what failed. Other 5xx statuses (501 from NotImplemented, 409
+  # from StaleObjectError) are deliberate responses rather than a broken app,
+  # so they go to the controller — and public/501.html does not exist, which
+  # would make PublicExceptions return an empty body.
+  get "/:id", to: "errors#show", constraints: {id: /[45]\d{2}/}, as: :error
 end
