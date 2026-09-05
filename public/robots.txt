@@ -1,3 +1,7 @@
 # See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
 User-agent: *
-Disallow: /heroku/
+
+# The error pages under /heroku/ are deliberately *not* disallowed. Disallow
+# stops a crawler fetching a page, which stops it reading the page's own
+# `<meta name="robots" content="noindex">` — leaving the URL eligible for
+# URL-only indexing, which is exactly what the noindex is there to prevent.
