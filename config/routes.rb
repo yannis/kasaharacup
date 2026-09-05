@@ -81,5 +81,6 @@ Rails.application.routes.draw do
   # from StaleObjectError) are deliberate responses rather than a broken app,
   # so they go to the controller — and public/501.html does not exist, which
   # would make PublicExceptions return an empty body.
+  match "/500", to: ActionDispatch::PublicExceptions.new(Rails.public_path), via: :all
   get "/:id", to: "errors#show", constraints: {id: /[45]\d{2}/}, as: :error
 end

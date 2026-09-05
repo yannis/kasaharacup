@@ -64,4 +64,19 @@ RSpec.describe "Errors", type: :request do
     expect(response).to have_http_status(:not_found)
     expect(response.body).to include("<h1>")
   end
+
+  describe "GET /500" do
+    # ActionDispatch::Static serves public/500.html ahead of the router, so
+    # this returns 200. The 500 status only appears on the exceptions_app
+    # path, which bypasses middleware — see error_handling_spec.rb.
+    #
+    # The absent stylesheet link is what proves no controller rendered this:
+    # the ErrorsController layout emits one, and the static page has none.
+    it "serves the new self-contained page, not the controller's" do
+      get "/500"
+
+      expect(response.body).to include('lang="fr"').and include('lang="en"')
+      expect(response.body).not_to include("stylesheet")
+    end
+  end
 end
