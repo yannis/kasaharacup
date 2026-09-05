@@ -202,16 +202,6 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
     send_data(pdf.render, filename: @kenshi.full_name.parameterize(separator: "_"))
   end
 
-  # member_action :receipt do
-  #   @kenshi = Kenshi.find params[:id]
-  #   pdf = KenshiReceipt.new(@kenshi)
-  #   send_data pdf.render, filename: @kenshi.full_name.parameterize(separator: '_')+"_receipt",
-  #                         type: "application/pdf",
-  #                         disposition: "inline",
-  #                         page_size: 'A4'
-
-  # end
-
   collection_action :pdfs do
     @kenshis = Kenshi.order(:last_name)
     pdf = KenshisPdf.new(@kenshis)
