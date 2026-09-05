@@ -56,4 +56,25 @@ RSpec.describe "Error handling", type: :request do
     expect(response).to have_http_status(:internal_server_error)
     expect(response.body).to eq Rails.public_path.join("500.html").read
   end
+
+  describe "403" do
+    let(:owner) { create(:user) }
+    let(:intruder) { create(:user) }
+    let!(:kenshi) { create(:kenshi, cup: cup, user: owner) }
+
+    it "renders the 403 page for a signed-in user without permission" do
+      sign_in intruder
+
+      get edit_cup_kenshi_path(cup, kenshi, locale: :fr)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.parsed_body.css("h1").text).to eq I18n.t("error_pages.statuses.403.title", locale: :fr)
+    end
+
+    it "still redirects a signed-out visitor to the login form" do
+      get edit_cup_kenshi_path(cup, kenshi, locale: :fr)
+
+      expect(response).to redirect_to(new_user_session_path(locale: :fr))
+    end
+  end
 end

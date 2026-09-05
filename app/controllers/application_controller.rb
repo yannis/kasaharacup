@@ -17,12 +17,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Signed-in users get a real 403 page, rendered by ErrorsController through
+  # config.exceptions_app (CanCan::AccessDenied is mapped to :forbidden in
+  # config/application.rb). Signed-out visitors keep the redirect to the login
+  # form, because signing in is the actual fix for them.
   rescue_from CanCan::AccessDenied do |exception|
-    if current_user.present?
-      redirect_to root_path, alert: exception.message
-    else
-      redirect_to new_user_session_path(locale: I18n.locale), alert: I18n.t("devise.failure.unauthenticated")
-    end
+    raise exception if current_user.present?
+
+    redirect_to new_user_session_path(locale: I18n.locale),
+      alert: I18n.t("devise.failure.unauthenticated")
   end
 
   private def set_current_cup
