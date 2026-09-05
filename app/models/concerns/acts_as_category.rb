@@ -26,7 +26,9 @@ module ActsAsCategory
           :club]).where.not(participations: {pool_number: nil}).group_by { |p|
           p.pool_number
         }
-        grouped_participations.each do |i, participations|
+        # sort: the participations come back unordered, so group_by would
+        # otherwise yield the pools in row order rather than by pool number.
+        grouped_participations.sort.each do |i, participations|
           pools << Pool.new(participations: participations, number: i)
         end
       end

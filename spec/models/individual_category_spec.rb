@@ -116,6 +116,21 @@ RSpec.describe IndividualCategory do
       end
     end
 
+    context "with pools created out of order" do
+      before {
+        # Insert the higher pool number first, so the rows come back from the
+        # database in an order that does not match the pool numbering.
+        [2, 1].each do |number|
+          create(:participation, category: individual_category, pool_number: number, pool_position: 1,
+            kenshi: create(:kenshi, cup: individual_category.cup))
+        end
+      }
+
+      it "orders the pools by number, not by row order" do
+        expect(individual_category.pools.map(&:number)).to eq [1, 2]
+      end
+    end
+
     context "with 24 participations" do
       before {
         24.times do |i|
