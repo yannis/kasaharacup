@@ -50,6 +50,15 @@ module Kasaharacup
     config.active_record.encryption.deterministic_key = ENV.fetch("ENCRYPTION_DETERMINISTIC_KEY")
     config.active_record.encryption.key_derivation_salt = ENV.fetch("ENCRYPTION_KEY_DERIVATION_SALT")
 
+    # Render error pages through the router: /500 goes straight to
+    # PublicExceptions, everything else to ErrorsController. See
+    # docs/superpowers/specs/2026-09-05-custom-error-pages-design.md
+    config.exceptions_app = routes
+
+    # Without this, CanCan::AccessDenied maps to 500. ApplicationController
+    # re-raises it for signed-in users so that it renders as a real 403.
+    config.action_dispatch.rescue_responses["CanCan::AccessDenied"] = :forbidden
+
     Rails.application.routes.default_url_options = {
       protocol: ENV.fetch("APP_PROTOCOL", "http"),
       host: ENV.fetch("APP_HOST"),
