@@ -6,9 +6,19 @@ RSpec.configure do |config|
     expect(flash.alert).to eql "Vous devez vous connecter ou vous inscrire pour continuer."
   end
 
+  # A signed-in user without permission now gets a real 403 rather than a
+  # redirect to the homepage: ApplicationController re-raises
+  # CanCan::AccessDenied for them, so ErrorsController renders it through
+  # config.exceptions_app. Signed-out visitors still bounce to the login form —
+  # see #should_be_asked_to_sign_in.
+  #
+  # Only the status is asserted. config/environments/test.rb sets
+  # consider_all_requests_local, from which Rails derives
+  # show_detailed_exceptions, so DebugExceptions renders its diagnostic page
+  # here instead of the real one. spec/requests/error_handling_spec.rb turns
+  # both off and asserts the rendered 403 page itself.
   def should_not_be_authorized
-    expect(response).to redirect_to(root_path)
-    expect(flash[:alert]).to include("You are not authorized to access this page")
+    expect(response).to have_http_status(:forbidden)
   end
 
   def should_not_find_model
