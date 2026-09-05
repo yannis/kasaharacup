@@ -51,9 +51,11 @@ module Kasaharacup
     config.active_record.encryption.key_derivation_salt = ENV.fetch("ENCRYPTION_KEY_DERIVATION_SALT")
 
     # Render error pages through the router: /500 goes straight to
-    # PublicExceptions, everything else to ErrorsController. See
-    # docs/superpowers/specs/2026-09-05-custom-error-pages-design.md
-    config.exceptions_app = routes
+    # PublicExceptions, everything else to ErrorsController. ErrorPages::Dispatcher
+    # strips unparseable parameters first — see the comment there for why the
+    # controller cannot do it itself. Resolved at request time so the constant
+    # stays reloadable in development.
+    config.exceptions_app = ->(env) { ErrorPages::Dispatcher.new(Rails.application.routes).call(env) }
 
     # Without this, CanCan::AccessDenied maps to 500. ApplicationController
     # re-raises it for signed-in users so that it renders as a real 403.

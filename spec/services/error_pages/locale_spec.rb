@@ -53,6 +53,25 @@ RSpec.describe ErrorPages::Locale do
     expect(resolve("HTTP_ACCEPT_LANGUAGE" => "fry")).to eq :fr
   end
 
+  # RFC 9110: q=0 means "not acceptable", not "least preferred".
+  it "never selects a language the visitor rejected with q=0" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "de;q=1,en;q=0")).to eq :fr
+  end
+
+  it "ignores a tag whose weight is malformed rather than treating it as q=1" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en;q=abc")).to eq :fr
+  end
+
+  it "ignores a weight outside the 0-1 range" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en;q=7")).to eq :fr
+  end
+
+  it "still accepts a well-formed weight of every allowed shape" do
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en;q=1.000")).to eq :en
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en;q=0.001")).to eq :en
+    expect(resolve("HTTP_ACCEPT_LANGUAGE" => "en; q=0.5")).to eq :en
+  end
+
   it "lets an explicit ?locale= override the path, so the pages can be previewed" do
     expect(resolve("action_dispatch.original_path" => "/fr/x", "QUERY_STRING" => "locale=en")).to eq :en
   end

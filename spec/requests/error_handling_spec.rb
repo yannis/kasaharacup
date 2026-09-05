@@ -57,6 +57,33 @@ RSpec.describe "Error handling", type: :request do
     expect(response.body).to eq Rails.public_path.join("500.html").read
   end
 
+  # ActionController::Instrumentation reads request.filtered_parameters while
+  # building its payload, before the action runs, so ErrorsController re-parses
+  # whatever made the request a 400 in the first place however carefully the
+  # action avoids `params`. Without ErrorPages::Dispatcher stripping them first
+  # that second parse raises inside the exceptions app, and ShowExceptions
+  # answers a raising exceptions app with its plain-text failsafe — the visitor
+  # sends one bad parameter and gets an unstyled "500 Internal Server Error".
+  describe "unparseable parameters" do
+    it "renders the branded 400 page for a malformed query string" do
+      get "/fr?locale=%"
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body.css("h1").text).to eq I18n.t("error_pages.statuses.400.title", locale: :fr)
+    end
+
+    # A route that actually accepts POST, so the body is parsed rather than the
+    # request dying at routing first.
+    it "renders the branded 400 page for a malformed form body" do
+      post cup_kenshis_path(cup, locale: :fr),
+        params: "a[]=1&a[b]=2",
+        headers: {"CONTENT_TYPE" => "application/x-www-form-urlencoded"}
+
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body.css("h1").text).to eq I18n.t("error_pages.statuses.400.title", locale: :fr)
+    end
+  end
+
   describe "403" do
     let(:owner) { create(:user) }
     let(:intruder) { create(:user) }

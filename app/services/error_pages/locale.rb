@@ -40,17 +40,33 @@ module ErrorPages
       available(@request.get_header("action_dispatch.original_path").to_s.split("/").second)
     end
 
-    # Language tags are case-insensitive, and header order is not preference
-    # order — q-values are. `sort_by` is not stable in Ruby, so the index breaks
-    # ties and keeps "en,fr" reading left to right.
     private def from_accept_language
+      accepted_tags.lazy.filter_map { |tag| available(tag[/\b[a-z]{2}\b/]) }.first
+    end
+
+    # The tags the visitor will actually accept, best first. Language tags are
+    # case-insensitive, and header order is not preference order — q-values are.
+    # `sort_by` is not stable in Ruby, so the index breaks ties and keeps
+    # "en,fr" reading left to right.
+    private def accepted_tags
       @request.get_header("HTTP_ACCEPT_LANGUAGE").to_s.downcase
         .split(",")
         .each_with_index
-        .sort_by { |tag, index| [-(tag[/q=([\d.]+)/, 1]&.to_f || 1.0), index] }
-        .lazy
-        .filter_map { |tag, _index| available(tag[/\b[a-z]{2}\b/]) }
-        .first
+        .map { |tag, index| [tag, index, quality(tag)] }
+        .select { |_tag, _index, quality| quality&.positive? }
+        .sort_by { |_tag, index, quality| [-quality, index] }
+        .map(&:first)
+    end
+
+    # RFC 9110: a weight is 0-1 with at most three decimals, and `q=0` means
+    # "not acceptable" rather than "least preferred". A malformed weight is not
+    # a preference either, so both are dropped rather than guessed at — nil here
+    # removes the tag from consideration.
+    private def quality(tag)
+      weight = tag[/;\s*q=([^;]*)/, 1]
+      return 1.0 if weight.nil?
+
+      weight.match?(/\A(?:0(?:\.\d{1,3})?|1(?:\.0{1,3})?)\z/) ? weight.to_f : nil
     end
 
     private def available(code)
