@@ -2,6 +2,12 @@
 <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
   <div class="prose prose-red-900 prose-lg text-gray-900 mx-auto py-10">
     <h1><%= @title %></h1>
+    <div class="rules__warning not-prose relative border-2 border-red-800 rounded-lg p-4 my-8">
+      <span class="absolute -top-2.5 left-3 bg-red-800 text-white text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full">
+        <%= t(".warning.label") %>
+      </span>
+      <p class="mt-1 text-base text-gray-700"><%= t(".warning.text") %></p>
+    </div>
     <%= md_to_html(t(".content")) %>
   </div>
 </div>

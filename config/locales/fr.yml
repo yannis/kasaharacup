@@ -643,8 +643,6 @@ fr:
       content: |
         Nous suivons pour l'essentiel les règles des tournois de l'EKF, à savoir celles écrites dans [le règlement des 34èmes Championnats d'Europe de kendo 2026](https://www.ekf-eu.com/documents/34EKC%202026%20RULES_FINAL.pdf).
 
-        Ces règles peuvent être adaptées en fonction du nombre de kenshis et de catégories inscrits.
-
         - [Compétition par équipe — poule](#team-pool)
         - [Compétition par équipe — tournoi](#team-tournament)
         - [Compétition individuelle — poule](#individual-pool)
@@ -724,6 +722,9 @@ fr:
 
         L'encho est limité à trois minutes. Si l'encho ne suffit pas à déterminer un vainqueur, le combat est décidé par décision des arbitres (hantei), sauf en demi-finales et en finales, où l'encho s'applique sans limite de temps.
       title: Règlement de la compétition
+      warning:
+        label: Important
+        text: 'Ce qui suit pose le cadre général, et non un programme figé. Le nombre de kenshis et d’équipes inscrits, et les catégories dans lesquelles ils le sont, déterminent le format définitif : certains points peuvent donc être adaptés, qu’il s’agisse de disputer une catégorie en poules ou directement en tableau, de la durée des combats, du recours ou non à l’encho, et ainsi de suite. Toute adaptation est annoncée lors du tournoi.'
   simple_form:
     error_notification:
       default_message: 'Veuillez vérifier les problèmes suivants :'

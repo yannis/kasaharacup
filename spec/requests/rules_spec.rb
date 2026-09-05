@@ -53,6 +53,24 @@ RSpec.describe "Rules", :en do
       expect(response.body).not_to include("1. Highest number")
     end
 
+    it "warns up front that the rules are ground rules, before the rules themselves" do
+      get rules_path(locale: :en)
+      prose = response.parsed_body.css("div.prose").first
+      callout = prose.css(".rules__warning").first
+      expect(callout.text).to match(/ground rules/i)
+      expect(callout.text).to include("pools", "how long the fights last", "encho")
+
+      # Between the title and the first rule, so nobody reads a duration as
+      # gospel before being told it may move.
+      order = prose.css("h1, .rules__warning, h2").map(&:name)
+      expect(order.first(3)).to eq %w[h1 div h2]
+    end
+
+    it "does not also carry the weaker sentence the callout replaces" do
+      get rules_path(locale: :en)
+      expect(response.body).not_to include("These rules may be adapted depending on")
+    end
+
     it "carries content from all four sections" do
       get rules_path(locale: :en)
       expect(response.body).to include("the duration is 4 minutes for all categories")
@@ -88,6 +106,13 @@ RSpec.describe "Rules", :en do
       expect(response.body).to include("4 minutes pour les juniors et de 5 minutes pour les seniors")
       expect(response.body).to include("Le temps de combat est de 4 minutes")
       expect(response.body).to include("5 minutes pour les seniors et de 4 minutes pour les juniors")
+    end
+
+    it "warns up front that the rules are ground rules" do
+      get rules_path(locale: :fr)
+      callout = response.parsed_body.css("div.prose .rules__warning").first
+      expect(callout.text).to include("cadre général")
+      expect(callout.text).to include("poules", "durée des combats", "encho")
     end
 
     it "leaves the Japanese kendo terms untranslated" do

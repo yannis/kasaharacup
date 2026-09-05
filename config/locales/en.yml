@@ -640,8 +640,6 @@ en:
       content: |
         We mainly follow the rules of EKF tournaments, namely those written in [the Rules & Regulations of the 34th European Kendo Championships 2026](https://www.ekf-eu.com/documents/34EKC%202026%20RULES_FINAL.pdf).
 
-        These rules may be adapted depending on the number of kenshis and categories entered.
-
         - [Team competition — pool](#team-pool)
         - [Team competition — tournament](#team-tournament)
         - [Individual competition — pool](#individual-pool)
@@ -721,6 +719,9 @@ en:
 
         There is a time limit of three minutes for the encho. If the encho is not enough to determine a winner, the fight is decided by shinpan-decisions (hantei), except for semi-finals and finals, where encho without time limit applies.
       title: Competition rules
+      warning:
+        label: Important
+        text: 'What follows are ground rules, not a fixed programme. How many kenshis and teams enter, and in which categories, decides the final format — so parts of it may be adapted: whether a category is fought in pools or straight in a bracket, how long the fights last, whether encho is used, and so on. Any adaptation is announced at the tournament.'
   simple_form:
     error_notification:
       default_message: 'Please review the problems below:'
