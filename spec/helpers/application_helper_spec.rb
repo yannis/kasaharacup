@@ -53,4 +53,17 @@ RSpec.describe ApplicationHelper, :fr do
       expect(helper.cup_description(cup)).to eq t("layout.description_short")
     end
   end
+
+  describe "#page_title" do
+    let(:cup) { build(:cup, start_on: Date.new(2026, 9, 26), year: 2026) }
+
+    it "names the cup alone when the view declared no title of its own" do
+      expect(helper.page_title(cup)).to eq "Kasahara Cup 2026"
+    end
+
+    it "puts the view's own title first" do
+      helper.title("Règlement de la compétition")
+      expect(helper.page_title(cup)).to eq "Règlement de la compétition — Kasahara Cup 2026"
+    end
+  end
 end

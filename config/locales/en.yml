@@ -553,6 +553,7 @@ en:
     navigation:
       about: About
       account: Account
+      rules: Rules
   navigation:
     kenshis:
       text: Kenshis (%{kenshis})
@@ -634,6 +635,93 @@ en:
   roles:
     annotator: annotator
     manager: manager
+  rules:
+    show:
+      content: |
+        We mainly follow the rules of EKF tournaments, namely those written in [the Rules & Regulations of the 34th European Kendo Championships 2026](https://www.ekf-eu.com/documents/34EKC%202026%20RULES_FINAL.pdf).
+
+        - [Team competition — pool](#team-pool)
+        - [Team competition — tournament](#team-tournament)
+        - [Individual competition — pool](#individual-pool)
+        - [Individual competition — tournament](#individual-tournament)
+
+        ## Team competition {#team}
+
+        ### Pool {#team-pool}
+
+        Every pool is in principle composed of three (3) teams, who fight in the following order: 1><2, 1><3, 2><3. If the inscriptions make it necessary, pools of two (2) or four (4) are included.
+
+        The teams are divided into pools by drawing, on condition that teams of the same club are kept out of the same pool. The 4 teams that got the medals at the previous Team Championships are seeded into different pools and removed to the far end of the grid.
+
+        The order of matches is announced, and pools may be combined, respecting that same principle of separation. The qualifiers from each pool are announced for each category before the competition starts.
+
+        For the first round, the names and the order of combats are handed in at the managers' meeting; all others at the administration table of the shiai-jo immediately after the end of the previous fight of the respective team.
+
+        The combats are played by "sanbon-shobu" and the duration is 4 minutes for all categories. A hikiwake (an even match) is declared in case no points are scored or if the score is one to one.
+
+        If two teams remain even at the end of the pool, a kettei-sen (a supplementary fight) between two of the team members decides the victory. This fight is held according to the "ippon-shobu" principle, without time limit.
+
+        Determination of the winning team in both pool and tournament matches is made in the following order of precedence:
+
+        1. Highest number of individual winners; but, if it is a tie, then
+        2. Highest number of points scored.
+        3. Should 1. and 2. still be a tie, a hikiwake is declared in the pool matches (see below) and a kettei-sen is conducted in the tournament matches.
+        4. A default is regarded as a loss: the opponent is given 2 points.
+
+        Determination of the ranking of teams in the pool matches is made in the following order of precedence:
+
+        1. Higher number of team matches won; but, if it is a tie, then
+        2. Lower number of team matches lost; but, if it is a tie, then
+        3. Higher number of hikiwake in team matches, if it is still a tie, then
+        4. Higher number of individual winners; if it is still a tie, then
+        5. Lower number of individual losses; but, if it is a tie, then
+        6. Higher number of individual hikiwake, if it is still a tie, then
+        7. Higher number of points scored, if it is still a tie, then
+        8. Lower number of points lost.
+
+        If the situation is still a tie between two teams, either to determine the order between the first and second or the second and third team in the pool, a kettei-sen ("ippon-shobu") between representatives of the two teams determines the ranking.
+
+        Should the situation be a tie between all the teams in the pool, the ranking is determined by a pool played by a representative of each team in kettei-sen ("ippon-shobu") of 3 minutes, like in the individual tournament.
+
+        ### Tournament {#team-tournament}
+
+        The tournament uses the knockout system. The refereeing rules and the principles for discerning the winners are the same as those defined for the pools. The duration of fights is 4 minutes for juniors and 5 minutes for seniors.
+
+        ## Individual competition {#individual}
+
+        ### Pool {#individual-pool}
+
+        Every pool is in principle composed of three (3) kenshis, who fight in the following order: 1><2, 1><3, 2><3. If the inscriptions make it necessary, pools of two (2) or four (4) are included. Pools may be combined, or a different order of fights announced.
+
+        The division into pools is handled by drawing, on condition that kenshis of the same club are kept out of the same pool. Also, the 4 competitors that got the medals at the previous respective Championships are seeded into different pools and moved to the corner of the elimination bracket.
+
+        The qualifiers from each pool are announced for each category before the competition starts.
+
+        The combat time is 4 minutes, following the "sanbon-shobu" rule. If appropriate, an even match (hikiwake) may be the result.
+
+        The kenshis of the same pool are ranked as follows. The criteria are applied in that order, and the subsequent criteria only if a clear decision is not reached:
+
+        1. The higher number of fights won; if it is still a tie, then
+        2. The lower number of fights lost; if it is still a tie, then
+        3. The higher number of hikiwake; if it is still a tie, then
+        4. The higher number of points scored; if it is still a tie, then
+        5. The lower number of points lost.
+
+        In case of equality between two kenshis, one kettei-sen (a supplementary fight) takes place immediately after the normal pool fights, to establish the final order among them. These fights follow the "ippon-shobu" rule, without time limit. In a pool of four, no kettei-sen takes place to determine the third and fourth positions if the first and second positions are clear.
+
+        In case of equality between all the kenshis of a pool, they fight the pool again following the "ippon-shobu" principle. If even after two such rounds the order among them is not clarified, the result is determined by lot (chusen).
+
+        ### Tournament {#individual-tournament}
+
+        After the pool system, the qualifiers are put on the tournament grid. The fights follow the knockout system.
+
+        The combat time is 5 minutes for seniors and 4 minutes for juniors, following the "sanbon-shobu" rule, with the possibility of one prolongation (encho).
+
+        There is a time limit of three minutes for the encho. If the encho is not enough to determine a winner, the fight is decided by shinpan-decisions (hantei), except for semi-finals and finals, where encho without time limit applies.
+      title: Competition rules
+      warning:
+        label: Important
+        text: 'What follows are ground rules, not a fixed programme. How many kenshis and teams enter, and in which categories, decides the final format — so parts of it may be adapted: whether a category is fought in pools or straight in a bracket, how long the fights last, whether encho is used, and so on. Any adaptation is announced at the tournament.'
   simple_form:
     error_notification:
       default_message: 'Please review the problems below:'

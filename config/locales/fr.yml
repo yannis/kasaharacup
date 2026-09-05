@@ -556,6 +556,7 @@ fr:
     navigation:
       about: A propos
       account: Compte
+      rules: Règlement
   navigation:
     kenshis:
       text: Inscrits (%{kenshis})
@@ -637,6 +638,93 @@ fr:
   roles:
     annotator: annotateur(trice)
     manager: manager
+  rules:
+    show:
+      content: |
+        Nous suivons pour l'essentiel les règles des tournois de l'EKF, à savoir celles écrites dans [le règlement des 34èmes Championnats d'Europe de kendo 2026](https://www.ekf-eu.com/documents/34EKC%202026%20RULES_FINAL.pdf).
+
+        - [Compétition par équipe — poule](#team-pool)
+        - [Compétition par équipe — tournoi](#team-tournament)
+        - [Compétition individuelle — poule](#individual-pool)
+        - [Compétition individuelle — tournoi](#individual-tournament)
+
+        ## Compétition par équipe {#team}
+
+        ### Poule {#team-pool}
+
+        Chaque poule est en principe composée de trois (3) équipes, qui se rencontrent dans l'ordre suivant : 1><2, 1><3, 2><3. Si les inscriptions le rendent nécessaire, des poules de deux (2) ou de quatre (4) sont constituées.
+
+        Les équipes sont réparties dans les poules par tirage au sort, à condition que les équipes d'un même club ne se retrouvent pas dans la même poule. Les 4 équipes médaillées lors des précédents championnats par équipe sont réparties dans des poules différentes et placées aux extrémités du tableau.
+
+        L'ordre des rencontres est annoncé et les poules peuvent être combinées, dans le respect de ce même principe de séparation. Le nombre de qualifiés par poule est annoncé pour chaque catégorie avant le début de la compétition.
+
+        Pour le premier tour, les noms et l'ordre des combats sont remis lors de la réunion des responsables d'équipe ; pour tous les suivants, à la table administrative du shiai-jo immédiatement après la fin de la rencontre précédente de l'équipe concernée.
+
+        Les combats se déroulent en « sanbon-shobu » et durent 4 minutes dans toutes les catégories. Un hikiwake (match nul) est déclaré si aucun point n'est marqué ou si le score est de un à un.
+
+        Si deux équipes restent à égalité à la fin de la poule, un kettei-sen (combat supplémentaire) entre deux membres des équipes décide de la victoire. Ce combat se déroule selon le principe « ippon-shobu », sans limite de temps.
+
+        L'équipe gagnante d'une rencontre, en poule comme en tournoi, est déterminée dans l'ordre de préséance suivant :
+
+        1. Le plus grand nombre de vainqueurs individuels ; en cas d'égalité, alors
+        2. Le plus grand nombre de points marqués.
+        3. Si les critères 1. et 2. laissent subsister une égalité, un hikiwake est déclaré dans les rencontres de poule (voir ci-dessous) et un kettei-sen est organisé dans les rencontres de tournoi.
+        4. Un forfait est considéré comme une défaite : l'adversaire reçoit 2 points.
+
+        Le classement des équipes dans les rencontres de poule est déterminé dans l'ordre de préséance suivant :
+
+        1. Le plus grand nombre de rencontres gagnées ; en cas d'égalité, alors
+        2. Le plus petit nombre de rencontres perdues ; en cas d'égalité, alors
+        3. Le plus grand nombre de hikiwake dans les rencontres ; en cas d'égalité, alors
+        4. Le plus grand nombre de vainqueurs individuels ; en cas d'égalité, alors
+        5. Le plus petit nombre de défaites individuelles ; en cas d'égalité, alors
+        6. Le plus grand nombre de hikiwake individuels ; en cas d'égalité, alors
+        7. Le plus grand nombre de points marqués ; en cas d'égalité, alors
+        8. Le plus petit nombre de points perdus.
+
+        Si l'égalité subsiste entre deux équipes, qu'il s'agisse de déterminer l'ordre entre la première et la deuxième ou entre la deuxième et la troisième équipe de la poule, un kettei-sen (« ippon-shobu ») entre les représentants des deux équipes détermine le classement.
+
+        Si l'égalité subsiste entre toutes les équipes de la poule, le classement est déterminé par une poule disputée par un représentant de chaque équipe en kettei-sen (« ippon-shobu ») de 3 minutes, comme dans le tournoi individuel.
+
+        ### Tournoi {#team-tournament}
+
+        Le tournoi se déroule par élimination directe. Les règles d'arbitrage et les principes de détermination des vainqueurs sont ceux définis pour les poules. La durée des combats est de 4 minutes pour les juniors et de 5 minutes pour les seniors.
+
+        ## Compétition individuelle {#individual}
+
+        ### Poule {#individual-pool}
+
+        Chaque poule est en principe composée de trois (3) kenshis, qui se rencontrent dans l'ordre suivant : 1><2, 1><3, 2><3. Si les inscriptions le rendent nécessaire, des poules de deux (2) ou de quatre (4) sont constituées. Les poules peuvent être combinées ou un autre ordre de combats être annoncé.
+
+        La répartition dans les poules se fait par tirage au sort, à condition que les kenshis d'un même club ne se retrouvent pas dans la même poule. En outre, les 4 compétiteurs médaillés lors des championnats précédents correspondants sont répartis dans des poules différentes et placés aux angles du tableau d'élimination.
+
+        Le nombre de qualifiés par poule est annoncé pour chaque catégorie avant le début de la compétition.
+
+        Le temps de combat est de 4 minutes, selon la règle « sanbon-shobu ». Le cas échéant, le combat peut se terminer par un match nul (hikiwake).
+
+        Les kenshis d'une même poule sont classés comme suit. Les critères sont appliqués dans cet ordre, et les critères suivants uniquement si une décision claire n'est pas atteinte :
+
+        1. Le plus grand nombre de combats gagnés ; en cas d'égalité, alors
+        2. Le plus petit nombre de combats perdus ; en cas d'égalité, alors
+        3. Le plus grand nombre de hikiwake ; en cas d'égalité, alors
+        4. Le plus grand nombre de points marqués ; en cas d'égalité, alors
+        5. Le plus petit nombre de points perdus.
+
+        En cas d'égalité entre deux kenshis, un kettei-sen (combat supplémentaire) a lieu immédiatement après les combats de poule afin d'établir l'ordre final entre eux. Ces combats suivent la règle « ippon-shobu », sans limite de temps. Dans une poule de quatre, aucun kettei-sen n'a lieu pour déterminer les troisième et quatrième places si les première et deuxième places sont claires.
+
+        En cas d'égalité entre tous les kenshis d'une poule, la poule est disputée à nouveau selon le principe « ippon-shobu ». Si, même après deux tours de ce type, l'ordre entre les kenshis n'est pas clarifié, le résultat est déterminé par tirage au sort (chusen).
+
+        ### Tournoi {#individual-tournament}
+
+        À l'issue des poules, les qualifiés sont placés sur le tableau du tournoi. Les combats se déroulent par élimination directe.
+
+        Le temps de combat est de 5 minutes pour les seniors et de 4 minutes pour les juniors, selon la règle « sanbon-shobu », avec la possibilité d'une prolongation (encho).
+
+        L'encho est limité à trois minutes. Si l'encho ne suffit pas à déterminer un vainqueur, le combat est décidé par décision des arbitres (hantei), sauf en demi-finales et en finales, où l'encho s'applique sans limite de temps.
+      title: Règlement de la compétition
+      warning:
+        label: Important
+        text: 'Ce qui suit pose le cadre général, et non un programme figé. Le nombre de kenshis et d’équipes inscrits, et les catégories dans lesquelles ils le sont, déterminent le format définitif : certains points peuvent donc être adaptés, qu’il s’agisse de disputer une catégorie en poules ou directement en tableau, de la durée des combats, du recours ou non à l’encho, et ainsi de suite. Toute adaptation est annoncée lors du tournoi.'
   simple_form:
     error_notification:
       default_message: 'Veuillez vérifier les problèmes suivants :'
