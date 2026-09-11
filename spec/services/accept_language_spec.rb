@@ -50,6 +50,17 @@ RSpec.describe AcceptLanguage do
     expect(best("fry")).to be_nil
   end
 
+  # Only the primary subtag names the language. "gsw-FR" is Swiss German as
+  # spoken in France, not French, and "fry-FR" is still West Frisian.
+  it "does not read the region of a three-letter tag as the language" do
+    expect(best("gsw-FR")).to be_nil
+    expect(best("fry-FR")).to be_nil
+  end
+
+  it "skips a three-letter tag whose region collides with an offered locale" do
+    expect(best("gsw-FR,en;q=0.8")).to eq :en
+  end
+
   # RFC 9110: q=0 means "not acceptable", not "least preferred".
   it "never selects a language the visitor rejected with q=0" do
     expect(best("de;q=1,en;q=0")).to be_nil
@@ -67,5 +78,27 @@ RSpec.describe AcceptLanguage do
     expect(best("en;q=1.000")).to eq :en
     expect(best("en;q=0.001")).to eq :en
     expect(best("en; q=0.5")).to eq :en
+  end
+
+  # RFC 9110 makes the digits after the point optional: `0*3DIGIT`.
+  it "accepts a weight with a trailing point and no decimals" do
+    expect(best("en;q=1.")).to eq :en
+    expect(best("en;q=1.,fr")).to eq :en
+  end
+
+  # RFC 9110 list syntax is `element *( OWS "," OWS element )`, so the space
+  # before a comma belongs to the list and must not invalidate the weight.
+  context "when the header pads its commas with optional whitespace" do
+    it "keeps a weighted tag that is followed by a space" do
+      expect(best("fr;q=0.2 ,en;q=0.1")).to eq :fr
+    end
+
+    it "keeps a weighted tag surrounded by spaces mid-header" do
+      expect(best("de, en;q=0.9 , nl")).to eq :en
+    end
+
+    it "keeps a trailing weighted tag padded at the end of the header" do
+      expect(best("en;q=0.9 ")).to eq :en
+    end
   end
 end
