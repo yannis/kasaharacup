@@ -9,7 +9,6 @@ class Team < ApplicationRecord
 
   validates :name, presence: true
   validates :name, uniqueness: {scope: :team_category_id}
-  validate :number_of_participations
 
   delegate :cup, to: :team_category
 
@@ -78,12 +77,5 @@ class Team < ApplicationRecord
 
   def fitness
     kenshis.inject(0) { |sum, k| sum + k.fitness }
-  end
-
-  protected def number_of_participations
-    if participations.count > 6
-      errors.add(:participations,
-        I18n.t("activerecord.errors.models.team.participations"))
-    end
   end
 end

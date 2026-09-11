@@ -38,6 +38,12 @@ module Kasaharacup
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # ActiveAdmin re-renders the form when a record fails validation, but
+    # `responders` answers with :ok by default and Turbo discards a 200 that is
+    # not a redirect -- the admin would see nothing at all. Answer 422 so the
+    # re-rendered form, errors included, reaches the browser.
+    config.responders.error_status = :unprocessable_content
+
     # I18n
     config.i18n.available_locales = %i[en fr]
     config.i18n.default_locale = :fr
