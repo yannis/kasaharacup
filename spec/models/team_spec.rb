@@ -18,6 +18,8 @@ RSpec.describe Team do
     it { expect(team.participations.count).to eq 0 }
     it { expect(team).to be_valid_verbose }
     it { expect(team).to be_incomplete }
+    it { expect(described_class.incomplete.all).to include(team) }
+    it { expect(described_class.complete.all).not_to include(team) }
     it { expect(team.name_and_status).to eql "SDK" }
     it { expect(team.name_and_category).to eql "SDK (team_cat)" }
     it { expect(team.poster_name).to eql "SDK" }
@@ -95,6 +97,68 @@ RSpec.describe Team do
       it { expect(team).to be_complete }
       it { expect(team).to be_isvalid }
       it { expect(team.participations.count).to eq 7 }
+    end
+  end
+
+  describe "a team in a category of three" do
+    let(:team_category) { create(:team_category, name: "team_cat", cup: cup, team_size: 3) }
+
+    context "with 3 participations" do
+      before {
+        create_list(:participation, 3, team: team, category: team_category)
+        team.reload
+      }
+
+      it { expect(team).to be_complete }
+      it { expect(team).to be_isvalid }
+      it { expect(team.name_and_status).to eql "SDK (complete)" }
+      it { expect(described_class.complete.all).to include(team) }
+      it { expect(described_class.incomplete.all).not_to include(team) }
+    end
+
+    context "with 2 participations" do
+      before {
+        create_list(:participation, 2, team: team, category: team_category)
+        team.reload
+      }
+
+      it { expect(team).to be_incomplete }
+      it { expect(team).to be_isvalid }
+      it { expect(described_class.incomplete.all).to include(team) }
+      it { expect(described_class.complete.all).not_to include(team) }
+    end
+
+    context "with 1 participation" do
+      before {
+        create_list(:participation, 1, team: team, category: team_category)
+        team.reload
+      }
+
+      it { expect(team).to be_incomplete }
+      it { expect(team).not_to be_isvalid }
+      it { expect(described_class.incomplete.all).to include(team) }
+    end
+  end
+
+  describe "the size scopes across categories" do
+    let(:small_category) { create(:team_category, name: "trios", cup: cup, team_size: 3) }
+    let(:big_category) { create(:team_category, name: "quintets", cup: cup, team_size: 5) }
+    let(:small_team) { create(:team, name: "Trio", team_category: small_category) }
+    let(:big_team) { create(:team, name: "Quintet", team_category: big_category) }
+
+    before {
+      create_list(:participation, 3, team: small_team, category: small_category)
+      create_list(:participation, 3, team: big_team, category: big_category)
+    }
+
+    it "counts three members as complete only where the category fields three" do
+      expect(cup.teams.complete).to contain_exactly(small_team)
+      expect(cup.teams.incomplete).to contain_exactly(big_team)
+    end
+
+    it "stays a plain relation, so it counts and chains like any other scope" do
+      expect(cup.teams.incomplete.count).to eq 1
+      expect(cup.teams.complete.order(:name).pluck(:name)).to eq ["Trio"]
     end
   end
 end
