@@ -85,8 +85,6 @@ en:
           attributes:
             dob:
               blank: Date of birth (DOB) is required for junior registrations
-        team:
-          participations: Participations
         user:
           attributes:
             current_password:

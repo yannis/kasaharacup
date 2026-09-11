@@ -88,8 +88,6 @@ fr:
           attributes:
             dob:
               blank: requise pour les juniors
-        team:
-          participations: Participations
         user:
           attributes:
             current_password:

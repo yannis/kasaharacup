@@ -84,5 +84,17 @@ RSpec.describe Team do
       it { expect(team).to be_isvalid }
       it { expect(team.participations.count).to eq 6 }
     end
+
+    context "with more participations than the category can field" do
+      before {
+        create_list(:participation, 7, team: team, category: team_category)
+        team.reload
+      }
+
+      it { expect(team).to be_valid_verbose }
+      it { expect(team).to be_complete }
+      it { expect(team).to be_isvalid }
+      it { expect(team.participations.count).to eq 7 }
+    end
   end
 end

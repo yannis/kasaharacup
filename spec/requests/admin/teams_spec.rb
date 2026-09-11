@@ -16,4 +16,12 @@ RSpec.describe "Admin teams" do
     expect(response).to have_http_status(:unprocessable_content)
     expect(team.reload.name).to eq "Swiss Team"
   end
+
+  it "renames a team carrying more members than its category can field" do
+    create_list(:participation, 7, team: team, category: team_category)
+
+    patch admin_team_path(team), params: {team: {name: "Swiss Team 1"}}, as: :turbo_stream
+
+    expect(team.reload.name).to eq "Swiss Team 1"
+  end
 end
