@@ -17,28 +17,23 @@ class Team < ApplicationRecord
       .where(participations: {team_id: nil})
   end
 
+  # Both sides of the comparison are correlated subqueries rather than joins.
+  # A join to team_categories would clash: the usual entry point is Cup#teams,
+  # a has_many :through that already joins that table, so Rails aliases the
+  # second one and the comparison reads the wrong copy. Counting in a subquery
+  # instead of GROUP BY ... HAVING also keeps the result an ordinary relation,
+  # so callers can order, chain and #count it like any other scope, and a team
+  # with no members at all still counts as incomplete.
+  MEMBER_COUNT = "(SELECT COUNT(*) FROM participations WHERE participations.team_id = teams.id)"
+  TEAM_SIZE = "(SELECT team_size FROM team_categories WHERE team_categories.id = teams.team_category_id)"
+  private_constant :MEMBER_COUNT, :TEAM_SIZE
+
   def self.incomplete
-    joins(:participations)
-      .group("teams.id")
-      .having("COUNT(participations.id) < 5")
+    where("#{MEMBER_COUNT} < #{TEAM_SIZE}")
   end
 
   def self.complete
-    joins(:participations)
-      .group("teams.id")
-      .having("COUNT(participations.id) >= 5")
-  end
-
-  def self.valid
-    joins(:participations)
-      .group("teams.id")
-      .having("COUNT(participations.id) >= 3")
-  end
-
-  def self.invalid
-    joins(:participations)
-      .group("teams.id")
-      .having("COUNT(participations.id) < 3")
+    where("#{MEMBER_COUNT} >= #{TEAM_SIZE}")
   end
 
   def to_s
@@ -46,15 +41,17 @@ class Team < ApplicationRecord
   end
 
   def complete?
-    participations.size >= 5
+    participations.size >= team_category.team_size
   end
 
   def incomplete?
     !complete?
   end
 
+  # A team stays in the running while it can still take a majority of the
+  # bouts: 3 of 5, 2 of 3. The missing fighters are forfeited.
   def isvalid?
-    participations.size > 2
+    participations.size > team_category.team_size / 2
   end
 
   def name_and_status
