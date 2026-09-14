@@ -200,16 +200,13 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
   member_action :pdf do
     @kenshi = Kenshi.find params[:id]
     pdf = KenshiPdf.new(@kenshi)
-    send_data(pdf.render, filename: @kenshi.full_name.parameterize(separator: "_"))
+    send_pdf pdf, filename: @kenshi.full_name
   end
 
   collection_action :pdfs do
     @kenshis = Kenshi.includes(:club).order(:last_name)
     pdf = KenshisPdf.new(@kenshis)
-    send_data pdf.render, filename: "kenshis",
-      type: "application/pdf",
-      disposition: "inline",
-      page_size: "A4"
+    send_pdf pdf, filename: "kenshis"
   end
 
   collection_action :dormitory_csv do

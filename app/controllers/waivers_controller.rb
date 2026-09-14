@@ -5,9 +5,6 @@ class WaiversController < ApplicationController
 
   def show
     pdf = WaiverPdf.new(@cup)
-    send_data pdf.render, filename: "junior_waiver_#{@cup.year}.pdf",
-      type: "application/pdf",
-      disposition: "inline",
-      page_size: "A4"
+    send_pdf pdf, filename: "junior_waiver_#{@cup.year}"
   end
 end
