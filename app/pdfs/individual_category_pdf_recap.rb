@@ -15,7 +15,12 @@ class IndividualCategoryPdfRecap < Prawn::Document
       cup_name_and_logo(category: individual_category)
     end
 
-    individual_category.pools.sort_by(&:number).each_with_index do |pool, i|
+    pools = individual_category.pools.sort_by(&:number)
+    initials = Kenshi.first_name_initials_for(
+      pools.flat_map { |pool| pool.participations.filter_map(&:kenshi) }, category: individual_category
+    )
+
+    pools.each_with_index do |pool, i|
       font_size 12
       move_down(-3)
       if i % 7 == 0
@@ -34,7 +39,7 @@ class IndividualCategoryPdfRecap < Prawn::Document
           pool.participations.map(&:kenshi).each_with_index do |kenshi, i|
             data << [
               i + 1,
-              "#{kenshi.last_name} #{kenshi.first_name_initials(category: individual_category)} (#{kenshi.club})"
+              "#{kenshi.last_name} #{initials[kenshi.id]} (#{kenshi.club})"
             ]
           end
           table(data, cell_style: {inline_format: true, size: 12}, width: 450) do

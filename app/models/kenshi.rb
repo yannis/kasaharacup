@@ -167,6 +167,19 @@ class Kenshi < ApplicationRecord
     end
   end
 
+  # The same initials #first_name_initials gives, for a whole collection in one
+  # query rather than one per kenshi. Returns a hash {kenshi.id => initials}.
+  def self.first_name_initials_for(kenshis, category: nil)
+    return {} if kenshis.empty?
+
+    same_name_groups = category ? category_name_groups(kenshis, category) : cup_name_groups(kenshis)
+    group_key = category ? ->(kenshi) { kenshi.last_name } : ->(kenshi) { [kenshi.cup_id, kenshi.last_name] }
+
+    kenshis.to_h do |kenshi|
+      [kenshi.id, initials_within(kenshi, same_name_groups.fetch(group_key.call(kenshi), []))]
+    end
+  end
+
   private_class_method def self.cup_name_groups(kenshis)
     Kenshi.where(cup_id: kenshis.map(&:cup_id).uniq, last_name: kenshis.map(&:last_name).uniq)
       .group_by { |kenshi| [kenshi.cup_id, kenshi.last_name] }
@@ -181,12 +194,15 @@ class Kenshi < ApplicationRecord
   end
 
   private_class_method def self.format_with_initials(kenshi, same_name_group)
+    normalize_poster_name("#{kenshi.last_name} #{initials_within(kenshi, same_name_group)}")
+  end
+
+  private_class_method def self.initials_within(kenshi, same_name_group)
     others = same_name_group.reject { |k| k.id == kenshi.id }
     my_initials = single_initials(kenshi.first_name)
-    if others.any? { |k| single_initials(k.first_name) == my_initials }
-      my_initials = double_initials(kenshi.first_name)
-    end
-    normalize_poster_name("#{kenshi.last_name} #{my_initials}")
+    return double_initials(kenshi.first_name) if others.any? { |k| single_initials(k.first_name) == my_initials }
+
+    my_initials
   end
 
   private_class_method def self.single_initials(first_name)

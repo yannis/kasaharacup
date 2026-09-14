@@ -18,7 +18,10 @@ class TeamCategoryPdf < Prawn::Document
       text @team_category.name, align: :center
     end
 
-    @team_category.teams.includes(kenshis: [:club, participations: :category]).order(:name).each do |team|
+    teams = @team_category.teams.includes(kenshis: [:club, participations: :category]).order(:name).to_a
+    poster_names = Kenshi.poster_names_for(teams.flat_map(&:kenshis), category: @team_category)
+
+    teams.each do |team|
       start_new_page layout: :portrait
 
       bounding_box [bounds.left + 10, bounds.top - 50], width: 500 do
@@ -32,12 +35,14 @@ class TeamCategoryPdf < Prawn::Document
         end
       end
 
-      team.kenshis.find_each do |kenshi|
+      # .each, not .find_each: the roster is already loaded above, and batching
+      # it again would re-read every team's members from the database.
+      team.kenshis.each do |kenshi|
         start_new_page layout: :landscape
 
         bounding_box [bounds.left + 10, bounds.top - 280], width: 700 do
-          font_size landscape_size(kenshi.poster_name(category: team_category))
-          text kenshi.poster_name(category: team_category), align: :center
+          font_size landscape_size(poster_names[kenshi.id])
+          text poster_names[kenshi.id], align: :center
         end
         bounding_box [bounds.left + 10, bounds.top - 500], width: 700 do
           font_size 36
