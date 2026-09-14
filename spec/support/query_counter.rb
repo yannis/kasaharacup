@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
 module QueryCounter
-  # The SQL a block sends to the database, minus what says nothing about how a
-  # page scales: schema lookups, and the query-cache hits Rails serves from
-  # memory within a single request.
+  # The SQL a block sends to the database, minus the schema lookups that say
+  # nothing about how a page scales. Query-cache hits are counted too, and
+  # marked: Rails serves them from memory, but a page that asks for the same row
+  # once per item still asks once per item, and that is the N+1 we are hunting.
+  # Leaving them out made the whole guard blind to the commonest shape of all —
+  # many rows reaching for one shared parent, whose SQL is byte-identical.
   def count_queries
     queries = []
     subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |_, _, _, _, payload|
-      next if payload[:name] == "SCHEMA" || payload[:cached]
+      next if payload[:name] == "SCHEMA"
 
-      queries << payload[:sql]
+      queries << (payload[:cached] ? "CACHE #{payload[:sql]}" : payload[:sql])
     end
     yield
     queries

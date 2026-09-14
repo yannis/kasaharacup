@@ -54,19 +54,23 @@ RSpec.describe "Query counts" do
     TeamCategoryBracketBuilder.new(team_category.reload, rebuild_started: true).call
   end
 
+  # The count is taken from the second render, so that is the one whose status
+  # has to hold: a page that starts failing at the larger size would otherwise
+  # pass the guard by issuing fewer queries on its error page.
   def queries_for(path)
     get path
+    queries = count_queries { get path }
     expect(response).to have_http_status(:ok)
-    count_queries { get path }
+    queries
   end
 
-  RSpec.shared_examples "a page whose query count does not grow" do
+  shared_examples "a page whose query count does not grow" do
     let(:grow) { -> { register_a_batch } }
 
     # Two batches before the first reading, four before the second. Starting at
-    # one of everything would measure the wrong thing: with a single row per
-    # collection, several preloads issue byte-identical SQL and Rails' per-request
-    # query cache serves all but the first, so the baseline reads artificially low.
+    # one of everything would measure the wrong thing: several of these pages
+    # only branch once a collection holds more than one row, so a single-row
+    # baseline never reaches the code the larger run is being compared against.
     it "sends the same queries over a cup twice the size" do
       2.times { grow.call }
       small = queries_for(path)
