@@ -8,7 +8,8 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
 
   controller do
     def scoped_collection
-      super.includes(:cup, :club, :user, participations: :category, purchases: :product)
+      super.includes(:cup, :club, :user, :personal_info, :individual_categories, :teams, :products,
+        participations: :category, purchases: :product)
     end
   end
 
@@ -203,7 +204,7 @@ ActiveAdmin.register Kenshi, as: "Kenshi" do
   end
 
   collection_action :pdfs do
-    @kenshis = Kenshi.order(:last_name)
+    @kenshis = Kenshi.includes(:club).order(:last_name)
     pdf = KenshisPdf.new(@kenshis)
     send_data pdf.render, filename: "kenshis",
       type: "application/pdf",
