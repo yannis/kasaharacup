@@ -25,11 +25,9 @@ class TeamCategoryMatchSheetPdf < Prawn::Document
       fill_color "000000"
       data = []
       data << ["Noms des équipe    >>", nil, nil, nil]
-      data << ["1. Sempo", nil, "x", nil]
-      data << ["2. Jiho", nil, "x", nil]
-      data << ["3. Chuken", nil, "x", nil]
-      data << ["4. Fukusho", nil, "x", nil]
-      data << ["5. Taisho", nil, "x", nil]
+      (1..team_category.team_size).each do |position|
+        data << [TeamPosition.label(position, team_category.team_size), nil, "x", nil]
+      end
       table(data, cell_style: {inline_format: true, size: 12}) do
         cells.padding = 5
         cells.padding_top = 40
