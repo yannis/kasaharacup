@@ -290,11 +290,23 @@ RSpec.describe Kenshi do
 
     it "scopes namesakes to the cup when no category is given" do
       tanaka = create(:kenshi, cup: cup, first_name: "Akira", last_name: "Tanaka")
-      create(:kenshi, cup: create(:cup), first_name: "Botan", last_name: "Tanaka")
+      # Same last name and the same first initial, in another cup: only the cup
+      # scoping keeps this one out of the group. Counted, Akira reads "Ak.".
+      create(:kenshi, cup: create(:cup), first_name: "Ayumi", last_name: "Tanaka")
 
       initials = described_class.first_name_initials_for([tanaka])
 
-      expect(initials[tanaka.id]).to eq tanaka.first_name_initials
+      expect(initials[tanaka.id]).to eq "A."
+    end
+
+    it "ignores a namesake who only fights another category of the same cup" do
+      akira = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Mori"))
+      elsewhere = create(:kenshi, cup: cup, first_name: "Ayumi", last_name: "Mori")
+      create(:participation, category: create(:individual_category, cup: cup), kenshi: elsewhere)
+
+      initials = described_class.first_name_initials_for([akira], category: category)
+
+      expect(initials[akira.id]).to eq "A."
     end
 
     it "is empty for an empty collection" do
