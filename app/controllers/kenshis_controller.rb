@@ -131,7 +131,6 @@ class KenshisController < ApplicationController
   end
 
   private def set_variables
-    @teams = @cup.teams.incomplete.order(:name) + @current_cup.teams.complete.order(:name)
     @club_names = Club.order(:name).pluck(:name).map { |club| club.strip }.uniq
     @products = @cup.products.where(display: true).order(:position)
   end
