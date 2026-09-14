@@ -13,8 +13,27 @@ class Team < ApplicationRecord
   delegate :cup, to: :team_category
 
   def self.empty
-    includes(:participations)
-      .where(participations: {team_id: nil})
+    where.missing(:participations)
+  end
+
+  # A team is nothing but its members — until the competition starts to refer
+  # to it. A pool, a bracket slot, a seeding, a podium place all outlive the
+  # roster (the participations behind a 2018 winner are long gone), and the
+  # encounter foreign keys nullify rather than block, so destroying a drawn
+  # team would silently blank a bracket slot instead of failing loudly. Only
+  # an empty team nothing points at is a leftover of registration.
+  NOT_DRAWN = <<~SQL.squish
+    NOT EXISTS (
+      SELECT 1 FROM encounters
+      WHERE encounters.team_1_id = teams.id
+        OR encounters.team_2_id = teams.id
+        OR encounters.winner_id = teams.id
+    )
+  SQL
+  private_constant :NOT_DRAWN
+
+  def self.abandoned
+    empty.where(rank: nil, pool_number: nil, seed: nil).where(NOT_DRAWN)
   end
 
   # Both sides of the comparison are correlated subqueries rather than joins.

@@ -19,6 +19,8 @@ class Participation < ApplicationRecord
   before_validation :assign_category
   before_validation :reset_pool_position_on_pool_change
   before_validation :auto_assign_pool_position
+  after_update :destroy_abandoned_team, if: :saved_change_to_team_id?
+  after_destroy :destroy_abandoned_team
 
   delegate :full_name, to: "kenshi", allow_nil: true
   delegate :grade, to: "kenshi", allow_nil: true
@@ -129,6 +131,23 @@ class Participation < ApplicationRecord
     if kenshi.female != expected_female
       errors.add(:category, :wrong_gender, name: category.name)
     end
+  end
+
+  # Nothing else ever clears a team away: the last member leaving — detached
+  # from the team, moved to another one, or struck from the cup altogether —
+  # would otherwise leave the row behind with nobody in it, still offering
+  # itself to the next registrant. A team the competition already refers to
+  # is not ours to throw away; Team.abandoned draws that line.
+  #
+  # A team going down takes its participations with it, so there is nothing
+  # left for them to tidy up after. On destroy the former team is read out of
+  # the database because #team_name= nils the attribute in memory on the way
+  # out, and that value is never saved.
+  private def destroy_abandoned_team
+    return if destroyed_by_association&.active_record == Team
+
+    former_team_id = destroyed? ? team_id_in_database : team_id_previously_was
+    Team.abandoned.find_by(id: former_team_id)&.destroy
   end
 
   private def reset_pool_position_on_pool_change
