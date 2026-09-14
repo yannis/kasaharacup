@@ -3,13 +3,17 @@
 class TeamPoolComponent < ViewComponent::Base
   include ActionView::RecordIdentifier
 
-  def initialize(team_category:, pool_number:, admin: true)
+  # `pools` is the category's TeamPool list when a whole page of cards is being
+  # rendered, so the page reads the (deliberately unmemoized) team_pools once
+  # instead of once per card. nil when a card is broadcast on its own.
+  def initialize(team_category:, pool_number:, admin: true, pools: nil)
     @team_category = team_category
     @pool_number = pool_number
     @admin = admin
+    @pools = pools
   end
 
-  private attr_reader :team_category, :pool_number, :admin
+  private attr_reader :team_category, :pool_number, :admin, :pools
 
   private def encounters
     @encounters ||= team_category.encounters_by_pool_number.fetch(pool_number, [])
