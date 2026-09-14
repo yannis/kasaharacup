@@ -34,6 +34,25 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     expect(described_class.new(category).page_count).to eq 4
   end
 
+  # Five bout rows rather than three, and a name long enough to wrap, are what
+  # a real category brings: the result table used to flow a fixed distance under
+  # the bout rows, so once the names were printed into it a five-fighter sheet
+  # ran its last row onto a second page. Every sheet is one page.
+  [3, 5].each do |team_size|
+    context "with #{team_size} fighters a side" do
+      let(:category) { create(:team_category, cup: cup, team_size: team_size, pool_size: 2, out_of_pool: 1) }
+
+      it "keeps each tie to a single page" do
+        pool_of(1, "Do Academy Torino", "South West United", "Kendo Leman Sporting Club Number One")
+        PoolEncounterGenerator.new(category).call
+
+        pdf = described_class.new(category)
+
+        expect(pdf.page_count).to eq category.encounters.count
+      end
+    end
+  end
+
   it "names both teams of each tie on its sheet" do
     pool_of(1, "Alpha", "Bravo")
     PoolEncounterGenerator.new(category).call

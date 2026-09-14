@@ -75,8 +75,16 @@ module TeamMatchSheet
     end
   end
 
+  # Far enough up the page for the table to fit under it whatever the sheet
+  # holds: five bout rows rather than three, and team names long enough to wrap.
+  RESULT_TABLE_TOP = 150
+
   private def draw_result_table(white_team:, red_team:)
-    move_down 100
+    # Anchored, not flowed: a fixed gap under the bout rows left a five-fighter
+    # sheet 89pt for a table that needs more once the names are printed in it,
+    # so the last row broke onto a second page. Anchoring also lands the table
+    # in the same place on a three-fighter sheet and a five-fighter one.
+    move_cursor_to RESULT_TABLE_TOP
 
     data = [["Team", "Rank", "Wins", "Pts scored"]]
     data << [sheet_name(red_team), nil, nil, nil]
