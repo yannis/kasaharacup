@@ -6,7 +6,7 @@ class TeamsController < ApplicationController
   respond_to :html
 
   def index
-    @ronins = @cup.participations.ronins.map(&:kenshi)
+    @ronins = @cup.participations.ronins.includes(:kenshi).map(&:kenshi)
     @teams = @cup.teams
       .includes(:kenshis, team_category: :cup)
       .joins(:participations)
@@ -16,7 +16,8 @@ class TeamsController < ApplicationController
   end
 
   def show
-    @kenshis = @team.kenshis.includes(:user, :club, participations: [:category]).order(:last_name, :first_name)
+    @kenshis = @team.kenshis.includes(:cup, :user, :club, participations: [:category, :team])
+      .order(:last_name, :first_name)
     respond_with @team
   end
 end

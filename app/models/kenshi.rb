@@ -94,6 +94,14 @@ class Kenshi < ApplicationRecord
     purchases.map(&:product).include? product
   end
 
+  # Sorted in Ruby so a preloaded `purchases: :product` is read in memory: the
+  # same list ordered in SQL joins products again, once per kenshi on a page
+  # that shows several. A product with no position sorts last, as ORDER BY
+  # products.position does.
+  def ordered_purchases
+    purchases.sort_by { |purchase| [purchase.product.position ? 0 : 1, purchase.product.position || 0] }
+  end
+
   def individual_category_ids=(ids)
     ids.each do |id|
       participations.new category: IndividualCategory.find(id)

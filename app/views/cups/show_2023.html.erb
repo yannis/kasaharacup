@@ -156,7 +156,7 @@
     </div>
     <% if @cup.registerable? %>
       <div class="mt-10">
-        <%= render "current_user_resume", cup: @cup %>
+        <%= render "current_user_resume", cup: @cup, kenshis: @user_kenshis %>
       </div>
     <% end %>
   </div>

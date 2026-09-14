@@ -21,7 +21,7 @@ class KenshisController < ApplicationController
     end
     @kenshis = @kenshis
       .not_shinpans
-      .includes(:user, :club, participations: {category: :team})
+      .includes(:cup, :user, :club, participations: [:category, :team])
       .where.associated(:participations)
       .order(created_at: :desc)
       .distinct
