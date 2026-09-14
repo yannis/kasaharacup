@@ -119,8 +119,6 @@ fr:
       generate_bracket:
         notice: Arbre de compétition généré
     encounters:
-      create:
-        notice: Rencontre créée.
       lineups:
         update:
           notice: Alignement enregistré.

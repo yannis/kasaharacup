@@ -47,8 +47,8 @@ RSpec.describe "Query counts" do
   end
 
   # A pool, plus the elimination bracket redrawn over the new standings: the
-  # encounter list names an unresolved bracket slot through its parent, so the
-  # bracket is what puts that path under measurement.
+  # category page only grows a Bracket panel once bracket encounters exist, and
+  # the tree there names an unresolved slot through its parent encounter.
   def add_a_pool_and_redraw_the_bracket
     add_a_pool
     TeamCategoryBracketBuilder.new(team_category.reload, rebuild_started: true).call
@@ -132,8 +132,8 @@ RSpec.describe "Query counts" do
       end
     end
 
-    context "with the encounter list" do
-      let(:path) { admin_team_category_encounters_path(team_category) }
+    context "with the team category bracket" do
+      let(:path) { admin_team_category_path(team_category) }
 
       it_behaves_like "a page whose query count does not grow" do
         let(:grow) { -> { add_a_pool_and_redraw_the_bracket } }

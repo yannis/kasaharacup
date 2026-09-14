@@ -53,6 +53,20 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Every PDF leaves through here, so none of them can go out missing what a
+  # browser reads to know what it has been handed: the content type, and a
+  # filename ending in .pdf. Sent bare, a poster arrives as a nameless blob the
+  # operating system will not open on a double-click.
+  #
+  # The name is parameterized here rather than at each call site — a category
+  # called "souriant(e) Chronos" otherwise reached the browser percent-encoded.
+  private def send_pdf(pdf, filename:)
+    send_data pdf.render,
+      filename: "#{filename.parameterize(separator: "_")}.pdf",
+      type: "application/pdf",
+      disposition: "inline"
+  end
+
   private def prevent_page_caching
     @cache_disabled = true
     h = response.headers

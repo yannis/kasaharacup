@@ -12,7 +12,8 @@ RSpec.describe "Locale negotiation" do
   let!(:cup) { create(:cup) }
   let(:admin) { create(:user, :admin) }
   let(:team_category) { create(:team_category, cup: cup) }
-  let(:unscoped_path) { "/admin/team_categories/#{team_category.id}/encounters" }
+  let(:encounter) { create(:encounter, team_category: team_category) }
+  let(:unscoped_path) { "/admin/team_categories/#{team_category.id}/encounters/#{encounter.id}" }
 
   # `set_locale` assigns `I18n.locale` in a before_action and nothing in
   # spec/support resets it globally, so these examples would otherwise leave the

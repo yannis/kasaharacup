@@ -115,8 +115,6 @@ en:
       generate_bracket:
         notice: Competition tree generated
     encounters:
-      create:
-        notice: Encounter created.
       lineups:
         update:
           notice: Lineup set.
