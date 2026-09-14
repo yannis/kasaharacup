@@ -140,6 +140,54 @@ RSpec.describe Team do
     end
   end
 
+  describe ".abandoned" do
+    let(:other_category) { create(:team_category, name: "other_cat", cup: cup) }
+    let!(:shell) { create(:team, name: "Shell", team_category: team_category) }
+    let!(:manned) { create(:team, name: "Manned", team_category: team_category) }
+
+    before { create(:participation, team: manned, category: team_category) }
+
+    it "finds the empty team nothing else points at" do
+      expect(described_class.abandoned).to contain_exactly(shell)
+    end
+
+    it "spares an empty team that holds a result" do
+      shell.update!(rank: 1)
+
+      expect(described_class.abandoned).to be_empty
+    end
+
+    it "spares an empty team that was seeded" do
+      shell.update!(seed: 1)
+
+      expect(described_class.abandoned).to be_empty
+    end
+
+    it "spares an empty team that was drawn into a pool" do
+      shell.update!(pool_number: 1)
+
+      expect(described_class.abandoned).to be_empty
+    end
+
+    it "spares an empty team that was drawn into an encounter" do
+      create(:encounter, team_category: team_category, team_1: shell, team_2: manned)
+
+      expect(described_class.abandoned).to be_empty
+    end
+
+    it "spares an empty team that won an encounter" do
+      create(:encounter, team_category: team_category, team_2: manned, winner: shell)
+
+      expect(described_class.abandoned).to be_empty
+    end
+
+    it "looks at its own encounters only" do
+      create(:encounter, team_category: other_category)
+
+      expect(described_class.abandoned).to contain_exactly(shell)
+    end
+  end
+
   describe "the size scopes across categories" do
     let(:small_category) { create(:team_category, name: "trios", cup: cup, team_size: 3) }
     let(:big_category) { create(:team_category, name: "quintets", cup: cup, team_size: 5) }

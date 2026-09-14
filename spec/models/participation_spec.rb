@@ -79,6 +79,68 @@ RSpec.describe Participation do
         end
       end
     end
+
+    describe "the team a member leaves behind" do
+      let!(:cup) { create(:cup, start_on: 1.year.from_now) }
+      let!(:team_category) { create(:team_category, cup: cup) }
+      let!(:kenshi) { create(:kenshi, cup: cup) }
+      let!(:team) { create(:team, name: "SDK", team_category: team_category) }
+      let!(:participation) {
+        create(:participation, kenshi: kenshi, category: team_category, team: team)
+      }
+
+      it "goes when the member is detached from it" do
+        participation.update!(team: nil)
+
+        expect(Team.find_by(id: team.id)).to be_nil
+      end
+
+      it "goes when the member moves to another team" do
+        participation.update!(team_name: "Other")
+
+        expect(Team.find_by(id: team.id)).to be_nil
+        expect(team_category.teams.pluck(:name)).to eq ["Other"]
+      end
+
+      it "goes when the member is removed from the cup" do
+        participation.destroy!
+
+        expect(Team.find_by(id: team.id)).to be_nil
+      end
+
+      it "goes when the kenshi is deleted" do
+        kenshi.destroy!
+
+        expect(Team.find_by(id: team.id)).to be_nil
+      end
+
+      it "goes when the registration form empties the team name" do
+        kenshi.update!(participations_attributes: [{id: participation.id, team_name: ""}])
+
+        expect(Team.find_by(id: team.id)).to be_nil
+      end
+
+      it "stays as long as someone is left in it" do
+        create(:participation, category: team_category, team: team)
+
+        participation.destroy!
+
+        expect(team.reload.participations.count).to eq 1
+      end
+
+      it "stays when it has already been drawn into the bracket" do
+        create(:encounter, team_category: team_category, team_1: team)
+
+        participation.destroy!
+
+        expect(team.reload).to be_present
+      end
+
+      it "stands aside when the team itself is destroyed" do
+        expect { team.destroy! }.to change(described_class, :count).by(-1)
+        expect(Team.find_by(id: team.id)).to be_nil
+      end
+    end
   end
 
   describe "Validations" do
