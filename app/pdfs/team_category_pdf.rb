@@ -18,7 +18,17 @@ class TeamCategoryPdf < Prawn::Document
       text @team_category.name, align: :center
     end
 
-    @team_category.teams.includes(kenshis: [:club, participations: :category]).order(:name).each do |team|
+    teams = @team_category.teams.includes(kenshis: [:club, participations: :category]).order(:name).to_a
+    poster_names = Kenshi.poster_names_for(teams.flat_map(&:kenshis), category: @team_category)
+
+    teams.each do |team|
+      # Sorted here, not in SQL: the roster is already loaded above, and both
+      # find_each and an .order would re-read every team's members from the
+      # database. `has_many :kenshis, through:` carries no order of its own, so
+      # without this the list and the boards would come out in whatever order
+      # the join happened to return — and in a different one from each other.
+      roster = team.kenshis.sort_by { |kenshi| [kenshi.last_name, kenshi.first_name] }
+
       start_new_page layout: :portrait
 
       bounding_box [bounds.left + 10, bounds.top - 50], width: 500 do
@@ -27,17 +37,17 @@ class TeamCategoryPdf < Prawn::Document
       end
       bounding_box [bounds.left, bounds.top - 500], width: 500 do
         font_size 24
-        team.kenshis.each do |kenshi|
+        roster.each do |kenshi|
           text "#{kenshi.full_name} (#{kenshi.club_name})", align: :left
         end
       end
 
-      team.kenshis.find_each do |kenshi|
+      roster.each do |kenshi|
         start_new_page layout: :landscape
 
         bounding_box [bounds.left + 10, bounds.top - 280], width: 700 do
-          font_size landscape_size(kenshi.poster_name(category: team_category))
-          text kenshi.poster_name(category: team_category), align: :center
+          font_size landscape_size(poster_names[kenshi.id])
+          text poster_names[kenshi.id], align: :center
         end
         bounding_box [bounds.left + 10, bounds.top - 500], width: 700 do
           font_size 36

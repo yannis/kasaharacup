@@ -24,23 +24,25 @@ class EncounterLineupSuggestion
   end
 
   private def previous_order(team)
-    encounter = candidate_encounters(team).order(updated_at: :desc, id: :desc).first
+    encounter = last_encounter_of(team)
     return unless encounter
 
     side = (encounter.team_1_id == team.id) ? 1 : 2
-    encounter.team_fights.where(daihyosen: false).order(:position)
-      .pluck(:"kenshi_#{side}_id")
+    encounter.team_fights.reject(&:daihyosen?).sort_by(&:position)
+      .map { |fight| fight.public_send(:"kenshi_#{side}_id") }
   end
 
-  # Encounters (other than this one) where the team fought a side whose lineup
-  # was actually entered — a set lineup is what carries a meaningful order.
-  private def candidate_encounters(team)
-    @encounter.team_category.encounters
-      .where.not(id: @encounter.id)
-      .where(
-        "(team_1_id = :t AND lineup_1_set = TRUE) OR (team_2_id = :t AND lineup_2_set = TRUE)",
-        t: team.id
-      )
+  # The team's most recent encounter other than this one where the side it sat
+  # on had its lineup actually entered — a set lineup is what carries a
+  # meaningful order. Picked out of the category's lineup-bearing encounters,
+  # which are already in that order and loaded once for the whole page.
+  private def last_encounter_of(team)
+    @encounter.team_category.lineup_set_encounters.find do |candidate|
+      next false if candidate.id == @encounter.id
+
+      (candidate.team_1_id == team.id && candidate.lineup_1_set?) ||
+        (candidate.team_2_id == team.id && candidate.lineup_2_set?)
+    end
   end
 
   private def roster_order(team)

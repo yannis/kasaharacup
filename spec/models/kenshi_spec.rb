@@ -257,4 +257,60 @@ RSpec.describe Kenshi do
       expect(names[suzuki.id]).to eq suzuki.poster_name(category: category)
     end
   end
+
+  describe ".first_name_initials_for" do
+    let(:category) { create(:individual_category, cup: cup) }
+
+    def qualify(kenshi)
+      create(:participation, category: category, kenshi: kenshi)
+      kenshi
+    end
+
+    it "matches #first_name_initials for every kenshi of the collection" do
+      akira = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Tanaka"))
+      botan = qualify(create(:kenshi, cup: cup, first_name: "Botan", last_name: "Tanaka"))
+      alone = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Yamada"))
+
+      initials = described_class.first_name_initials_for([akira, botan, alone], category: category)
+
+      expect(initials[akira.id]).to eq akira.first_name_initials(category: category)
+      expect(initials[botan.id]).to eq botan.first_name_initials(category: category)
+      expect(initials[alone.id]).to eq "A."
+    end
+
+    it "spells out a second letter where two namesakes share their first" do
+      akira = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Sato"))
+      ayumi = qualify(create(:kenshi, cup: cup, first_name: "Ayumi", last_name: "Sato"))
+
+      initials = described_class.first_name_initials_for([akira, ayumi], category: category)
+
+      expect(initials[akira.id]).to eq "Ak."
+      expect(initials[ayumi.id]).to eq "Ay."
+    end
+
+    it "scopes namesakes to the cup when no category is given" do
+      tanaka = create(:kenshi, cup: cup, first_name: "Akira", last_name: "Tanaka")
+      # Same last name and the same first initial, in another cup: only the cup
+      # scoping keeps this one out of the group. Counted, Akira reads "Ak.".
+      create(:kenshi, cup: create(:cup), first_name: "Ayumi", last_name: "Tanaka")
+
+      initials = described_class.first_name_initials_for([tanaka])
+
+      expect(initials[tanaka.id]).to eq "A."
+    end
+
+    it "ignores a namesake who only fights another category of the same cup" do
+      akira = qualify(create(:kenshi, cup: cup, first_name: "Akira", last_name: "Mori"))
+      elsewhere = create(:kenshi, cup: cup, first_name: "Ayumi", last_name: "Mori")
+      create(:participation, category: create(:individual_category, cup: cup), kenshi: elsewhere)
+
+      initials = described_class.first_name_initials_for([akira], category: category)
+
+      expect(initials[akira.id]).to eq "A."
+    end
+
+    it "is empty for an empty collection" do
+      expect(described_class.first_name_initials_for([])).to eq({})
+    end
+  end
 end

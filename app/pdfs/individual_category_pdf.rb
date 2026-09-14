@@ -14,7 +14,15 @@ class IndividualCategoryPdf < Prawn::Document
     font "Inconsolata"
     # start_new_page layout: :landscape
 
-    category.pools.sort_by(&:number).each_with_index do |pool, i|
+    # #pools is deliberately not memoized, so read it once; the poster names of
+    # everyone it holds are then resolved in one query rather than the two
+    # namesake lookups printing each fighter's board would otherwise cost.
+    pools = category.pools.sort_by(&:number)
+    poster_names = Kenshi.poster_names_for(
+      pools.flat_map { |pool| pool.participations.filter_map(&:kenshi) }, category: category
+    )
+
+    pools.each_with_index do |pool, i|
       bounding_box [bounds.left + 10, bounds.top - 50], width: 500 do
         unless i == 0
           start_new_page layout: :portrait
@@ -32,12 +40,13 @@ class IndividualCategoryPdf < Prawn::Document
       end
 
       pool.participations.map(&:kenshi).each do |kenshi|
+        poster_name = poster_names[kenshi.id]
         2.times do
           start_new_page layout: :landscape
 
           bounding_box [bounds.left + 10, bounds.top - 280], width: 700 do
-            font_size landscape_size(kenshi.poster_name(category: category))
-            text kenshi.poster_name(category: category), align: :center
+            font_size landscape_size(poster_name)
+            text poster_name, align: :center
           end
           bounding_box [bounds.left + 10, bounds.top - 500], width: 700 do
             font_size 36

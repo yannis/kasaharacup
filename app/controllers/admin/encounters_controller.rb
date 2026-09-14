@@ -5,10 +5,15 @@ module Admin
     before_action :set_team_category
 
     def index
+      # The whole category in one query, so preload_parents can wire each
+      # encounter to its parents out of that same set: a bracket row reads its
+      # parent's teams to name an unresolved slot, and preloading the parent
+      # association alone would still fetch those one encounter at a time.
       @encounters = @team_category.encounters
-        .includes(:team_1, :team_2, :winner,
-          parent_encounter_1: :winner, parent_encounter_2: :winner)
+        .includes(:team_1, :team_2, :winner)
         .order(:id)
+        .to_a
+      Encounter.preload_parents(@encounters)
     end
 
     def show

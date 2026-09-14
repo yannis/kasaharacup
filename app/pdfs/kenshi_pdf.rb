@@ -14,9 +14,11 @@ class KenshiPdf < Prawn::Document
     font "Inconsolata"
     # start_new_page :layout => :landscape
 
+    poster_name = kenshi.poster_name
+
     bounding_box [bounds.left + 10, bounds.top - 280], width: 700 do
-      font_size landscape_size(kenshi.poster_name)
-      text kenshi.poster_name, align: :center
+      font_size landscape_size(poster_name)
+      text poster_name, align: :center
     end
 
     bounding_box [bounds.left + 10, bounds.top - 500], width: 700 do

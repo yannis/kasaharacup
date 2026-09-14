@@ -4,9 +4,13 @@
     idempotent: the acting admin is subscribed to the same broadcast stream it
     renders to, and an append would otherwise be applied twice. %>
 <%= tag.div id: "team_pools_#{team_category.id}" do %>
-  <% team_category.team_pools.each do |pool| %>
+  <%# Read the pools once for the container and hand the list to every card:
+      each card's standings need it, and team_pools is not memoized. %>
+  <% pools = team_category.team_pools # rubocop:disable Lint/UselessAssignment %>
+  <% pools.each do |pool| %>
     <div>
-      <%= render "admin/team_categories/pool_card", team_category: team_category, pool_number: pool.number %>
+      <%= render "admin/team_categories/pool_card",
+            team_category: team_category, pool_number: pool.number, pools: pools %>
     </div>
   <% end %>
 <% end %>

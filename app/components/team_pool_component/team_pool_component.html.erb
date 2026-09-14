@@ -3,7 +3,7 @@
   <h3 class="pool-card__title">Pool <%= pool_number %></h3>
 
   <%= helpers.render "admin/team_categories/pool_standings",
-        team_category: team_category, pool_number: pool_number, admin: admin %>
+        team_category: team_category, pool_number: pool_number, admin: admin, pools: pools %>
 
   <% if encounters.empty? %>
     <p class="pool-card__empty">No pool encounters yet.</p>

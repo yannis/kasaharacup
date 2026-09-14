@@ -11,10 +11,13 @@
       </tr>
     </thead>
     <tbody>
-      <%# Load team_pools once per render: it was previously re-queried on every
-          standings row (the move-select below), turning one card into K+1
-          grouping queries. The per-row move list derives from _pools in memory. %>
-      <% _pools = team_category.team_pools %>
+      <%# team_pools is deliberately not memoized, so read it once per render:
+          it was previously re-queried on every standings row (the move-select
+          below), turning one card into K+1 grouping queries. A page of cards
+          hands the list in, so the whole page reads it once rather than once per
+          card; a card broadcast on its own falls back to loading it here. The
+          per-row move list derives from _pools in memory. %>
+      <% _pools = local_assigns[:pools] || team_category.team_pools %>
       <% _pool = _pools.find { |p| p.number == pool_number } %>
       <% TeamPoolStandings.for(
            teams: _pool&.teams || [],

@@ -68,6 +68,31 @@ RSpec.describe EncounterLineupSuggestion do
     expect(described_class.new(fresh).for_slot(1)).to eq roster.map(&:id)
   end
 
+  it "prefers the most recently confirmed of several previous encounters" do
+    roster = members(t1, 3)
+    members(t2, 3)
+    t3 = create(:team, team_category: tc)
+    members(t3, 3)
+
+    older = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    EncounterLineup.new(older).assign(t1, [roster[0].id, roster[1].id, roster[2].id])
+    newer = create(:encounter, team_category: tc, team_1: t1, team_2: t3)
+    EncounterLineup.new(newer).assign(t1, [roster[2].id, roster[1].id, roster[0].id])
+
+    fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    expect(described_class.new(fresh).for_slot(1)).to eq [roster[2].id, roster[1].id, roster[0].id]
+  end
+
+  it "ignores an encounter of the team whose lineup was never confirmed" do
+    roster = members(t1, 3)
+    members(t2, 3)
+
+    create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+
+    fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    expect(described_class.new(fresh).for_slot(1)).to eq roster.map(&:id)
+  end
+
   it "returns nothing for an unresolved bracket slot" do
     fresh = create(:encounter, team_category: tc, team_1: nil, team_2: nil, round: 2, position: 1)
     expect(described_class.new(fresh).for_slot(1)).to eq []
