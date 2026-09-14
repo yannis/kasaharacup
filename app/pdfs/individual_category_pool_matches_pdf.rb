@@ -7,11 +7,13 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
     super(page_layout: :portrait)
 
     pools = individual_category.pools.sort_by(&:number)
-    kenshis = pools.flat_map { |pool| pool.participations.filter_map(&:kenshi) }
-    # Two maps because the two tables below disambiguate namesakes differently:
-    # the match grid within the category, the standings across the whole cup.
-    match_names = Kenshi.poster_names_for(kenshis, category: individual_category)
-    standing_names = Kenshi.poster_names_for(kenshis)
+    # Namesakes are told apart within the category, as everywhere else a category
+    # is printed. The standings table below used to scope that to the whole cup,
+    # so a fighter with a namesake in another category was initialled there and
+    # not in the match grid — two spellings of one name on one sheet.
+    poster_names = Kenshi.poster_names_for(
+      pools.flat_map { |pool| pool.participations.filter_map(&:kenshi) }, category: individual_category
+    )
 
     pools.each_with_index do |pool, i|
       unless i == 0
@@ -43,8 +45,8 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
           p_high = participations[high - 1]
           next if p_low.nil? || p_high.nil?
 
-          name_low = match_names[p_low.kenshi_id]
-          name_high = match_names[p_high.kenshi_id]
+          name_low = poster_names[p_low.kenshi_id]
+          name_high = poster_names[p_high.kenshi_id]
 
           data << if i.even?
             ["#{i + 1}.", name_low, nil, "x", nil, name_high]
@@ -86,7 +88,7 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
       bounding_box [bounds.left, bounds.top - 500], width: 580, align: :center do
         data = [[nil, "Rank", "Wins", "Losses", "Hikiwake", "Pts scored", "Pts conceded"]]
         pool.participations.map(&:kenshi).each do |kenshi|
-          data << [standing_names[kenshi.id], nil, nil, nil, nil, nil, nil]
+          data << [poster_names[kenshi.id], nil, nil, nil, nil, nil, nil]
         end
         table(data, cell_style: {inline_format: true}) do
           cells.padding = 5
