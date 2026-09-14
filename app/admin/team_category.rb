@@ -238,4 +238,16 @@ ActiveAdmin.register TeamCategory do
   action_item :match_sheet, only: :show do
     link_to "Match sheet", team_match_sheet_admin_team_category_path(team_category)
   end
+
+  member_action :pool_sheets do
+    @team_category = TeamCategory.find params[:id]
+    pdf = TeamCategoryPoolMatchesPdf.new(@team_category)
+    send_data pdf.render, filename: "#{@team_category.name}_#{@team_category.cup.year}_pool_sheets",
+      type: "application/pdf",
+      disposition: "inline",
+      page_size: "A4"
+  end
+  action_item :pool_sheets, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "Pool match sheets", pool_sheets_admin_team_category_path(team_category)
+  end
 end
