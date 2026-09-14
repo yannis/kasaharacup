@@ -48,6 +48,24 @@ class TeamCategory < ApplicationRecord
       .group_by(&:pool_number)
   end
 
+  # The category's encounters that carry a confirmed lineup, newest first, with
+  # their bouts — the raw material EncounterLineupSuggestion reads a team's last
+  # fighter order from. Loaded once per instance: the pool page suggests an
+  # order for both sides of every pool encounter, and asking per side turned
+  # that into two queries per encounter.
+  #
+  # Memoized like #encounters_by_pool_number, and safe for the same reason: only
+  # read paths ask for a suggestion. The one writer, EncounterLineupSeeder,
+  # confirms a lineup on the encounter it is seeding, and a suggestion always
+  # skips its own encounter — so what it writes could never have been read here.
+  def lineup_set_encounters
+    @lineup_set_encounters ||= encounters
+      .where("lineup_1_set = TRUE OR lineup_2_set = TRUE")
+      .includes(:team_fights)
+      .order(updated_at: :desc, id: :desc)
+      .to_a
+  end
+
   def set_team_pools(random: Random.new)
     TeamPooler.new(self, random: random).set_pools
   end
