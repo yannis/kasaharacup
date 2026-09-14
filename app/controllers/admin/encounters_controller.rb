@@ -4,33 +4,8 @@ module Admin
   class EncountersController < BaseController
     before_action :set_team_category
 
-    def index
-      # The whole category in one query, so preload_parents can wire each
-      # encounter to its parents out of that same set: a bracket row reads its
-      # parent's teams to name an unresolved slot, and preloading the parent
-      # association alone would still fetch those one encounter at a time.
-      @encounters = @team_category.encounters
-        .includes(:team_1, :team_2, :winner)
-        .order(:id)
-        .to_a
-      Encounter.preload_parents(@encounters)
-    end
-
     def show
       @encounter = @team_category.encounters.find(params.expect(:id))
-    end
-
-    def new
-    end
-
-    def create
-      permitted = params.expect(encounter: [:team_1_id, :team_2_id])
-      encounter = @team_category.encounters.create!(permitted)
-      redirect_to admin_team_category_encounter_path(@team_category, encounter),
-        notice: t(".notice")
-    rescue ActiveRecord::RecordInvalid => e
-      redirect_to new_admin_team_category_encounter_path(@team_category),
-        alert: e.record.errors.full_messages.to_sentence
     end
 
     private def set_team_category

@@ -15,27 +15,6 @@ RSpec.describe "Admin encounters" do
     create(:kenshi, cup: cup).tap { |k| create(:participation, category: tc, team: team, kenshi: k) }
   end
 
-  it "creates an encounter between two teams" do
-    post admin_team_category_encounters_path(tc), params: {encounter: {team_1_id: t1.id, team_2_id: t2.id}}
-
-    encounter = Encounter.last
-    expect(encounter.team_1).to eq t1
-    expect(response).to redirect_to(admin_team_category_encounter_path(tc, encounter))
-  end
-
-  it "lists encounters, including bracket encounters whose teams are unresolved (nil)" do
-    create(:encounter, team_category: tc, team_1: t1, team_2: t2)
-    # A round-1 bracket encounter resolves its teams through parent winners, so
-    # team_1/team_2 are nil. The index must render them via the nil-safe
-    # team_display_name helper rather than crashing on nil.name.
-    create(:encounter, team_category: tc, team_1: nil, team_2: nil, round: 1)
-
-    get admin_team_category_encounters_path(tc)
-
-    expect(response).to have_http_status(:ok)
-    expect(response.body).to include("To be decided")
-  end
-
   it "renders a pool encounter without the bracket panel frame or Close button" do
     encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2, pool_number: 1)
 
@@ -102,13 +81,13 @@ RSpec.describe "Admin encounters" do
   end
 
   it "redirects non-admins away" do
+    encounter = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
     sign_out admin
     sign_in create(:user)
 
-    post admin_team_category_encounters_path(tc), params: {encounter: {team_1_id: t1.id, team_2_id: t2.id}}
+    get admin_team_category_encounter_path(tc, encounter)
 
     expect(response).to redirect_to(root_url)
-    expect(Encounter.count).to eq 0
   end
 
   it "renders the standalone encounter page" do

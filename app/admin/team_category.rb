@@ -205,10 +205,6 @@ ActiveAdmin.register TeamCategory do
     link_to("New document", new_admin_team_category_document_path(team_category))
   end
 
-  action_item :encounters, only: :show do
-    link_to "Encounters", admin_team_category_encounters_path(team_category)
-  end
-
   member_action :team_match_sheet do
     @team_category = TeamCategory.find params[:id]
     pdf = TeamCategoryMatchSheetPdf.new(@team_category)
