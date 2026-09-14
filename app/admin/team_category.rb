@@ -215,18 +215,6 @@ ActiveAdmin.register TeamCategory do
     link_to "Encounters", admin_team_category_encounters_path(team_category)
   end
 
-  # collection_action :pdfs do
-  #   @team_categories = TeamCategory.order(:name)
-  #   pdf = TeamCategoryPdf.new(@team_categories)
-  #   send_data pdf.render, filename: "team_categories",
-  #                         type: "application/pdf",
-  #                         disposition: "inline",
-  #                         page_size: 'A4'
-  # end
-  # action_item only: :index do
-  #   link_to("PDF", pdfs_admin_team_categories_path)
-  # end
-
   member_action :team_match_sheet do
     @team_category = TeamCategory.find params[:id]
     pdf = TeamCategoryMatchSheetPdf.new(@team_category)
