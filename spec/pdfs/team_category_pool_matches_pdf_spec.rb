@@ -24,26 +24,49 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     end
   end
 
-  it "gives each pool its own page" do
-    pool_of(1, "Alpha", "Bravo")
-    pool_of(2, "Charlie", "Delta")
+  it "gives every pool tie of the category its own sheet" do
+    pool_of(1, "Alpha", "Bravo", "Charlie")
+    pool_of(2, "Delta", "Echo")
     PoolEncounterGenerator.new(category).call
 
-    expect(described_class.new(category).page_count).to eq 2
+    # Three ties in the first pool (a cycle of three), one in the second.
+    expect(category.encounters.count).to eq 4
+    expect(described_class.new(category).page_count).to eq 4
   end
 
-  it "names both teams of every tie in the pool" do
-    pool_of(1, "Alpha", "Bravo", "Charlie")
+  it "names both teams of each tie on its sheet" do
+    pool_of(1, "Alpha", "Bravo")
+    PoolEncounterGenerator.new(category).call
+    tie = category.encounters.sole
+
+    texts = texts_in(described_class.new(category))
+
+    expect(texts).to include(tie.team_1.poster_name, tie.team_2.poster_name)
+  end
+
+  it "prefills the team names and nothing else" do
+    teams = pool_of(1, "Alpha", "Bravo")
+    members = teams.flat_map do |team|
+      Array.new(3) do
+        kenshi = create(:kenshi, cup: cup)
+        create(:participation, category: category, kenshi: kenshi, team: team)
+        kenshi
+      end
+    end
     PoolEncounterGenerator.new(category).call
 
     texts = texts_in(described_class.new(category))
 
-    category.encounters.each do |encounter|
-      expect(texts).to include(encounter.team_1.poster_name), "missing #{encounter.team_1.name}"
-      expect(texts).to include(encounter.team_2.poster_name), "missing #{encounter.team_2.name}"
+    # The sheet the desk writes on: a labelled row per fighting position with
+    # nobody on it, a blank bout number, and an empty result table.
+    expect(texts).to include("ALPHA", "BRAVO")
+    expect(texts).to include("1. Sempo", "2. Chuken", "3. Taisho")
+    expect(texts).to include("Combat n°", "Team", "Rank", "Wins", "Pts scored")
+    expect(texts.count("x")).to eq 3
+    members.each do |kenshi|
+      expect(texts.join(" ")).not_to include(kenshi.last_name.upcase),
+        "#{kenshi.full_name} should not be printed on the sheet"
     end
-    # One numbered row per tie, and a blank "x" between the two score boxes.
-    expect(texts.count("x")).to eq category.encounters.count
   end
 
   it "reads the ties off the encounters rather than recomputing the pairing" do
@@ -54,40 +77,30 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     delta = create(:team, team_category: category, name: "Delta", pool_number: nil)
     category.encounters.order(:id).first.update!(team_1: delta)
 
-    texts = texts_in(described_class.new(category))
-
-    expect(texts).to include("DELTA")
-    # ...and the standings still list the pool, which Delta is not part of.
-    expect(texts.count("DELTA")).to eq 1
-    expect(texts).to include("ALPHA", "BRAVO", "CHARLIE")
+    expect(texts_in(described_class.new(category))).to include("DELTA")
   end
 
-  it "says so when a pool has teams but no encounters yet" do
+  it "keeps a tie's teams on the side the encounter puts them" do
+    pool_of(1, "Alpha", "Bravo")
+    PoolEncounterGenerator.new(category).call
+    tie = category.encounters.sole
+
+    texts = texts_in(described_class.new(category))
+    white, red = tie.team_1.poster_name, tie.team_2.poster_name
+
+    # A side is identified by colour on both tables, and they list the two
+    # colours in opposite orders: the name boxes are drawn white then red, the
+    # result table red then white. team_1 is the white side on both.
+    expect(texts.index(white)).to be < texts.index(red)
+    expect(texts.rindex(white)).to be > texts.rindex(red)
+  end
+
+  it "renders a category with no pool ties rather than an empty document" do
     pool_of(1, "Alpha", "Bravo")
 
-    texts = texts_in(described_class.new(category))
-
-    expect(texts).to include("No pool encounters generated.")
-    expect(texts).to include("ALPHA", "BRAVO")
-  end
-
-  it "lists every team of the pool in the standings, with the on-screen columns" do
-    pool_of(1, "Alpha", "Bravo", "Charlie")
-    PoolEncounterGenerator.new(category).call
-
-    texts = texts_in(described_class.new(category))
-
-    expect(texts).to include("Rank", "W", "L", "H", "iW", "iL", "iH", "Pts+", "Pts-")
-    expect(texts).to include("ALPHA", "BRAVO", "CHARLIE")
-  end
-
-  it "renders a category with no pools at all rather than an empty document" do
-    bracket_only = create(:team_category, cup: cup, team_size: 3, pool_size: 1)
-    create(:team, team_category: bracket_only)
-
-    pdf = described_class.new(bracket_only)
+    pdf = described_class.new(category)
 
     expect(pdf.page_count).to eq 1
-    expect(texts_in(pdf)).to include("#{bracket_only.name} — no pools")
+    expect(texts_in(pdf)).to include("#{category.name} — no pool encounters")
   end
 end
