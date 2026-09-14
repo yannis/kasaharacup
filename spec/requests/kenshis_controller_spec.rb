@@ -232,4 +232,38 @@ RSpec.describe KenshisController do
       end
     end
   end
+
+  # The registration form builds its team dropdown per category, straight from
+  # TeamCategory#teams. The controller assigns nothing for it: the
+  # completeness-ordered list it used to build was rendered by no template
+  # (#1276).
+  describe "the team dropdown on the registration form," do
+    let!(:cup) { create(:cup, start_on: Date.parse("#{Date.current.year}-11-30")) }
+    let!(:team_category) { create(:team_category, cup:, team_size: 3) }
+    let!(:other_category) { create(:team_category, cup:, team_size: 3) }
+    let!(:complete_team) { create(:team, name: "Bravo", team_category:) }
+    let!(:empty_team) { create(:team, name: "Alpha", team_category:) }
+    let!(:other_team) { create(:team, name: "Charlie", team_category: other_category) }
+    let(:user) { create(:user) }
+
+    before do
+      create_list(:participation, 3, team: complete_team, category: team_category)
+      sign_in user
+      get(new_cup_user_kenshi_path(cup))
+    end
+
+    it "offers every team of its own category, alphabetically, complete or not" do
+      expect(team_name_options).to eq [["Alpha", "Bravo"], ["Charlie"]]
+    end
+
+    it "does not read a team list from the controller" do
+      expect(assigns(:teams)).to be_nil
+    end
+
+    def team_name_options
+      response.parsed_body.css('select[name$="[team_name]"]').map { |select|
+        select.css("option").map(&:text).compact_blank
+      }
+    end
+  end
 end
