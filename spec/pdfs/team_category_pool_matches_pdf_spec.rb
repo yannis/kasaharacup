@@ -15,6 +15,18 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     end
   end
 
+  # Each text run is positioned by a `BT ... Td ... TJ ... ET` block; the second
+  # number of the Td is its baseline down the page.
+  def text_positions_in(pdf)
+    pdf.render.scan(/BT(.*?)ET/m).flatten.filter_map do |block|
+      baseline = block[/([\d.]+)\s+([\d.-]+)\s+Td/, 2]
+      text = block.scan(/<([0-9A-Fa-f]+)>/).flatten.map { |hex| [hex].pack("H*") }.join
+        .force_encoding(Encoding::WINDOWS_1252)
+        .encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
+      [baseline.to_f.round, text] if baseline && !text.empty?
+    end.sort
+  end
+
   let(:cup) { create(:cup) }
   let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 2, out_of_pool: 1) }
 
@@ -53,6 +65,45 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     end
   end
 
+  it "says which pool each sheet belongs to and where it sits in it" do
+    pool_of(1, "Alpha", "Bravo", "Charlie")
+    pool_of(2, "Delta", "Echo")
+    PoolEncounterGenerator.new(category).call
+
+    texts = texts_in(described_class.new(category))
+
+    # A stack of loose sheets has to be sortable back into pools without
+    # reading the team names off each one.
+    expect(texts.grep(/\APool /))
+      .to eq ["Pool 1 — 1/3", "Pool 1 — 2/3", "Pool 1 — 3/3", "Pool 2 — 1/1"]
+  end
+
+  # The label is placed, not flowed: a line added to the header pushes the bout
+  # number down into the top border of the table under it.
+  it "leaves every other line of the sheet exactly where the blank one has it" do
+    pool_of(1, "Alpha", "Bravo")
+    PoolEncounterGenerator.new(category).call
+
+    blank = text_positions_in(TeamCategoryMatchSheetPdf.new(category))
+    labelled = text_positions_in(described_class.new(category))
+    added = ["ALPHA", "BRAVO"]
+
+    expect(labelled.reject { |_, text| text.start_with?("Pool ") || added.include?(text) })
+      .to eq(blank.reject { |_, text| added.include?(text) })
+  end
+
+  it "gives a club name room to sit on one line in both tables" do
+    pool_of(1, "Do Academy Torino", "South West United")
+    PoolEncounterGenerator.new(category).call
+
+    texts = texts_in(described_class.new(category))
+
+    # A name that wraps is drawn as two runs, so a whole name appearing twice —
+    # once in its box, once in the result table — is the name fitting in both.
+    expect(texts.count("DO ACADEMY TORINO")).to eq 2
+    expect(texts.count("SOUTH WEST UNITED")).to eq 2
+  end
+
   it "names both teams of each tie on its sheet" do
     pool_of(1, "Alpha", "Bravo")
     PoolEncounterGenerator.new(category).call
@@ -80,7 +131,7 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     # nobody on it, a blank bout number, and an empty result table.
     expect(texts).to include("ALPHA", "BRAVO")
     expect(texts).to include("1. Sempo", "2. Chuken", "3. Taisho")
-    expect(texts).to include("Combat n°", "Team", "Rank", "Wins", "Pts scored")
+    expect(texts).to include("Team", "Rank", "Wins", "Pts scored")
     expect(texts.count("x")).to eq 3
     members.each do |kenshi|
       expect(texts.join(" ")).not_to include(kenshi.last_name.upcase),

@@ -20,9 +20,9 @@ class TeamCategoryPoolMatchesPdf < Prawn::Document
     if ties.empty?
       render_empty_state
     else
-      ties.each_with_index do |tie, index|
+      ties.each_with_index do |(tie, label), index|
         start_new_page layout: :portrait unless index == 0
-        draw_team_match_sheet(team_category, white_team: tie.team_1, red_team: tie.team_2)
+        draw_team_match_sheet(team_category, white_team: tie.team_1, red_team: tie.team_2, label: label)
       end
     end
   end
@@ -33,11 +33,15 @@ class TeamCategoryPoolMatchesPdf < Prawn::Document
     text "#{team_category.name} — no pool encounters", size: 14
   end
 
-  # Pool by pool, and within a pool in the order the generator drew them. Read
-  # through the category so every tie of every pool is loaded at once rather
-  # than one query per pool.
+  # Pool by pool, and within a pool in the order the generator drew them, each
+  # tie paired with the label that says where its sheet belongs in the stack.
+  # Read through the category so every tie of every pool is loaded at once
+  # rather than one query per pool.
   private def pool_ties
     by_pool = team_category.encounters_by_pool_number
-    by_pool.keys.sort.flat_map { |number| by_pool.fetch(number).sort_by(&:id) }
+    by_pool.keys.sort.flat_map do |number|
+      ties = by_pool.fetch(number).sort_by(&:id)
+      ties.each_with_index.map { |tie, index| [tie, "Pool #{number} — #{index + 1}/#{ties.size}"] }
+    end
   end
 end

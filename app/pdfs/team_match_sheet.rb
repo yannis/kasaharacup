@@ -5,8 +5,8 @@
 #
 # Drawn blank for a whole category (TeamCategoryMatchSheetPdf, printed as a
 # stack of spares), or with the two teams already named, one sheet per pool tie
-# (TeamCategoryPoolMatchesPdf). Nothing else is ever filled in: the fighters,
-# the scores and the bout number are what the desk writes during the tie.
+# (TeamCategoryPoolMatchesPdf). Nothing else is ever filled in: the fighters and
+# the scores are what the desk writes during the tie.
 #
 # A side is identified by colour, not by position: the left name box is white
 # and the right one red, while the result table lists red first. Both keys off
@@ -17,13 +17,15 @@ module TeamMatchSheet
   WHITE = "F5F3F1"
   RED = "ff0000"
 
-  def draw_team_match_sheet(team_category, white_team: nil, red_team: nil)
-    draw_sheet_header(team_category)
+  def draw_team_match_sheet(team_category, white_team: nil, red_team: nil, label: nil)
+    draw_sheet_header(team_category, label)
     draw_bout_rows(team_category, white_team: white_team, red_team: red_team)
     draw_result_table(white_team: white_team, red_team: red_team)
   end
 
-  private def draw_sheet_header(team_category)
+  # `label` says which sheet this is out of a printed stack — the pool it
+  # belongs to and its place in that pool.
+  private def draw_sheet_header(team_category, label)
     bounding_box [bounds.left, bounds.top + 20], width: 400 do
       fill_color "000000"
       font_size 48
@@ -33,11 +35,22 @@ module TeamMatchSheet
       font_size 48
       move_down font.height
     end
-    text "Combat n°   ", align: :center
+    draw_sheet_label(label) if label
 
     cup_name_and_logo(category: team_category)
 
     font_size 12
+  end
+
+  # Placed under the title rather than flowed into it: a line added to the
+  # header pushes what follows down into the top border of the table below it,
+  # and the sheet has no room to give.
+  private def draw_sheet_label(label)
+    resume_at = cursor
+    bounding_box [bounds.left, bounds.top - 105], width: 400 do
+      font_size(24) { text label }
+    end
+    move_cursor_to resume_at
   end
 
   private def draw_bout_rows(team_category, white_team:, red_team:)
@@ -92,7 +105,10 @@ module TeamMatchSheet
 
     table(data, cell_style: {inline_format: true}, position: :center) do
       cells.padding = 5
-      column(0).width = 140
+      # As wide as the name boxes above, since it holds the same two names: at
+      # 140 a club name of any length wrapped onto a second line here while
+      # fitting on one up there.
+      column(0).width = 200
       column(0).borders = []
 
       column(1..3).width = 72
