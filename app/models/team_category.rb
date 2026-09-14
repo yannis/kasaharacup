@@ -54,16 +54,29 @@ class TeamCategory < ApplicationRecord
   # order for both sides of every pool encounter, and asking per side turned
   # that into two queries per encounter.
   #
-  # Memoized like #encounters_by_pool_number, and safe for the same reason: only
-  # read paths ask for a suggestion. The one writer, EncounterLineupSeeder,
-  # confirms a lineup on the encounter it is seeding, and a suggestion always
-  # skips its own encounter — so what it writes could never have been read here.
+  # Memoized like #encounters_by_pool_number. Two paths confirm a lineup, and
+  # neither can read a stale snapshot: EncounterLineupSeeder writes to the very
+  # encounter it is seeding, which a suggestion always skips, so what it writes
+  # could never appear here anyway; LineupsController#update writes and then
+  # re-renders through respond_with_encounter, which builds its EncounterComponent
+  # without auto_seed, so that render asks for no suggestion at all. Give that
+  # responder auto_seed — or add any other write-then-suggest path on one category
+  # instance — and the second side would be suggested from a pre-write snapshot.
   def lineup_set_encounters
     @lineup_set_encounters ||= encounters
       .where("lineup_1_set = TRUE OR lineup_2_set = TRUE")
       .includes(:team_fights)
       .order(updated_at: :desc, id: :desc)
       .to_a
+  end
+
+  # Both memos above hold rows read at first call. Plain ivars survive #reload,
+  # which resets associations only, so clear them: a caller that reloads is
+  # asking for the current state of the category, memos included.
+  def reload(...)
+    @encounters_by_pool_number = nil
+    @lineup_set_encounters = nil
+    super
   end
 
   def set_team_pools(random: Random.new)
