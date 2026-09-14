@@ -31,7 +31,7 @@ RSpec.describe "StaticPages", :fr do
       it "announces the upcoming edition and its dates" do
         get about_path(locale: :en)
         expect(response.body).to include(
-          "The #{cup.edition.ordinalize} edition of the Kasahara Cup will take place on 26 and 27 September, 2026"
+          "The #{cup.edition.ordinalize} edition of the Kasahara Cup will take place on 26 and 27 September 2026"
         )
       end
     end
