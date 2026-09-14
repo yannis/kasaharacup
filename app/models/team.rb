@@ -11,6 +11,10 @@ class Team < ApplicationRecord
   validates :name, uniqueness: {scope: :team_category_id}
 
   delegate :cup, to: :team_category
+  # allow_nil so the predicates below stay total for a Team built before its
+  # category is assigned. The column is NOT NULL with a foreign key, so this
+  # only concerns unsaved records.
+  delegate :team_size, to: :team_category, allow_nil: true
 
   def self.empty
     where.missing(:participations)
@@ -37,22 +41,31 @@ class Team < ApplicationRecord
   end
 
   # Both sides of the comparison are correlated subqueries rather than joins.
-  # A join to team_categories would clash: the usual entry point is Cup#teams,
-  # a has_many :through that already joins that table, so Rails aliases the
-  # second one and the comparison reads the wrong copy. Counting in a subquery
-  # instead of GROUP BY ... HAVING also keeps the result an ordinary relation,
-  # so callers can order, chain and #count it like any other scope, and a team
-  # with no members at all still counts as incomplete.
-  MEMBER_COUNT = "(SELECT COUNT(*) FROM participations WHERE participations.team_id = teams.id)"
-  TEAM_SIZE = "(SELECT team_size FROM team_categories WHERE team_categories.id = teams.team_category_id)"
-  private_constant :MEMBER_COUNT, :TEAM_SIZE
-
-  def self.incomplete
-    where("#{MEMBER_COUNT} < #{TEAM_SIZE}")
-  end
+  # Joining team_categories would be redundant at best: the usual entry point
+  # is Cup#teams, a has_many :through that already joins that table, so Rails
+  # aliases the second join to team_categories_teams. Both copies key on
+  # teams.team_category_id and therefore read the same row, but the scopes
+  # should not have to rely on that. Counting in a subquery instead of
+  # GROUP BY ... HAVING also keeps the result an ordinary relation, so callers
+  # can order, chain and #count it like any other scope, and a team with no
+  # members at all still counts as incomplete.
+  #
+  # The fragments name the teams table literally, so these scopes are only
+  # correct where teams is unaliased. Merged into a query that joins teams
+  # twice -- Encounter.joins(:team_1, :team_2), or any self-join -- they bind
+  # to whichever copy kept the bare name, silently and without error.
+  MEMBER_COUNT_SQL = "(SELECT COUNT(*) FROM participations WHERE participations.team_id = teams.id)"
+  TEAM_SIZE_SQL = "(SELECT team_size FROM team_categories WHERE team_categories.id = teams.team_category_id)"
+  COMPLETE_SQL = "#{MEMBER_COUNT_SQL} >= #{TEAM_SIZE_SQL}"
+  private_constant :MEMBER_COUNT_SQL, :TEAM_SIZE_SQL, :COMPLETE_SQL
 
   def self.complete
-    where("#{MEMBER_COUNT} >= #{TEAM_SIZE}")
+    where(COMPLETE_SQL)
+  end
+
+  # The complement of .complete by construction, so the two cannot drift apart.
+  def self.incomplete
+    where.not(COMPLETE_SQL)
   end
 
   def to_s
@@ -60,7 +73,7 @@ class Team < ApplicationRecord
   end
 
   def complete?
-    participations.size >= team_category.team_size
+    team_size.present? && participations.size >= team_size
   end
 
   def incomplete?
@@ -70,7 +83,7 @@ class Team < ApplicationRecord
   # A team stays in the running while it can still take a majority of the
   # bouts: 3 of 5, 2 of 3. The missing fighters are forfeited.
   def isvalid?
-    participations.size > team_category.team_size / 2
+    team_size.present? && participations.size > team_size / 2
   end
 
   def name_and_status
