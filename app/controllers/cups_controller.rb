@@ -17,13 +17,20 @@ class CupsController < ApplicationController
       @grouped_events = @cup.events.order(:start_on).group_by { |e| e.start_on.to_date }
       @headlines = @cup.headlines.shown.order(created_at: :desc)
       @shinpans = @cup.kenshis.shinpans.includes(:club).order(:last_name, :first_name)
-      @user_kenshis = current_user ? current_user.kenshis.for_cup(@cup).includes(participations: :category).to_a : []
       template = if @cup.canceled?
         "show_canceled"
       elsif Date.current > @cup.start_on.to_date
         "show_past"
       else
         "show"
+      end
+      # Only cups/show carries the registration resume, so only it needs the
+      # list: loading it for show_past and show_canceled — i.e. for most of the
+      # year — was three SELECTs thrown away.
+      @user_kenshis = if template == "show" && current_user
+        current_user.kenshis.for_cup(@cup).includes(participations: :category).to_a
+      else
+        []
       end
       render template
     end
