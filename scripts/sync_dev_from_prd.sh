@@ -2,7 +2,7 @@
 
 echo "------------------------------"
 echo "|    HEROKU PROD -> DEV      |"
-echo "------------------------------\n"
+echo -e "------------------------------\n"
 
 echo "Please check you already installed :"
 echo " - aws, the AWS command-line tool,"
@@ -30,19 +30,12 @@ capture_dump() {
 }
 
 set +x
-echo "\nCAPTURE DUMP"
+echo -e "\nCAPTURE DUMP"
 echo "------------------------------"
-if [[ ARGV[0] == "-auto" ]]; then
-  capture=$(ruby -ryaml -e "puts YAML::load(open(ARGV.first).read)['capture_dump']" config/prd_to_dev.yml)
-  if [[ "$capture" == "true" ]]; then
-    capture_dump
-  fi
-else
-  echo "Capture a new dump on Heroku? (y/n)"
-  read capture
-  if [[ "$capture" != "${capture#[Yy]}" ]]; then
-    capture_dump
-  fi
+echo "Capture a new dump on Heroku? (y/n)"
+read capture
+if [[ "$capture" != "${capture#[Yy]}" ]]; then
+  capture_dump
 fi
 
 # Here we download the latest backup of the DB
@@ -52,7 +45,7 @@ download_dump() {
 }
 
 set +x
-echo "\nDOWNLOAD DUMP"
+echo -e "\nDOWNLOAD DUMP"
 echo "------------------------------"
 
 if test -f "tmp/kasaharacup-production.dmp"; then
@@ -66,7 +59,7 @@ else
 fi
 
 set +x
-echo "\nDATABASE CREATION"
+echo -e "\nDATABASE CREATION"
 echo "------------------------------"
 
 su $SUDO_USER <<'EOF'
@@ -75,7 +68,7 @@ su $SUDO_USER <<'EOF'
 EOF
 
 set +x
-echo "\nDATABASE RESTORATION"
+echo -e "\nDATABASE RESTORATION"
 echo "------------------------------"
 
 su $SUDO_USER <<'EOF'
@@ -123,7 +116,7 @@ if [[ "$delete" != "${delete#[Yy]}" ]]; then
 fi
 
 set +x
-echo "\nASSETS SYNC"
+echo -e "\nASSETS SYNC"
 echo "------------------------------"
 
 sync_assets() {
@@ -141,6 +134,6 @@ if [[ "$sync" != "${sync#[Yy]}" ]]; then
 fi
 
 set +x
-echo "\n------------------------------"
+echo -e "\n------------------------------"
 echo "|     REFRESH COMPLETED      |"
 echo "------------------------------"
