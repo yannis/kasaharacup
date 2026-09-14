@@ -18,8 +18,6 @@ RSpec.describe Team do
     it { expect(team.participations.count).to eq 0 }
     it { expect(team).to be_valid_verbose }
     it { expect(team).to be_incomplete }
-    it { expect(described_class.incomplete).to include(team) }
-    it { expect(described_class.complete).not_to include(team) }
     it { expect(team.name_and_status).to eql "SDK" }
     it { expect(team.name_and_category).to eql "SDK (team_cat)" }
     it { expect(team.poster_name).to eql "SDK" }
@@ -38,8 +36,6 @@ RSpec.describe Team do
 
       it { expect(team).to be_valid_verbose }
       it { expect(team_participation.team).to eq team }
-      it { expect(described_class.incomplete).to include(team) }
-      it { expect(described_class.incomplete).to eq [team] }
       it { expect(team).to be_incomplete }
       it { expect(team).not_to be_isvalid }
       it { expect(team.participations.count).to eq 1 }
@@ -55,8 +51,6 @@ RSpec.describe Team do
 
       it { expect(team).to be_incomplete }
       it { expect(team).not_to be_isvalid }
-      it { expect(described_class.incomplete).to include(team) }
-      it { expect(described_class.complete).not_to include(team) }
     end
 
     context "with 3 participations" do
@@ -67,8 +61,6 @@ RSpec.describe Team do
 
       it { expect(team).to be_incomplete }
       it { expect(team).to be_isvalid }
-      it { expect(described_class.incomplete).to include(team) }
-      it { expect(described_class.complete).not_to include(team) }
     end
 
     context "with 5 participations" do
@@ -83,7 +75,6 @@ RSpec.describe Team do
       it { expect(team).to be_valid_verbose }
       it { expect(team).to be_complete }
       it { expect(team).to be_isvalid }
-      it { expect(described_class.complete).to include(team) }
       it { expect(team.participations.count).to eq 5 }
       it { expect(team.fitness).to eq 0.5 }
     end
@@ -97,7 +88,6 @@ RSpec.describe Team do
       it { expect(team).to be_valid_verbose }
       it { expect(team).to be_incomplete }
       it { expect(team).to be_isvalid }
-      it { expect(described_class.incomplete).to include(team) }
       it { expect(team.participations.count).to eq 4 }
     end
 
@@ -122,8 +112,6 @@ RSpec.describe Team do
       it { expect(team).to be_valid_verbose }
       it { expect(team).to be_complete }
       it { expect(team).to be_isvalid }
-      it { expect(described_class.complete).to include(team) }
-      it { expect(described_class.incomplete).not_to include(team) }
       it { expect(team.participations.count).to eq 7 }
     end
   end
@@ -140,8 +128,6 @@ RSpec.describe Team do
       it { expect(team).to be_complete }
       it { expect(team).to be_isvalid }
       it { expect(team.name_and_status).to eql "SDK (complete)" }
-      it { expect(described_class.complete).to include(team) }
-      it { expect(described_class.incomplete).not_to include(team) }
     end
 
     context "with 2 participations" do
@@ -152,8 +138,6 @@ RSpec.describe Team do
 
       it { expect(team).to be_incomplete }
       it { expect(team).to be_isvalid }
-      it { expect(described_class.incomplete).to include(team) }
-      it { expect(described_class.complete).not_to include(team) }
     end
 
     context "with 1 participation" do
@@ -164,8 +148,6 @@ RSpec.describe Team do
 
       it { expect(team).to be_incomplete }
       it { expect(team).not_to be_isvalid }
-      it { expect(described_class.incomplete).to include(team) }
-      it { expect(described_class.complete).not_to include(team) }
     end
   end
 
@@ -217,7 +199,7 @@ RSpec.describe Team do
     end
   end
 
-  describe "the size scopes across categories" do
+  describe "teams across categories of different sizes" do
     let(:small_category) { create(:team_category, name: "trios", cup: cup, team_size: 3) }
     let(:big_category) { create(:team_category, name: "quintets", cup: cup, team_size: 5) }
     let(:small_team) { create(:team, name: "Trio", team_category: small_category) }
@@ -229,13 +211,8 @@ RSpec.describe Team do
     }
 
     it "counts three members as complete only where the category fields three" do
-      expect(cup.teams.complete).to contain_exactly(small_team)
-      expect(cup.teams.incomplete).to contain_exactly(big_team)
-    end
-
-    it "stays a plain relation, so it counts and chains like any other scope" do
-      expect(cup.teams.incomplete.count).to eq 1
-      expect(cup.teams.complete.order(:name).pluck(:name)).to eq ["Trio"]
+      expect(small_team).to be_complete
+      expect(big_team).to be_incomplete
     end
 
     it "tells the two sizes apart on the isvalid? majority too" do

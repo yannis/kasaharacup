@@ -26,6 +26,11 @@ class Team < ApplicationRecord
   # encounter foreign keys nullify rather than block, so destroying a drawn
   # team would silently blank a bracket slot instead of failing loudly. Only
   # an empty team nothing points at is a leftover of registration.
+  #
+  # The fragment names the teams table literally, so it is only correct where
+  # teams is unaliased. Merged into a query that joins teams twice -- any
+  # self-join, such as Encounter.joins(:team_1, :team_2) -- it binds to
+  # whichever copy kept the bare name, silently and without error.
   NOT_DRAWN = <<~SQL.squish
     NOT EXISTS (
       SELECT 1 FROM encounters
@@ -38,34 +43,6 @@ class Team < ApplicationRecord
 
   def self.abandoned
     empty.where(rank: nil, pool_number: nil, seed: nil).where(NOT_DRAWN)
-  end
-
-  # Both sides of the comparison are correlated subqueries rather than joins.
-  # Joining team_categories would be redundant at best: the usual entry point
-  # is Cup#teams, a has_many :through that already joins that table, so Rails
-  # aliases the second join to team_categories_teams. Both copies key on
-  # teams.team_category_id and therefore read the same row, but the scopes
-  # should not have to rely on that. Counting in a subquery instead of
-  # GROUP BY ... HAVING also keeps the result an ordinary relation, so callers
-  # can order, chain and #count it like any other scope, and a team with no
-  # members at all still counts as incomplete.
-  #
-  # The fragments name the teams table literally, so these scopes are only
-  # correct where teams is unaliased. Merged into a query that joins teams
-  # twice -- Encounter.joins(:team_1, :team_2), or any self-join -- they bind
-  # to whichever copy kept the bare name, silently and without error.
-  MEMBER_COUNT_SQL = "(SELECT COUNT(*) FROM participations WHERE participations.team_id = teams.id)"
-  TEAM_SIZE_SQL = "(SELECT team_size FROM team_categories WHERE team_categories.id = teams.team_category_id)"
-  COMPLETE_SQL = "#{MEMBER_COUNT_SQL} >= #{TEAM_SIZE_SQL}"
-  private_constant :MEMBER_COUNT_SQL, :TEAM_SIZE_SQL, :COMPLETE_SQL
-
-  def self.complete
-    where(COMPLETE_SQL)
-  end
-
-  # The complement of .complete by construction, so the two cannot drift apart.
-  def self.incomplete
-    where.not(COMPLETE_SQL)
   end
 
   def to_s
