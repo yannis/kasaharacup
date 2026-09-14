@@ -57,7 +57,7 @@ fr:
         last_name: Nom
         male: Homme
         mr: M.
-        ms: Mme.
+        ms: Mme
         password: Mot de passe
         password_confirmation: Confirmation du mot de passe
         remember_me: Garder en mémoire
@@ -77,9 +77,9 @@ fr:
         participation:
           attributes:
             category:
-              too_old: Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name}!
-              too_young: Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name}!
-              wrong_gender: Désolé, mais la catégorie %{name} est réservée à un autre genre!
+              too_old: Désolé, mais vous êtes trop vieux pour participer à la catégorie %{name} !
+              too_young: Désolé, mais vous êtes trop jeune pour participer à la catégorie %{name} !
+              wrong_gender: Désolé, mais la catégorie %{name} est réservée à un autre genre !
         purchase:
           attributes:
             product_id:
@@ -148,13 +148,13 @@ fr:
       one_day: le %{start_on}
       two_days: les %{start_on} et %{end_on}
     show:
-      accomodation:
+      accommodation:
         hotels_html: Vous pouvez toujours choisir parmi <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>les nombreux hôtels</a> que Genève et la France toute proche peuvent offrir.
         title: Logement
       categories:
         title: Les catégories
       deadline: Le délai pour les inscriptions est fixé au %{deadline}
-      deadline_passed: Les inscriptions sont fermée depuis le %{deadline}
+      deadline_passed: Les inscriptions sont fermées depuis le %{deadline}
       fee: "%{fee_chf} CHF"
       fees:
         description: Carte bancaire ou Twint (CHF uniquement, pas d'espèces).
@@ -166,9 +166,9 @@ fr:
         prepayment_reference: KasaharaCup2026 + nom du participant
         prepayment_reference_label: Référence de paiement
         prepayment_transfer_fees: Les éventuels frais de virement sont à la charge de l'expéditeur.
-        title: Combien ça coûte?
+        title: Combien ça coûte ?
         variable: Prix variable
-      over: Le tournoi est terminé! Merci à tous les participants et à l'année prochaine!
+      over: Le tournoi est terminé ! Merci à tous les participants et à l'année prochaine !
       products:
         not_available: Malheureusement plus disponible
       program:
@@ -194,11 +194,11 @@ fr:
             Stade du Bout-du-Monde<br />
             Route de Vessy 12<br />
             1206 Genève<br />
-            Switzerland<br />
+            Suisse<br />
             _GPS: 46.180588,6.155893_<br />
             <a id="google_map" href="https://maps.google.ch/maps?hl=fr&amp;ie=UTF8&amp;q=centre+sportif+du+bout+du+monde&amp;fb=1&amp;gl=ch&amp;hq=centre+sportif+du+bout+du+monde&amp;cid=0,0,2906637816380334854&amp;t=m&amp;ll=46.182846,6.156163&amp;spn=0.007131,0.013733&amp;z=16" target="_blank" rel="noopener noreferrer">Google map vers la salle de compétition</a>
           title: Coordonnées
-        title: Où est-ce que ça se passe?
+        title: Où est-ce que ça se passe ?
   date:
     abbr_day_names:
     - dim
@@ -267,7 +267,7 @@ fr:
         one: environ un an
         other: environ %{count} ans
       almost_x_years:
-        one: presqu'un an
+        one: presque un an
         other: presque %{count} ans
       half_a_minute: une demi‑minute
       less_than_x_minutes:
@@ -310,7 +310,7 @@ fr:
       send_paranoid_instructions: Si votre e-mail existe dans notre base de données, vous allez bientôt recevoir un e-mail contenant les instructions de confirmation de votre compte.
       title: Renvoyer les instructions de confirmation
     failure:
-      already_authenticated: Vous êtes déjà connecté
+      already_authenticated: Vous êtes déjà connecté.
       inactive: Votre compte n'est pas encore activé.
       invalid: Email ou mot de passe incorrect.
       last_attempt: Vous avez droit à une tentative avant que votre compte ne soit verrouillé.
@@ -320,39 +320,39 @@ fr:
       unauthenticated: Vous devez vous connecter ou vous inscrire pour continuer.
       unconfirmed: Vous devez valider votre compte pour continuer.
     links:
-      confirmation: Pas reçu de confirmation d'enregistrement?
-      forgot: Oublié votre mot de passe?
+      confirmation: Pas reçu de confirmation d'enregistrement ?
+      forgot: Oublié votre mot de passe ?
       oauth: Connectez-vous avec
-      sign_in: Vous avez déjà un compte?
-      sign_up: Pas encore de compte?
-      unlock: Pas reçu d'instructions de déblocage?
+      sign_in: Vous avez déjà un compte ?
+      sign_up: Pas encore de compte ?
+      unlock: Pas reçu d'instructions de déblocage ?
     mailer:
       confirmation_instructions:
         action: Confirmer mon email
-        greeting: Bienvenue %{recipient}!
+        greeting: Bienvenue %{recipient} !
         instruction: 'Vous pouvez confirmer votre email grâce au lien ci-dessous:'
         subject: Instructions de confirmation
       email_changed:
-        greeting: Bonjour %{recipient}!
+        greeting: Bonjour %{recipient} !
         message: Nous vous contactons pour vous informer que votre email a été changé en %{email}.
-        message_unconfirmed: Nous vous contactons pour vous informer que votre email est en train d’être changé par %{email}.
+        message_unconfirmed: Nous vous contactons pour vous informer que votre email est en train d'être changé par %{email}.
         subject: Email modifié
       password_change:
-        greeting: Bonjour %{recipient}!
+        greeting: Bonjour %{recipient} !
         message: Nous vous contactons pour vous notifier que votre mot de passe a été modifié.
         subject: Mot de passe modifié
       reset_password_instructions:
         action: Changer mon mot de passe
-        greeting: Bonjour %{recipient}!
-        instruction: 'Quelqu’un a demandé un lien pour changer votre mot de passe, le voici:'
-        instruction_2: Si vous n’avez pas émis cette demande, merci d’ignorer cet email.
-        instruction_3: Votre mot de passe ne changera pas tant que vous n’aurez pas cliqué sur ce lien et renseigné un nouveau mot de passe.
+        greeting: Bonjour %{recipient} !
+        instruction: 'Quelqu''un a demandé un lien pour changer votre mot de passe, le voici:'
+        instruction_2: Si vous n'avez pas émis cette demande, merci d'ignorer cet email.
+        instruction_3: Votre mot de passe ne changera pas tant que vous n'aurez pas cliqué sur ce lien et renseigné un nouveau mot de passe.
         subject: Instructions pour changer le mot de passe
       unlock_instructions:
         action: Débloquer mon compte
-        greeting: Bonjour %{recipient}!
+        greeting: Bonjour %{recipient} !
         instruction: 'Suivez ce lien pour débloquer votre compte:'
-        message: Votre compte a été bloqué suite à un nombre d’essais de connexions manquées trop important.
+        message: Votre compte a été bloqué suite à un nombre d'essais de connexions manquées trop important.
         subject: Instructions pour déverrouiller le compte
     passwords:
       new: Démarrez la réinitialisation du mot de passe
@@ -360,22 +360,23 @@ fr:
       send_instructions: Vous allez recevoir les instructions de réinitialisation du mot de passe dans quelques instants
       send_paranoid_instructions: Si votre e-mail existe dans notre base de données, vous allez recevoir un lien de réinitialisation par e-mail
       title: Changez de mot de passe
-      updated: Votre mot de passe a été édité avec succès, vous êtes maintenant connecté
+      updated: Votre mot de passe a été modifié avec succès, vous êtes maintenant connecté.
       updated_not_active: Votre mot de passe a été changé avec succès.
     registrations:
       cancel_title: Détruisez votre compte
-      cancel_verif: Attention! Toutes vos données seront détruites y compris vos inscriptions. Ceci est irréversible.
+      cancel_verif: Attention ! Toutes vos données seront détruites y compris vos inscriptions. Ceci est irréversible.
       destroyed: Votre compte a été supprimé avec succès. Nous espérons vous revoir bientôt.
       edit:
-        cancel_my_account: Supprimer ce compte!
+        cancel_my_account: Supprimer ce compte !
         current_password: Nous avons besoin de votre mot de passe actuel afin de valider votre modification
         password:
           hint: Laissez blanc si vous ne désirez pas de modification
-        unhappy: Mécontent?
+        title: Mise à jour
+        unhappy: Mécontent ?
       edit_title: Modifiez votre compte
       new:
         title: Création d'un compte
-      signed_up: Bienvenu, vous êtes connecté.
+      signed_up: Bienvenue, vous êtes connecté.
       signed_up_but_inactive: Vous êtes bien enregistré. Vous ne pouvez cependant pas vous connecter car votre compte n'est pas encore activé.
       signed_up_but_locked: Vous êtes bien enregistré. Vous ne pouvez cependant pas vous connecter car votre compte est verrouillé.
       signed_up_but_unconfirmed: Un message contenant un lien de confirmation a été envoyé à votre adresse email. Ouvrez ce lien pour activer votre compte.
@@ -383,6 +384,7 @@ fr:
       update_needs_confirmation: Votre compte a bien été mis à jour mais nous devons vérifier votre nouvelle adresse email. Merci de vérifier vos emails et de cliquer sur le lien de confirmation pour finaliser la validation de votre nouvelle adresse.
       updated: Votre compte a été modifié avec succès.
     sessions:
+      already_signed_out: Déconnecté.
       email: Email
       new:
         title: Connectez-vous
@@ -405,7 +407,7 @@ fr:
       confirmation: ne concorde pas avec %{attribute}
       confirmation_period_expired: à confirmer dans les %{period}, merci de faire une nouvelle demande
       date_string_not_iso8601: doit être une date valide au format "AAAA-MM-JJ"
-      doesnt_exist: n’existe pas
+      doesnt_exist: n'existe pas
       empty: doit être rempli(e)
       equal_to: doit être égal à %{count}
       even: doit être pair
@@ -456,15 +458,16 @@ fr:
       title: Les nouvelles
     link: Toutes les nouvelles
   helpers:
-    are_you_sure: Vous êtes sûr?
+    are_you_sure: Vous êtes sûr ?
     cancel: Annuler
     page_entries_info:
       more_pages:
-        display_entries: "%{entry_name}  <b>%{first} - %{last}</b> sur <b>%{total}</b> au total"
+        display_entries: "%{entry_name} <b>%{first} - %{last}</b> sur <b>%{total}</b> au total"
       one_page:
         display_entries:
           one: "<b>%{count}</b> %{entry_name}"
           other: "<b>tous les %{count}</b> %{entry_name}"
+          zero: Aucun %{entry_name} trouvé
     select:
       prompt: Veuillez sélectionner
     submit:
@@ -490,17 +493,17 @@ fr:
       extra: Autres produits
       individual_categories: Catégories individuelles
       more_details:
-        help: Si vous dormez au dortoir, nous devons communiquer certaines de vos informations au bureau d'administration du dortoir. En effet, en tant qu'hôtel, le bureau doit déclarer chaque résident à l'Etat de Genève.
+        help: Si vous dormez au dortoir, nous devons communiquer certaines de vos informations au bureau d'administration du dortoir. En effet, en tant qu'hôtel, le bureau doit déclarer chaque résident à l'État de Genève.
         title: Plus de détails
-      not_available: Désolé, “%{product_name}“ n'est plus disponible pour l'instant. Veuillez revenir  plus tard vérifier une disponibilité éventuelle.
-      ronin_info: Cochez cette boîte si vous voulez participez à la compétition par %{category_name} mais n'avez pas trouvez de co-équipiers. Nous essayerons de trouver une équipe incomplete pour vous.
-      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos-coéquipiers. Si l'équipe n'existe pas encore créez-là en entrant son nom suivi de ↩︎ dans le champs de recherche.
+      not_available: Désolé, “%{product_name}” n'est plus disponible pour l'instant. Veuillez revenir plus tard pour vérifier une disponibilité éventuelle.
+      ronin_info: Cochez cette case si vous voulez participer à la compétition %{category_name} mais n'avez pas trouvé de coéquipiers. Nous essayerons de vous trouver une équipe incomplète.
+      team_info: Choisissez ici l'équipe à laquelle vous avez prévu de participer avec vos coéquipiers. Si l'équipe n'existe pas encore, créez-la en entrant son nom suivi de ↩︎ dans le champ de recherche.
       waiver:
         info: 'Les juniors de moins de 18 ans qui participent à la catégorie Team doivent présenter une décharge de responsabilité signée par un responsable légal. Merci de télécharger et compléter le document suivant et de le présenter le jour de la compétition:'
         title: Décharge de responsabilité
     helpers:
       destroy:
-        confirm: Êtes vous sûr?
+        confirm: Êtes-vous sûr ?
         text: Détruire
       duplicate:
         text: Dupliquer
@@ -520,7 +523,7 @@ fr:
       title: Inscrivez quelqu'un à la compétition
       yourself: Finalisez votre inscription à la compétition
     self:
-      exist: Il semblerait que vous soyez déjà inscrit. Voulez-vous modifier cette inscription?
+      exist: Il semblerait que vous soyez déjà inscrit. Voulez-vous modifier cette inscription ?
     show:
       register_someone_else: Inscrivez quelqu'un d'autre
       title: Inscription de %{full_name}
@@ -544,7 +547,7 @@ fr:
   layouts:
     footer:
       contact:
-        text_html: Contactez nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre.
+        text_html: Contactez-nous à %{mail} si vous avez la moindre interrogation. Nous nous ferons un plaisir de vous répondre.
         title: Contact
       newsletter:
         button: Abonnez-vous
@@ -552,7 +555,7 @@ fr:
         subtitle: Recevez des informations occasionnelles sur le tournoi.
         title: Abonnez-vous à notre newsletter
     navigation:
-      about: A propos
+      about: À propos
       account: Compte
       rules: Règlement
   navigation:
@@ -562,8 +565,8 @@ fr:
       text: Inscriptions
       title: Inscrivez-vous à la compétition
     teams:
-      text: Equipes (%{teams})
-      title: Equipes déjà inscrites
+      text: Équipes (%{teams})
+      title: Équipes déjà inscrites
   navigation_dropdown_component:
     canceled: Annulée
   number:
@@ -575,7 +578,7 @@ fr:
         separator: ","
         significant: false
         strip_insignificant_zeros: false
-        unit: "€"
+        unit: CHF
     format:
       delimiter: " "
       precision: 3
@@ -619,7 +622,7 @@ fr:
   participations:
     destroy:
       alert: Erreur lors de la destruction de l'inscription
-      confirm: Etes-vous bien sûr de vouloir détruire cette inscription? Le processus est irréversible…
+      confirm: Êtes-vous bien sûr de vouloir détruire cette inscription ? Le processus est irréversible…
       notice: Participation détruite avec succès
       title: Détruire
   personal_infos:
@@ -628,18 +631,18 @@ fr:
       email_helper: Une adresse email personnelle est requise pour recevoir le pass pour les transports publics genevois
   purchases:
     destroy:
-      confirm: Etes-vous bien sûr de vouloir détruire cette extra? Le processus est irréversible…
+      confirm: Êtes-vous bien sûr de vouloir détruire cet extra ? Le processus est irréversible…
       title: Détruire
   registrations:
     form:
-      club_info: Choisissez ici le Dojo ou Club auquel vous appartenez. Si il n'existe pas encore créez-le en entrant son nom suivi de ↩︎ dans le champs de recherche.
+      club_info: Choisissez ici le Dojo ou Club auquel vous appartenez. S'il n'existe pas encore, créez-le en entrant son nom suivi de ↩︎ dans le champ de recherche.
   roles:
     annotator: annotateur(trice)
     manager: manager
   rules:
     show:
       content: |
-        Nous suivons pour l'essentiel les règles des tournois de l'EKF, à savoir celles écrites dans [le règlement des 34èmes Championnats d'Europe de kendo 2026](https://www.ekf-eu.com/documents/34EKC%202026%20RULES_FINAL.pdf).
+        Nous suivons pour l'essentiel les règles des tournois de l'EKF, à savoir celles écrites dans [le règlement des 34es Championnats d'Europe de kendo 2026](https://www.ekf-eu.com/documents/34EKC%202026%20RULES_FINAL.pdf).
 
         - [Compétition par équipe — poule](#team-pool)
         - [Compétition par équipe — tournoi](#team-tournament)
@@ -722,7 +725,7 @@ fr:
       title: Règlement de la compétition
       warning:
         label: Important
-        text: 'Ce qui suit pose le cadre général, et non un programme figé. Le nombre de kenshis et d’équipes inscrits, et les catégories dans lesquelles ils le sont, déterminent le format définitif : certains points peuvent donc être adaptés, qu’il s’agisse de disputer une catégorie en poules ou directement en tableau, de la durée des combats, du recours ou non à l’encho, et ainsi de suite. Toute adaptation est annoncée lors du tournoi.'
+        text: 'Ce qui suit pose le cadre général, et non un programme figé. Le nombre de kenshis et d''équipes inscrits, et les catégories dans lesquelles ils le sont, déterminent le format définitif : certains points peuvent donc être adaptés, qu''il s''agisse de disputer une catégorie en poules ou directement en tableau, de la durée des combats, du recours ou non à l''encho, et ainsi de suite. Toute adaptation est annoncée lors du tournoi.'
   simple_form:
     error_notification:
       default_message: 'Veuillez vérifier les problèmes suivants :'
@@ -734,12 +737,12 @@ fr:
   static_pages:
     about:
       a_html: |
-        La coupe Kasahara est un tournoi international de kendo organisé chaque année depuis 1984 en l'honneur de <strong>Kasahara Toshiaki sensei</strong>, le premier Secrétaire de la ZNKR (Zen Nippon Kendo Renmei) et de l'IKF (International Kendo Federation). Kasahara sensei a joué un rôle crucial dans le développement du kendo en Suisse.
-        <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4ème Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
+        La Coupe Kasahara est un tournoi international de kendo organisé chaque année depuis 1984 en l'honneur de <strong>Kasahara Toshiaki sensei</strong>, le premier Secrétaire de la ZNKR (Zen Nippon Kendo Renmei) et de l'IKF (International Kendo Federation). Kasahara sensei a joué un rôle crucial dans le développement du kendo en Suisse.
+        <br/>En 1972, son fils, Kasahara Hiroaki sensei, alors âgé de 22 ans et 4e Dan de kendo, passa deux ans en Suisse comme professeur de kendo envoyé directement par la ZNKR.
       b_html: 'Le tournoi, organisé depuis plus de 20 ans à Genève par la section kendo du <a href=''http://www.kendo-geneve.ch''>Shung Do Kwan Budo</a>, réunit environ 150 participants de toute l''Europe : des kenshis français, italiens, japonais, anglais et bien entendu suisses.'
       edition_html:
-        past: La %{edition} édition de la Coupe Kasahara a eu lieu %{dates} au stade du Bout-du-Monde, proche du centre ville.
-        upcoming: La %{edition} édition de la Coupe Kasahara aura lieu %{dates} au stade du Bout-du-Monde, proche du centre ville.
+        past: La %{edition} édition de la Coupe Kasahara a eu lieu %{dates} au stade du Bout-du-Monde, proche du centre-ville.
+        upcoming: La %{edition} édition de la Coupe Kasahara aura lieu %{dates} au stade du Bout-du-Monde, proche du centre-ville.
       title: La compétition
   support:
     array:
@@ -748,14 +751,14 @@ fr:
       words_connector: ", "
   teams:
     destroy:
-      confirm: Etes-vous bien sûr de vouloir détruire cette équipe? Le processus est irréversible…
+      confirm: Êtes-vous bien sûr de vouloir détruire cette équipe ? Le processus est irréversible…
       title: Détruire
     index:
       ronins:
-        info: Nous sommes à la recherche d'une équipe pour les Ronins suivants. Faites-nous savoir si vous avez une place disponible!
+        info: Nous sommes à la recherche d'une équipe pour les Ronins suivants. Faites-nous savoir si vous avez une place disponible !
       title: Toutes les équipes
     show:
-      title: Equipe “%{team_name}”
+      title: Équipe “%{team_name}”
     team_row:
       complete: Complète
       incomplete: Incomplète

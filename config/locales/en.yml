@@ -74,8 +74,8 @@ en:
         participation:
           attributes:
             category:
-              too_old: 'not valid: You''re too old to participate to the %{name} category!'
-              too_young: 'not valid: You''re too young to participate to the %{name} category!'
+              too_old: 'not valid: You''re too old to participate in the %{name} category!'
+              too_young: 'not valid: You''re too young to participate in the %{name} category!'
               wrong_gender: 'not valid: this category (%{name}) is restricted to a different gender!'
         purchase:
           attributes:
@@ -109,7 +109,7 @@ en:
         other: Products
       team_category:
         one: Team category
-        other: Team category
+        other: Team categories
   admin:
     competition_trees:
       generate_bracket:
@@ -144,13 +144,13 @@ en:
       one_day: on %{start_on}
       two_days: on %{start_on} and %{end_on}
     show:
-      accomodation:
-        hotels_html: You can chose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
-        title: Accomodation
+      accommodation:
+        hotels_html: You can choose from <a href='https://www.booking.com/region/ch/geneve-canton.fr.html' target='_blank'>the many hotels</a> that Geneva and surrounding France offer.
+        title: Accommodation
       categories:
         title: Categories
       deadline: The deadline for registration is %{deadline}
-      deadline_passed: Registration is closed since %{deadline}
+      deadline_passed: Registration has been closed since %{deadline}
       fee: "%{fee_chf} CHF"
       fees:
         description: Credit card or Twint (CHF only, no cash).
@@ -161,9 +161,9 @@ en:
         prepayment_recommended: Recommended
         prepayment_reference: KasaharaCup2026 + name of the participant
         prepayment_reference_label: Payment reference
-        prepayment_transfer_fees: Any bank transfer fees are at the sender's charge.
+        prepayment_transfer_fees: Any bank transfer fees are borne by the sender.
         title: Registration fees
-        variable: Price variable
+        variable: Variable price
       over: The tournament is over! Thanks to all for participating and see you next year!
       products:
         not_available: Unfortunately not available anymore
@@ -184,7 +184,7 @@ en:
         one: 1 spot left
         other: "%{count} spots left"
       venue:
-        a_html: Since a few years, the tournament is taking place at the %{stade_du_bout_du_monde}.
+        a_html: As every year, the tournament will take place at the %{stade_du_bout_du_monde}.
         address:
           content: |
             Stade du Bout-du-Monde<br />
@@ -227,7 +227,7 @@ en:
     - Friday
     - Saturday
     formats:
-      day_month_year: "%d %B, %Y"
+      day_month_year: "%d %B %Y"
       day_only: "%d"
       default: "%Y-%m-%d"
       long: "%B %d, %Y"
@@ -397,11 +397,11 @@ en:
     messages:
       accepted: must be accepted
       already_confirmed: was already confirmed, please try signing in
-      blank: can’t be blank
+      blank: can't be blank
       confirmation: doesn't match %{attribute}
       confirmation_period_expired: needs to be confirmed within %{period}, please request a new one
       date_string_not_iso8601: must be valid date in the format “YYYY-MM-DD”
-      doesnt_exist: doesn’t exist
+      doesnt_exist: doesn't exist
       empty: can't be empty
       equal_to: must be equal to %{count}
       even: must be even
@@ -475,7 +475,7 @@ en:
       flash:
         alert: Kenshi not registered
         notice: Kenshi successfully registered
-    deadline_passed: The registration deadline is overpassed. Please contact %{email}.
+    deadline_passed: The registration deadline has passed. Please contact %{email}.
     destroy:
       notice: Kenshi successfully destroyed
     edit:
@@ -487,11 +487,11 @@ en:
       extra: Additional items
       individual_categories: Individual categories
       more_details:
-        help: If you sleep at the dormitory, we need to communicate some of your information to the dormitory administration office. Indeed, as an hotel, the office as to declare each residents to the state of Geneva.
+        help: If you sleep at the dormitory, we need to pass some of your information on to the dormitory administration office. Like a hotel, the office has to declare each resident to the State of Geneva.
         title: More details
-      not_available: Sorry, “%{product_name}“ is not available for the time being. Please come back later to check for any availability.
-      ronin_info: Check this box if you'd like to take part to the %{category_name} competition but haven't find a team yet. We'll try to fit you in a incomplete team.
-      team_info: Choose here the team you plan to participate in with your teammates. If the team does not exist yet create it by entering its name followed by ↩︎ in the search field.
+      not_available: Sorry, “%{product_name}” is not available for the time being. Please come back later to check for any availability.
+      ronin_info: Check this box if you'd like to take part in the %{category_name} competition but haven't found a team yet. We'll try to fit you into an incomplete team.
+      team_info: Choose the team you plan to compete with here. If the team does not exist yet, create it by entering its name followed by ↩︎ in the search field.
       waiver:
         info: 'Juniors under the age of 18 who are participating in the Team category must present a liability waiver signed by a legal guardian. Please download and complete the following document and present it on the day of the competition:'
         title: Liability waiver
@@ -514,12 +514,12 @@ en:
       no_categories: Not participating in any category for the moment
     new:
       duplicate: Duplicate the registration of %{full_name}
-      title: Register someone to the competition
-      yourself: Complete your registration to the competition
+      title: Register someone for the competition
+      yourself: Complete your registration for the competition
     self:
       exist: It seems you're already registered. Do you want to modify this registration?
     show:
-      register_someone_else: Register someone else to the competition
+      register_someone_else: Register someone else for the competition
       title: Registration of %{full_name}
     update:
       flash:
@@ -541,7 +541,7 @@ en:
   layouts:
     footer:
       contact:
-        text_html: Contact us at %{mail} if you have any questions. We're looking forward to answer to you…
+        text_html: Contact us at %{mail} if you have any questions. We look forward to hearing from you…
         title: Contact
       newsletter:
         button: Subscribe
@@ -557,7 +557,7 @@ en:
       text: Kenshis (%{kenshis})
     register:
       text: Register
-      title: Register to the competition
+      title: Register for the competition
     teams:
       text: Teams (%{teams})
       title: Already registered teams
@@ -567,12 +567,12 @@ en:
     currency:
       format:
         delimiter: ","
-        format: "%u%n"
+        format: "%n %u"
         precision: 2
         separator: "."
         significant: false
         strip_insignificant_zeros: false
-        unit: "$"
+        unit: CHF
     format:
       delimiter: ","
       precision: 3
@@ -647,7 +647,7 @@ en:
 
         ### Pool {#team-pool}
 
-        Every pool is in principle composed of three (3) teams, who fight in the following order: 1><2, 1><3, 2><3. If the inscriptions make it necessary, pools of two (2) or four (4) are included.
+        Every pool is in principle composed of three (3) teams, who fight in the following order: 1><2, 1><3, 2><3. If the number of entries makes it necessary, pools of two (2) or four (4) are included.
 
         The teams are divided into pools by drawing, on condition that teams of the same club are kept out of the same pool. The 4 teams that got the medals at the previous Team Championships are seeded into different pools and removed to the far end of the grid.
 
@@ -689,7 +689,7 @@ en:
 
         ### Pool {#individual-pool}
 
-        Every pool is in principle composed of three (3) kenshis, who fight in the following order: 1><2, 1><3, 2><3. If the inscriptions make it necessary, pools of two (2) or four (4) are included. Pools may be combined, or a different order of fights announced.
+        Every pool is in principle composed of three (3) kenshis, who fight in the following order: 1><2, 1><3, 2><3. If the number of entries makes it necessary, pools of two (2) or four (4) are included. Pools may be combined, or a different order of fights announced.
 
         The division into pools is handled by drawing, on condition that kenshis of the same club are kept out of the same pool. Also, the 4 competitors that got the medals at the previous respective Championships are seeded into different pools and moved to the corner of the elimination bracket.
 
@@ -732,7 +732,7 @@ en:
     about:
       a_html: |
         The Kasahara Cup is an international kendo tournament organized each year since 1984 in honor of <strong>Kasahara Toshiaki sensei</strong>, the first Secretary of the ZNKR (Zen Nippon Kendo Renmei) and the IKF (International Kendo Federation). Kasahara sensei played a crucial role in the development of kendo in Switzerland.
-        <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese Kendo professor directly sent by the ZNKR.
+        <br/>In 1972, his son, Kasahara Hiroaki sensei, then 22 years old and kendo 4th Dan, stayed in Switzerland for two years as the first Japanese kendo instructor sent directly by the ZNKR.
       b_html: 'The tournament, organized for more than 20 years in Geneva by the kendo section of the <a href=''http://www.kendo-geneve.ch''>Shung Do Kwan Budo</a>, gathers about 150 participants from all over Europe: French, Italian, Japanese, English and of course Swiss kenshis.'
       edition_html:
         past: The %{edition} edition of the Kasahara Cup took place %{dates} at the Bout-du-Monde stadium, near the city center.
@@ -749,7 +749,7 @@ en:
       title: Destroy
     index:
       ronins:
-        info: We are loking for a team for the following Ronins. Let us know if you have an available spot!
+        info: We are looking for a team for the following Ronins. Let us know if you have an available spot!
       title: All teams
     show:
       title: Team “%{team_name}”
@@ -774,8 +774,8 @@ en:
     show:
       edit: edit
       no_registrations: You have no registrations yet.
-      register_someone_else: Register someone else to the competition
-      register_yourself: Register yourself to the competition
+      register_someone_else: Register someone else for the competition
+      register_yourself: Register yourself for the competition
       title: Account of %{full_name}
       your_registrations: Your registrations for Kasahara Cup %{year}
   views:
@@ -796,7 +796,7 @@ en:
     signature: |
       ......................................................... (place, date)
       Signature:
-    title: Liability waiver for junior under 18 years old
+    title: Liability waiver for juniors under 18 years old
     undersigned: |
       I, the undersigned
       ............................................................................... (name, first name)
