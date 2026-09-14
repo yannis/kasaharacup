@@ -86,6 +86,26 @@ EOF
 su $SUDO_USER <<'EOF'
   set -x
   pg_restore -O -d kasaharacup_development tmp/kasaharacup-production.dmp
+EOF
+
+# The heroku_ext schema created above exists only so pg_restore can resolve the
+# dump's references to it — Heroku installs its extensions there. With the data
+# in, move the extension into public and drop the now-empty schema.
+#
+# This has to happen BEFORE db:migrate. Rails re-dumps db/schema.rb after every
+# migration, and it qualifies any extension sitting outside the search path, so
+# the dump comes out as enable_extension "heroku_ext.pg_stat_statements". That
+# line cannot load into the test database, which has no such schema: the load
+# aborts, schema_migrations is left empty, and rspec then reports every
+# migration as pending — the misleading "you have N pending migrations" error.
+# Relocating first keeps the dumped line unqualified, matching what is committed.
+#
+# Both statements are safe to re-run: SET SCHEMA is a no-op when the extension is
+# already in public, and RESTRICT makes the drop fail loudly rather than destroy
+# anything, should a dump ever put something else in heroku_ext.
+su $SUDO_USER <<'EOF'
+  set -x
+  psql kasaharacup_development -c "ALTER EXTENSION pg_stat_statements SET SCHEMA public; DROP SCHEMA IF EXISTS heroku_ext RESTRICT;"
   bundle exec rails db:migrate
 EOF
 
