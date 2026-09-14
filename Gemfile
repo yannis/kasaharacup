@@ -25,14 +25,11 @@ gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
 
-# Use Redis adapter to run Action Cable in production
-gem "redis", "~> 6.0"
+# Database-backed Action Cable pubsub, so production needs no Redis
+gem "solid_cable"
 
 # reCAPTCHA
 gem "recaptcha"
-
-# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
-# gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

@@ -1,11 +1,14 @@
+# No Redis anywhere. Action Cable's redis adapter pins redis < 6, which blocked
+# the redis 6 bump, and nothing else in the app used the gem — so it is gone
+# rather than pinned back (issue #1296). Development runs the in-process
+# adapter, production a Postgres-backed one.
 development:
-  adapter: redis
-  url: redis://localhost:6379/1
+  adapter: async
 
 test:
   adapter: test
 
+# solid_cable names no `connects_to`, so it uses the primary database. Its
+# defaults apply: poll every 0.1s, keep messages for a day, trim as it writes.
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: kasaharacup_production
+  adapter: solid_cable
