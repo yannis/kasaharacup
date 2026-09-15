@@ -121,7 +121,7 @@ RSpec.describe Kenshi do
   describe "A kenshi with badly formatted name and email" do
     let(:kenshi) {
       create(:kenshi, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
-        email: "STUPIDLY.FORAMaTTED@EMAIL.COM", cup: cup)
+        email: "  STUPIDLY.FORAMaTTED@EMAIL.COM ", cup: cup)
     }
 
     it { expect(kenshi.norm_last_name).to eq "Last-J.-Name Name" }
@@ -137,6 +137,17 @@ RSpec.describe Kenshi do
     it { expect(kenshi.last_name).to eq "Ito" }
     it { expect(kenshi.full_name).to eq "Kei Sub Ito" }
     it { expect(kenshi.first_name_initials).to eq "K.S." }
+
+    it "normalizes on assignment, before anything validates" do
+      expect(described_class.new(last_name: " itO ").last_name).to eq "Ito"
+    end
+
+    # The reason the normalization is declared rather than hand-rolled in a
+    # callback: a hash finder normalizes its value too, so the uniqueness check
+    # above cannot be slipped past with a leading space.
+    it "normalizes the value of a hash finder too" do
+      expect(described_class.where(last_name: " ito ")).to include(kenshi)
+    end
   end
 
   describe "Updating a kenshi with participations data" do

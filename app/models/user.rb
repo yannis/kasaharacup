@@ -37,9 +37,13 @@ class User < ApplicationRecord
     ].join(" ")
   end
 
+  # Hash conditions rather than a raw SQL fragment: Kenshi normalizes these two
+  # attributes, and normalization reaches the values of a hash finder but not of
+  # a fragment. A name stored here with a stray space — 67 of them are, this
+  # model having never squished — therefore still matches the kenshi it
+  # registered, whose own name is squished.
   def registered_for_cup?(cup)
-    cup.present? && cup.kenshis.where("kenshis.first_name = ? AND kenshis.last_name = ?", first_name,
-      last_name).present?
+    cup.present? && cup.kenshis.exists?(first_name:, last_name:)
   end
 
   def has_kenshis?

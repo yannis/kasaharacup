@@ -62,6 +62,17 @@ RSpec.describe User do
     it { expect(user.reload.email).to eq "stupidly.foramatted@email.com" }
     it { expect(user).not_to be_registered_for_cup(cup) }
 
+    # This model does not squish its names, so a user can carry a stray space a
+    # kenshi never keeps. The lookup has to see past it, or the user is offered
+    # "register yourself" for a cup they already registered for.
+    it "recognizes the kenshi it registered despite a stray space of its own" do
+      registered = create(:user, first_name: "Sylvain", last_name: "Perez")
+      create(:kenshi, user: registered, cup: cup, first_name: "Sylvain", last_name: "Perez")
+      registered.update_column(:first_name, "Sylvain ")
+
+      expect(registered.reload).to be_registered_for_cup(cup)
+    end
+
     # context "if an kenshi with the same name exist" do
     #   let!(:kenshi){create :kenshi, first_name: user.first_name, last_name: user.last_name}
 

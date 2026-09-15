@@ -17,6 +17,17 @@ class Kenshi < ApplicationRecord
   has_many :purchases, dependent: :destroy
   has_many :products, through: :purchases
 
+  # Normalized on assignment rather than in a before_validation, so the value
+  # the uniqueness check and every hash finder see is the one the database will
+  # hold: a stray space used to slip a duplicate past them, and to leave a
+  # family name unmatched by its namesakes — which is how two Ito printed with
+  # no disambiguating initial (#1293). POSIX bracket expression, so an accented
+  # letter counts as a letter.
+  normalizes :first_name, :last_name, with: ->(name) {
+    name.squish.gsub(/[[:alpha:]]+/) { |word| word.capitalize }
+  }
+  normalizes :email, with: ->(email) { email.strip.downcase }
+
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :grade, presence: true
@@ -29,7 +40,6 @@ class Kenshi < ApplicationRecord
   accepts_nested_attributes_for :purchases, allow_destroy: true
   accepts_nested_attributes_for :personal_info, allow_destroy: true
 
-  before_validation :format
   after_validation :logs
   after_create_commit :notify_slack
   after_commit :update_purchase
@@ -236,13 +246,6 @@ class Kenshi < ApplicationRecord
 
   def fitness
     (grade.to_f / age_at_cup.to_f).round(4)
-  end
-
-  private def format
-    # use POSIX bracket expression here
-    self.last_name = last_name.squish.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
-    self.first_name = first_name.to_s.squish.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
-    self.email = email.downcase if email
   end
 
   private def notify_slack
