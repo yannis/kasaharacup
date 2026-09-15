@@ -90,9 +90,12 @@ RSpec.describe PoolComponent, type: :component do
       end
     end
 
-    # The per-fighter namesake check (Kenshi#poster_name) and the per-pool fight
-    # query (pool_number = N) are both gone — batched/shared on the category.
-    expect(queries.grep(/SELECT 1 AS one FROM .kenshis./)).to be_empty
+    # One namesake lookup for the whole category rather than one per fighter,
+    # and no per-pool fight query — both batched/shared on the category. The
+    # shape below is the one Kenshi.poster_names_for sends; PoolComponent's
+    # per-fighter fallback would send it again for every fighter, so this counts
+    # rather than greps for absence.
+    expect(queries.grep(/SELECT DISTINCT .kenshis.\..id./).size).to eq 1
     expect(queries.grep(/FROM .fights.+"pool_number" = /)).to be_empty
   end
 

@@ -121,13 +121,33 @@ RSpec.describe Kenshi do
   describe "A kenshi with badly formatted name and email" do
     let(:kenshi) {
       create(:kenshi, first_name: "FIRST-J.-sébastien mÜhlebäch", last_name: "LAST-J.-name nAme",
-        email: "STUPIDLY.FORAMaTTED@EMAIL.COM", cup: cup)
+        email: "  STUPIDLY.FORAMaTTED@EMAIL.COM ", cup: cup)
     }
 
     it { expect(kenshi.norm_last_name).to eq "Last-J.-Name Name" }
     it { expect(kenshi.norm_first_name).to eq "First-J.-Sébastien Mühlebäch" }
     it { expect(kenshi.full_name).to eq "First-J.-Sébastien Mühlebäch Last-J.-Name Name" }
     it { expect(kenshi.reload.email).to eq "stupidly.foramatted@email.com" }
+  end
+
+  describe "A kenshi whose name carries stray whitespace" do
+    let(:kenshi) { create(:kenshi, first_name: "  Kei  Sub ", last_name: " Ito ", cup: cup) }
+
+    it { expect(kenshi.first_name).to eq "Kei Sub" }
+    it { expect(kenshi.last_name).to eq "Ito" }
+    it { expect(kenshi.full_name).to eq "Kei Sub Ito" }
+    it { expect(kenshi.first_name_initials).to eq "K.S." }
+
+    it "normalizes on assignment, before anything validates" do
+      expect(described_class.new(last_name: " itO ").last_name).to eq "Ito"
+    end
+
+    # The reason the normalization is declared rather than hand-rolled in a
+    # callback: a hash finder normalizes its value too, so the uniqueness check
+    # above cannot be slipped past with a leading space.
+    it "normalizes the value of a hash finder too" do
+      expect(described_class.where(last_name: " ito ")).to include(kenshi)
+    end
   end
 
   describe "Updating a kenshi with participations data" do
@@ -311,6 +331,70 @@ RSpec.describe Kenshi do
 
     it "is empty for an empty collection" do
       expect(described_class.first_name_initials_for([])).to eq({})
+    end
+  end
+
+  # Namesakes are told apart on the name the reader actually sees, which is
+  # stripped of accents and stray spaces. Two spellings that print identically
+  # have to disambiguate each other, however they are stored.
+  describe "namesakes whose stored spellings differ" do
+    let(:category) { create(:individual_category, cup: cup) }
+
+    def qualify(kenshi)
+      create(:participation, category: category, kenshi: kenshi)
+      kenshi
+    end
+
+    # Raw SQL, because `normalizes` decorates the attribute *type*: it reaches
+    # #update_column and #update_all too, and either of those would quietly
+    # store the squished value these examples are about.
+    def stored_as(kenshi, column, value)
+      described_class.connection.update(
+        described_class.sanitize_sql(["UPDATE kenshis SET #{column} = ? WHERE id = ?", value, kenshi.id])
+      )
+      kenshi.reload
+    end
+
+    it "disambiguates last names that differ only by a stray space" do
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), :last_name, " Ito")
+      makoto = create(:kenshi, cup: cup, first_name: "Makoto", last_name: "Ito")
+
+      expect(kei.poster_name).to eq "ITO K."
+      expect(makoto.poster_name).to eq "ITO M."
+      expect(described_class.poster_names_for([kei, makoto]))
+        .to eq(kei.id => "ITO K.", makoto.id => "ITO M.")
+    end
+
+    it "disambiguates last names that differ only by their accents" do
+      alba = create(:kenshi, cup: cup, first_name: "Alba", last_name: "Pérez")
+      bruno = create(:kenshi, cup: cup, first_name: "Bruno", last_name: "Perez")
+
+      expect(alba.poster_name).to eq "PEREZ A."
+      expect(bruno.poster_name).to eq "PEREZ B."
+    end
+
+    it "disambiguates them within a category too" do
+      kei = stored_as(qualify(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito")), :last_name, " Ito")
+      makoto = qualify(create(:kenshi, cup: cup, first_name: "Makoto", last_name: "Ito"))
+
+      names = described_class.poster_names_for([kei, makoto], category: category)
+
+      expect(names[kei.id]).to eq "ITO K."
+      expect(names[makoto.id]).to eq "ITO M."
+      expect(described_class.first_name_initials_for([kei, makoto], category: category))
+        .to eq(kei.id => "K.", makoto.id => "M.")
+    end
+
+    it "reads the initials of a stored first name that starts with a space" do
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), :first_name, " Kei")
+
+      expect(kei.first_name_initials).to eq "K."
+    end
+
+    it "never prints a poster name with a leading space" do
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), :last_name, " Ito")
+
+      expect(kei.poster_name).to eq "ITO"
     end
   end
 end
