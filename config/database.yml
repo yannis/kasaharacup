@@ -4,12 +4,24 @@ default: &default
   encoding: unicode
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+# Three consumers share this pool wherever Action Cable runs on solid_cable, not
+# one: Puma's request threads (RAILS_MAX_THREADS), ActiveJob's :async executor —
+# which defaults to that same count and runs the broadcast_*_later_to jobs in
+# this very process — and solid_cable's listener thread, which checks out once
+# per polling_interval. Sized to web + jobs + listener so a burst of scoring
+# broadcasts cannot starve the listener into a connection timeout.
+cable_aware_pool: &cable_aware_pool
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i * 2 + 1 %>
+
 development:
   <<: *default
+  <<: *cable_aware_pool
   database: kasaharacup_development
   host: <%= ENV.fetch('POSTGRES_HOST') { 'localhost' } %>
   user: postgres
 
+# Deliberately left on the lean default pool: the cable adapter is `test` here,
+# and parallel specs multiply this number by the process count.
 test:
   <<: *default
   database: kasaharacup_test<%= ENV["TEST_ENV_NUMBER"] %>
@@ -18,6 +30,7 @@ test:
 
 production:
   <<: *default
+  <<: *cable_aware_pool
   database: kasaharacup_production
   username: kasaharacup
   password: <%= ENV["KASAHARACUP_DATABASE_PASSWORD"] %>

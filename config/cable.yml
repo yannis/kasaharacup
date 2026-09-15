@@ -1,11 +1,36 @@
+# No Redis anywhere. Action Cable's redis adapter pins redis < 6, which blocked
+# the redis 6 bump, and nothing else in the app used the gem — so it is gone
+# rather than pinned back (issue #1296). solid_cable names no `connects_to`, so
+# it falls back to ActiveRecord::Base and lives in the primary database.
+#
+# Every option is spelled out rather than left to the gem: #1296 was a
+# production-only outage, and a default that silently changes upstream would
+# land here with no diff to review.
+default: &default
+  adapter: solid_cable
+  # The listener polls this often for new rows; it is also the floor on
+  # broadcast latency.
+  polling_interval: 0.1.seconds
+  # Messages are never replayed — the listener seeds from MAX(id) both on boot
+  # and on every new subscription — so retention buys nothing beyond covering a
+  # poll. The gem's 1.day default would leave a tournament's worth of rendered
+  # competition trees in the primary database, its backups, and the dump that
+  # scripts/sync_dev_from_prd.sh pulls into development.
+  message_retention: 5.minutes
+  # A ConnectionTimeoutError must not be terminal. The gem's default of 1 allows
+  # a single immediate retry, after which the listener thread exits *silently*
+  # (the rescue swallows it, so report_on_exception never fires) and is never
+  # rebuilt — every live panel freezes until the process restarts, with nothing
+  # logged. These are the backoff delays, in seconds, between retries.
+  reconnect_attempts: [0.5, 1, 2, 5, 10]
+
+# Development runs the same adapter as production on purpose: the production
+# pubsub path being the one nobody ever exercises is what let #1296 ship.
 development:
-  adapter: redis
-  url: redis://localhost:6379/1
+  <<: *default
 
 test:
   adapter: test
 
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: kasaharacup_production
+  <<: *default

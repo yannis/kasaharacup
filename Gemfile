@@ -25,14 +25,14 @@ gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
 
-# Use Redis adapter to run Action Cable in production
-gem "redis", "~> 6.0"
+# Database-backed Action Cable pubsub, so production needs no Redis. Pinned:
+# the schema lives in a hand-written migration rather than the gem's
+# generator, so a major bump that changes solid_cable_messages must be an
+# explicit decision, not a weekly Dependabot PR (issue #1296).
+gem "solid_cable", "~> 4.0"
 
 # reCAPTCHA
 gem "recaptcha"
-
-# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
-# gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

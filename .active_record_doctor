@@ -6,7 +6,9 @@ ActiveRecordDoctor.configure do
     "schema_migrations",
     "active_storage_blobs",
     "active_storage_attachments",
-    "action_text_rich_texts"
+    "action_text_rich_texts",
+    # Owned by the solid_cable gem: no app model, no validations we can add.
+    "solid_cable_messages"
   ]
 
   # Detector-specific settings affect only one specific detector.
