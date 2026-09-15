@@ -13,7 +13,7 @@ echo
 
 if [[ $UID != 0 ]]; then
   echo "Please run this script with sudo:"
-  echo "sudo bash $0 $*"
+  echo "sudo bash $0"
   exit 1
 fi
 
@@ -33,7 +33,7 @@ set +x
 echo -e "\nCAPTURE DUMP"
 echo "------------------------------"
 echo "Capture a new dump on Heroku? (y/n)"
-read capture
+read -r capture
 if [[ "$capture" != "${capture#[Yy]}" ]]; then
   capture_dump
 fi
@@ -50,7 +50,7 @@ echo "------------------------------"
 
 if test -f "tmp/kasaharacup-production.dmp"; then
   echo "Dump detected in tmp folder ($(ls -l tmp/kasaharacup-production.dmp | cut -d ' ' -f '9-11')). Re-download it? (y/n)"
-  read fresh_dump
+  read -r fresh_dump
   if [[ "$fresh_dump" != "${fresh_dump#[Yy]}" ]]; then
     download_dump
   fi
@@ -73,7 +73,7 @@ echo "------------------------------"
 
 su $SUDO_USER <<'EOF'
   set -x
-  psql kasaharacup_development -c "CREATE SCHEMA IF NOT EXISTS heroku_ext; CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA heroku_ext;"
+  psql kasaharacup_development -c "CREATE SCHEMA IF NOT EXISTS heroku_ext" -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA heroku_ext"
 EOF
 
 su $SUDO_USER <<'EOF'
@@ -93,13 +93,26 @@ EOF
 # migration as pending — the misleading "you have N pending migrations" error.
 # Relocating first keeps the dumped line unqualified, matching what is committed.
 #
-# Both statements are safe to re-run: SET SCHEMA is a no-op when the extension is
-# already in public, and RESTRICT makes the drop fail loudly rather than destroy
-# anything, should a dump ever put something else in heroku_ext.
+# Each statement gets its own -c. psql sends a single -c string to the server as
+# one transaction, so pairing them would roll the relocation back whenever the
+# drop failed — silently undoing the fix. Split, the relocation commits on its
+# own and only the cleanup can fail; a leftover heroku_ext is cosmetic, since
+# db/schema.rb never mentions the schema itself. SET SCHEMA is a no-op when the
+# extension already sits in public, so a re-run is harmless, and RESTRICT
+# refuses rather than destroys, should a dump put something else in there.
+#
+# set -e stops the block if the relocation fails, so db:migrate can never re-dump
+# the qualified name from a database that was never fixed up.
 su $SUDO_USER <<'EOF'
+  set -e
   set -x
-  psql kasaharacup_development -c "ALTER EXTENSION pg_stat_statements SET SCHEMA public; DROP SCHEMA IF EXISTS heroku_ext RESTRICT;"
+  psql kasaharacup_development -c "ALTER EXTENSION pg_stat_statements SET SCHEMA public"
+  psql kasaharacup_development -c "DROP SCHEMA IF EXISTS heroku_ext RESTRICT" ||
+    echo "NOTE: heroku_ext still holds objects and was left in place"
   bundle exec rails db:migrate
+  set +x
+  git diff --quiet db/schema.rb ||
+    echo "WARNING: the sync rewrote db/schema.rb — review it before committing"
 EOF
 
 delete_dump() {
@@ -110,7 +123,7 @@ delete_dump() {
 }
 
 echo "Delete dump file? (y/n)"
-read delete
+read -r delete
 if [[ "$delete" != "${delete#[Yy]}" ]]; then
   delete_dump
 fi
@@ -128,7 +141,7 @@ sync_assets() {
 
 
 echo "Sync S3 development assets from production? (y/n)"
-read sync
+read -r sync
 if [[ "$sync" != "${sync#[Yy]}" ]]; then
   sync_assets
 fi
