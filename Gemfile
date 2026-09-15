@@ -25,8 +25,11 @@ gem "sprockets-rails"
 gem "stimulus-rails"
 gem "turbo-rails"
 
-# Database-backed Action Cable pubsub, so production needs no Redis
-gem "solid_cable"
+# Database-backed Action Cable pubsub, so production needs no Redis. Pinned:
+# the schema lives in a hand-written migration rather than the gem's
+# generator, so a major bump that changes solid_cable_messages must be an
+# explicit decision, not a weekly Dependabot PR (issue #1296).
+gem "solid_cable", "~> 4.0"
 
 # reCAPTCHA
 gem "recaptcha"

@@ -713,7 +713,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   solargraph
-  solid_cable
+  solid_cable (~> 4.0)
   sprockets-rails
   standard
   stimulus-rails

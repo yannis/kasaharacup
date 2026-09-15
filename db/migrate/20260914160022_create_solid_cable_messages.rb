@@ -13,6 +13,10 @@ class CreateSolidCableMessages < ActiveRecord::Migration[8.1]
       t.datetime :created_at, null: false
       t.bigint :channel_hash, null: false
 
+      # Kept only to stay identical to upstream's db/cable_schema.rb: nothing
+      # queries `channel` in SQL — broadcastable filters on channel_hash,
+      # trimmable on created_at, and the channel value is matched in memory
+      # against the listener's Concurrent::Map.
       t.index :channel
       t.index :channel_hash
       t.index :created_at
