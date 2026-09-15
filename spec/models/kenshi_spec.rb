@@ -345,13 +345,18 @@ RSpec.describe Kenshi do
       kenshi
     end
 
-    def stored_as(kenshi, last_name)
-      kenshi.update_column(:last_name, last_name)
+    # Raw SQL, because `normalizes` decorates the attribute *type*: it reaches
+    # #update_column and #update_all too, and either of those would quietly
+    # store the squished value these examples are about.
+    def stored_as(kenshi, column, value)
+      described_class.connection.update(
+        described_class.sanitize_sql(["UPDATE kenshis SET #{column} = ? WHERE id = ?", value, kenshi.id])
+      )
       kenshi.reload
     end
 
     it "disambiguates last names that differ only by a stray space" do
-      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), " Ito")
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), :last_name, " Ito")
       makoto = create(:kenshi, cup: cup, first_name: "Makoto", last_name: "Ito")
 
       expect(kei.poster_name).to eq "ITO K."
@@ -369,7 +374,7 @@ RSpec.describe Kenshi do
     end
 
     it "disambiguates them within a category too" do
-      kei = stored_as(qualify(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito")), " Ito")
+      kei = stored_as(qualify(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito")), :last_name, " Ito")
       makoto = qualify(create(:kenshi, cup: cup, first_name: "Makoto", last_name: "Ito"))
 
       names = described_class.poster_names_for([kei, makoto], category: category)
@@ -381,14 +386,13 @@ RSpec.describe Kenshi do
     end
 
     it "reads the initials of a stored first name that starts with a space" do
-      kei = create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito")
-      kei.update_column(:first_name, " Kei")
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), :first_name, " Kei")
 
-      expect(kei.reload.first_name_initials).to eq "K."
+      expect(kei.first_name_initials).to eq "K."
     end
 
     it "never prints a poster name with a leading space" do
-      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), " Ito")
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), :last_name, " Ito")
 
       expect(kei.poster_name).to eq "ITO"
     end
