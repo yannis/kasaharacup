@@ -130,6 +130,15 @@ RSpec.describe Kenshi do
     it { expect(kenshi.reload.email).to eq "stupidly.foramatted@email.com" }
   end
 
+  describe "A kenshi whose name carries stray whitespace" do
+    let(:kenshi) { create(:kenshi, first_name: "  Kei  Sub ", last_name: " Ito ", cup: cup) }
+
+    it { expect(kenshi.first_name).to eq "Kei Sub" }
+    it { expect(kenshi.last_name).to eq "Ito" }
+    it { expect(kenshi.full_name).to eq "Kei Sub Ito" }
+    it { expect(kenshi.first_name_initials).to eq "K.S." }
+  end
+
   describe "Updating a kenshi with participations data" do
     let(:kenshi) { create(:kenshi, first_name: "Yannis", last_name: "Jaquet", female: false, cup: cup) }
     let(:individual_category) { create(:individual_category, cup: kenshi.cup) }
@@ -311,6 +320,66 @@ RSpec.describe Kenshi do
 
     it "is empty for an empty collection" do
       expect(described_class.first_name_initials_for([])).to eq({})
+    end
+  end
+
+  # Namesakes are told apart on the name the reader actually sees, which is
+  # stripped of accents and stray spaces. Two spellings that print identically
+  # have to disambiguate each other, however they are stored.
+  describe "namesakes whose stored spellings differ" do
+    let(:category) { create(:individual_category, cup: cup) }
+
+    def qualify(kenshi)
+      create(:participation, category: category, kenshi: kenshi)
+      kenshi
+    end
+
+    def stored_as(kenshi, last_name)
+      kenshi.update_column(:last_name, last_name)
+      kenshi.reload
+    end
+
+    it "disambiguates last names that differ only by a stray space" do
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), " Ito")
+      makoto = create(:kenshi, cup: cup, first_name: "Makoto", last_name: "Ito")
+
+      expect(kei.poster_name).to eq "ITO K."
+      expect(makoto.poster_name).to eq "ITO M."
+      expect(described_class.poster_names_for([kei, makoto]))
+        .to eq(kei.id => "ITO K.", makoto.id => "ITO M.")
+    end
+
+    it "disambiguates last names that differ only by their accents" do
+      alba = create(:kenshi, cup: cup, first_name: "Alba", last_name: "Pérez")
+      bruno = create(:kenshi, cup: cup, first_name: "Bruno", last_name: "Perez")
+
+      expect(alba.poster_name).to eq "PEREZ A."
+      expect(bruno.poster_name).to eq "PEREZ B."
+    end
+
+    it "disambiguates them within a category too" do
+      kei = stored_as(qualify(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito")), " Ito")
+      makoto = qualify(create(:kenshi, cup: cup, first_name: "Makoto", last_name: "Ito"))
+
+      names = described_class.poster_names_for([kei, makoto], category: category)
+
+      expect(names[kei.id]).to eq "ITO K."
+      expect(names[makoto.id]).to eq "ITO M."
+      expect(described_class.first_name_initials_for([kei, makoto], category: category))
+        .to eq(kei.id => "K.", makoto.id => "M.")
+    end
+
+    it "reads the initials of a stored first name that starts with a space" do
+      kei = create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito")
+      kei.update_column(:first_name, " Kei")
+
+      expect(kei.reload.first_name_initials).to eq "K."
+    end
+
+    it "never prints a poster name with a leading space" do
+      kei = stored_as(create(:kenshi, cup: cup, first_name: "Kei", last_name: "Ito"), " Ito")
+
+      expect(kei.poster_name).to eq "ITO"
     end
   end
 end

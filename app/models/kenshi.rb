@@ -135,19 +135,17 @@ class Kenshi < ApplicationRecord
     products.sum { |product| (currency.to_sym == :chf) ? product.fee_chf : product.fee_eu }
   end
 
+  # The name printed on posters, brackets and match sheets: the family name
+  # alone, or the family name followed by enough of the first name to tell
+  # namesakes apart.
   def poster_name(category: nil)
-    poster_name = [last_name]
+    Kenshi.poster_names_for([self], category:)[id]
+  end
 
-    same_name_kenshis = Kenshi.where(last_name: last_name).where.not(id: id)
-    same_name_kenshis = if category
-      same_name_kenshis.includes(:participations).where(participations: {category:})
-    else
-      same_name_kenshis.where(cup: cup)
-    end
-    if same_name_kenshis.exists?
-      poster_name << first_name_initials(category:)
-    end
-    Kenshi.send(:normalize_poster_name, poster_name.join(" "))
+  # Just the first-name part of a poster name, for listings that print the
+  # family name in a column of their own.
+  def first_name_initials(category: nil)
+    Kenshi.first_name_initials_for([self], category:)[id]
   end
 
   # Batch-computes poster_name for a collection of kenshis with a single DB
@@ -158,12 +156,15 @@ class Kenshi < ApplicationRecord
   def self.poster_names_for(kenshis, category: nil)
     return {} if kenshis.empty?
 
-    same_name_groups = category ? category_name_groups(kenshis, category) : cup_name_groups(kenshis)
-    group_key = category ? ->(kenshi) { kenshi.last_name } : ->(kenshi) { [kenshi.cup_id, kenshi.last_name] }
+    groups = namesake_groups(kenshis, category:)
 
     kenshis.each_with_object({}) do |kenshi, hash|
-      group = same_name_groups.fetch(group_key.call(kenshi), [])
-      hash[kenshi.id] = (group.size > 1) ? format_with_initials(kenshi, group) : normalize_poster_name(kenshi.last_name)
+      namesakes = namesakes_of(kenshi, groups, category:)
+      hash[kenshi.id] = if namesakes.empty?
+        normalize_poster_name(kenshi.last_name)
+      else
+        normalize_poster_name("#{kenshi.last_name} #{initials_among(kenshi, namesakes)}")
+      end
     end
   end
 
@@ -172,49 +173,61 @@ class Kenshi < ApplicationRecord
   def self.first_name_initials_for(kenshis, category: nil)
     return {} if kenshis.empty?
 
-    same_name_groups = category ? category_name_groups(kenshis, category) : cup_name_groups(kenshis)
-    group_key = category ? ->(kenshi) { kenshi.last_name } : ->(kenshi) { [kenshi.cup_id, kenshi.last_name] }
+    groups = namesake_groups(kenshis, category:)
 
-    kenshis.to_h do |kenshi|
-      [kenshi.id, initials_within(kenshi, same_name_groups.fetch(group_key.call(kenshi), []))]
+    kenshis.to_h { |kenshi| [kenshi.id, initials_among(kenshi, namesakes_of(kenshi, groups, category:))] }
+  end
+
+  # Namesakes are matched on the name the reader actually sees, not on the one
+  # stored: spellings that differ only by case, by an accent or by a stray space
+  # print identically, so they have to disambiguate each other. No SQL equality
+  # says that, so the whole scope is fetched once and grouped in Ruby.
+  private_class_method def self.namesake_groups(kenshis, category:)
+    scope = if category
+      joins(:participations).where(participations: {category:}).distinct
+    else
+      where(cup_id: kenshis.map(&:cup_id).uniq)
     end
+
+    scope.select(:id, :cup_id, :first_name, :last_name)
+      .group_by { |candidate| namesake_key(candidate, category:) }
   end
 
-  private_class_method def self.cup_name_groups(kenshis)
-    Kenshi.where(cup_id: kenshis.map(&:cup_id).uniq, last_name: kenshis.map(&:last_name).uniq)
-      .group_by { |kenshi| [kenshi.cup_id, kenshi.last_name] }
+  # A category scope holds a single cup's participants, so the printed family
+  # name alone identifies the group there; a cup scope may span several.
+  private_class_method def self.namesake_key(kenshi, category:)
+    printed = normalize_poster_name(kenshi.last_name)
+    category ? printed : [kenshi.cup_id, printed]
   end
 
-  private_class_method def self.category_name_groups(kenshis, category)
-    Kenshi.joins(:participations)
-      .where(participations: {category: category})
-      .where(last_name: kenshis.map(&:last_name).uniq)
-      .distinct
-      .group_by(&:last_name)
+  private_class_method def self.namesakes_of(kenshi, groups, category:)
+    groups.fetch(namesake_key(kenshi, category:), []).reject { |other| other.id == kenshi.id }
   end
 
-  private_class_method def self.format_with_initials(kenshi, same_name_group)
-    normalize_poster_name("#{kenshi.last_name} #{initials_within(kenshi, same_name_group)}")
-  end
+  # One letter is usually enough; a namesake whose first name prints the same
+  # initial pushes both of them to two.
+  private_class_method def self.initials_among(kenshi, namesakes)
+    initials = single_initials(kenshi.first_name)
+    taken = namesakes.map { |other| normalize_poster_name(single_initials(other.first_name)) }
+    return double_initials(kenshi.first_name) if taken.include?(normalize_poster_name(initials))
 
-  private_class_method def self.initials_within(kenshi, same_name_group)
-    others = same_name_group.reject { |k| k.id == kenshi.id }
-    my_initials = single_initials(kenshi.first_name)
-    return double_initials(kenshi.first_name) if others.any? { |k| single_initials(k.first_name) == my_initials }
-
-    my_initials
+    initials
   end
 
   private_class_method def self.single_initials(first_name)
-    first_name.to_s.split(/[\s|-]/).map { |part| "#{part[0]}." }.join
+    name_parts(first_name).map { |part| "#{part[0]}." }.join
   end
 
   private_class_method def self.double_initials(first_name)
-    first_name.to_s.split(/[\s|-]/).map { |part| "#{part[0, 2]}." }.join
+    name_parts(first_name).map { |part| "#{part[0, 2]}." }.join
+  end
+
+  private_class_method def self.name_parts(first_name)
+    first_name.to_s.split(/[\s|-]+/).reject(&:empty?)
   end
 
   private_class_method def self.normalize_poster_name(text)
-    text.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/, "").upcase
+    text.to_s.unicode_normalize(:nfkd).gsub(/[^\x00-\x7F]/, "").upcase.squish
   end
 
   def logs
@@ -225,29 +238,10 @@ class Kenshi < ApplicationRecord
     (grade.to_f / age_at_cup.to_f).round(4)
   end
 
-  def first_name_initials(category: nil)
-    initials = first_name.split(/[\s|-]/).map { |s| s.first + "." }.join
-    same_name_kenshis = Kenshi.where(last_name:).where.not(id:)
-    same_name_kenshis = if category
-      same_name_kenshis.includes(:participations).where(participations: {category:})
-    else
-      same_name_kenshis.where(cup:)
-    end
-    if same_name_kenshis.exists?
-      same_name_kenshis_initials = same_name_kenshis.map do |k|
-        k.first_name.split(/[\s|-]/).map { |s| s.first + "." }.join
-      end
-      if same_name_kenshis_initials.include?(initials)
-        initials = first_name.split(/[\s|-]/).map { |s| s[0..1] + "." }.join
-      end
-    end
-    initials
-  end
-
   private def format
     # use POSIX bracket expression here
-    self.last_name = last_name.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
-    self.first_name = first_name.to_s.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
+    self.last_name = last_name.squish.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if last_name
+    self.first_name = first_name.to_s.squish.gsub(/[[:alpha:]]+/) { |w| w.capitalize } if first_name
     self.email = email.downcase if email
   end
 
