@@ -56,32 +56,77 @@ class BracketSeeder
     [sort_by_strength(top), sort_by_strength(bottom)]
   end
 
-  # Build the round-1 units (pairs; [slot, nil] for byes) for one half, ordered
-  # by leading fighter so the round-1 column reads in pool-number order within
-  # the half. half_size is an even power of two (the B == 2 case returns
-  # earlier), so the post-bye `rest` cross_pool_match receives is always
-  # even-sized. Slots are unique by (pool_number, pool_rank), so
-  # `half_slots - byes` removes exactly the byes.
+  # Build the round-1 units (pairs; [slot, nil] for byes) for one half.
+  # half_size is an even power of two (the B == 2 case returns earlier), so the
+  # post-bye `rest` cross_pool_match receives is always even-sized. Slots are
+  # unique by (pool_number, pool_rank), so `half_slots - byes` removes exactly
+  # the byes.
   private def build_half_units(half_slots)
     half_size = bracket_size / 2
     byes = select_byes(half_slots, half_size - half_slots.size)
     fights = cross_pool_match(sort_by_strength(half_slots - byes))
-    units = byes.map { |slot| [slot, nil] } + fights
+    place(byes, fights)
+  end
+
+  # Plain pool-number order is the most readable column — neighbouring pools sit
+  # next to each other — and because select_byes already spreads the byes over
+  # the pool range, it usually lands them in distinct round-2 slots by itself.
+  # When it does not, fall back to placing them structurally. Same greedy-then-
+  # guaranteed shape as cross_pool_match.
+  private def place(byes, fights)
+    natural = by_pool(byes.map { |slot| [slot, nil] } + fights)
+    balanced?(natural) ? natural : spread_byes(byes, fights)
+  end
+
+  # Byes take the half's most-spread positions, so they land in distinct round-2
+  # slots (and distinct quarters, eighths, ... as far as their number allows)
+  # rather than meeting each other and cancelling out; the fights fill what is
+  # left. The positions are used in ascending order, so both groups still read
+  # down the column in pool-number order.
+  private def spread_byes(byes, fights)
+    units = Array.new(byes.size + fights.size)
+    positions = BracketPositions.spread_order(units.size).first(byes.size).sort
+    by_pool(byes.map { |slot| [slot, nil] }).each_with_index { |unit, i| units[positions[i]] = unit }
+    open = units.each_index.reject { |i| units[i] }
+    by_pool(fights).each_with_index { |unit, i| units[open[i]] = unit }
+    units
+  end
+
+  # Byes are spread as evenly as the bracket allows when no round-2 slot holds
+  # more than one more of them than another.
+  private def balanced?(units)
+    counts = units.each_slice(2).map { |slot| slot.count { |unit| unit.last.nil? } }
+    counts.max - counts.min <= 1
+  end
+
+  private def by_pool(units)
     units.sort_by { |pair| [pair.first.pool_number, pair.first.pool_rank] }
   end
 
   # Byes go to evenly-spaced pool winners (rank-1s) within the half, so the bye
   # advantage is distributed across the pool-number range rather than always
   # landing on the lowest-numbered pools. When a half has more byes than winners
-  # (a small field in a large bracket), the spread spills over the half's entries
-  # in rank-major order, so a pool may then receive more than one bye. Returns []
-  # when there are no byes — never forces one, which would drop a fighter.
+  # (a small field in a large bracket), *every* winner takes one and the surplus
+  # spills over the remaining entries by strength, so a runner-up never holds a
+  # bye while a winner fights. Returns [] when there are no byes — never forces
+  # one, which would drop a fighter.
   private def select_byes(slots, byes_count)
     return [] if byes_count <= 0
 
     winners = slots.select { |slot| slot.pool_rank == 1 }.sort_by(&:pool_number)
-    source = (byes_count <= winners.size) ? winners : sort_by_strength(slots)
-    Array.new(byes_count) { |j| source[j * source.size / byes_count] }
+    return spread(winners, byes_count) if byes_count <= winners.size
+
+    winners + spread(sort_by_strength(slots - winners), byes_count - winners.size)
+  end
+
+  # Take `count` entries spaced evenly across the whole of `source`, endpoints
+  # included: 2 of 3 picks the first and last, not the first and second the way
+  # `j * size / count` did. A lone pick takes the front (the strongest entry),
+  # there being no range to spread it over.
+  private def spread(source, count)
+    return source.first(1) if count == 1
+
+    Array.new(count) { |j| source[j * (source.size - 1) / (count - 1)] }
   end
 
   # Match the (even-sized, strength-sorted) `rest` into cross-pool fights. The
