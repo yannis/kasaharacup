@@ -46,6 +46,6 @@ class EncounterLineupSuggestion
   end
 
   private def roster_order(team)
-    team.kenshis.pluck(:id)
+    team.participations.order(:id).pluck(:kenshi_id)
   end
 end

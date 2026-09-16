@@ -48,11 +48,16 @@ RSpec.describe EncounterLineupSuggestion do
     expect(described_class.new(fresh).for_slot(1)).to eq roster.map(&:id)
   end
 
-  it "falls back to roster order when the team has no previous encounter" do
-    roster = members(t1, 3)
+  it "falls back to participation order when the team has no previous encounter" do
+    kenshis = create_list(:kenshi, 3, cup: tc.cup)
+    roster = [kenshis.second, kenshis.first, kenshis.third]
+    roster.each { |kenshi| create(:participation, category: tc, team: t1, kenshi: kenshi) }
     members(t2, 3)
 
     fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    team = fresh.resolved_team_1
+    allow(team).to receive(:kenshis).and_return(team.kenshis.reorder(id: :desc))
+
     expect(described_class.new(fresh).for_slot(1)).to eq roster.map(&:id)
   end
 
