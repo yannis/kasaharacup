@@ -67,10 +67,10 @@ class BracketOnlySeeder
     (0...list.size / 2).map { |i| [list[i], list[list.size - 1 - i]] }
   end
 
-  # Units holding a seed go to the protected positions in seed-priority order,
-  # and remaining bye units take the next protected positions — the sequence
-  # is maximally spread, so no two byes meet in round 2 unless byes outnumber
-  # the round-2 slots. Only the fights are drawn into random positions.
+  # Units holding a seed go to BracketPositions' protected positions in
+  # seed-priority order, and remaining bye units take the next protected
+  # positions — the sequence is maximally spread, so no two byes meet in round 2
+  # unless byes outnumber the round-2 slots. Only fights get random positions.
   # (Seeded fight units and unseeded byes never coexist: byes go to seeds
   # first, so an unseeded bye implies every seed already holds one.)
   private def place(units)
@@ -79,7 +79,7 @@ class BracketOnlySeeder
     protected_units = with_seed.sort_by { |unit| seed_priority(unit) } + byes
 
     positions = Array.new(units.size)
-    sequence = priority_positions(units.size)
+    sequence = BracketPositions.spread_order(units.size)
     protected_units.each_with_index { |unit, i| positions[sequence[i]] = unit }
     open = (0...units.size).select { |i| positions[i].nil? }.shuffle(random: random)
     fights.each { |unit| positions[open.shift] = unit }
@@ -89,21 +89,5 @@ class BracketOnlySeeder
   # A unit's priority is its strongest seed's index in the seed order.
   private def seed_priority(unit)
     unit.compact.filter_map { |team| seeded.index(team) }.min
-  end
-
-  # Seed-priority ordering of unit positions, following the standard bracket
-  # layout (projected semifinals 1v4 and 2v3, quarterfinals 1v8/4v5/3v6/2v7):
-  # build the classic replace-by-complement-pairs layout, mirror the bottom
-  # half so seed 2 sits at the very bottom, then read off each seed's unit
-  # index. unit count is always a power of two (bracket_size / 2).
-  private def priority_positions(count)
-    layout = [1]
-    while layout.size < count
-      doubled = layout.size * 2
-      layout = layout.flat_map { |seed| [seed, doubled + 1 - seed] }
-    end
-    half = count / 2
-    layout = layout.first(half) + layout.last(half).reverse if count > 1
-    (1..count).map { |seed| layout.index(seed) }
   end
 end
