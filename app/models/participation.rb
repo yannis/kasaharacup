@@ -12,6 +12,7 @@ class Participation < ApplicationRecord
   validates :kenshi_id,
     uniqueness: {scope: [:category_type, :category_id], if: ->(p) { p.ronin.blank? }, allow_nil: true}
   validates :pool_number, numericality: {only_integer: true, greater_than: 0, allow_nil: true}
+  validates :seed, numericality: {only_integer: true, greater_than: 0, allow_nil: true}
   validate :individual_or_team_category
   validate :category_age
   validate :category_gender

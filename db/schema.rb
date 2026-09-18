@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -261,6 +261,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_100000) do
     t.integer "pool_rank"
     t.integer "rank"
     t.boolean "ronin"
+    t.integer "seed"
     t.integer "team_id"
     t.datetime "updated_at", precision: nil
     t.index ["category_id", "category_type"], name: "index_participations_on_category_id_and_category_type"
