@@ -32,7 +32,8 @@
                       <span class="competition-tree__pool-position"><%= prefix %></span>
                     <% end %>
                     <% if (seed = fighter_seed(fight, bye_slot)) %>
-                      <span class="competition-tree__seed" title="Seed <%= seed %>">S<%= seed %></span>
+                      <span class="competition-tree__seed" aria-label="Seed <%= seed %>"
+                            title="Seed <%= seed %>">S<%= seed %></span>
                     <% end %>
                     <%= fighter_name(fight, bye_slot) %>
                   </li>
@@ -66,7 +67,8 @@
                               <span class="competition-tree__pool-position"><%= prefix %></span>
                             <% end %>
                             <% if (seed = fighter_seed(fight, slot)) %>
-                              <span class="competition-tree__seed" title="Seed <%= seed %>">S<%= seed %></span>
+                              <span class="competition-tree__seed" aria-label="Seed <%= seed %>"
+                            title="Seed <%= seed %>">S<%= seed %></span>
                             <% end %>
                             <%= poster_name_for(fighter) %>
                           </span>
@@ -100,7 +102,8 @@
                           <span class="competition-tree__pool-position"><%= prefix %></span>
                         <% end %>
                         <% if (seed = fighter_seed(fight, slot)) %>
-                          <span class="competition-tree__seed" title="Seed <%= seed %>">S<%= seed %></span>
+                          <span class="competition-tree__seed" aria-label="Seed <%= seed %>"
+                            title="Seed <%= seed %>">S<%= seed %></span>
                         <% end %>
                         <%= fighter_name(fight, slot) %>
                       </span>

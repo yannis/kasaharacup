@@ -62,7 +62,8 @@
                 <%= participation.full_name %>
               <% end %>
               <% if participation.seed.present? %>
-                <span class="pool-standings__seed" title="Seed <%= participation.seed %>">S<%= participation.seed %></span>
+                <span class="pool-standings__seed" aria-label="Seed <%= participation.seed %>"
+                      title="Seed <%= participation.seed %>">S<%= participation.seed %></span>
               <% end %>
             </td>
             <td><%= participation.grade %></td>

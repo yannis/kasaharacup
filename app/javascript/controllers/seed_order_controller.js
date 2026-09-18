@@ -87,11 +87,29 @@ export default class extends Controller {
       });
       if (!response.ok) {
         console.error('seed move failed:', response.status, await response.text());
+        this.report('The seed order could not be saved. Reload and try again.');
         return;
       }
       Turbo.renderStreamMessage(await response.text());
     } catch (error) {
       console.error('seed move error:', error);
+      this.report('The seed order could not be saved. Reload and try again.');
     }
+  }
+
+  // Nothing in the panel moves until the server's stream comes back, so a
+  // failed drag is indistinguishable from a missed drop target unless we say
+  // so. Same banner bracket_swap_controller raises for the same reason. The
+  // next successful stream replaces the panel and takes the banner with it,
+  // which is what we want: it only describes the attempt that failed.
+  report(message) {
+    let banner = this.element.querySelector('.seed-panel__error');
+    if (!banner) {
+      banner = document.createElement('p');
+      banner.className = 'seed-panel__error';
+      banner.setAttribute('role', 'alert');
+      this.element.prepend(banner);
+    }
+    banner.textContent = message;
   }
 }

@@ -69,3 +69,9 @@
   color: var(--color-gray-500);
   font-size: 0.875rem;
 }
+
+.seed-panel__error {
+  color: #991b1b;
+  font-size: 0.8125rem;
+  margin: 0;
+}
