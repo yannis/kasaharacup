@@ -67,6 +67,7 @@ Rails.application.routes.draw do
         resources :fight_points, only: [:create, :destroy]
       end
       resources :pool_memberships, only: :update, module: :individual_categories
+      resources :seeds, only: [:update, :destroy], module: :individual_categories
       resources :documents
       resources :videos
     end
