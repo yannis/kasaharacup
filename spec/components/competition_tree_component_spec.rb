@@ -340,6 +340,18 @@ RSpec.describe CompetitionTreeComponent, type: :component do
     expect(page).to have_css(".competition-tree__seed", text: "S1")
   end
 
+  # fighter_seed deliberately carries no `round == 1` guard, unlike
+  # fighter_pool_prefix: the badge follows a seed as far through the tree as
+  # they get. Without this, adding the guard back for symmetry would break
+  # nothing.
+  it "badges a seeded fighter in a later round too" do
+    fight.fighter_1.participations.first.update!(seed: 1)
+
+    render_inline(described_class.new(category: category.reload))
+
+    expect(page).to have_css(".competition-tree__seed", text: "S1", count: 2)
+  end
+
   it "badges nobody when no one is seeded" do
     render_inline(described_class.new(category: category.reload, admin: true))
 
