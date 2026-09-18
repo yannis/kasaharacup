@@ -118,5 +118,66 @@ RSpec.describe SeedOrderMove do
 
       expect(result.map(&:id)).to eq [a.id, b.id]
     end
+
+    # A real request only ever carries strings: params[:to_position] comes off
+    # a select or the drag controller's form body, never as an Integer.
+    it "takes the position as a string, the way a request sends it" do
+      a = participant(seed: 1)
+      b = participant
+
+      described_class.new(participation: b, to_position: "2").call
+
+      expect(seeds_by_id).to eq(a.id => 1, b.id => 2)
+    end
+
+    it "treats a blank position as unseeding" do
+      a = participant(seed: 1)
+      b = participant(seed: 2)
+
+      described_class.new(participation: b, to_position: "").call
+
+      expect(b.reload.seed).to be_nil
+      expect(seeds_by_id).to eq(a.id => 1)
+    end
+
+    it "seeds the first participant of a category that has none" do
+      a = participant
+
+      described_class.new(participation: a, to_position: 1).call
+
+      expect(seeds_by_id).to eq(a.id => 1)
+    end
+
+    it "unseeds the last remaining seed" do
+      a = participant(seed: 1)
+
+      described_class.new(participation: a, to_position: nil).call
+
+      expect(a.reload.seed).to be_nil
+      expect(seeds_by_id).to be_empty
+    end
+
+    # The panel only offers the unseeded in its add select, so this is the
+    # double-submit race the clamp exists for rather than an ordinary path.
+    it "re-seeds a participation that already holds a seed" do
+      a = participant(seed: 1)
+      b = participant(seed: 2)
+
+      described_class.new(participation: b, to_position: 3).call
+
+      expect(seeds_by_id).to eq(a.id => 1, b.id => 2)
+    end
+
+    it "does not run a second call against the first call's stale plan" do
+      a = participant(seed: 1)
+      b = participant(seed: 2)
+      move = described_class.new(participation: b, to_position: 1)
+
+      move.call
+      a.update!(seed: nil)
+      move.call
+
+      expect(seeds_by_id).to eq(b.id => 1)
+    end
   end
 end

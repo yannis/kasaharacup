@@ -26,24 +26,28 @@ class SeedOrderMove
   end
 
   def call
+    order = target_order
     Participation.transaction do
       participation.update!(seed: nil) if to_position.nil?
-      target_order.each_with_index do |member, index|
+      order.each_with_index do |member, index|
         next if member.seed == index + 1
 
         member.update!(seed: index + 1)
       end
     end
-    target_order
+    order
   end
 
   private attr_reader :participation, :category, :to_position
 
+  # Derived once into a local rather than memoised on the instance: a second
+  # call would otherwise replay the first one's plan instead of reading the
+  # seeds as they now stand, and silently undo whatever happened in between.
   private def target_order
-    @target_order ||= begin
-      rest = current_order.reject { |member| member.id == participation.id }
-      to_position.nil? ? rest : rest.insert(insert_index(rest), participation)
-    end
+    rest = current_order.reject { |member| member.id == participation.id }
+    return rest if to_position.nil?
+
+    rest.insert(insert_index(rest), participation)
   end
 
   # A target outside the list clamps into range rather than raising: the panel
