@@ -281,4 +281,47 @@ RSpec.describe Encounter do
       expect(final.lineup_1_set).to be false
     end
   end
+
+  describe "#unscored? vs #pristine?" do
+    let(:category) { create(:team_category, pool_size: nil) }
+
+    def fresh_encounter
+      create_list(:team, 2, team_category: category)
+      TeamCategoryBracketBuilder.new(category, random: Random.new(1)).call
+      category.bracket_encounters.find_by(round: 1)
+    end
+
+    it "treats a confirmed lineup as unscored but not pristine" do
+      encounter = fresh_encounter
+      # What EncounterLineupSeeder does the moment an admin opens the panel.
+      encounter.update!(lineup_1_set: true, lineup_2_set: true)
+
+      expect(encounter).to be_unscored
+      expect(encounter).not_to be_pristine
+    end
+
+    it "is neither once a bout is scored" do
+      encounter = fresh_encounter
+      fight = create(:team_fight, encounter: encounter)
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1")
+
+      expect(encounter.reload).not_to be_unscored
+      expect(encounter).not_to be_pristine
+    end
+
+    it "is neither once a winner is recorded" do
+      encounter = fresh_encounter
+      encounter.update!(winner: encounter.team_1)
+
+      expect(encounter).not_to be_unscored
+      expect(encounter).not_to be_pristine
+    end
+
+    it "is both on a freshly built encounter" do
+      encounter = fresh_encounter
+
+      expect(encounter).to be_unscored
+      expect(encounter).to be_pristine
+    end
+  end
 end
