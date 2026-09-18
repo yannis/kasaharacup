@@ -6,7 +6,7 @@
 #
 #   SeedPoolOrder.order(4)  # => [1, 3, 4, 2]
 #
-# Cuts the numbers with **the same rule** BracketSeeder#assign_halves uses —
+# Cuts the numbers with the same rule BracketSeeder#assign_halves uses —
 # first((size / 2.0).ceil) — orders each block recursively, then snakes the two
 # results together. A low-block pool sends its winner to the top half of the
 # tree and a high-block pool sends its winner to the bottom, so sharing the cut
@@ -43,7 +43,7 @@ module SeedPoolOrder
     return pools if pools.size <= 1
 
     low = pools.first((pools.size / 2.0).ceil)
-    snake(ordered(low), ordered(pools - low))
+    snake(ordered(low), ordered(pools.drop(low.size)))
   end
 
   # Takes from whichever block still has entries when the other runs out: the
