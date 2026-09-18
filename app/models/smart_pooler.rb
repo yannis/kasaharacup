@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Distributes a category's participants into pools, balancing three goals:
+# Distributes a category's participants into pools, balancing four goals:
 #
 #   1. Randomness    - a different valid layout on every reset.
 #   2. Club spread   - members of the same club land in different pools whenever
@@ -8,12 +8,16 @@
 #                      has more members than there are pools).
 #   3. Grade balance - strength is spread evenly so no pool is all-strong or
 #                      all-weak.
+#   4. Seed spread   - the seeded go into pools that feed opposite halves of the
+#                      bracket, so the top two can only meet in the final.
 #
-# Strategy: order participants strongest-first (randomised within equal grades),
-# then drop each into the weakest pool that still has room and does not already
-# hold their club (LPT balancing + club-aware placement). That single pass is
-# greedy, so a final repair pass trades clubmates apart where it painted itself
-# into a corner.
+# Strategy: the seeded go in first, into the pools SeedPoolOrder names, and
+# never move again — neither the placing pass nor the repair may touch them.
+# Then order the rest strongest-first (randomised within equal grades), and drop
+# each into the weakest pool that still has room and does not already hold their
+# club (LPT balancing + club-aware placement). That single pass is greedy, so a
+# final repair pass trades clubmates apart where it painted itself into a
+# corner.
 #
 # Pools number ceil(N / pool_size), so each holds either pool_size or
 # pool_size - 1 participants with the fewest short pools possible. The short
@@ -162,7 +166,10 @@ class SmartPooler
   # Who the duplicate can trade with: anyone unseeded whose own club is absent
   # from the crowded pool once the duplicate leaves it, so the trade cannot
   # introduce a fresh collision of its own. A seed is never traded in, which
-  # can leave a collision unrepaired — the pinning is worth more.
+  # can leave a collision unrepaired — the pinning is worth more. Two seeded
+  # clubmates sharing a pool (only reachable when the seeds outnumber the pools
+  # and the order wraps) are left alone for the same reason: neither half of
+  # that pair may move.
   private def trade_partners(roomy, crowded, duplicate)
     staying = crowded.participations - [duplicate]
     roomy.participations.reject { |candidate|
