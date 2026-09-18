@@ -317,6 +317,17 @@ RSpec.describe Encounter do
       expect(encounter).not_to be_pristine
     end
 
+    # Regression: a 0-0 hikiwake records no fight point and derives no winner,
+    # so reading points alone reported an encounter the admin had decided as
+    # untouched — and a draw-correction swap then destroyed those decisions.
+    it "is neither once a bout is marked hikiwake" do
+      encounter = fresh_encounter
+      create(:team_fight, encounter: encounter, draw: true)
+
+      expect(encounter.reload).not_to be_unscored
+      expect(encounter).not_to be_pristine
+    end
+
     it "is both on a freshly built encounter" do
       encounter = fresh_encounter
 

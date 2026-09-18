@@ -230,6 +230,68 @@ RSpec.describe "Admin encounters" do
       expect(response.parsed_body["message"]).to include("reload and try again")
     end
 
+    it "answers 422 with confirm: true when a fighter order would be discarded" do
+      first, second = round_one
+      first.update!(lineup_1_set: true, lineup_2_set: true)
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: second.team_1_id},
+        headers: turbo_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["confirm"]).to be true
+      expect(response.parsed_body["message"]).to include("fighter order")
+      expect(first.reload.team_1).not_to eq second.team_1
+    end
+
+    it "flags an ordinary refusal as not confirmable" do
+      first, = round_one
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: first.team_2_id},
+        headers: turbo_headers
+
+      expect(response.parsed_body["confirm"]).to be false
+    end
+
+    it "performs the swap when the client confirms with force" do
+      first, second = round_one
+      moving_in = second.team_1
+      first.update!(lineup_1_set: true, lineup_2_set: true)
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: moving_in.id, force: true},
+        headers: turbo_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(first.reload.team_1).to eq moving_in
+    end
+
+    it "refuses a drop whose source encounter is stale" do
+      first, second = round_one
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: second.team_1_id, expected_encounter_id: first.id},
+        headers: turbo_headers
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["message"]).to include("has moved")
+    end
+
+    # A non-scalar hint used to reach #to_i in the service and raise
+    # NoMethodError, answering 500 instead of performing the swap.
+    it "ignores a non-scalar expected_team_id rather than raising" do
+      first, second = round_one
+      moving_in = second.team_1
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: moving_in.id, expected_team_id: [first.team_1_id]},
+        headers: turbo_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(first.reload.team_1).to eq moving_in
+    end
+
     it "renders swap selects on a pristine bracket-only round-1 encounter" do
       get admin_team_category_encounter_path(bracket_only, round_one.first)
 

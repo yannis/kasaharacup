@@ -70,14 +70,18 @@ describe "Admin bracket drag-to-swap", :js do
     signin_and_visit(admin, admin_team_category_path(category))
     find("a[href='#{admin_team_category_encounter_path(category, first)}']").click
 
-    within(".swap-team__form--slot_1") do
-      select moving_in.name, from: "team_id_1"
-      click_button "Swap"
+    # The panel form always prompts: the partner is only known once a team is
+    # picked, and opening this panel has already auto-confirmed both lineups.
+    accept_confirm do
+      within(".swap-team__form--slot_1") do
+        select moving_in.name, from: "team_id_1"
+        click_button "Swap"
+      end
     end
 
-    # The form posts with data-turbo="false", so this is a full page load and
-    # click_button returns before it lands. Wait on the redrawn tree, or the DB
-    # assertion races the request.
+    # The form breaks out of the panel frame to the whole page, so this is a
+    # full navigation and click_button returns before it lands. Wait on the
+    # redrawn tree, or the DB assertion races the request.
     within(slot_selector(first, 1)) { expect(page).to have_content moving_in.name }
     expect(first.reload.team_1).to eq moving_in
   end

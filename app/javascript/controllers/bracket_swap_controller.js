@@ -60,7 +60,7 @@ export default class extends Controller {
 
     // Drop team A onto slot B: B receives A, and A's slot receives B's old
     // occupant. Post against the TARGET slot, so expected_team_id describes it.
-    this.submit(target, source.teamId);
+    this.submit(target, source);
   }
 
   canDrop(target) {
@@ -75,16 +75,39 @@ export default class extends Controller {
     }
   }
 
-  async submit(slot, teamId) {
+  async submit(slot, source) {
     if (slot.getAttribute('aria-busy') === 'true') return; // ignore a double-drop
     slot.setAttribute('aria-busy', 'true');
 
+    try {
+      let refusal = await this.post(slot, source, false);
+      // The server owns the confirm decision: a swap that would discard a
+      // fighter order answers 422 with confirm: true, exactly as a destructive
+      // pool move does. Declining leaves the draw untouched and says nothing.
+      if (refusal?.confirm) {
+        if (!window.confirm(refusal.message)) return;
+        refusal = await this.post(slot, source, true);
+      }
+      if (refusal?.message) this.report(refusal.message);
+    } finally {
+      slot.removeAttribute('aria-busy');
+    }
+  }
+
+  // Returns null once the new tree has been rendered, or {message, confirm}
+  // when the server refused the swap.
+  async post(slot, source, force) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
     const body = new URLSearchParams({
       slot: slot.dataset.slot,
-      team_id: teamId,
+      team_id: source.teamId,
+      // BOTH ends of the swap, so a drop issued against a tree drawn before
+      // someone else's swap landed is refused rather than silently re-aimed at
+      // wherever the dragged team sits now.
       expected_team_id: slot.dataset.teamId,
+      expected_encounter_id: source.encounterId,
     });
+    if (force) body.set('force', 'true');
 
     try {
       const response = await fetch(slot.dataset.swapUrl, {
@@ -97,23 +120,17 @@ export default class extends Controller {
         body,
       });
 
-      if (response.status === 422) {
-        const { message } = await response.json();
-        this.report(message);
-        return;
-      }
+      if (response.status === 422) return await response.json();
       if (!response.ok) {
         console.error('bracket swap failed:', response.status, await response.text());
-        this.report('The swap could not be saved. Reload and try again.');
-        return;
+        return { message: 'The swap could not be saved. Reload and try again.' };
       }
       // Morphs the tree in place, so the grips and this controller survive.
       Turbo.renderStreamMessage(await response.text());
+      return null;
     } catch (error) {
       console.error('bracket swap error:', error);
-      this.report('The swap could not be saved. Reload and try again.');
-    } finally {
-      slot.removeAttribute('aria-busy');
+      return { message: 'The swap could not be saved. Reload and try again.' };
     }
   }
 

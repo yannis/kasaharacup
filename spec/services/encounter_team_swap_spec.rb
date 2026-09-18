@@ -96,10 +96,11 @@ RSpec.describe EncounterTeamSwap do
       first, second = round_one
       moving_in = second.team_1
       # Opening the panel seeds AND confirms both lineups. That is not a result,
-      # and the swap clears the displaced side anyway.
+      # so it does not make the encounter ineligible — it only asks for
+      # confirmation, which force: true supplies.
       first.update!(lineup_1_set: true, lineup_2_set: true)
 
-      described_class.new(first).swap(1, moving_in)
+      described_class.new(first).swap(1, moving_in, force: true)
 
       expect(first.reload.team_1).to eq moving_in
       expect(first.lineup_1_set?).to be false
@@ -116,7 +117,7 @@ RSpec.describe EncounterTeamSwap do
       first, second = round_one
       EncounterLineupSeeder.new(first).call
 
-      described_class.new(first.reload).swap(1, second.team_1)
+      described_class.new(first.reload).swap(1, second.team_1, force: true)
 
       first.reload
       expect(first.winner).to be_nil
@@ -193,6 +194,93 @@ RSpec.describe EncounterTeamSwap do
 
       expect { described_class.new(final).swap(1, fight.team_1) }
         .to raise_error(described_class::InvalidSwap, /round-1/)
+    end
+
+    it "asks for confirmation before discarding a confirmed fighter order" do
+      build_bracket(4)
+      first, second = round_one
+      first.update!(lineup_1_set: true, lineup_2_set: true)
+
+      expect { described_class.new(first).swap(1, second.team_1) }
+        .to raise_error(described_class::NeedsConfirmation, /fighter order/)
+      expect(first.reload.team_1).not_to eq second.team_1
+    end
+
+    it "does not ask for confirmation when no lineup has been confirmed" do
+      build_bracket(4)
+      first, second = round_one
+      moving_in = second.team_1
+
+      expect { described_class.new(first).swap(1, moving_in) }.not_to raise_error
+      expect(first.reload.team_1).to eq moving_in
+    end
+
+    # Regression: #unscored? read fight points only, so an encounter the admin
+    # had decided by marking every bout hikiwake (0-0, no points, no winner)
+    # reported as untouched and the swap destroyed those decisions.
+    it "rejects when an involved encounter has bouts marked hikiwake" do
+      build_bracket(4)
+      stock_rosters
+      first, second = round_one
+      EncounterLineupSeeder.new(second).call
+      second.reload.update!(lineup_1_set: true, lineup_2_set: true)
+      second.team_fights.reload.each { |fight| fight.update!(draw: true) if fight.hikiwake_eligible? }
+
+      expect { described_class.new(first).swap(1, second.reload.team_1, force: true) }
+        .to raise_error(described_class::InvalidSwap, /recorded results/)
+      expect(second.reload.team_fights.where(draw: true)).to be_present
+    end
+
+    # Regression: both byes propagate into the same round-2 slot, so writing the
+    # first one tripped Encounter#teams_differ and raised RecordInvalid — a 500
+    # the caller could not act on, since it is not an InvalidSwap.
+    it "refuses two byes that already meet in round 2, without raising RecordInvalid" do
+      build_bracket(5)
+      children = Hash.new { |hash, key| hash[key] = [] }
+      round_one.each do |enc|
+        enc.children.each { |child| children[child.id] << enc }
+      end
+      pair = children.values.find { |parents| parents.size == 2 && parents.all?(&:bye?) }
+      expect(pair).to be_present
+      bye_a, bye_b = pair
+
+      expect { described_class.new(bye_b).swap(bye_b.bye_slot, bye_a.public_send(:"team_#{bye_a.bye_slot}")) }
+        .to raise_error(described_class::InvalidSwap, /already meet in round 2/)
+    end
+
+    it "refuses a partner encounter that still carries pool seeding metadata" do
+      build_bracket(4)
+      first, second = round_one
+      second.update_columns(team_1_pool_number: 1, team_1_pool_rank: 1)
+
+      expect { described_class.new(first).swap(1, second.team_1) }
+        .to raise_error(described_class::InvalidSwap, /pool standings/)
+      expect(second.reload.team_1_pool_number).to eq 1
+    end
+
+    it "rejects a drop issued from a tree drawn before the team moved" do
+      build_bracket(4)
+      first, second = round_one
+      moving_in = second.team_1
+
+      expect {
+        described_class.new(first).swap(1, moving_in, expected_encounter_id: first.id)
+      }.to raise_error(described_class::InvalidSwap, /has moved/)
+      expect(first.reload.team_1).not_to eq moving_in
+    end
+
+    it "locks a bye-fed round-2 child before writing, since the swap wipes it" do
+      build_bracket(3)
+      bye = round_one.find(&:bye?)
+      fight = round_one.detect { |e| !e.bye? }
+
+      queries = count_queries do
+        described_class.new(bye).swap(bye.bye_slot, fight.team_1)
+      end
+      before_first_write = queries.take_while { |sql| !sql.match?(/\AUPDATE /i) }
+
+      # Both round-1 rows plus the child the bye feeds.
+      expect(before_first_write.grep(/FOR UPDATE/).size).to eq 3
     end
 
     it "rejects swaps on pooled categories" do
@@ -310,6 +398,21 @@ RSpec.describe EncounterTeamSwap do
       expect(swap.swappable?(bye.bye_slot)).to be true
       expect(swap.swappable?((bye.bye_slot == 1) ? 2 : 1)).to be false
       expect(swap.candidates).to contain_exactly(fight.team_1, fight.team_2)
+    end
+
+    it "does not offer teams whose own encounter could never accept the swap" do
+      build_bracket(8)
+      first, second, third, fourth = round_one
+      second.update!(winner: second.team_1)
+      third.update_columns(team_1_pool_number: 1, team_1_pool_rank: 1)
+
+      candidates = described_class.new(first).candidates
+
+      # A scored encounter and a pool-seeded one are both refused by #swap, so
+      # offering their occupants was an option that could only ever error.
+      expect(candidates).not_to include second.team_1, second.team_2
+      expect(candidates).not_to include third.team_1, third.team_2
+      expect(candidates).to include fourth.team_1, fourth.team_2
     end
 
     it "withdraws the offer once results exist" do

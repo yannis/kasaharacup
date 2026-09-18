@@ -7,11 +7,18 @@
 # in the bracket join via a rebuild, never a swap.
 #
 # Rejected unless every impacted encounter — both round-1 encounters plus any
-# round-2 child fed by a bye among them — is unscored: no winner and no
-# recorded fight points. A merely auto-seeded lineup does not block a swap
-# (see Encounter#unscored?).
+# round-2 child fed by a bye among them — is unscored: no winner, no recorded
+# fight point and no bout the admin marked hikiwake. A merely auto-seeded
+# lineup does not block a swap (see Encounter#unscored?); it prompts for
+# confirmation instead (see #validate_confirmed_lineups!).
 class EncounterTeamSwap
   class InvalidSwap < StandardError; end
+
+  # A swap that is legal but would discard a fighter order someone may have
+  # entered by hand. Separate from InvalidSwap because the client can act on
+  # it: confirm, then retry with force: true — the same shape TeamPoolMove uses
+  # for a destructive pool move.
+  class NeedsConfirmation < StandardError; end
 
   SLOTS = [1, 2].freeze
 
@@ -32,8 +39,7 @@ class EncounterTeamSwap
     children = children_by_parent_id(encounters)
 
     encounters.each_with_object(Set.new) do |enc, slots|
-      next unless enc.round == 1 && enc.pool_number.blank?
-      next if pool_seeded?(enc)
+      next if ineligibility_reason(enc)
       next unless impacted_in_memory(enc, children).all?(&:unscored?)
 
       SLOTS.each do |slot|
@@ -42,11 +48,26 @@ class EncounterTeamSwap
     end
   end
 
-  # Every round-1 occupant in the bracket — the pool a slot's swap candidates
-  # are drawn from.
-  def self.round_one_occupants(encounters)
-    encounters.select { |enc| enc.round == 1 }
-      .flat_map { |enc| [enc.team_1, enc.team_2] }.compact
+  # The per-encounter half of eligibility, shared by the tree (.swappable_slots)
+  # and the write path (#swap) so the two can never disagree about what may
+  # move. Returns nil when the encounter qualifies, or the reason it does not.
+  #
+  # The pool_number guard is not redundant for a caller-supplied list: both
+  # in-app callers pass TeamCategory#bracket_encounters (already scoped to
+  # pool_number: nil), but this is public API over a list we do not build.
+  def self.ineligibility_reason(enc)
+    return "encounter #{enc.number} is not part of the bracket" if enc.pool_number.present?
+    return "only round-1 slots can be swapped" unless enc.round == 1
+
+    # A bracket-only category whose pool_size was lowered can still hold round-1
+    # encounters seeded from pool standings. Swapping one writes team ids that
+    # TeamCategoryBracketBuilder#update_team_slot re-resolves from this metadata
+    # on the next build, silently undoing the swap.
+    if enc.team_1_pool_number.present? || enc.team_2_pool_number.present?
+      return "encounter #{enc.number} is still seeded from pool standings — rebuild the bracket instead"
+    end
+
+    nil
   end
 
   # The bracket, loaded the way both entry points above need it.
@@ -56,14 +77,6 @@ class EncounterTeamSwap
       .bracket_order.to_a
     Encounter.preload_parents(list)
     list
-  end
-
-  # A bracket-only category whose pool_size was lowered can still hold round-1
-  # encounters seeded from pool standings. Swapping one writes team ids that
-  # TeamCategoryBracketBuilder#update_team_slot re-resolves from this metadata
-  # on the next build, silently undoing the swap.
-  private_class_method def self.pool_seeded?(enc)
-    enc.team_1_pool_number.present? || enc.team_2_pool_number.present?
   end
 
   private_class_method def self.children_by_parent_id(encounters)
@@ -86,22 +99,32 @@ class EncounterTeamSwap
   # it — one query for a dozen rows, once per panel render — so the panel and the
   # tree can never disagree about what is swappable.
   def swappable?(slot)
-    self.class.swappable_slots(bracket, category: category).include?([encounter.id, slot])
+    swappable_slot_set.include?([encounter.id, slot])
   end
 
-  # Teams this encounter can swap with: every other round-1 occupant. BOTH of
-  # its own teams are excluded — swapping a match's two sides only flips which
-  # is team_1, and #swap rejects it, so offering the sibling was an option that
-  # could only ever error.
+  # Teams this encounter can swap with: the occupants of every OTHER slot the
+  # tree would let you drag. BOTH of its own teams are excluded — swapping a
+  # match's two sides only flips which is team_1, and #swap rejects it. Slots
+  # #swap would refuse (already scored, still pool-seeded) are excluded for the
+  # same reason: offering them was an option that could only ever error.
   def candidates
-    self.class.round_one_occupants(bracket) - [encounter.team_1, encounter.team_2].compact
+    bracket.flat_map { |enc|
+      SLOTS.filter_map do |slot|
+        enc.public_send(:"team_#{slot}") if swappable_slot_set.include?([enc.id, slot])
+      end
+    } - [encounter.team_1, encounter.team_2].compact
   end
 
-  # `expected_team_id` is the team the CLIENT believes occupies the slot. The
+  # `expected_team_id` and `expected_encounter_id` are the target slot's
+  # occupant and the dragged team's encounter as the CLIENT believes them. The
   # bracket tree morphs from a broadcast, so a drop can be issued against a tree
-  # drawn before someone else's swap landed; checking it turns a silent
-  # mis-swap into a reload prompt.
-  def swap(slot, team, expected_team_id: nil)
+  # drawn before someone else's swap landed; checking BOTH ends turns a silent
+  # mis-swap into a reload prompt. The target alone is not enough — #locate
+  # re-resolves the dragged team to wherever it sits *now*, which may be an
+  # encounter the admin never looked at.
+  #
+  # `force` skips the confirmation prompt; see #validate_confirmed_lineups!.
+  def swap(slot, team, expected_team_id: nil, expected_encounter_id: nil, force: false)
     raise InvalidSwap, "swaps only apply to bracket-only categories" unless category.bracket_only?
     raise InvalidSwap, "only round-1 slots can be swapped" unless encounter.round == 1
     raise InvalidSwap, "invalid slot" unless SLOTS.include?(slot)
@@ -114,12 +137,21 @@ class EncounterTeamSwap
 
     other_encounter, other_slot = locate(team)
     raise InvalidSwap, "#{team.name} is already in this encounter" if other_encounter == encounter
+    if expected_encounter_id.present? && other_encounter.id != expected_encounter_id.to_i
+      raise InvalidSwap, "#{team.name} has moved — reload and try again"
+    end
+
+    validate_eligible!(other_encounter)
+    validate_distinct_bye_children!(other_encounter)
 
     Encounter.transaction do
-      # Ascending id order: two opposing swaps take the rows in the same
-      # sequence, so they serialize instead of deadlocking. lock! reloads each
-      # row, which also clears the association cache we re-read below.
-      [encounter, other_encounter].sort_by(&:id).each(&:lock!)
+      # Lock EVERY row this swap can write — the two round-1 rows AND any
+      # bye-fed round-2 child, which #clear_seeded_lineup! wipes. Ascending id
+      # order: two opposing swaps take the rows in the same sequence, so they
+      # serialize instead of deadlocking. lock! reloads each row, which also
+      # clears the association cache we re-read below.
+      impacted_encounters = (impacted(encounter) + impacted(other_encounter)).uniq
+      impacted_encounters.sort_by(&:id).each(&:lock!)
 
       # Everything above was read before the locks and is stale by definition.
       current = occupant(slot)
@@ -132,8 +164,8 @@ class EncounterTeamSwap
         raise InvalidSwap, "#{team.name} has moved — reload and try again"
       end
 
-      # Covers both sides plus any bye-fed round-2 child.
-      impacted_encounters = validate_unscored!(other_encounter)
+      validate_unscored!(impacted_encounters)
+      validate_confirmed_lineups!(impacted_encounters) unless force
 
       # Re-drawing wipes whatever was seeded, on BOTH sides and on every
       # impacted encounter — see #clear_seeded_lineup!.
@@ -148,6 +180,12 @@ class EncounterTeamSwap
 
   private def bracket
     @bracket ||= self.class.bracket_for(category)
+  end
+
+  # Memoised: the panel asks #swappable? once per slot and then builds
+  # #candidates, and the Set is derived from the same already-loaded bracket.
+  private def swappable_slot_set
+    @swappable_slot_set ||= self.class.swappable_slots(bracket, category: category)
   end
 
   private def occupant(slot)
@@ -171,15 +209,58 @@ class EncounterTeamSwap
     [match, (match.team_1_id == team.id) ? 1 : 2]
   end
 
-  # Raises unless every impacted encounter is unscored; returns them so the
-  # caller can reset them without walking the graph twice.
-  private def validate_unscored!(other_encounter)
-    (impacted(encounter) + impacted(other_encounter)).uniq.each do |enc|
+  # The tree's own eligibility rules, enforced where it counts: the write path.
+  # Both ends have to qualify. The tree hides a pool-seeded slot, but a swap
+  # reaching this service from the panel's select (or a hand-rolled POST) would
+  # otherwise land and be silently reverted by the next bracket build.
+  private def validate_eligible!(other_encounter)
+    [encounter, other_encounter].each do |enc|
+      reason = self.class.ineligibility_reason(enc)
+      raise InvalidSwap, reason if reason
+    end
+  end
+
+  # Two byes that feed the SAME round-2 encounter cannot exchange occupants:
+  # the first #assign_team_to_slot propagates its new occupant into the child
+  # while the child's other slot still holds that very team, which
+  # Encounter#teams_differ rejects — an ActiveRecord::RecordInvalid that escapes
+  # the caller's InvalidSwap rescue as a 500. The draw itself is what needs
+  # fixing there, so the remedy is a rebuild.
+  #
+  # Only the PAIR is refused, not the slots: either bye can still be swapped
+  # with any encounter it does not already meet in round 2, so both keep their
+  # grips.
+  private def validate_distinct_bye_children!(other_encounter)
+    return unless encounter.bye? && other_encounter.bye?
+    return if (encounter.children.ids & other_encounter.children.ids).empty?
+
+    raise InvalidSwap,
+      "encounters #{encounter.number} and #{other_encounter.number} already meet in round 2 " \
+      "— rebuild the bracket instead of swapping them"
+  end
+
+  # Raises unless every impacted encounter is free of recorded results.
+  private def validate_unscored!(impacted_encounters)
+    impacted_encounters.each do |enc|
       next if enc.unscored?
 
       raise InvalidSwap,
         "encounter #{enc.number} already has recorded results — clear them before swapping"
     end
+  end
+
+  # #unscored? deliberately ignores the lineup flags: EncounterLineupSeeder
+  # confirms both the moment an admin opens a panel, so gating eligibility on
+  # them made the tool withdraw itself on sight. The cost is that
+  # #clear_seeded_lineup! cannot tell a seeded fighter order from one an admin
+  # typed — so a hand-entered order is protected by this prompt rather than by
+  # the eligibility rule. Same shape as TeamPoolMove's :needs_confirmation.
+  private def validate_confirmed_lineups!(impacted_encounters)
+    numbers = impacted_encounters.reject(&:pristine?).map(&:number).sort
+    return if numbers.empty?
+
+    subject = (numbers.size == 1) ? "encounter #{numbers.first}" : "encounters #{numbers.to_sentence}"
+    raise NeedsConfirmation, "This clears the fighter order entered on #{subject}. Swap anyway?"
   end
 
   # A draw correction re-draws the encounter, so a lineup that was merely
@@ -192,10 +273,9 @@ class EncounterTeamSwap
   # The recorded winner then made the slot permanently unswappable, which is the
   # dead end this whole feature exists to remove.
   #
-  # Destroying the bouts is safe precisely here: #validate_unscored! has already
-  # proved there is no winner and no fight point, so nothing but seeded fighter
-  # assignments can be lost, and reopening the panel re-seeds from the new
-  # occupants.
+  # #validate_unscored! has already proved there is no winner, no fight point
+  # and no hikiwake, so no RESULT can be lost here — only fighter assignments,
+  # which #validate_confirmed_lineups! has either found absent or had confirmed.
   private def clear_seeded_lineup!(enc)
     enc.team_fights.destroy_all
     enc.update!(lineup_1_set: false, lineup_2_set: false)
