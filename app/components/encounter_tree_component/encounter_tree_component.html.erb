@@ -3,7 +3,8 @@
   <% if admin %>
     <%= helpers.turbo_stream_from team_category, :encounter_tree %>
   <% end %>
-  <div id="<%= tree_dom_id %>" class="competition-tree">
+  <div id="<%= tree_dom_id %>" class="competition-tree"
+      data-controller="bracket-swap">
     <% if rounds.empty? %>
       <p class="competition-tree__empty">No bracket yet.</p>
     <% else %>
@@ -24,9 +25,16 @@
                   <span class="competition-tree__bye-label">Bye</span>
                 </div>
                 <ol class="competition-tree__fighters">
-                  <li class="competition-tree__fighter competition-tree__fighter--winner">
-                    <span class="competition-tree__fighter-name"><%= team_name(encounter, encounter.bye_slot) %></span>
-                  </li>
+                  <% slot = encounter.bye_slot %>
+                  <%= tag.li class: "competition-tree__fighter competition-tree__fighter--winner",
+                        data: swap_data(encounter, slot) do %>
+                    <% if swappable?(encounter, slot) %>
+                      <span class="competition-tree__grip" draggable="true" aria-hidden="true"
+                            title="Drag onto another team to swap them"
+                            data-action="dragstart->bracket-swap#dragStart dragend->bracket-swap#dragEnd">⠿</span>
+                    <% end %>
+                    <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
+                  <% end %>
                 </ol>
               </article>
             <% else %>
@@ -40,12 +48,19 @@
                 </div>
                 <ol class="competition-tree__fighters">
                   <% [1, 2].each do |slot| %>
-                    <li class="competition-tree__fighter <%= "competition-tree__fighter--winner" if team_winner?(encounter, slot) %>">
+                    <%= tag.li class: ["competition-tree__fighter",
+                          ("competition-tree__fighter--winner" if team_winner?(encounter, slot))],
+                          data: swap_data(encounter, slot) do %>
+                      <% if swappable?(encounter, slot) %>
+                        <span class="competition-tree__grip" draggable="true" aria-hidden="true"
+                              title="Drag onto another team to swap them"
+                              data-action="dragstart->bracket-swap#dragStart dragend->bracket-swap#dragEnd">⠿</span>
+                      <% end %>
                       <% if (seed = seed_label(encounter, slot)) && encounter.public_send(:"resolved_team_#{slot}").blank? %>
                         <span class="competition-tree__pool-position"><%= seed %></span>
                       <% end %>
                       <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
-                    </li>
+                    <% end %>
                   <% end %>
                 </ol>
               </article>

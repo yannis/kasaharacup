@@ -85,15 +85,33 @@ class Encounter < ApplicationRecord
     EncounterResult.new(self)
   end
 
-  # No real work recorded yet: no winner, neither lineup confirmed, and no
-  # scored bouts. Used to decide whether destroying/reseating this encounter
-  # (a draw-correction swap, or moving a team between pools) is safe without
-  # explicit confirmation.
-  def pristine?
-    winner_id.nil? && !lineup_1_set? && !lineup_2_set? &&
+  # No RESULT recorded: no winner, no scored bout and no bout the admin marked
+  # hikiwake. The bar a draw-correction swap has to clear.
+  #
+  # #draw is checked as well as the points because a 0-0 hikiwake leaves NO
+  # other trace: TeamFight#hikiwake_eligible? requires an unscored bout, and an
+  # all-hikiwake encounter derives no winner, so reading points alone reported a
+  # fully decided drawn encounter as untouched and let a swap destroy it.
+  #
+  # Deliberately blind to the lineup flags. EncounterLineupSeeder confirms BOTH
+  # lineups the moment an admin opens a panel, so gating on them made the swap
+  # tool withdraw itself a second after anyone merely looked at an encounter. A
+  # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_slot
+  # clears the outgoing side's fighters, its points and its flag on every swap,
+  # and EncounterTeamSwap confirms before discarding the rest.
+  def unscored?
+    winner_id.nil? &&
       # any? (not exists?) so a preloaded team_fights: :fight_points association is
       # read in memory instead of firing one EXISTS query per bout.
-      team_fights.none? { |fight| fight.fight_points.any? }
+      team_fights.none? { |fight| fight.fight_points.any? || fight.draw? }
+  end
+
+  # No work recorded AT ALL — #unscored? plus untouched lineups. The stricter
+  # bar, used where re-resolving a slot would silently discard an order the
+  # admin entered by hand and cannot recover: TeamCategoryBracketBuilder's
+  # non-force update, and TeamPoolMove's confirmation prompt.
+  def pristine?
+    unscored? && !lineup_1_set? && !lineup_2_set?
   end
 
   # Persist the derived winning team; no-op when already current. Called

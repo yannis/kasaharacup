@@ -88,6 +88,33 @@ class EncounterTreeComponent < ViewComponent::Base
     visible_connector_parent(encounter).first if hidden_pass_through_node?(encounter)
   end
 
+  private def swappable?(encounter, slot)
+    swappable_slots.include?([encounter.id, slot])
+  end
+
+  private def swappable_slots
+    @swappable_slots ||= if admin
+      EncounterTeamSwap.swappable_slots(encounters, category: team_category)
+    else
+      Set.new
+    end
+  end
+
+  # Drag/drop wiring for one slot. Empty for a slot that cannot move, so the
+  # template can splat it unconditionally and non-swappable slots are inert
+  # drop targets.
+  private def swap_data(encounter, slot)
+    return {} unless swappable?(encounter, slot)
+
+    {
+      encounter_id: encounter.id,
+      slot: slot,
+      team_id: encounter.public_send(:"team_#{slot}").id,
+      swap_url: helpers.admin_team_category_encounter_team_swap_path(team_category, encounter),
+      action: "dragover->bracket-swap#dragOver dragleave->bracket-swap#dragLeave drop->bracket-swap#drop"
+    }
+  end
+
   private def encounter_path(encounter)
     helpers.admin_team_category_encounter_path(team_category, encounter)
   end

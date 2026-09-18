@@ -1,7 +1,17 @@
 <%# Draw-correction controls for a bracket-only round-1 encounter: swap a
-    slot's occupant with any other round-1 occupant. data: {turbo: false}
-    forces a full page load back to the category page, where the flash renders
-    above the updated bracket (the form sits inside the encounter panel frame). %>
+    slot's occupant with any other round-1 occupant. This is the keyboard and
+    touch path; the tree's drag grips are the primary one.
+
+    Turbo handles the submit (it used to be data-turbo="false") so that
+    data-turbo-confirm can prompt, and data-turbo-frame="_top" breaks it out of
+    the encounter panel frame — the redirect still lands on the whole category
+    page with the flash above the updated bracket, exactly as before.
+
+    The prompt is unconditional and the form forces the swap, because the
+    partner encounter is only known once a team is picked — and opening this
+    very panel has already auto-confirmed both its lineups
+    (EncounterLineupSeeder), so a swap from here almost always has a fighter
+    order to discard. The drag path gets the precise, server-named prompt. %>
 <% swap = EncounterTeamSwap.new(encounter) # rubocop:disable Lint/UselessAssignment %>
 <% swappable_slots = [1, 2].select { |slot| swap.swappable?(slot) } # rubocop:disable Lint/UselessAssignment %>
 <% if swappable_slots.any? %>
@@ -10,11 +20,14 @@
       <% current = encounter.public_send(:"team_#{slot}") # rubocop:disable Lint/UselessAssignment %>
       <%= form_with url: admin_team_category_encounter_team_swap_path(encounter.team_category, encounter),
             method: :post, class: "swap-team__form swap-team__form--slot_#{slot}",
-            data: {turbo: false} do |f| %>
+            data: {turbo_frame: "_top",
+                   turbo_confirm: "Swapping re-draws both encounters. Any fighter order already " \
+                                  "entered on them — or on a following bye match — is cleared. Continue?"} do |f| %>
         <%= f.hidden_field :slot, value: slot %>
+        <%= f.hidden_field :force, value: true %>
         <%= label_tag "team_id_#{slot}", "Swap #{current.name} with", class: "swap-team__label" %>
         <%= select_tag :team_id,
-              options_from_collection_for_select(swap.candidates(slot), :id, :name),
+              options_from_collection_for_select(swap.candidates, :id, :name),
               include_blank: true, id: "team_id_#{slot}", required: true, class: "swap-team__select" %>
         <%= f.submit "Swap", class: "swap-team__submit" %>
       <% end %>

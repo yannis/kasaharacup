@@ -81,4 +81,91 @@ RSpec.describe EncounterTreeComponent, type: :component do
     expect(page.text.scan("1.2").size).to eq 1
     expect(page.text.scan("2.2").size).to eq 1
   end
+
+  describe "drag-to-swap eligibility" do
+    let(:bracket_only) { create(:team_category, pool_size: nil) }
+
+    def build_bracket(team_count = 4)
+      create_list(:team, team_count, team_category: bracket_only)
+      TeamCategoryBracketBuilder.new(bracket_only, random: Random.new(1)).call
+    end
+
+    def round_one
+      bracket_only.bracket_encounters.where(round: 1).order(:position).to_a
+    end
+
+    it "marks an unscored round-1 slot swappable for an admin" do
+      build_bracket
+      component = described_class.new(team_category: bracket_only, admin: true)
+
+      expect(component.send(:swappable?, round_one.first, 1)).to be true
+    end
+
+    it "marks nothing swappable for a non-admin" do
+      build_bracket
+      component = described_class.new(team_category: bracket_only, admin: false)
+
+      expect(component.send(:swappable?, round_one.first, 1)).to be false
+    end
+
+    it "renders a grip on both slots of an unscored encounter" do
+      build_bracket
+      render_inline(described_class.new(team_category: bracket_only, admin: true))
+
+      expect(page).to have_css(".competition-tree__grip", count: 4)
+    end
+
+    it "renders a grip on a bye card" do
+      build_bracket(3)
+      render_inline(described_class.new(team_category: bracket_only, admin: true))
+
+      expect(page).to have_css(".competition-tree__match--bye .competition-tree__grip")
+    end
+
+    it "renders no grip for an encounter with a recorded result" do
+      build_bracket
+      first = round_one.first
+      first.update!(winner: first.team_1)
+
+      render_inline(described_class.new(team_category: bracket_only, admin: true))
+
+      expect(page).to have_css(".competition-tree__grip", count: 2)
+    end
+
+    it "still renders grips once the lineups have been auto-seeded" do
+      build_bracket
+      round_one.first.update!(lineup_1_set: true, lineup_2_set: true)
+
+      render_inline(described_class.new(team_category: bracket_only, admin: true))
+
+      expect(page).to have_css(".competition-tree__grip", count: 4)
+    end
+
+    it "renders no grip for a non-admin" do
+      build_bracket
+      render_inline(described_class.new(team_category: bracket_only, admin: false))
+
+      expect(page).to have_no_css(".competition-tree__grip")
+    end
+
+    it "carries the swap payload on a swappable slot" do
+      build_bracket
+      first = round_one.first
+      render_inline(described_class.new(team_category: bracket_only, admin: true))
+
+      expect(page).to have_css(
+        %([data-encounter-id="#{first.id}"][data-slot="1"][data-team-id="#{first.team_1_id}"])
+      )
+    end
+
+    it "marks nothing swappable in a pooled category" do
+      ranked_team(1)
+      ranked_team(2)
+      TeamCategoryBracketBuilder.new(tc).call
+      component = described_class.new(team_category: tc, admin: true)
+      encounter = tc.bracket_encounters.find_by(round: 1)
+
+      expect(component.send(:swappable?, encounter, 1)).to be false
+    end
+  end
 end
