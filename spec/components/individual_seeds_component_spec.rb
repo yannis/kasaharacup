@@ -75,6 +75,34 @@ RSpec.describe IndividualSeedsComponent, type: :component do
     expect(page).to have_css("[data-seed-order-next-position-value='3']")
   end
 
+  # A seeded participation destroyed in ActiveAdmin leaves a gap behind, and
+  # SeedOrderMove reads to_position as a rank into the seeded list. The rows
+  # must therefore carry ranks, agreeing with what the move select offers —
+  # sending the raw seed would overshoot on a gapped list.
+  it "numbers the rows by rank, not by the stored seed, when seeds have a gap" do
+    first = participant(seed: 1)
+    third = participant(seed: 3)
+    fifth = participant(seed: 5)
+
+    render_inline(described_class.new(category: category))
+
+    rows = page.all(".seed-panel__row")
+    expect(rows.pluck("data-position")).to eq %w[1 2 3]
+    expect(rows.pluck("data-seed-url"))
+      .to match [first, third, fifth].map { |p| a_string_including("/seeds/#{p.id}") }
+    expect(page.all(".seed-panel__move-select option").pluck("value").compact_blank.uniq).to eq %w[1 2 3]
+  end
+
+  it "still offers the add select and the hint with nothing seeded at all" do
+    participant
+
+    render_inline(described_class.new(category: category))
+
+    expect(page).to have_css(".seed-panel__add-select")
+    expect(page).to have_text("Smart pool reset")
+    expect(page).to have_no_css(".seed-panel__row")
+  end
+
   it "says when nothing is seeded yet" do
     participant
 

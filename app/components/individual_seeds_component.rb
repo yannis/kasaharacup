@@ -16,16 +16,21 @@ class IndividualSeedsComponent < ViewComponent::Base
 
   private attr_reader :category
 
+  # Both lists are slices of the same set, so it is loaded once.
+  private def participations
+    @participations ||= category.participations.includes(kenshi: :club).to_a
+  end
+
   # [seed, id] — the tie-break BracketOnlySeeder uses, so a list left
   # non-contiguous by a destroyed participation still reads in a stable order.
   private def seeded
-    @seeded ||= category.participations.includes(kenshi: :club)
-      .where.not(seed: nil).sort_by { |participation| [participation.seed, participation.id] }
+    @seeded ||= participations.select { |participation| participation.seed.present? }
+      .sort_by { |participation| [participation.seed, participation.id] }
   end
 
   private def unseeded
-    @unseeded ||= category.participations.includes(kenshi: :club)
-      .where(seed: nil).sort_by { |participation| participation.full_name.to_s }
+    @unseeded ||= participations.reject { |participation| participation.seed.present? }
+      .sort_by { |participation| participation.full_name.to_s }
   end
 
   private def positions

@@ -4,14 +4,21 @@
       data: {controller: "seed-order", seed_order_next_position_value: next_position} do %>
   <% if seeded.any? %>
     <ol class="seed-panel__list">
-      <% seeded.each do |participation| %>
+      <%# A row's position is its RANK in this list, not its stored seed. The two
+          agree whenever the seeds are contiguous, which SeedOrderMove restores
+          on every change — but a seeded participation destroyed in ActiveAdmin
+          leaves a gap behind, and the server reads to_position as a rank into
+          the seeded list. Sending the raw seed would then overshoot, and the
+          drag would disagree with the "Move to position" select, which already
+          offers ranks. %>
+      <% seeded.each_with_index do |participation, index| %>
         <li class="seed-panel__row" data-seed-url="<%= seed_url(participation) %>"
-            data-position="<%= participation.seed %>"
+            data-position="<%= index + 1 %>"
             data-action="dragover->seed-order#dragOver dragleave->seed-order#dragLeave drop->seed-order#drop">
           <span class="seed-panel__grip pool-match__grip" draggable="true"
                 title="Drag onto the position it should take"
                 data-action="dragstart->seed-order#dragStart">⠿</span>
-          <span class="seed-panel__number"><%= participation.seed %></span>
+          <span class="seed-panel__number" aria-label="Seed <%= index + 1 %>"><%= index + 1 %></span>
           <% if participation.kenshi %>
             <%= link_to participation.full_name, helpers.admin_kenshi_path(participation.kenshi),
                   class: "seed-panel__name" %>
