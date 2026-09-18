@@ -287,17 +287,33 @@ RSpec.describe SmartPooler do
       end
 
       # The clubmate is the one that moves — the seed is pinned.
-      it "trades the clubmate away rather than the seed" do
-        club = create(:club)
-        seed = add_participant(club: club, grade: "5Dan")
-        clubmate = add_participant(club: club, grade: "5Dan")
-        14.times { add_participant }
-        seed.update!(seed: 1)
+      #
+      # The collision has to be forced. The placing pass already keeps
+      # clubmates apart whenever a pool without their club has room, so a
+      # roomy category never reaches the repair at all: the seed's pool has to
+      # be the only one left when the clubmate is placed. Four fighters in
+      # pools of two does it. The seed is pinned to pool 1; the two unrelated
+      # fighters are stronger, so LPT sends both to the emptier, weaker pool 2
+      # and fills it; the clubmate is weakest, placed last, and has nowhere to
+      # go but the seed's pool. The repair then has a trade available, and the
+      # seeded half of it must be the half that stays put.
+      context "when a clubmate is forced into the seed's pool" do
+        let(:pool_size) { 2 }
 
-        described_class.new(category).set_pools
+        it "trades the clubmate away rather than the seed" do
+          club = create(:club)
+          seed = add_participant(club: club, grade: "5Dan")
+          clubmate = add_participant(club: club, grade: "kyu")
+          add_participant(grade: "4Dan")
+          add_participant(grade: "3Dan")
+          seed.update!(seed: 1)
 
-        expect(seed.reload.pool_number).to eq SeedPoolOrder.order(4).first
-        expect(clubmate.reload.pool_number).not_to eq seed.reload.pool_number
+          described_class.new(category).set_pools
+
+          expect(seed.reload.pool_number).to eq SeedPoolOrder.order(2).first
+          expect(clubmate.reload.pool_number).not_to eq seed.reload.pool_number
+          expect(pooled.values.map(&:size).sort).to eq [2, 2]
+        end
       end
 
       # More seeds than pools wraps the order, and the target sizes still hold:
