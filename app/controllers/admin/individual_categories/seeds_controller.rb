@@ -11,9 +11,18 @@ module Admin
     # both are replaced too — otherwise they keep the old number until the next
     # full page load.
     #
-    # No confirmation/422 flow and no Turbo::StreamsChannel broadcast, unlike
-    # Admin::IndividualCategories::PoolMembershipsController: seeding happens
-    # in one sitting before the competition, with one admin at the keyboard.
+    # No confirmation/422 flow, unlike
+    # Admin::IndividualCategories::PoolMembershipsController: nothing here
+    # discards recorded work, so there is nothing to confirm.
+    #
+    # The change is broadcast the way that sibling broadcasts its own: the pool
+    # cards and the tree already subscribe to the category's :competition_tree
+    # stream, and seeding is not confined to the quiet hour before the
+    # competition — a category can be reseeded once its bracket exists. Without
+    # this, a second admin with the page open keeps seed badges that look
+    # current and are not. Every stream is a replace, so the acting admin
+    # applying them twice — once from the response, once from the broadcast —
+    # is idempotent.
     class SeedsController < Admin::BaseController
       def update
         apply(params[:to_position])
@@ -23,9 +32,17 @@ module Admin
         apply(nil)
       end
 
+      # nil unseeds — SeedOrderMove reads a blank target that way.
       private def apply(to_position)
         SeedOrderMove.new(participation: participation, to_position: to_position).call
+        broadcast
         render turbo_stream: streams
+      end
+
+      private def broadcast
+        Turbo::StreamsChannel.broadcast_stream_to(
+          [individual_category, :competition_tree], content: streams
+        )
       end
 
       private def individual_category

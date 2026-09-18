@@ -55,6 +55,20 @@ RSpec.describe "Admin individual seeds" do
     expect(response).to have_http_status(:ok)
     expect(first.reload.seed).to be_nil
     expect(second.reload.seed).to eq 1
+    expect(response.body).to include("target=\"individual_seeds_#{category.id}\"")
+    expect(response.body).to include("target=\"individual_pools_#{category.id}\"")
+  end
+
+  # The panel's JavaScript refuses to send a blank position, but that guarantee
+  # lives a layer away from this contract: a direct caller gets the unseed the
+  # service defines for a blank target.
+  it "treats an update with a blank position as an unseed" do
+    seeded = participant(seed: 1)
+
+    move(seeded, "")
+
+    expect(response).to have_http_status(:ok)
+    expect(seeded.reload.seed).to be_nil
   end
 
   # A seeded participant already in a pool wears its badge on the pool card,
