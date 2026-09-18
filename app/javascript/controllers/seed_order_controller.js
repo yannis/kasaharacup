@@ -26,7 +26,8 @@ export default class extends Controller {
 
   dragOver(event) {
     event.preventDefault(); // a preventDefault'd dragover is what permits the drop
-    event.dataTransfer.dropEffect = 'move';
+    const { dataTransfer } = event;
+    dataTransfer.dropEffect = 'move';
     event.currentTarget.classList.add('seed-panel__row--drop');
   }
 
