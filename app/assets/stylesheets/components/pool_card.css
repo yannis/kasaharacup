@@ -860,8 +860,8 @@
   margin-left: 0.25rem;
   padding: 0 0.25rem;
   border-radius: 0.25rem;
-  background: var(--color-brand-lighter);
-  color: var(--color-gray-800);
+  background: #e5c9b1;
+  color: #27231f;
   font-size: 0.75rem;
   font-weight: 700;
 }

@@ -1,8 +1,15 @@
+/* The seeding panel on an individual category's admin page.
+ *
+ * Raw hex, not the --color-* theme tokens: this file is imported by BOTH
+ * application.tailwind.css and active_admin.scss, and only the former defines
+ * the @theme block. The sibling component stylesheets use hex for the same
+ * reason. */
+
 .seed-panel {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 
 .seed-panel__list {
@@ -18,22 +25,41 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid var(--color-gray-200);
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #e8e5e3;
   border-radius: 0.25rem;
-  background: var(--color-gray-50);
+  background: #fcfaf8;
+}
+
+.seed-panel__row:hover {
+  border-color: #d6d4d0;
 }
 
 .seed-panel__row--drop {
-  outline: 2px dashed var(--color-brand);
+  outline: 2px dashed #de7012;
   outline-offset: 1px;
 }
 
+.seed-panel__grip {
+  flex: none;
+  color: #a6a29d;
+  cursor: grab;
+}
+
+/* Same chip as the seed badge on the pool cards and in the tree, so the number
+ * reads as the same thing in all three places. */
 .seed-panel__number {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 1.5rem;
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+  background: #e5c9b1;
+  color: #27231f;
+  font-size: 0.8125rem;
   font-weight: 700;
-  text-align: center;
-  color: var(--color-brand-dark);
 }
 
 .seed-panel__name {
@@ -42,36 +68,66 @@
 
 .seed-panel__club,
 .seed-panel__grade {
-  color: var(--color-gray-500);
+  color: #75716c;
   font-size: 0.875rem;
 }
 
+/* Takes the slack, so the controls line up down the right-hand edge however
+ * long the names and clubs are. */
+.seed-panel__grade {
+  flex: 1 1 auto;
+}
+
+.seed-panel__move-select {
+  flex: none;
+}
+
+.seed-panel__add-select {
+  min-width: 16rem;
+}
+
 .seed-panel__unseed-form {
+  flex: none;
   display: inline;
   margin: 0;
 }
 
-.seed-panel__unseed {
-  padding: 0 0.375rem;
-  border: 0;
-  background: transparent;
-  color: var(--color-gray-500);
+/* Scoped to .seed-panel to outrank ActiveAdmin's own button styling, which
+ * otherwise renders this as a full-size grey pill on its own line. */
+.seed-panel .seed-panel__unseed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid #e8e5e3;
+  border-radius: 0.25rem;
+  background: #fff;
+  color: #75716c;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: none;
+  box-shadow: none;
   cursor: pointer;
 }
 
-.seed-panel__unseed:hover {
+.seed-panel .seed-panel__unseed:hover {
+  border-color: #991b1b;
+  background: #fff;
   color: #991b1b;
 }
 
 .seed-panel__empty,
 .seed-panel__hint {
   margin: 0;
-  color: var(--color-gray-500);
+  color: #75716c;
   font-size: 0.875rem;
 }
 
 .seed-panel__error {
+  margin: 0;
   color: #991b1b;
   font-size: 0.8125rem;
-  margin: 0;
 }
