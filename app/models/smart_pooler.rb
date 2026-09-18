@@ -37,6 +37,7 @@ class SmartPooler
     return if participants.empty?
 
     build_empty_pools
+    place_seeds
     ordered_participants.each { |participation| pick_pool(participation).participations << participation }
     repair_club_spread!
     persist!
@@ -65,10 +66,44 @@ class SmartPooler
     Array.new(count) { |i| (i * total.to_f / count).round }
   end
 
+  # The seeded go in before anything else, each into the next pool of
+  # SeedPoolOrder that is still under its target size — so the pools feeding
+  # opposite halves of the bracket hold the top two seeds. The cursor walks
+  # the order rather than re-searching it from the front each time: restarting
+  # from index 0 for every seed would pile them all into the order's first
+  # pool until it alone reached target size, instead of giving each its own.
+  # The size check still matters because target_sizes makes some pools short
+  # (see short_pool_indices): with more seeds than pools the order is reused
+  # by wrapping the cursor, and wrapping onto a pool already at target size
+  # would overfill it, so the cursor skips forward past it. A seed is one of
+  # the participants target_sizes was computed from, so a pool with room
+  # always exists.
+  private def place_seeds
+    order = SeedPoolOrder.order(pool_count).map { |number| number - 1 }
+    cursor = 0
+    seeded.each do |participation|
+      index = order[cursor % order.size]
+      while poules[index].participations.size >= target_sizes[index]
+        cursor += 1
+        index = order[cursor % order.size]
+      end
+      poules[index].participations << participation
+      cursor += 1
+    end
+  end
+
+  # [seed, id] — the same tie-break BracketOnlySeeder uses, so a duplicate can
+  # never reorder unpredictably even though the panel keeps 1..N contiguous.
+  private def seeded
+    @seeded ||= participants.select { |participation| participation.seed.present? }
+      .sort_by { |participation| [participation.seed, participation.id] }
+  end
+
   # Strongest first so LPT balancing spreads the top fighters across pools;
-  # the random key shuffles fighters of equal grade.
+  # the random key shuffles fighters of equal grade. The seeded are already
+  # placed and never move again.
   private def ordered_participants
-    participants.sort_by { |p| [-p.kenshi.grade.to_i, random.rand] }
+    (participants - seeded).sort_by { |p| [-p.kenshi.grade.to_i, random.rand] }
   end
 
   private def pick_pool(participation)
@@ -111,23 +146,29 @@ class SmartPooler
     }
   end
 
-  # Everyone in this pool whose club another of its members also belongs to.
+  # Everyone in this pool whose club another of its members also belongs to —
+  # minus the seeded, who are pinned. The rejection comes AFTER the grouping on
+  # purpose: a seed still counts towards its club's presence, so a seed and a
+  # clubmate are a collision, and the clubmate is the one offered up for trade.
   private def crowded_clubmates(pool)
     pool.participations
       .select { |participation| participation.kenshi.club.present? }
       .group_by { |participation| participation.kenshi.club }
       .select { |_club, members| members.size > 1 }
       .flat_map { |_club, members| members }
+      .reject { |participation| participation.seed.present? }
   end
 
-  # Who the duplicate can trade with: anyone whose own club is absent from the
-  # crowded pool once the duplicate leaves it, so the trade cannot introduce a
-  # fresh collision of its own.
+  # Who the duplicate can trade with: anyone unseeded whose own club is absent
+  # from the crowded pool once the duplicate leaves it, so the trade cannot
+  # introduce a fresh collision of its own. A seed is never traded in, which
+  # can leave a collision unrepaired — the pinning is worth more.
   private def trade_partners(roomy, crowded, duplicate)
     staying = crowded.participations - [duplicate]
     roomy.participations.reject { |candidate|
-      candidate.kenshi.club.present? &&
-        staying.any? { |other| other.kenshi.club == candidate.kenshi.club }
+      candidate.seed.present? ||
+        (candidate.kenshi.club.present? &&
+          staying.any? { |other| other.kenshi.club == candidate.kenshi.club })
     }
   end
 
