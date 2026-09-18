@@ -331,4 +331,18 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     expect(rendered.to_html).to include("Fight #{bracket.number}")
   end
+
+  it "badges a seeded fighter in the tree" do
+    fight.fighter_1.participations.first.update!(seed: 1)
+
+    render_inline(described_class.new(category: category.reload, admin: true))
+
+    expect(page).to have_css(".competition-tree__seed", text: "S1")
+  end
+
+  it "badges nobody when no one is seeded" do
+    render_inline(described_class.new(category: category.reload, admin: true))
+
+    expect(page).to have_no_css(".competition-tree__seed")
+  end
 end

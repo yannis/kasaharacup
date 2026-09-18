@@ -86,6 +86,14 @@ class CompetitionTreeComponent < ViewComponent::Base
     participations_by_kenshi_id[kenshi&.id]&.pool_label
   end
 
+  # A seeded kenshi carries their number wherever they appear in the tree, not
+  # only in round 1 the way the pool prefix does: the point of the badge is to
+  # see at a glance how far the seeds got.
+  private def fighter_seed(fight, slot)
+    fighter = fight.public_send(:"resolved_fighter_#{slot}")
+    participations_by_kenshi_id[fighter&.id]&.seed
+  end
+
   private def participations_by_kenshi_id
     @participations_by_kenshi_id ||= category.participations.index_by(&:kenshi_id)
   end

@@ -154,4 +154,21 @@ RSpec.describe PoolComponent, type: :component do
       expect(rendered.css(".pool-standings__grip")).to be_empty
     end
   end
+
+  it "badges a seeded participant on the pool card" do
+    kenshi = add_kenshi(pool: 1, position: 1)
+    Participation.find_by(kenshi: kenshi).update!(seed: 2)
+
+    render_inline(described_class.new(category: category, pool_number: 1))
+
+    expect(page).to have_css(".pool-standings__seed", text: "S2")
+  end
+
+  it "badges nobody when no one is seeded" do
+    add_kenshi(pool: 1, position: 1)
+
+    render_inline(described_class.new(category: category, pool_number: 1))
+
+    expect(page).to have_no_css(".pool-standings__seed")
+  end
 end
