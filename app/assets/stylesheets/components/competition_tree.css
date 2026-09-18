@@ -323,3 +323,31 @@
   border-color: #bfdbfe;
   color: #1e3a8a;
 }
+
+/* Drag-to-swap affordances on a bracket-only draw (admin only). The keyboard
+   path is the encounter panel's swap form, not these. */
+.competition-tree__grip {
+  cursor: grab;
+  color: #75716c;
+  padding-inline: 0.25rem;
+  user-select: none;
+}
+
+.competition-tree__grip:active {
+  cursor: grabbing;
+}
+
+.competition-tree__fighter--drop {
+  outline: 2px dashed #4a7dff;
+  outline-offset: -2px;
+}
+
+.competition-tree__fighter[aria-busy="true"] {
+  opacity: 0.5;
+}
+
+.competition-tree__swap-error {
+  color: #991b1b;
+  font-size: 0.8125rem;
+  margin-block-end: 0.5rem;
+}
