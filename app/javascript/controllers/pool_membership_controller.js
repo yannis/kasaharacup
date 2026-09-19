@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Turbo } from '@hotwired/turbo-rails';
+import { readDragPayload, writeDragPayload } from './drag_payload';
 
 // Moves a team into another pool. Each pool card is its own controller
 // instance; a team row is dragged from its source card and dropped on a
@@ -13,11 +14,9 @@ import { Turbo } from '@hotwired/turbo-rails';
 // with force=true. On success we render the returned Turbo Stream, which
 // replaces the affected pool cards (or removes an emptied one).
 //
-// The payload is tagged with a kind because the individual category's admin
-// page also renders the seeding panel, which drags under the same
-// application/json type. A seed row dropped on a pool card would otherwise be
-// PATCHed with to_pool_number, which the seeds endpoint reads as a blank
-// position and applies as a silent unseed.
+// Tags every payload with this and ignores anything else — the seeding panel
+// and the bracket drag under the same type on the same pages. See
+// drag_payload.js.
 const KIND = 'pool-membership';
 
 export default class extends Controller {
@@ -28,10 +27,10 @@ export default class extends Controller {
     if (!row) return;
     const { dataTransfer } = event;
     dataTransfer.effectAllowed = 'move';
-    dataTransfer.setData(
-      'application/json',
-      JSON.stringify({ kind: KIND, url: row.dataset.moveUrl, fromPool: Number(row.dataset.fromPool) }),
-    );
+    writeDragPayload(dataTransfer, KIND, {
+      url: row.dataset.moveUrl,
+      fromPool: Number(row.dataset.fromPool),
+    });
   }
 
   dragOver(event) {
@@ -76,12 +75,7 @@ export default class extends Controller {
   }
 
   readPayload(event) {
-    try {
-      const payload = JSON.parse(event.dataTransfer.getData('application/json'));
-      return payload?.kind === KIND ? payload : null;
-    } catch {
-      return null;
-    }
+    return readDragPayload(event, KIND);
   }
 
   async move(url, toPool, force = false) {

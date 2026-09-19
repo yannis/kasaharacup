@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Turbo } from '@hotwired/turbo-rails';
+import { readDragPayload, writeDragPayload } from './drag_payload';
 
 // Reorders an individual category's seeds: a row's grip is dragged onto the
 // row whose position it should take, and the server renumbers the list back to
@@ -13,12 +14,8 @@ import { Turbo } from '@hotwired/turbo-rails';
 // This is an insert-at-position reorder, not a swap: the drop sends the target
 // row's CURRENT position, and the server's insert rule makes that read
 // correctly whether the row moved up or down.
-// The seeding panel and the pool cards are rendered on the same admin page and
-// both carry their payload as application/json, so each one tags its payload
-// with a kind and ignores the other's. Without that, a row dropped on the wrong
-// panel is PATCHed with the wrong parameter name, which every one of these
-// endpoints reads as "clear it": a pool row dropped here would un-pool the
-// participant and wipe that pool's fights, silently.
+// Tags every payload with this and ignores anything else — the pool cards drag
+// under the same type on the same page. See drag_payload.js.
 const KIND = 'seed-order';
 
 export default class extends Controller {
@@ -29,7 +26,7 @@ export default class extends Controller {
     if (!row) return;
     const { dataTransfer } = event;
     dataTransfer.effectAllowed = 'move';
-    dataTransfer.setData('application/json', JSON.stringify({ kind: KIND, url: row.dataset.seedUrl }));
+    writeDragPayload(dataTransfer, KIND, { url: row.dataset.seedUrl });
   }
 
   dragOver(event) {
@@ -74,12 +71,7 @@ export default class extends Controller {
   }
 
   readPayload(event) {
-    try {
-      const payload = JSON.parse(event.dataTransfer.getData('application/json'));
-      return payload?.kind === KIND ? payload : null;
-    } catch {
-      return null;
-    }
+    return readDragPayload(event, KIND);
   }
 
   async move(url, position) {
@@ -94,6 +86,7 @@ export default class extends Controller {
         },
         body: new URLSearchParams({ to_position: position }),
       });
+      if (response.status === 204) return; // no-op (already in that position)
       if (!response.ok) {
         console.error('seed move failed:', response.status, await response.text());
         this.report('The seed order could not be saved. Reload and try again.');
