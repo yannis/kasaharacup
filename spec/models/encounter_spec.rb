@@ -219,20 +219,22 @@ RSpec.describe Encounter do
       expect(child.reload.team_1_id).to eq a.id
     end
 
-    it "clears stale points on the side when a slot re-resolves to another team" do
+    it "clears the stale matchup when a slot re-resolves to another team" do
+      member(c)
       child = create(:encounter, team_category: tc, team_1: a, team_2: c)
       member(a)
       tf = create(:team_fight, encounter: child, kenshi_1: a.kenshis.first, kenshi_2: c.kenshis.first)
       create(:fight_point, scorable: tf, fighter_side: "fighter_1", kind: "men")
-      child.update!(lineup_1_set: true)
+      child.update!(lineup_1_set: true, lineup_2_set: true)
 
       child.assign_team_to_slot(1, b)
 
-      tf.reload
       expect(child.reload.team_1_id).to eq b.id
+      expect(child.team_fights).to be_empty
+      expect(FightPoint.where(scorable: tf)).to be_empty
+      # BOTH flags: c's order was entered to face a, who is no longer there.
       expect(child.lineup_1_set).to be false
-      expect(tf.kenshi_1_id).to be_nil
-      expect(tf.fight_points.where(fighter_side: "fighter_1")).to be_empty
+      expect(child.lineup_2_set).to be false
     end
 
     it "is a no-op on first fill (nil -> team) and keeps no stale state" do
@@ -274,11 +276,37 @@ RSpec.describe Encounter do
 
       r1.update!(winner: b) # the feeding result flips: b now advances, not a
 
-      bout.reload
       expect(final.reload.team_1_id).to eq b.id
-      expect(bout.kenshi_1_id).to be_nil
-      expect(bout.fight_points.where(fighter_side: "fighter_1")).to be_empty
+      expect(final.team_fights).to be_empty
+      expect(FightPoint.where(scorable: bout)).to be_empty
       expect(final.lineup_1_set).to be false
+    end
+
+    # Regression (#1310): correcting an earlier round's winner re-resolves the
+    # child's slot, and invalidation used to empty only that side of every bout.
+    # The opponent's seeded fighters were left alone in their bouts, which
+    # TeamFight#forfeit reads as a walkover — recompute_winner! then recorded a
+    # 5-0 win nobody fought, which advanced and locked the slot.
+    it "does not hand the other side a forfeit win when a feeding result is corrected" do
+      category = create(:team_category, cup: tc.cup, pool_size: nil)
+      create_list(:team, 4, team_category: category)
+      TeamCategoryBracketBuilder.new(category, random: Random.new(1)).call
+      category.teams.each do |team|
+        create_list(:kenshi, category.team_size, cup: tc.cup).each do |kenshi|
+          create(:participation, category: category, team: team, kenshi: kenshi)
+        end
+      end
+      semis = category.bracket_encounters.where(round: 1).order(:position).to_a
+      final = category.bracket_encounters.find_by(round: 2)
+      semis.each { |semi| semi.update!(winner: semi.team_1) }
+      # Opening the final's panel seeds and confirms both of its lineups.
+      EncounterLineupSeeder.new(final.reload).call
+
+      semis.first.update!(winner: semis.first.team_2) # an ordinary correction
+
+      final.reload
+      expect(final.winner_id).to be_nil
+      expect(final.team_fights.where.not(winner_id: nil)).to be_empty
     end
   end
 

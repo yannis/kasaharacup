@@ -106,11 +106,12 @@ RSpec.describe EncounterTeamSwap do
       expect(first.lineup_1_set?).to be false
     end
 
-    # Regression: #invalidate_slot nils only the swapped side's fighters. On an
-    # encounter whose lineups were auto-seeded when the panel was opened, that
-    # left the untouched side alone in every bout, which reads as a forfeit —
-    # recompute_winner! then handed the incoming team a 3-0 defeat it never
-    # fought, and the recorded winner made the slot unswappable for good.
+    # Regression: #invalidate_matchup used to empty only the swapped side's
+    # fighters. On an encounter whose lineups were auto-seeded when the panel
+    # was opened, that left the untouched side alone in every bout, which reads
+    # as a forfeit — recompute_winner! then handed the incoming team a 3-0
+    # defeat it never fought, and the recorded winner made the slot unswappable
+    # for good. See the Encounter spec for the same bug via result correction.
     it "clears a seeded lineup rather than leaving the other side to win by forfeit" do
       build_bracket(4)
       stock_rosters

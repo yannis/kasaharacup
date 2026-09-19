@@ -96,9 +96,9 @@ class Encounter < ApplicationRecord
   # Deliberately blind to the lineup flags. EncounterLineupSeeder confirms BOTH
   # lineups the moment an admin opens a panel, so gating on them made the swap
   # tool withdraw itself a second after anyone merely looked at an encounter. A
-  # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_slot
-  # clears the outgoing side's fighters, its points and its flag on every swap,
-  # and EncounterTeamSwap confirms before discarding the rest.
+  # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_matchup
+  # drops the stale bouts and both lineup flags on every swap, and
+  # EncounterTeamSwap confirms before discarding the rest.
   def unscored?
     winner_id.nil? &&
       # any? (not exists?) so a preloaded team_fights: :fight_points association is
@@ -148,11 +148,11 @@ class Encounter < ApplicationRecord
   end
 
   # The single path for setting a bracket slot's team. First fill (nil -> team)
-  # just writes the column. Re-resolution (a different team, or nil) first
-  # invalidates the previous occupant's sub-state on that side, then writes the
-  # column and re-derives this encounter's winner. Both the winner-propagation
-  # callback and the builder's first-round re-resolve go through here, so stale
-  # state can never survive an advancement change.
+  # just writes the column. Re-resolution (a different team, or nil) writes the
+  # column, discards the now-stale matchup, then re-derives this encounter's
+  # winner. Both the winner-propagation callback and the builder's first-round
+  # re-resolve go through here, so stale state can never survive an advancement
+  # change.
   def assign_team_to_slot(slot, team)
     column = :"team_#{slot}_id"
     return if public_send(column) == team&.id
@@ -161,7 +161,7 @@ class Encounter < ApplicationRecord
     update!(column => team&.id)
 
     if previous_id.present? && team&.id != previous_id
-      invalidate_slot(slot)
+      invalidate_matchup
       recompute_winner!
     end
   end
@@ -178,17 +178,21 @@ class Encounter < ApplicationRecord
       .where("parent_encounter_1_id = :id OR parent_encounter_2_id = :id", id: id)
   end
 
-  # Wipe the previous occupant's data on side `slot`: kenshi, that side's
-  # fight_points (they are keyed by fighter_side, NOT by kenshi, so they would
-  # otherwise be counted for the new team), and the now-stale per-bout outcome.
-  private def invalidate_slot(slot)
-    side = (slot == 1) ? "fighter_1" : "fighter_2"
-    team_fights.each do |fight|
-      fight.fight_points.where(fighter_side: side).destroy_all
-      fight.update!("kenshi_#{slot}_id": nil)
-      fight.recompute_outcome_from_points!
-    end
-    update!("lineup_#{slot}_set": false)
+  # A slot's occupant changed, so the MATCHUP changed and the whole bout set is
+  # stale — not just the side being rewritten. The outgoing team's fighters and
+  # points obviously go (points are keyed by fighter_side, not by kenshi, so
+  # they would otherwise be credited to the incoming team); the opponent's go
+  # too, because that order was entered to face a team that is no longer there.
+  #
+  # Emptying only the rewritten side left every bout with one fighter and an
+  # empty seat, which TeamFight#forfeit reads as a walkover: recompute_winner!
+  # then handed the untouched side a clean-sweep win nobody fought, and that
+  # phantom result advanced up the tree and made the slot unswappable for good
+  # (#1310). Covering both sides here fixes it for every caller at once — winner
+  # propagation, bye propagation and the builder's first-round re-resolve.
+  private def invalidate_matchup
+    team_fights.destroy_all
+    update!(lineup_1_set: false, lineup_2_set: false)
   end
 
   private def broadcast_bracket_tree
