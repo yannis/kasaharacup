@@ -5,6 +5,12 @@
 # drawn at random into the remaining open slots. Pools hold pool_size or
 # pool_size - 1 teams, with the larger pools first. Accepts an injected RNG so a
 # layout is reproducible.
+#
+# The seeds go into the pools SeedPoolOrder names, not into consecutive ones.
+# Consecutive pool numbers are exactly the ones BracketSeeder.low_block sends to
+# the SAME half of the tree, so "one seed per pool" used to mean seeds 1 and 2
+# both in the top half — meeting in the semifinal, with the final decided
+# against seed 3. At eight pools all four medalists shared a half.
 class TeamPooler
   def initialize(team_category, random: Random.new)
     @team_category = team_category
@@ -32,20 +38,29 @@ class TeamPooler
   # Larger pools first: with N teams and P pools, the first (N mod P) pools hold
   # ceil, the rest floor. e.g. 11 teams, P=4 -> [3,3,3,2].
   private def target_sizes
-    base, remainder = teams.size.divmod(pool_count)
-    Array.new(pool_count) { |i| (i < remainder) ? base + 1 : base }
+    @target_sizes ||= begin
+      base, remainder = teams.size.divmod(pool_count)
+      Array.new(pool_count) { |i| (i < remainder) ? base + 1 : base }
+    end
   end
 
   private def place_seeds(pools)
-    seeded = teams.select { |t| t.seed.present? }.sort_by(&:seed)
-    seeded.each_with_index { |team, i| pools[i % pool_count] << team }
+    SeedPoolOrder.assign(seeded.size, target_sizes).each_with_index do |index, i|
+      pools[index] << seeded[i]
+    end
+  end
+
+  # [seed, id] — the same tie-break BracketOnlySeeder uses, so a duplicate seed
+  # cannot order one way here and the other way on the pool-less path.
+  private def seeded
+    @seeded ||= teams.select { |team| team.seed.present? }
+      .sort_by { |team| [team.seed, team.id] }
   end
 
   private def draw_rest(pools)
-    sizes = target_sizes
-    unseeded = teams.reject { |t| t.seed.present? }.shuffle(random: random)
+    unseeded = (teams - seeded).shuffle(random: random)
     unseeded.each do |team|
-      pool_index = (0...pools.size).find { |i| pools[i].size < sizes[i] }
+      pool_index = (0...pools.size).find { |i| pools[i].size < target_sizes[i] }
       pools[pool_index] << team
     end
   end

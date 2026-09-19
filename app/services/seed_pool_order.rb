@@ -47,6 +47,33 @@ module SeedPoolOrder
     ordered((1..count).to_a)
   end
 
+  # The pool each of `seed_count` seeds goes to, as ZERO-BASED indices into
+  # target_sizes, in seed order. Both poolers walk the order this way, so the
+  # walk lives here rather than once in each of them.
+  #
+  # The cursor advances rather than re-searching from the front: restarting at
+  # the first pool for every seed would pile them all into it until it alone
+  # reached target size, instead of giving each seed its own. The size check
+  # only bites when the seeds outnumber the pools and the order wraps —
+  # wrapping onto a pool already at target size would overfill it, so the
+  # cursor skips past. A seed is one of the members target_sizes was computed
+  # from, so a pool with room always exists and the skip always terminates.
+  def self.assign(seed_count, target_sizes)
+    indices = order(target_sizes.size).map { |number| number - 1 }
+    filled = Array.new(target_sizes.size, 0)
+    cursor = 0
+    Array.new(seed_count) do
+      index = indices[cursor % indices.size]
+      while filled[index] >= target_sizes[index]
+        cursor += 1
+        index = indices[cursor % indices.size]
+      end
+      filled[index] += 1
+      cursor += 1
+      index
+    end
+  end
+
   private_class_method def self.ordered(pools)
     return pools if pools.size <= 1
 

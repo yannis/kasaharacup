@@ -61,4 +61,46 @@ RSpec.describe SeedPoolOrder do
       expect(halves(3)).to eq [true, false, true]
     end
   end
+
+  # The walk both poolers share. SmartPooler and TeamPooler each used to carry
+  # their own copy, which is how they drifted apart in the first place (#1312).
+  describe ".assign" do
+    it "hands out the order's pools, zero-based, in seed order" do
+      expect(described_class.assign(4, [4, 4, 4, 4])).to eq [0, 2, 3, 1]
+    end
+
+    it "assigns nothing when nothing is seeded" do
+      expect(described_class.assign(0, [4, 4])).to eq []
+    end
+
+    it "gives each seed its own pool while the pools last" do
+      expect(described_class.assign(4, [4, 4, 4, 4]).uniq.size).to eq 4
+    end
+
+    # More seeds than pools wraps the order, and a second seed in a pool is
+    # fine — overfilling one past its target size is not, because the pooler
+    # then has nowhere to put the unseeded.
+    it "wraps onto a second round of pools without exceeding a target size" do
+      counts = described_class.assign(6, [2, 2, 2, 2]).tally
+      expect(counts.values.sum).to eq 6
+      expect(counts.values.max).to be <= 2
+    end
+
+    it "skips a pool that is already at its target size" do
+      # Pool 1 (index 0) holds one team; the order opens on it, so the second
+      # seed must skip past rather than overfill it.
+      assigned = described_class.assign(3, [1, 2, 2])
+      expect(assigned.count(0)).to eq 1
+      expect(assigned.size).to eq 3
+    end
+
+    it "never exceeds any target size, across a range of shapes" do
+      (1..8).each do |pools|
+        sizes = Array.new(pools) { 2 }
+        described_class.assign(pools * 2, sizes).tally.each do |index, used|
+          expect(used).to be <= sizes[index], "#{pools} pools, index #{index}"
+        end
+      end
+    end
+  end
 end

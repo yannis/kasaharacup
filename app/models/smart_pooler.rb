@@ -73,18 +73,9 @@ class SmartPooler
     Array.new(count) { |i| (i * total.to_f / count).round }
   end
 
-  # The seeded go in before anything else, each into the next pool of
-  # SeedPoolOrder that is still under its target size — so the pools feeding
-  # opposite halves of the bracket hold the top two seeds. The cursor walks
-  # the order rather than re-searching it from the front each time: restarting
-  # from index 0 for every seed would pile them all into the order's first
-  # pool until it alone reached target size, instead of giving each its own.
-  # The size check still matters because target_sizes makes some pools short
-  # (see short_pool_indices): with more seeds than pools the order is reused
-  # by wrapping the cursor, and wrapping onto a pool already at target size
-  # would overfill it, so the cursor skips forward past it. A seed is one of
-  # the participants target_sizes was computed from, so a pool with room
-  # always exists.
+  # The seeded go in before anything else, into the pools SeedPoolOrder names,
+  # so the pools feeding opposite halves of the bracket hold the top two seeds.
+  # TeamPooler walks the same order through the same call.
   #
   # DELIBERATE: SeedPoolOrder always opens on pool 1, and short_pool_indices
   # always makes pool 1 one of the short pools when the sizes are uneven, so
@@ -92,16 +83,8 @@ class SmartPooler
   # usual reading of a top seeding rather than an accident of the two rules
   # meeting, and the pooler spec pins it so it cannot change unnoticed.
   private def place_seeds
-    order = SeedPoolOrder.order(pool_count).map { |number| number - 1 }
-    cursor = 0
-    seeded.each do |participation|
-      index = order[cursor % order.size]
-      while poules[index].participations.size >= target_sizes[index]
-        cursor += 1
-        index = order[cursor % order.size]
-      end
-      poules[index].participations << participation
-      cursor += 1
+    SeedPoolOrder.assign(seeded.size, target_sizes).each_with_index do |index, i|
+      poules[index].participations << seeded[i]
     end
   end
 
