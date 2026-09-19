@@ -1,0 +1,65 @@
+<%# One controller instance on the panel (not per row): every row is both a
+    drag source and a drop target, and a reorder replaces the whole panel. %>
+<%= tag.div id: dom_id_for_seeds, class: "seed-panel",
+      data: {controller: "seed-order", seed_order_next_position_value: next_position} do %>
+  <%# Inside the replaced element, the way the pool cards and the tree do it:
+      the panel subscribes on its own rather than riding the pool cards'
+      stream, because a bracket-only category renders no pool cards and there
+      would be nothing else on the page holding a subscription. Rendered
+      outside this div it would be duplicated on every replace. %>
+  <%= helpers.turbo_stream_from category, :team_seeds %>
+  <% if seeded.any? %>
+    <ol class="seed-panel__list">
+      <%# A row's position is its RANK in this list, not its stored seed. The two
+          agree whenever the seeds are contiguous, which SeedOrderMove restores
+          on every change — but a seeded team destroyed in ActiveAdmin leaves a
+          gap behind, and the server reads to_position as a rank into the seeded
+          list. %>
+      <% seeded.each_with_index do |team, index| %>
+        <li class="seed-panel__row" data-seed-url="<%= seed_url(team) %>"
+            data-position="<%= index + 1 %>"
+            data-action="dragover->seed-order#dragOver dragleave->seed-order#dragLeave drop->seed-order#drop">
+          <span class="seed-panel__grip pool-match__grip" draggable="true"
+                title="Drag onto the position it should take"
+                data-action="dragstart->seed-order#dragStart">⠿</span>
+          <span class="seed-panel__number" aria-label="Seed <%= index + 1 %>"><%= index + 1 %></span>
+          <%= link_to team.name, helpers.admin_team_path(team), class: "seed-panel__name" %>
+          <span class="seed-panel__club"><%= clubs_of(team) %></span>
+          <%# Takes the slack in the flex row, so the controls line up down the
+              right-hand edge however long the names and clubs are. %>
+          <span class="seed-panel__grade"><%= roster_of(team) %></span>
+          <%# The keyboard path, matching the "Move to" select on pool rows. %>
+          <select class="seed-panel__move-select pool-standings__move-select"
+                  aria-label="Move <%= team.name %> to another seed position"
+                  data-action="change->seed-order#moveViaSelect">
+            <option value="">Move to position…</option>
+            <% positions.each do |position| %>
+              <option value="<%= position %>"><%= position %></option>
+            <% end %>
+          </select>
+          <%# A plain DELETE form: this one works without JavaScript, and Turbo
+              renders the stream the controller answers with. %>
+          <%= helpers.button_to "✕", seed_url(team), method: :delete,
+                class: "seed-panel__unseed",
+                form: {class: "seed-panel__unseed-form"},
+                aria: {label: "Unseed #{team.name}"} %>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <p class="seed-panel__empty">No seeds yet. Seed last year's medalists so the draw keeps them apart.</p>
+  <% end %>
+
+  <div class="seed-panel__add">
+    <select class="seed-panel__add-select pool-standings__move-select"
+            aria-label="Seed a team"
+            data-action="change->seed-order#seedViaSelect">
+      <option value="">Seed a team…</option>
+      <% unseeded.each do |team| %>
+        <option value="<%= seed_url(team) %>"><%= team.name %></option>
+      <% end %>
+    </select>
+  </div>
+
+  <p class="seed-panel__hint"><%= effect_hint %></p>
+<% end %>

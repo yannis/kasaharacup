@@ -46,6 +46,7 @@ Rails.application.routes.draw do
       resources :documents
       resources :videos
       resources :pool_memberships, only: :update, module: :team_categories
+      resources :seeds, only: [:update, :destroy], module: :team_categories
       resources :encounters, only: :show do
         resource :lineup, only: :update, module: :encounters
         resource :team_swap, only: :create, module: :encounters

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Team, as: "Team" do
-  permit_params :name, :cup, :team_category_id, :rank, :seed, :pool_number, :pool_position, :pool_rank
+  permit_params :name, :cup, :team_category_id, :rank, :pool_number, :pool_position, :pool_rank
 
   controller do
     def scoped_collection
@@ -87,7 +87,11 @@ ActiveAdmin.register Team, as: "Team" do
       f.input :team_category, collection: TeamCategory.all.map { |tc| ["#{tc.name} (#{tc.cup})", tc.id] }
       f.input :name
       f.input :rank
-      f.input :seed, hint: "1 = champion … 4 = fourth medal; leave blank for unseeded"
+      # No :seed input. The seeding panel on the team category page owns the
+      # order and keeps it contiguous at 1..N; a free-text seed here could set
+      # 7 with no 1..6, or duplicate a value, and the two paths would disagree
+      # about what the draw is. Matches app/admin/participation.rb, which does
+      # not offer one either.
     end
     f.actions
   end
