@@ -57,6 +57,30 @@ class EncounterTreeComponent < ViewComponent::Base
     ""
   end
 
+  # One definition of the badge; the tree shows it at two points (a bye and a
+  # regular match), as CompetitionTreeComponent does.
+  private def seed_badge(encounter, slot)
+    seed = team_seed(encounter, slot)
+    return if seed.nil?
+
+    tag.span("S#{seed}", class: "competition-tree__seed",
+      aria: {label: "Seed #{seed}"}, title: "Seed #{seed}")
+  end
+
+  # A seeded team carries its number wherever it appears in the tree, not only
+  # in round 1 the way seed_label's pool-position prefix does: the point of the
+  # badge is to see at a glance how far the seeds got. The two never collide —
+  # seed_label only shows for a slot no team has reached yet.
+  #
+  # Admin only, matching CompetitionTreeComponent. Every call site renders this
+  # component with admin: true today, because there is no public team bracket;
+  # the guard is about the day one is added.
+  private def team_seed(encounter, slot)
+    return unless admin
+
+    encounter.public_send(:"resolved_team_#{slot}")&.seed
+  end
+
   private def seed_label(encounter, slot)
     return unless encounter.round == 1
 

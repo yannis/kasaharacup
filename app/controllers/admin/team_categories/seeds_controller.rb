@@ -9,15 +9,18 @@ module Admin
     # Twin of Admin::IndividualCategories::SeedsController, and the differences
     # are worth naming:
     #
-    # The response carries the panel and nothing else. Its individual sibling
-    # also replaces the pool cards and the competition tree because those wear
-    # seed badges; the team pool cards and bracket do not, so there is nothing
-    # else on the page a seed change can make stale.
+    # The response carries more than the panel, as its sibling's does: a seeded
+    # team wears its badge on the pool card and in the bracket, so both go
+    # stale on a seed change and are replaced too.
     #
-    # It broadcasts on the panel's OWN stream rather than riding the pool
-    # cards': a bracket-only category (pool_size <= 1) renders no pool cards at
-    # all, so there would be no subscriber to carry the panel's replace. The
-    # panel subscribes to that stream itself.
+    # Where it really parts company is the broadcast. On the individual side
+    # the panel, the pool cards and the tree all subscribe to one stream, so a
+    # single broadcast reaches them. Here each surface has its own — the panel
+    # because a bracket-only category (pool_size <= 1) renders no pool cards to
+    # ride along with, the cards and the bracket because they already had one
+    # before seeding existed. So this broadcasts three times, each with only
+    # the stream that belongs to it: sending the whole set to each would apply
+    # the other two twice on a page holding more than one subscription.
     #
     # No confirmation/422 flow, as on the individual side: nothing here discards
     # recorded work, so there is nothing to confirm.
@@ -58,8 +61,21 @@ module Admin
         end
       end
 
+      # Each surface subscribes to a stream of its own here, where the
+      # individual side has the panel, the pool cards and the tree all sharing
+      # one — so a seed change has to reach three rather than ride a single
+      # broadcast. Sending the whole set to each would apply the other two
+      # twice on a page holding more than one subscription.
       private def broadcast
-        Turbo::StreamsChannel.broadcast_stream_to([team_category, :team_seeds], content: streams)
+        broadcast_to(:team_seeds, panel_stream)
+        broadcast_to(:team_pools, pools_stream)
+        broadcast_to(:encounter_tree, tree_stream)
+      end
+
+      private def broadcast_to(name, content)
+        return if content.nil?
+
+        Turbo::StreamsChannel.broadcast_stream_to([team_category, name], content: content)
       end
 
       private def team_category
@@ -70,11 +86,40 @@ module Admin
         @team ||= team_category.teams.find(params.expect(:id))
       end
 
-      # Memoised: broadcast and render both want the same set.
+      # Memoised: broadcast and render both want the same set, and rendering it
+      # twice would re-run the panel, every pool card and the whole bracket for
+      # identical output.
       private def streams
-        @streams ||= helpers.turbo_stream.replace(
+        @streams ||= helpers.safe_join([panel_stream, pools_stream, tree_stream].compact)
+      end
+
+      private def panel_stream
+        @panel_stream ||= helpers.turbo_stream.replace(
           "team_seeds_#{team_category.id}",
           TeamSeedsComponent.new(category: team_category)
+        )
+      end
+
+      # A seeded team wears its badge on the pool card, so the cards go stale on
+      # a seed change the same way the panel does. Nothing to replace before any
+      # pool exists — or ever, in a bracket-only category.
+      private def pools_stream
+        return if team_category.team_pools.none?
+
+        @pools_stream ||= helpers.turbo_stream.replace(
+          "team_pools_#{team_category.id}",
+          partial: "admin/team_categories/pools",
+          locals: {team_category: team_category}
+        )
+      end
+
+      private def tree_stream
+        return if team_category.bracket_encounters.none?
+
+        @tree_stream ||= helpers.turbo_stream.replace(
+          helpers.dom_id(team_category, :encounter_tree),
+          partial: "team_bracket_trees/team_bracket_tree",
+          locals: {team_category: team_category}
         )
       end
     end

@@ -70,4 +70,19 @@ describe "Admin team category seeding", :js do
     expect(page).to have_css(".seed-panel__row[data-position='2']", text: "Bbb")
     expect(seed_order).to eq %w[Aaa Bbb]
   end
+
+  # The payoff of replacing the pool cards as well as the panel: the badge has
+  # to appear on the card without a reload, or an admin has no way to see the
+  # seeding they just set against the draw it affects.
+  it "shows the new seed's badge on the pool card straight away" do
+    3.times { |i| team("Pooled #{i}") }
+    TeamPooler.new(category, random: Random.new(1)).set_pools
+
+    signin_and_visit(admin, admin_team_category_path(category))
+
+    expect(page).to have_no_css(".pool-standings__seed")
+    find(".seed-panel__add-select").select("Pooled 0")
+
+    expect(page).to have_css(".pool-standings__seed", text: "S1")
+  end
 end

@@ -25,6 +25,10 @@ RSpec.describe "Admin team seeds" do
 
   def seeds_by_id = category.teams.reload.to_h { |t| [t.id, t.seed] }
 
+  # stream_name_from is private on Turbo's side; there is no public way to ask
+  # what a pair of streamables resolves to.
+  def stream_for(name) = Turbo::StreamsChannel.send(:stream_name_from, [category, name])
+
   it "seeds a team and replaces the panel" do
     fresh = team
 
@@ -64,27 +68,51 @@ RSpec.describe "Admin team seeds" do
     expect(a.reload.seed).to be_nil
   end
 
-  # The panel is the only page element a seed change can make stale: the team
-  # pool cards and the bracket carry no seed badge, unlike their individual
-  # counterparts.
-  it "replaces the panel and nothing else" do
+  it "replaces only the panel when there are no pools and no bracket" do
     move(team, 1)
 
     expect(response.body.scan("<turbo-stream").size).to eq 1
+    expect(response.body).to include("target=\"team_seeds_#{category.id}\"")
+  end
+
+  # A seeded team wears its badge on the pool card and in the bracket, so both
+  # go stale on a seed change the same way the panel does.
+  describe "once the draw exists" do
+    before do
+      4.times { team }
+      TeamPooler.new(category, random: Random.new(1)).set_pools
+      TeamCategoryBracketBuilder.new(category).call
+    end
+
+    it "replaces the pools container and the bracket too" do
+      move(category.teams.first, 1)
+
+      expect(response.body).to include("target=\"team_seeds_#{category.id}\"")
+      expect(response.body).to include("target=\"team_pools_#{category.id}\"")
+      expect(response.body).to include("target=\"#{ActionView::RecordIdentifier.dom_id(category, :encounter_tree)}\"")
+    end
+
+    # Each surface subscribes to a stream of its own, unlike the individual
+    # side where one broadcast reaches all three. Sending the whole set to each
+    # would apply the other two twice wherever a page holds more than one
+    # subscription.
+    it "broadcasts each surface only on its own stream" do
+      expect { move(category.teams.first, 1) }
+        .to have_broadcasted_to(stream_for(:team_seeds)).from_channel(Turbo::StreamsChannel)
+        .and have_broadcasted_to(stream_for(:team_pools)).from_channel(Turbo::StreamsChannel)
+        .and have_broadcasted_to(stream_for(:encounter_tree)).from_channel(Turbo::StreamsChannel)
+    end
   end
 
   # The panel's subscription and the controller's broadcast name the stream in
   # two different files, so a typo in either would silently stop other open
   # pages from following along — the acting admin would still see the change,
   # because their panel is replaced from the response, not the broadcast.
-  # stream_name_from is private on Turbo's side; there is no public way to ask
-  # what a pair of streamables resolves to.
   it "broadcasts on the stream the panel subscribes to" do
-    stream = Turbo::StreamsChannel.send(:stream_name_from, [category, :team_seeds])
     fresh = team
 
     expect { move(fresh, 1) }
-      .to have_broadcasted_to(stream).from_channel(Turbo::StreamsChannel)
+      .to have_broadcasted_to(stream_for(:team_seeds)).from_channel(Turbo::StreamsChannel)
   end
 
   it "refuses a team from another category" do
