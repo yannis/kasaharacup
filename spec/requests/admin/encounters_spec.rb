@@ -232,7 +232,7 @@ RSpec.describe "Admin encounters" do
 
     it "answers 422 with confirm: true when a fighter order would be discarded" do
       first, second = round_one
-      first.update!(lineup_1_set: true, lineup_2_set: true)
+      first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
       post admin_team_category_encounter_team_swap_path(bracket_only, first),
         params: {slot: 1, team_id: second.team_1_id},
@@ -257,7 +257,7 @@ RSpec.describe "Admin encounters" do
     it "performs the swap when the client confirms with force" do
       first, second = round_one
       moving_in = second.team_1
-      first.update!(lineup_1_set: true, lineup_2_set: true)
+      first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
       post admin_team_category_encounter_team_swap_path(bracket_only, first),
         params: {slot: 1, team_id: moving_in.id, force: true},

@@ -9,15 +9,16 @@
 # Rejected unless every impacted encounter — both round-1 encounters plus any
 # round-2 child fed by a bye among them — is unscored: no winner, no recorded
 # fight point and no bout the admin marked hikiwake. A merely auto-seeded
-# lineup does not block a swap (see Encounter#unscored?); it prompts for
-# confirmation instead (see #validate_confirmed_lineups!).
+# lineup does not block a swap and does not prompt either: it is an order
+# nobody chose. Only an order an admin entered by hand asks for confirmation
+# (see #validate_confirmed_lineups! and Encounter#hand_ordered?).
 class EncounterTeamSwap
   class InvalidSwap < StandardError; end
 
-  # A swap that is legal but would discard a fighter order someone may have
-  # entered by hand. Separate from InvalidSwap because the client can act on
-  # it: confirm, then retry with force: true — the same shape TeamPoolMove uses
-  # for a destructive pool move.
+  # A swap that is legal but would discard a fighter order an admin entered by
+  # hand. Separate from InvalidSwap because the client can act on it: confirm,
+  # then retry with force: true — the same shape TeamPoolMove uses for a
+  # destructive pool move.
   class NeedsConfirmation < StandardError; end
 
   SLOTS = [1, 2].freeze
@@ -70,6 +71,18 @@ class EncounterTeamSwap
     nil
   end
 
+  # The prompt a swap over these encounters owes the admin, or nil when it
+  # would discard no fighter order anyone entered. Shared by the write path
+  # (#validate_confirmed_lineups!) and the panel form (#confirmation_for), so
+  # what the form asks and what the server refuses can never disagree.
+  def self.confirmation_message(impacted_encounters)
+    numbers = impacted_encounters.filter_map { |enc| enc.number if enc.hand_ordered? }.sort
+    return if numbers.empty?
+
+    subject = (numbers.size == 1) ? "encounter #{numbers.first}" : "encounters #{numbers.to_sentence}"
+    "This clears the fighter order entered on #{subject}. Swap anyway?"
+  end
+
   # The bracket, loaded the way both entry points above need it.
   def self.bracket_for(category)
     list = category.bracket_encounters
@@ -79,14 +92,17 @@ class EncounterTeamSwap
     list
   end
 
-  private_class_method def self.children_by_parent_id(encounters)
+  # Internal, but shared with the instance side (see #impacted_from_bracket):
+  # both answer questions about a bye's blast radius from an already-loaded
+  # list rather than firing #children per node.
+  def self.children_by_parent_id(encounters)
     encounters.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |enc, lookup|
       lookup[enc.parent_encounter_1_id] << enc if enc.parent_encounter_1_id
       lookup[enc.parent_encounter_2_id] << enc if enc.parent_encounter_2_id
     end
   end
 
-  private_class_method def self.impacted_in_memory(enc, children)
+  def self.impacted_in_memory(enc, children)
     [enc] + (enc.bye? ? children[enc.id] : [])
   end
 
@@ -113,6 +129,23 @@ class EncounterTeamSwap
         enc.public_send(:"team_#{slot}") if swappable_slot_set.include?([enc.id, slot])
       end
     } - [encounter.team_1, encounter.team_2].compact
+  end
+
+  # The prompt the panel's select form owes before swapping `team` into this
+  # encounter, or nil when the swap would discard no hand-entered order. The
+  # form cannot let the server decide: the partner is only known once a team is
+  # picked from the dropdown, and by then the answer has to be in the page. So
+  # it asks per option, off the bracket already loaded for #candidates — no
+  # query of its own, and the same verdict #swap would reach.
+  #
+  # nil for a team the bracket does not hold: #swap refuses that outright, and
+  # a prompt is not how a refusal is reported.
+  def confirmation_for(team)
+    other = encounter_holding(team)
+    return unless other
+
+    impacted = (impacted_from_bracket(encounter) + impacted_from_bracket(other)).uniq
+    self.class.confirmation_message(impacted)
   end
 
   # `expected_team_id` and `expected_encounter_id` are the target slot's
@@ -191,6 +224,22 @@ class EncounterTeamSwap
     encounter.public_send(:"team_#{slot}")
   end
 
+  # The bracket row that holds `team` in a round-1 slot, read from the loaded
+  # list — #locate's in-memory twin, for the read path that must not query.
+  private def encounter_holding(team)
+    bracket.detect do |enc|
+      enc.round == 1 && (enc.team_1_id == team.id || enc.team_2_id == team.id)
+    end
+  end
+
+  private def children_lookup
+    @children_lookup ||= self.class.children_by_parent_id(bracket)
+  end
+
+  private def impacted_from_bracket(enc)
+    self.class.impacted_in_memory(enc, children_lookup)
+  end
+
   private def round_one
     category.bracket_encounters.where(round: 1)
   end
@@ -248,19 +297,15 @@ class EncounterTeamSwap
     end
   end
 
-  # #unscored? deliberately ignores the lineup flags: EncounterLineupSeeder
-  # confirms both the moment an admin opens a panel, so gating eligibility on
-  # them made the tool withdraw itself on sight. The cost is that
-  # Encounter#invalidate_matchup cannot tell a seeded fighter order from one an
-  # admin typed — so a hand-entered order is protected by this prompt rather
-  # than by the eligibility rule. Same shape as TeamPoolMove's
-  # :needs_confirmation.
+  # #unscored? (the eligibility bar) deliberately ignores the lineup flags:
+  # EncounterLineupSeeder confirms both the moment an admin opens a panel, so
+  # gating eligibility on them made the tool withdraw itself on sight. A
+  # hand-entered order is protected by this prompt instead — and only a
+  # hand-entered one, which is what Encounter#hand_ordered? answers. Same shape
+  # as TeamPoolMove's :needs_confirmation.
   private def validate_confirmed_lineups!(impacted_encounters)
-    numbers = impacted_encounters.reject(&:pristine?).map(&:number).sort
-    return if numbers.empty?
-
-    subject = (numbers.size == 1) ? "encounter #{numbers.first}" : "encounters #{numbers.to_sentence}"
-    raise NeedsConfirmation, "This clears the fighter order entered on #{subject}. Swap anyway?"
+    message = self.class.confirmation_message(impacted_encounters)
+    raise NeedsConfirmation, message if message
   end
 
   # A bye's round-2 child slot changes with the bye's occupant, so it is part

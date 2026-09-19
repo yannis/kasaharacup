@@ -80,6 +80,35 @@ RSpec.describe EncounterLineup do
     expect(encounter.team_fights.order(:position).map(&:kenshi_1_id)).to eq chosen.map(&:id)
   end
 
+  describe "who ordered the side" do
+    it "credits #assign to the admin who submitted it" do
+      m = members(t1, 3)
+      described_class.new(encounter).assign(t1, m.map(&:id))
+
+      expect(encounter.reload.lineup_1_set?).to be true
+      expect(encounter.lineup_1_set_by_admin?).to be true
+      expect(encounter.lineup_2_set_by_admin?).to be false
+    end
+
+    it "confirms an #assign_suggested side without crediting an admin" do
+      m = members(t1, 3)
+      described_class.new(encounter).assign_suggested(t1, m.map(&:id))
+
+      # The side is usable — bouts can be scored and marked hikiwake — but
+      # nobody chose this order, so there is nothing here worth protecting.
+      expect(encounter.reload.lineup_1_set?).to be true
+      expect(encounter.lineup_1_set_by_admin?).to be false
+    end
+
+    it "keeps an admin's credit when a suggestion later rewrites the side" do
+      m = members(t1, 3)
+      described_class.new(encounter).assign(t1, m.map(&:id))
+      described_class.new(encounter).assign_suggested(t1, m.reverse.map(&:id))
+
+      expect(encounter.reload.lineup_1_set_by_admin?).to be true
+    end
+  end
+
   describe "#seed" do
     it "places the fighters without confirming the side" do
       m = members(t1, 3)

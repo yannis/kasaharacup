@@ -302,7 +302,8 @@ RSpec.describe Encounter do
       member(a)
       tf = create(:team_fight, encounter: child, kenshi_1: a.kenshis.first, kenshi_2: c.kenshis.first)
       create(:fight_point, scorable: tf, fighter_side: "fighter_1", kind: "men")
-      child.update!(lineup_1_set: true, lineup_2_set: true)
+      child.update!(lineup_1_set: true, lineup_2_set: true,
+        lineup_1_set_by_admin: true, lineup_2_set_by_admin: true)
 
       child.assign_team_to_slot(1, b)
 
@@ -312,6 +313,11 @@ RSpec.describe Encounter do
       # BOTH flags: c's order was entered to face a, who is no longer there.
       expect(child.lineup_1_set).to be false
       expect(child.lineup_2_set).to be false
+      # The credit goes with the order it described. Left behind on an encounter
+      # with no bouts at all, it would read as hand-ordered for good and every
+      # later swap would prompt about fighters nobody entered.
+      expect(child.lineup_1_set_by_admin).to be false
+      expect(child.lineup_2_set_by_admin).to be false
     end
 
     it "is a no-op on first fill (nil -> team) and keeps no stale state" do
@@ -444,12 +450,23 @@ RSpec.describe Encounter do
       category.bracket_encounters.find_by(round: 1)
     end
 
-    it "treats a confirmed lineup as unscored but not pristine" do
+    it "stays pristine when a lineup was only auto-seeded" do
       encounter = fresh_encounter
-      # What EncounterLineupSeeder does the moment an admin opens the panel.
+      # What EncounterLineupSeeder does the moment an admin opens the panel:
+      # it confirms both sides without anyone having ordered anything.
       encounter.update!(lineup_1_set: true, lineup_2_set: true)
 
       expect(encounter).to be_unscored
+      expect(encounter).to be_pristine
+      expect(encounter).not_to be_hand_ordered
+    end
+
+    it "treats a hand-entered lineup as unscored but not pristine" do
+      encounter = fresh_encounter
+      encounter.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      expect(encounter).to be_unscored
+      expect(encounter).to be_hand_ordered
       expect(encounter).not_to be_pristine
     end
 

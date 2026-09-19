@@ -7,6 +7,7 @@ import PoolMembershipController from './controllers/pool_membership_controller';
 import BracketSwapController from './controllers/bracket_swap_controller';
 import StreamLinkController from './controllers/stream_link_controller';
 import SeedOrderController from './controllers/seed_order_controller';
+import SwapConfirmController from './controllers/swap_confirm_controller';
 
 const application = Application.start();
 application.register('fight-winner', FightWinnerController);
@@ -16,3 +17,4 @@ application.register('pool-membership', PoolMembershipController);
 application.register('bracket-swap', BracketSwapController);
 application.register('stream-link', StreamLinkController);
 application.register('seed-order', SeedOrderController);
+application.register('swap-confirm', SwapConfirmController);

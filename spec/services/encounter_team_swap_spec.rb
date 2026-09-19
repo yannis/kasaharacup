@@ -218,10 +218,10 @@ RSpec.describe EncounterTeamSwap do
         .to raise_error(described_class::InvalidSwap, /round-1/)
     end
 
-    it "asks for confirmation before discarding a confirmed fighter order" do
+    it "asks for confirmation before discarding a hand-entered fighter order" do
       build_bracket(4)
       first, second = round_one
-      first.update!(lineup_1_set: true, lineup_2_set: true)
+      first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
       expect { described_class.new(first).swap(1, second.team_1) }
         .to raise_error(described_class::NeedsConfirmation, /fighter order/)
@@ -235,6 +235,55 @@ RSpec.describe EncounterTeamSwap do
 
       expect { described_class.new(first).swap(1, moving_in) }.not_to raise_error
       expect(first.reload.team_1).to eq moving_in
+    end
+
+    # The bug this prompt had: opening a panel auto-seeds AND confirms both
+    # lineups, so every later swap asked about an order nobody typed — a prompt
+    # that cries wolf is clicked through without reading.
+    it "does not ask for confirmation when the panel merely auto-seeded the lineups" do
+      build_bracket(4)
+      stock_rosters
+      first, second = round_one
+      EncounterLineupSeeder.new(first).call
+      EncounterLineupSeeder.new(second).call
+      moving_in = second.reload.team_1
+
+      expect { described_class.new(first.reload).swap(1, moving_in) }.not_to raise_error
+      expect(first.reload.team_1).to eq moving_in
+    end
+
+    it "asks for confirmation once an admin reorders an auto-seeded lineup" do
+      build_bracket(4)
+      stock_rosters
+      first, second = round_one
+      EncounterLineupSeeder.new(first).call
+      first.reload
+      EncounterLineup.new(first).assign(first.team_1, first.team_1.kenshis.ids.reverse)
+
+      expect { described_class.new(first.reload).swap(1, second.team_1) }
+        .to raise_error(described_class::NeedsConfirmation, /encounter #{first.number}/)
+    end
+
+    it "asks for confirmation when the PARTNER encounter carries a hand-entered order" do
+      build_bracket(4)
+      first, second = round_one
+      second.update!(lineup_2_set: true, lineup_2_set_by_admin: true)
+
+      expect { described_class.new(first).swap(1, second.team_1) }
+        .to raise_error(described_class::NeedsConfirmation, /encounter #{second.number}/)
+    end
+
+    it "forgets the hand-entered order it just discarded" do
+      build_bracket(4)
+      first, second = round_one
+      first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      described_class.new(first).swap(1, second.team_1, force: true)
+
+      # Left set, the re-drawn encounter would prompt for ever about fighters
+      # the swap has already thrown away.
+      expect(first.reload).to be_pristine
+      expect(first).not_to be_hand_ordered
     end
 
     # Regression: #unscored? read fight points only, so an encounter the admin
@@ -444,6 +493,58 @@ RSpec.describe EncounterTeamSwap do
       create(:fight_point, scorable: fight, fighter_side: "fighter_1")
 
       expect(described_class.new(encounter.reload).swappable?(1)).to be false
+    end
+  end
+
+  # The panel's select form cannot know the partner until a team is picked, so
+  # it asks the service per option rather than prompting for every one of them.
+  describe "#confirmation_for" do
+    it "is nil when neither end has a hand-entered order" do
+      build_bracket(4)
+      first, second = round_one
+
+      expect(described_class.new(first).confirmation_for(second.team_1)).to be_nil
+    end
+
+    it "names this encounter when its own order was entered by hand" do
+      build_bracket(4)
+      first, second = round_one
+      first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      expect(described_class.new(first).confirmation_for(second.team_1))
+        .to include("encounter #{first.number}")
+    end
+
+    it "names the partner encounter when the order is on its side" do
+      build_bracket(4)
+      first, second = round_one
+      second.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      message = described_class.new(first).confirmation_for(second.team_1)
+
+      expect(message).to include("encounter #{second.number}")
+      expect(message).not_to include("encounter #{first.number}")
+    end
+
+    it "includes a bye's round-2 child, whose lineup the swap also discards" do
+      build_bracket(3)
+      bye = round_one.detect(&:bye?)
+      fight = round_one.detect { |enc| !enc.bye? }
+      final = category.bracket_encounters.find_by(round: 2)
+      final.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      expect(described_class.new(bye).confirmation_for(fight.team_1))
+        .to include("encounter #{final.number}")
+    end
+
+    it "matches what #swap would refuse" do
+      build_bracket(4)
+      first, second = round_one
+      first.update!(lineup_2_set: true, lineup_2_set_by_admin: true)
+      swap = described_class.new(first)
+
+      expect { swap.swap(1, second.team_1) }
+        .to raise_error(described_class::NeedsConfirmation, swap.confirmation_for(second.team_1))
     end
   end
 end

@@ -98,6 +98,35 @@ RSpec.describe TeamCategoryBracketBuilder do
       expect(enc.reload.team_1_id).to eq original_team_1
       expect(fight.reload.fight_points).to be_present
     end
+
+    # The other half of that rule: an auto-seeded lineup is NOT work in
+    # progress. Opening a panel confirms both sides, which used to make the
+    # encounter non-pristine — so a rank change after anyone had merely looked
+    # at the bracket silently stopped propagating into its slots.
+    it "still re-resolves a slot on an encounter whose panel auto-seeded its lineups" do
+      described_class.new(category).call
+      enc = category.bracket_encounters.find_by(round: 1, team_1_pool_number: 1)
+      enc.update!(lineup_1_set: true, lineup_2_set: true)
+      replacement = ranked_team(pool_number: 1, pool_rank: 1)
+      t1_1.update!(pool_rank: nil)
+
+      described_class.new(category).call
+
+      expect(enc.reload.team_1_id).to eq replacement.id
+    end
+
+    it "leaves a slot alone once an admin has ordered its fighters" do
+      described_class.new(category).call
+      enc = category.bracket_encounters.find_by(round: 1, team_1_pool_number: 1)
+      enc.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+      original_team_1 = enc.team_1_id
+
+      ranked_team(pool_number: 1, pool_rank: 1)
+      t1_1.update!(pool_rank: nil)
+      described_class.new(category).call
+
+      expect(enc.reload.team_1_id).to eq original_team_1
+    end
   end
 
   context "force rebuild of a multi-round bracket" do
