@@ -17,6 +17,55 @@ RSpec.describe TeamPooler do
     expect(pool_numbers.uniq.size).to eq 4 # all in different pools
   end
 
+  # The regression #1312 asks for. Distinct pools was never the hard part —
+  # consecutive pool numbers are exactly the ones BracketSeeder.low_block sends
+  # to the SAME half, so the old `i % pool_count` put seeds 1 and 2 both in the
+  # top half and they met in the semifinal.
+  #
+  # Reads the encounters' own pool_number/pool_rank rather than playing out a
+  # pool phase: the builder records them even with no rank entered, and round-1
+  # encounters in position order are the bracket left to right, so the first
+  # half of the column is the top half of the tree.
+  describe "keeping the seeds apart in the bracket" do
+    # out_of_pool is what makes the builder emit round-1 slots at all; the
+    # bare factory leaves it nil.
+    let(:tc) { create(:team_category, pool_size: 3, out_of_pool: 2) }
+
+    def half_of(pool_number)
+      encounters = tc.bracket_encounters.where(round: 1).order(:position).to_a
+      index = encounters.index { |encounter|
+        [[encounter.team_1_pool_number, encounter.team_1_pool_rank],
+          [encounter.team_2_pool_number, encounter.team_2_pool_rank]].include?([pool_number, 1])
+      }
+      (index < encounters.size / 2) ? :top : :bottom
+    end
+
+    it "sends the top two seeds' pools to opposite halves" do
+      first = team(seed: 1)
+      second = team(seed: 2)
+      10.times { team }
+
+      described_class.new(tc, random: Random.new(1)).set_pools
+      TeamCategoryBracketBuilder.new(tc).call
+
+      expect(half_of(first.reload.pool_number)).not_to eq half_of(second.reload.pool_number)
+    end
+
+    it "splits four seeds two to a half" do
+      seeds = Array.new(4) { |i| team(seed: i + 1) }
+      12.times { team }
+
+      described_class.new(tc, random: Random.new(1)).set_pools
+      TeamCategoryBracketBuilder.new(tc).call
+
+      halves = seeds.map { |s| half_of(s.reload.pool_number) }
+      expect(halves.tally.values.sort).to eq [2, 2]
+      # And the standard pairing below the top two: 1 meets 4, 2 meets 3.
+      expect(halves[0]).to eq halves[3]
+      expect(halves[1]).to eq halves[2]
+    end
+  end
+
   it "sizes pools with the fewest short pools (11 teams, size 3 -> 3,3,3,2)" do
     11.times { team }
     described_class.new(tc, random: Random.new(1)).set_pools
