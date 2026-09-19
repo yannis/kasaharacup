@@ -25,6 +25,8 @@ class Encounter < ApplicationRecord
       (saved_change_to_winner_id? || saved_change_to_team_1_id? || saved_change_to_team_2_id?)
   }
 
+  after_commit :broadcast_invalidated_matchup, if: -> { @matchup_invalidated }
+
   delegate :team_size, to: :team_category
 
   PARENT_ASSOCIATIONS = [:parent_encounter_1, :parent_encounter_2].freeze
@@ -159,11 +161,10 @@ class Encounter < ApplicationRecord
 
     previous_id = public_send(column)
     update!(column => team&.id)
+    return if previous_id.blank?
 
-    if previous_id.present? && team&.id != previous_id
-      invalidate_matchup
-      recompute_winner!
-    end
+    invalidate_matchup
+    recompute_winner!
   end
 
   def recompute_pool_standings!
@@ -185,14 +186,69 @@ class Encounter < ApplicationRecord
   # too, because that order was entered to face a team that is no longer there.
   #
   # Emptying only the rewritten side left every bout with one fighter and an
-  # empty seat, which TeamFight#forfeit reads as a walkover: recompute_winner!
+  # empty seat, which TeamFight#forfeit read as a walkover: recompute_winner!
   # then handed the untouched side a clean-sweep win nobody fought, and that
   # phantom result advanced up the tree and made the slot unswappable for good
-  # (#1310). Covering both sides here fixes it for every caller at once — winner
-  # propagation, bye propagation and the builder's first-round re-resolve.
+  # (#1310).
+  #
+  # This reaches every RE-resolution caller — winner propagation, bye
+  # propagation and the builder's first-round re-resolve — but by construction
+  # it cannot reach a first fill (nil -> team), where a panel opened before both
+  # parents are decided seeds one side and leaves the other empty. So #1310 is
+  # closed in two places, and both are load-bearing: this one removes the stale
+  # matchup, and TeamFight#forfeit's own lineup gate stops a half-filled one
+  # being read as a walkover for as long as it legitimately exists.
   private def invalidate_matchup
+    log_discarded_matchup
     team_fights.destroy_all
     update!(lineup_1_set: false, lineup_2_set: false)
+    @matchup_invalidated = true
+  end
+
+  # Correcting an earlier round can reach a descendant that was already fought
+  # and scored, on a path that — unlike EncounterTeamSwap — has no unscored?
+  # guard and no confirmation prompt. Discarding those points is unavoidable
+  # (they are keyed by fighter_side, not by kenshi, so keeping the opponent's
+  # half would credit them to the incoming team), but it should not be silent:
+  # leave a trace for when someone asks where a scoresheet went.
+  private def log_discarded_matchup
+    points = FightPoint.where(scorable: team_fights).count
+    return if points.zero?
+
+    bouts = team_fights.size
+    Rails.logger.warn(
+      "Encounter #{id}: matchup invalidated, discarding " \
+      "#{bouts} #{"bout".pluralize(bouts)} and " \
+      "#{points} recorded #{"fight point".pluralize(points)}"
+    )
+  end
+
+  # Repaint every screen showing this matchup — neither existing broadcast
+  # survives an invalidation. The bouts are DESTROYED, and TeamFight repaints the
+  # panel only from an after_update_commit, so an open editor keeps rendering
+  # bouts whose ids are gone (scoring one then 404s in TeamFightPointsController).
+  # The tree is exposed on the swap path for a different reason: the slot write is
+  # no longer the last save, so its saved_changes never reach commit and
+  # broadcast_bracket_tree's own condition reads false. Measured before this fix:
+  # a swap enqueued 0 panel and 0 tree broadcasts, a correction 0 panel.
+  #
+  # Re-sending a tree another record already broadcast is an idempotent morph, so
+  # this deliberately does not try to detect that.
+  private def broadcast_invalidated_matchup
+    @matchup_invalidated = false
+    broadcast_panel
+    broadcast_bracket_tree if pool_number.blank?
+  end
+
+  # Shared with TeamFight, which repaints the same panel after scoring.
+  def broadcast_panel
+    broadcast_replace_later_to(
+      [self, :panel],
+      target: ActionView::RecordIdentifier.dom_id(self),
+      partial: "admin/encounters/panel",
+      locals: {encounter: self, admin: true},
+      attributes: {method: :morph}
+    )
   end
 
   private def broadcast_bracket_tree

@@ -146,7 +146,8 @@ class EncounterTeamSwap
 
     Encounter.transaction do
       # Lock EVERY row this swap can write — the two round-1 rows AND any
-      # bye-fed round-2 child, which bye propagation re-draws. Ascending id
+      # bye-fed round-2 child, which Encounter#propagate_bye_to_children
+      # re-draws. Ascending id
       # order: two opposing swaps take the rows in the same sequence, so they
       # serialize instead of deadlocking. lock! reloads each row, which also
       # clears the association cache we re-read below.
@@ -250,10 +251,11 @@ class EncounterTeamSwap
 
   # #unscored? deliberately ignores the lineup flags: EncounterLineupSeeder
   # confirms both the moment an admin opens a panel, so gating eligibility on
-  # them made the tool withdraw itself on sight. The cost is that the
-  # re-draw cannot tell a seeded fighter order from one an admin typed — so a
-  # hand-entered order is protected by this prompt rather than by the
-  # eligibility rule. Same shape as TeamPoolMove's :needs_confirmation.
+  # them made the tool withdraw itself on sight. The cost is that
+  # Encounter#invalidate_matchup cannot tell a seeded fighter order from one an
+  # admin typed — so a hand-entered order is protected by this prompt rather
+  # than by the eligibility rule. Same shape as TeamPoolMove's
+  # :needs_confirmation.
   private def validate_confirmed_lineups!(impacted_encounters)
     numbers = impacted_encounters.reject(&:pristine?).map(&:number).sort
     return if numbers.empty?

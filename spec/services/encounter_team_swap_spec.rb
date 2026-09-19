@@ -49,6 +49,27 @@ RSpec.describe EncounterTeamSwap do
       expect(final.reload.public_send(:"team_#{slot}_id")).to eq moving_in.id
     end
 
+    # This service used to clear the bye-fed child itself; that now happens only
+    # as a side effect of bye propagation reaching Encounter#invalidate_matchup.
+    # Without this, nothing pins it: narrowing #bye_occupant_changed? would leave
+    # the child holding a lineup drawn against a team no longer in the bracket —
+    # #1310 one round up — with the suite still green.
+    it "clears the bye-fed child's seeded lineup when the bye occupant is swapped out" do
+      build_bracket(3)
+      stock_rosters
+      bye = round_one.detect(&:bye?)
+      fight = round_one.detect { |e| !e.bye? }
+      final = category.bracket_encounters.find_by(round: 2)
+      moving_in = fight.team_1
+      EncounterLineupSeeder.new(final.reload).call
+      expect(final.reload.team_fights).not_to be_empty
+
+      described_class.new(bye).swap(bye.bye_slot, moving_in, force: true)
+
+      expect(final.reload.team_fights).to be_empty
+      expect(final).to have_attributes(lineup_1_set: false, lineup_2_set: false)
+    end
+
     it "rejects a team that does not occupy a bracket slot" do
       build_bracket(4)
       newcomer = create(:team, team_category: category)
@@ -106,8 +127,8 @@ RSpec.describe EncounterTeamSwap do
       expect(first.lineup_1_set?).to be false
     end
 
-    # Regression: #invalidate_matchup used to empty only the swapped side's
-    # fighters. On an encounter whose lineups were auto-seeded when the panel
+    # Regression: invalidation used to empty only the swapped side's fighters
+    # (#invalidate_slot). On an encounter whose lineups were auto-seeded when the panel
     # was opened, that left the untouched side alone in every bout, which reads
     # as a forfeit — recompute_winner! then handed the incoming team a 3-0
     # defeat it never fought, and the recorded winner made the slot unswappable

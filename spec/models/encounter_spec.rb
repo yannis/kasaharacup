@@ -170,6 +170,32 @@ RSpec.describe Encounter do
     end
   end
 
+  describe "matchup invalidation broadcast" do
+    # Regression: #invalidate_matchup DESTROYS the bouts, and TeamFight repaints
+    # the panel only from an after_update_commit — so nothing told an open editor
+    # its bouts were gone. It kept rendering them, and scoring one 404'd in
+    # Admin::TeamFightPointsController. The tree is just as exposed on the swap
+    # path, where the slot write's saved_changes no longer reach commit.
+    it "repaints the panel and the tree when a slot re-resolution empties the matchup" do
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      parent = create(:encounter, team_category: tc, team_1: a, team_2: b, round: 1, position: 1)
+      child = create(:encounter, team_category: tc, team_1: nil, team_2: nil, round: 2, position: 1,
+        parent_encounter_1: parent)
+      child.assign_team_to_slot(1, a)
+      create(:team_fight, encounter: child, position: 1)
+      child.update!(lineup_1_set: true, lineup_2_set: true)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      parent.update!(winner: b) # a no longer advances: child slot 1 re-resolves
+
+      targets = ActiveJob::Base.queue_adapter.enqueued_jobs.map { |job| job[:args].to_s }
+      expect(child.reload.team_fights).to be_empty
+      expect(targets).to include(a_string_matching(/\bencounter_#{child.id}\b/))
+      expect(targets).to include(a_string_matching(/encounter_tree_team_category_#{tc.id}/))
+    end
+  end
+
   describe "bye propagation to children" do
     let(:category) { create(:team_category, pool_size: nil) }
     let(:bye) { category.bracket_encounters.where(round: 1).detect(&:bye?) }
@@ -259,7 +285,7 @@ RSpec.describe Encounter do
 
     # Guards the invariant that an already-SCORED descendant cannot keep stale
     # fight_points when an upstream result flips. Propagation routes the slot
-    # change through assign_team_to_slot, which must invalidate the scored side.
+    # change through assign_team_to_slot, which must invalidate the whole matchup.
     it "wipes a scored descendant's stale points when its feeding result flips" do
       r1 = create(:encounter, team_category: tc, team_1: a, team_2: b)
       r1_other = create(:encounter, team_category: tc, team_1: c, team_2: create(:team, team_category: tc), winner: c)
@@ -274,6 +300,11 @@ RSpec.describe Encounter do
       final.update!(lineup_1_set: true)
       expect(final.reload.team_1_id).to eq a.id
 
+      # The wipe is unavoidable (points are keyed by fighter_side), so it is at
+      # least recorded — this is the only trace of a destroyed scoresheet.
+      expect(Rails.logger).to receive(:warn)
+        .with(/Encounter #{final.id}: matchup invalidated, discarding 1 bout and 1 recorded fight point/)
+
       r1.update!(winner: b) # the feeding result flips: b now advances, not a
 
       expect(final.reload.team_1_id).to eq b.id
@@ -282,12 +313,9 @@ RSpec.describe Encounter do
       expect(final.lineup_1_set).to be false
     end
 
-    # Regression (#1310): correcting an earlier round's winner re-resolves the
-    # child's slot, and invalidation used to empty only that side of every bout.
-    # The opponent's seeded fighters were left alone in their bouts, which
-    # TeamFight#forfeit reads as a walkover — recompute_winner! then recorded a
-    # 5-0 win nobody fought, which advanced and locked the slot.
-    it "does not hand the other side a forfeit win when a feeding result is corrected" do
+    # A real 4-team bracket with full rosters, so the lineup seeder has something
+    # to seed. Returns [category, round-1 encounters, final].
+    def stocked_bracket
       category = create(:team_category, cup: tc.cup, pool_size: nil)
       create_list(:team, 4, team_category: category)
       TeamCategoryBracketBuilder.new(category, random: Random.new(1)).call
@@ -296,17 +324,59 @@ RSpec.describe Encounter do
           create(:participation, category: category, team: team, kenshi: kenshi)
         end
       end
-      semis = category.bracket_encounters.where(round: 1).order(:position).to_a
-      final = category.bracket_encounters.find_by(round: 2)
+      [category,
+        category.bracket_encounters.where(round: 1).order(:position).to_a,
+        category.bracket_encounters.find_by(round: 2)]
+    end
+
+    # Regression (#1310): correcting an earlier round's winner re-resolves the
+    # child's slot, and invalidation used to empty only that side of every bout.
+    # The opponent's seeded fighters were left alone in their bouts, which
+    # TeamFight#forfeit reads as a walkover — recompute_winner! then recorded a
+    # 5-0 win nobody fought, which advanced and locked the slot.
+    it "does not hand the other side a forfeit win when a feeding result is corrected" do
+      category, semis, final = stocked_bracket
       semis.each { |semi| semi.update!(winner: semi.team_1) }
       # Opening the final's panel seeds and confirms both of its lineups.
       EncounterLineupSeeder.new(final.reload).call
+
+      # Without these the assertions below hold on an empty bout set, i.e.
+      # whether or not seeding actually ran.
+      expect(final.reload.team_fights.count).to eq category.team_size
+      expect(final).to have_attributes(lineup_1_set: true, lineup_2_set: true)
 
       semis.first.update!(winner: semis.first.team_2) # an ordinary correction
 
       final.reload
       expect(final.winner_id).to be_nil
-      expect(final.team_fights.where.not(winner_id: nil)).to be_empty
+      expect(final.team_fights).to be_empty
+      expect(final).to have_attributes(lineup_1_set: false, lineup_2_set: false)
+    end
+
+    # Regression (#1310, first-fill variant): #invalidate_matchup only fires on
+    # RE-resolution, so it cannot reach this one. An admin opening the final's
+    # panel while only one semi is decided seeds just that side, leaving every
+    # bout with one fighter and an empty seat — which TeamFight#forfeit read as a
+    # walkover, showing "Winner: X" and a 10-0 sweep before anyone had fought (the
+    # component renders result.winner outside its both_teams_resolved? guard).
+    # Fixed by gating #forfeit on both lineups being confirmed.
+    it "does not derive a winner for a half-seeded matchup" do
+      _category, semis, final = stocked_bracket
+
+      semis.first.update!(winner: semis.first.team_1) # the other semi is still open
+      EncounterLineupSeeder.new(final.reload).call
+      final.reload
+
+      expect(final.team_fights).not_to be_empty
+      expect(final.team_fights.map(&:kenshi_2_id)).to all(be_nil)
+      expect(final).to have_attributes(lineup_1_set: true, lineup_2_set: false)
+
+      final.recompute_winner!
+
+      result = final.reload.result
+      expect(result.winner).to be_nil
+      expect([result.team_1_ippons, result.team_2_ippons]).to eq [0, 0]
+      expect(final.winner_id).to be_nil
     end
   end
 

@@ -48,10 +48,10 @@ module Scorable
     true
   end
 
-  # Outcome recomputation reads straight from the DB: it runs in write paths
-  # (point create/destroy, slot invalidation) where a cached fight_points set may
-  # be stale, so accuracy beats reusing a loaded association here. Read-side
-  # callers that count points for display use the in-memory points_for instead.
+  # Outcome recomputation reads straight from the DB: it runs on point
+  # create/destroy, where a cached fight_points set may be stale, so accuracy
+  # beats reusing a loaded association here. Read-side callers that count
+  # points for display use the in-memory points_for instead.
   private def scoring_points_count(slot)
     side = (slot == 1) ? "fighter_1" : "fighter_2"
     fight_points.where(fighter_side: side).where.not(kind: "hansoku").count

@@ -50,9 +50,24 @@ RSpec.describe TeamFight do
 
   it "treats a one-sided lineup as a forfeit win for the present side" do
     tf = fight(k2_present: false)
-    tf.resolve_lineup! # forfeit resolution is triggered by EncounterLineup, not on create
+    # Forfeit resolution is triggered by EncounterLineup, not on create, and
+    # only once it has confirmed BOTH lineups — which is what #forfeit gates on.
+    encounter.update!(lineup_1_set: true, lineup_2_set: true)
+    tf.resolve_lineup!
     expect(tf.reload).to have_attributes(winner_id: k1.id, draw: false)
     expect(tf.individual_points(1)).to eq 2
+    expect(tf.individual_points(2)).to eq 0
+  end
+
+  # Regression (#1310): fighters persist as soon as a panel is opened, so a
+  # half-filled bout exists long before anyone confirms a lineup. Reading it as
+  # a walkover handed the present side a win nobody fought.
+  it "does not treat a half-filled bout as a forfeit before both lineups are confirmed" do
+    tf = fight(k2_present: false)
+    tf.resolve_lineup!
+    expect(tf.forfeit).to be_nil
+    expect(tf.reload).to have_attributes(winner_id: nil, draw: false)
+    expect(tf.individual_points(1)).to eq 0
     expect(tf.individual_points(2)).to eq 0
   end
 

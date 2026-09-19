@@ -56,7 +56,17 @@ class TeamFight < ApplicationRecord
   end
 
   # Exactly one side empty => that side forfeits; the present kenshi wins.
+  #
+  # Gated on BOTH lineups being confirmed, exactly as #hikiwake_eligible? is.
+  # A half-filled matchup is not a walkover: fighters persist as soon as a
+  # panel is opened, so a bout can hold one side because only one parent has
+  # been decided yet, or because a slot re-resolution just emptied the other.
+  # Reading that as a forfeit let recompute_winner! record a clean-sweep win
+  # nobody fought, which advanced up the tree and locked the slot (#1310).
+  # The genuine short-roster forfeit is unaffected: EncounterLineup resolves
+  # forfeits only after it has set both flags.
   def forfeit
+    return nil unless encounter.lineup_1_set? && encounter.lineup_2_set?
     return nil if kenshi_1_id.present? == kenshi_2_id.present?
 
     kenshi_1 || kenshi_2
@@ -82,13 +92,7 @@ class TeamFight < ApplicationRecord
 
   private def refresh_encounter
     encounter.recompute_winner!
-    broadcast_replace_later_to(
-      [encounter, :panel],
-      target: ActionView::RecordIdentifier.dom_id(encounter),
-      partial: "admin/encounters/panel",
-      locals: {encounter: encounter, admin: true},
-      attributes: {method: :morph}
-    )
+    encounter.broadcast_panel
     return if encounter.pool_number.blank?
 
     broadcast_replace_later_to(
