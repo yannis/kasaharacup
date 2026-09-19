@@ -78,10 +78,6 @@ module Admin
         Turbo::StreamsChannel.broadcast_stream_to([team_category, name], content: content)
       end
 
-      private def team_category
-        @team_category ||= TeamCategory.find(params.expect(:team_category_id))
-      end
-
       private def team
         @team ||= team_category.teams.find(params.expect(:id))
       end
@@ -101,26 +97,53 @@ module Admin
       end
 
       # A seeded team wears its badge on the pool card, so the cards go stale on
-      # a seed change the same way the panel does. Nothing to replace before any
-      # pool exists — or ever, in a bracket-only category.
+      # a seed change the same way the panel does.
+      #
+      # morph, not a plain replace: the cards embed an encounter editor per
+      # pool encounter, and only a badge changed. A replace would collapse
+      # every open <details> and discard an in-flight inline edit, here and on
+      # every other admin page following the broadcast.
+      #
+      # Memoised including the "nothing to replace" answer, as tree_stream is:
+      # broadcast and render both ask, and the guard costs a query.
       private def pools_stream
-        return if team_category.team_pools.none?
+        return @pools_stream if defined?(@pools_stream)
 
-        @pools_stream ||= helpers.turbo_stream.replace(
-          "team_pools_#{team_category.id}",
-          partial: "admin/team_categories/pools",
-          locals: {team_category: team_category}
-        )
+        @pools_stream = if pool_cards?
+          helpers.turbo_stream.replace(
+            "team_pools_#{team_category.id}",
+            method: :morph,
+            partial: "admin/team_categories/pools",
+            locals: {team_category: team_category}
+          )
+        end
       end
 
-      private def tree_stream
-        return if team_category.bracket_encounters.none?
+      # Both halves are needed, and bracket_only? has to come first.
+      #
+      # It is not merely the cheap half: app/admin/team_category.rb renders the
+      # container on pool_size > 1, so a category switched back to 1 has NO
+      # target on the page even while its teams still carry the pool_number the
+      # last draw left them — team_pools alone would render every card and
+      # broadcast them into the void. The second half then skips the pooled
+      # category whose pools are not drawn yet, where the container is on the
+      # page but holds no card a seed could go stale on.
+      private def pool_cards?
+        !team_category.bracket_only? && team_category.team_pools.any?
+      end
 
-        @tree_stream ||= helpers.turbo_stream.replace(
-          helpers.dom_id(team_category, :encounter_tree),
-          partial: "team_bracket_trees/team_bracket_tree",
-          locals: {team_category: team_category}
-        )
+      # Memoised including the "nothing to replace" answer: broadcast and
+      # render both ask, and the guard is a query of its own.
+      private def tree_stream
+        return @tree_stream if defined?(@tree_stream)
+
+        @tree_stream = if team_category.bracket_encounters.exists?
+          helpers.turbo_stream.replace(
+            helpers.dom_id(team_category, :encounter_tree),
+            partial: "team_bracket_trees/team_bracket_tree",
+            locals: {team_category: team_category}
+          )
+        end
       end
     end
   end

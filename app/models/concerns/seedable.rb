@@ -23,9 +23,10 @@ module Seedable
   end
 
   class_methods do
-    # The same order over records already in memory: the poolers and the
-    # seeding panels all work from a list they loaded for other reasons too, so
-    # none of them can use the scope without a second query.
+    # The same order over records already in memory: SmartPooler, TeamPooler,
+    # BracketOnlySeeder and both seeding panels all work from a list they
+    # loaded for other reasons too, so none of them can use the scope without a
+    # second query.
     def in_seed_order(records)
       records.select(&:seeded?).sort_by { |record| [record.seed, record.id] }
     end

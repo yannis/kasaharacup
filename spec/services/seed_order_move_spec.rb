@@ -198,5 +198,36 @@ RSpec.describe SeedOrderMove do
 
       expect(seeds_by_id).to eq(b.id => 1)
     end
+
+    # The controller loads the record before the lock, so a move that commits
+    # in between leaves the in-memory copy holding a seed the database no
+    # longer agrees with. write_seed! skips a write whose target already
+    # matches, so without a re-read under the lock the stale value silently
+    # cancels this move and leaves the passed record duplicated.
+    it "moves a record whose seed changed under it since it was loaded" do
+      a = participant(seed: 1)
+      b = participant(seed: 2)
+      c = participant(seed: 3)
+      stale = Participation.find(c.id)
+
+      described_class.new(record: Participation.find(c.id), to_position: 2).call
+      described_class.new(record: stale, to_position: 3).call
+
+      expect(seeds_by_id).to eq(a.id => 1, b.id => 2, c.id => 3)
+    end
+
+    # The same staleness on the unseed path: clear_seed! reads the copy's seed
+    # to decide there is anything to clear, so a copy that still says
+    # "unseeded" would walk away leaving the row seeded.
+    it "clears a seed the stale copy does not know it has" do
+      a = participant(seed: 1)
+      b = participant
+      stale = Participation.find(b.id) # loaded while still unseeded
+
+      described_class.new(record: Participation.find(b.id), to_position: 2).call
+      described_class.new(record: stale, to_position: nil).call
+
+      expect(seeds_by_id).to eq(a.id => 1)
+    end
   end
 end

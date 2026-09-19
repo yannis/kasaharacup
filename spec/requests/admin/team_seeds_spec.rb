@@ -29,6 +29,22 @@ RSpec.describe "Admin team seeds" do
   # what a pair of streamables resolves to.
   def stream_for(name) = Turbo::StreamsChannel.send(:stream_name_from, [category, name])
 
+  def stream_targets
+    {
+      team_seeds: "team_seeds_#{category.id}",
+      team_pools: "team_pools_#{category.id}",
+      encounter_tree: ActionView::RecordIdentifier.dom_id(category, :encounter_tree)
+    }
+  end
+
+  # This payload carries its own surface and neither of the other two.
+  def expect_only(payload, surface)
+    expect(payload).to include(%(target="#{stream_targets.fetch(surface)}"))
+    stream_targets.except(surface).each_value do |other|
+      expect(payload).not_to include(%(target="#{other}"))
+    end
+  end
+
   it "seeds a team and replaces the panel" do
     fresh = team
 
@@ -96,11 +112,20 @@ RSpec.describe "Admin team seeds" do
     # side where one broadcast reaches all three. Sending the whole set to each
     # would apply the other two twice wherever a page holds more than one
     # subscription.
+    #
+    # Asserted on the PAYLOAD, not merely that something was published: naming
+    # the three streams alone would still pass under exactly that regression.
     it "broadcasts each surface only on its own stream" do
       expect { move(category.teams.first, 1) }
-        .to have_broadcasted_to(stream_for(:team_seeds)).from_channel(Turbo::StreamsChannel)
-        .and have_broadcasted_to(stream_for(:team_pools)).from_channel(Turbo::StreamsChannel)
-        .and have_broadcasted_to(stream_for(:encounter_tree)).from_channel(Turbo::StreamsChannel)
+        .to have_broadcasted_to(stream_for(:team_seeds))
+          .from_channel(Turbo::StreamsChannel)
+          .with { |payload| expect_only(payload, :team_seeds) }
+        .and have_broadcasted_to(stream_for(:team_pools))
+          .from_channel(Turbo::StreamsChannel)
+          .with { |payload| expect_only(payload, :team_pools) }
+        .and have_broadcasted_to(stream_for(:encounter_tree))
+          .from_channel(Turbo::StreamsChannel)
+          .with { |payload| expect_only(payload, :encounter_tree) }
     end
   end
 

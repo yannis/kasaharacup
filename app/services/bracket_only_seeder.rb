@@ -33,9 +33,9 @@ class BracketOnlySeeder
 
   private attr_reader :teams, :random
 
+  # [seed, id] via Seedable, the one definition the panel and both poolers share.
   private def seeded
-    @seeded ||= teams.select { |team| team.seed.present? }
-      .sort_by { |team| [team.seed, team.id] }
+    @seeded ||= Team.in_seed_order(teams)
   end
 
   private def unseeded

@@ -18,7 +18,9 @@
 # tie-break BracketOnlySeeder uses — and writing 1..N back heals both on the
 # next change, instead of either needing a path of its own.
 #
-# Nothing here touches pools: seeds apply on the next Smart pool reset.
+# Nothing here touches pools or the bracket: the seeds only take effect the
+# next time the category is drawn — a Smart pool reset or Generate pools on the
+# pooled path, a bracket build on the pool-less one.
 #
 # Returns a Result whose status is :noop when the move asked for the order that
 # was already in place, so the caller can skip re-rendering and broadcasting —
@@ -44,6 +46,15 @@ class SeedOrderMove
       # would silently drop the first one's move — invisibly, because the
       # broadcast then "corrects" the first admin's page.
       group.lock!
+      # The record was loaded before the lock, so its seed can already be
+      # stale — another admin's move may have committed in between. Everything
+      # below compares against it (write_seed! skips a write when the seed it
+      # holds already matches the target), so a stale value silently drops
+      # this move and leaves a duplicate seed behind. Re-read it under the
+      # lock, alongside the siblings current_order reads there for the same
+      # reason. Gone-in-between raises RecordNotFound, which is the honest
+      # answer for a drag onto something that no longer exists.
+      record.reload
       order = target_order
       # Both run: an unseed clears one row AND renumbers what is left.
       cleared = clear_seed!

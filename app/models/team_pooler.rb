@@ -50,11 +50,10 @@ class TeamPooler
     end
   end
 
-  # [seed, id] — the same tie-break BracketOnlySeeder uses, so a duplicate seed
-  # cannot order one way here and the other way on the pool-less path.
+  # [seed, id] via Seedable, so a duplicate seed cannot order one way here and
+  # the other way on the pool-less path or in the seeding panel.
   private def seeded
-    @seeded ||= teams.select { |team| team.seed.present? }
-      .sort_by { |team| [team.seed, team.id] }
+    @seeded ||= Team.in_seed_order(teams)
   end
 
   private def draw_rest(pools)
