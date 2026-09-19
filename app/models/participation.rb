@@ -29,6 +29,19 @@ class Participation < ApplicationRecord
   delegate :cup, to: "kenshi", allow_nil: true
   delegate :product_individual_junior, :product_individual_adult, to: :cup
 
+  # Seeded, in seed order. The tie-break on id matters because the seed values
+  # can briefly hold a duplicate — destroying a seeded participation leaves a
+  # gap, and the panel's "add" sends N + 1 — and BracketOnlySeeder breaks that
+  # tie the same way, so the panel, the pooler and the draw never disagree.
+  scope :seeded, -> { where.not(seed: nil).order(:seed, :id) }
+
+  # The same order over records already in memory: SmartPooler and the seeding
+  # panel both work from a list they loaded for other reasons too, so neither
+  # can use the scope without a second query.
+  def self.in_seed_order(participations)
+    participations.select(&:seeded?).sort_by { |participation| [participation.seed, participation.id] }
+  end
+
   def self.no_pool
     where(pool_number: nil)
   end
@@ -39,6 +52,10 @@ class Participation < ApplicationRecord
 
   def self.ronins
     where(ronin: true)
+  end
+
+  def seeded?
+    seed.present?
   end
 
   def category_individual

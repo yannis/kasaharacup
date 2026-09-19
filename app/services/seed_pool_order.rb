@@ -6,12 +6,20 @@
 #
 #   SeedPoolOrder.order(4)  # => [1, 3, 4, 2]
 #
-# Cuts the numbers with the same rule BracketSeeder#assign_halves uses —
-# first((size / 2.0).ceil) — orders each block recursively, then snakes the two
-# results together. A low-block pool sends its winner to the top half of the
-# tree and a high-block pool sends its winner to the bottom, so sharing the cut
-# is what makes the separation structural rather than a coincidence that would
-# drift the next time the seeder is touched.
+# Cuts the numbers with BracketSeeder.low_block — the same call assign_halves
+# makes — orders each block recursively, then snakes the two results together. A
+# low-block pool sends its winner to the top half of the tree and a high-block
+# pool sends its winner to the bottom, so sharing the cut is what makes the
+# separation structural rather than a coincidence that would drift the next time
+# the seeder is touched.
+#
+# The separation is over POOL WINNERS. assign_halves routes a slot by
+# `pool_rank.odd? == in_low_block`, so a seed that only comes second in its pool
+# is sent to the half its own pool winner did not take — which can be the half
+# the other top seed went to. Seeds 1 and 2 therefore meet no earlier than the
+# final whenever both win their pools, and can meet in a semifinal when one of
+# them does not. Keeping them apart in that case would need assign_halves itself
+# to know about seeds.
 #
 # The snake — rather than a plain alternation — is what reproduces the standard
 # draw. Alternating strictly would send every odd seed to the low block, which
@@ -42,7 +50,7 @@ module SeedPoolOrder
   private_class_method def self.ordered(pools)
     return pools if pools.size <= 1
 
-    low = pools.first((pools.size / 2.0).ceil)
+    low = BracketSeeder.low_block(pools)
     snake(ordered(low), ordered(pools.drop(low.size)))
   end
 

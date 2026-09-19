@@ -116,7 +116,26 @@ RSpec.describe SeedOrderMove do
 
       result = described_class.new(participation: b, to_position: 2).call
 
-      expect(result.map(&:id)).to eq [a.id, b.id]
+      expect(result.status).to eq :ok
+      expect(result.order.map(&:id)).to eq [a.id, b.id]
+    end
+
+    # The caller skips re-rendering and broadcasting on this, so it has to be
+    # reported rather than inferred from an unchanged list.
+    it "reports a move that changes nothing as a noop" do
+      participant(seed: 1)
+      b = participant(seed: 2)
+
+      result = described_class.new(participation: b, to_position: 2).call
+
+      expect(result.status).to eq :noop
+      expect(b.reload.seed).to eq 2
+    end
+
+    it "reports an unseed of an already unseeded participation as a noop" do
+      b = participant
+
+      expect(described_class.new(participation: b, to_position: nil).call.status).to eq :noop
     end
 
     # A real request only ever carries strings: params[:to_position] comes off

@@ -9,7 +9,10 @@
 #   3. Grade balance - strength is spread evenly so no pool is all-strong or
 #                      all-weak.
 #   4. Seed spread   - the seeded go into pools that feed opposite halves of the
-#                      bracket, so the top two can only meet in the final.
+#                      bracket, so the top two meet no earlier than the final
+#                      whenever both win their pools. A seed that only comes
+#                      second is routed by its rank instead (see SeedPoolOrder),
+#                      and can then meet the other in a semifinal.
 #
 # Strategy: the seeded go in first, into the pools SeedPoolOrder names, and
 # never move again — neither the placing pass nor the repair may touch them.
@@ -82,6 +85,12 @@ class SmartPooler
   # would overfill it, so the cursor skips forward past it. A seed is one of
   # the participants target_sizes was computed from, so a pool with room
   # always exists.
+  #
+  # DELIBERATE: SeedPoolOrder always opens on pool 1, and short_pool_indices
+  # always makes pool 1 one of the short pools when the sizes are uneven, so
+  # seed 1 draws a short pool — one fight fewer on the way out. That is the
+  # usual reading of a top seeding rather than an accident of the two rules
+  # meeting, and the pooler spec pins it so it cannot change unnoticed.
   private def place_seeds
     order = SeedPoolOrder.order(pool_count).map { |number| number - 1 }
     cursor = 0
@@ -96,11 +105,8 @@ class SmartPooler
     end
   end
 
-  # [seed, id] — the same tie-break BracketOnlySeeder uses, so a duplicate can
-  # never reorder unpredictably even though the panel keeps 1..N contiguous.
   private def seeded
-    @seeded ||= participants.select { |participation| participation.seed.present? }
-      .sort_by { |participation| [participation.seed, participation.id] }
+    @seeded ||= Participation.in_seed_order(participants)
   end
 
   # Strongest first so LPT balancing spreads the top fighters across pools;
@@ -160,7 +166,7 @@ class SmartPooler
       .group_by { |participation| participation.kenshi.club }
       .select { |_club, members| members.size > 1 }
       .flat_map { |_club, members| members }
-      .reject { |participation| participation.seed.present? }
+      .reject(&:seeded?)
   end
 
   # Who the duplicate can trade with: anyone unseeded whose own club is absent
@@ -173,7 +179,7 @@ class SmartPooler
   private def trade_partners(roomy, crowded, duplicate)
     staying = crowded.participations - [duplicate]
     roomy.participations.reject { |candidate|
-      candidate.seed.present? ||
+      candidate.seeded? ||
         (candidate.kenshi.club.present? &&
           staying.any? { |other| other.kenshi.club == candidate.kenshi.club })
     }

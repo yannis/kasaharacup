@@ -86,10 +86,27 @@ class CompetitionTreeComponent < ViewComponent::Base
     participations_by_kenshi_id[kenshi&.id]&.pool_label
   end
 
+  # One definition of the badge: it appears at three points in the tree (a bye,
+  # round 1, and every later round) and the three copies had already drifted in
+  # their indentation before they could drift in their markup.
+  private def seed_badge(fight, slot)
+    seed = fighter_seed(fight, slot)
+    return if seed.nil?
+
+    tag.span("S#{seed}", class: "competition-tree__seed",
+      aria: {label: "Seed #{seed}"}, title: "Seed #{seed}")
+  end
+
   # A seeded kenshi carries their number wherever they appear in the tree, not
   # only in round 1 the way the pool prefix does: the point of the badge is to
   # see at a glance how far the seeds got.
+  #
+  # Admin only. The seeding is the organizers' reading of the field, not a
+  # result: publishing it on the public tree would tell every competitor who
+  # the draw was built to protect.
   private def fighter_seed(fight, slot)
+    return unless admin
+
     fighter = fight.public_send(:"resolved_fighter_#{slot}")
     participations_by_kenshi_id[fighter&.id]&.seed
   end

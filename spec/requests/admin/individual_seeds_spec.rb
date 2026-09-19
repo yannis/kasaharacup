@@ -120,4 +120,88 @@ RSpec.describe "Admin individual seeds" do
 
     expect(response).to have_http_status(:not_found)
   end
+
+  it "redirects a non-admin away" do
+    sign_in create(:user)
+    seeded = participant(seed: 1)
+
+    move(seeded, 1)
+
+    expect(response).to redirect_to(root_url)
+    expect(seeded.reload.seed).to eq 1
+  end
+
+  describe "a position that is not a position" do
+    # "abc".to_i is 0, which used to clamp to 1 and silently make the
+    # participant the TOP seed — the most valuable slot in the panel handed
+    # out by a stale client sending "undefined".
+    it "refuses a non-numeric position rather than reading it as 1" do
+      a = participant(seed: 1)
+      b = participant(seed: 2)
+
+      move(b, "abc")
+
+      expect(response).to have_http_status(:bad_request)
+      expect([a.reload.seed, b.reload.seed]).to eq [1, 2]
+    end
+
+    it "refuses a zero or negative position" do
+      participant(seed: 1)
+      b = participant(seed: 2)
+
+      move(b, "0")
+
+      expect(response).to have_http_status(:bad_request)
+      expect(b.reload.seed).to eq 2
+    end
+
+    # A non-scalar used to reach Integer#to_i on an Array and raise a 500.
+    it "refuses a non-scalar position" do
+      b = participant(seed: 1)
+
+      patch admin_individual_category_seed_path(category, b),
+        params: {to_position: ["1"]}, as: :turbo_stream
+
+      expect(response).to have_http_status(:bad_request)
+      expect(b.reload.seed).to eq 1
+    end
+  end
+
+  # The per-row select offers the row's own current position, so this is one
+  # mis-click away at all times. Re-rendering the panel, every pool card and the
+  # whole tree — and broadcasting them — to say nothing changed is pure waste.
+  it "answers a move that changes nothing with no content" do
+    participant(seed: 1)
+    b = participant(seed: 2)
+
+    move(b, 2)
+
+    expect(response).to have_http_status(:no_content)
+    expect(b.reload.seed).to eq 2
+  end
+
+  # The unseed control is a plain button_to, so a browser that never ran Turbo
+  # has to get a page back rather than raw <turbo-stream> markup.
+  it "redirects to the category when the request is not a turbo stream" do
+    seeded = participant(seed: 1)
+
+    delete admin_individual_category_seed_path(category, seeded)
+
+    expect(response).to redirect_to(admin_individual_category_path(category))
+    expect(seeded.reload.seed).to be_nil
+  end
+
+  # A category edit can invalidate a participation that is already seeded
+  # (narrowing max_age under a seeded kenshi). Renumbering must not run that
+  # record's own validations, or seeding dies for the whole category.
+  it "still reorders when an already seeded participation is now invalid" do
+    a = participant(seed: 1)
+    b = participant(seed: 2)
+    category.update_columns(max_age: a.kenshi.age_at_cup - 1)
+
+    move(b, 1)
+
+    expect(response).to have_http_status(:success)
+    expect([a.reload.seed, b.reload.seed]).to eq [2, 1]
+  end
 end

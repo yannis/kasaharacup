@@ -21,15 +21,12 @@ class IndividualSeedsComponent < ViewComponent::Base
     @participations ||= category.participations.includes(kenshi: :club).to_a
   end
 
-  # [seed, id] — the tie-break BracketOnlySeeder uses, so a list left
-  # non-contiguous by a destroyed participation still reads in a stable order.
   private def seeded
-    @seeded ||= participations.select { |participation| participation.seed.present? }
-      .sort_by { |participation| [participation.seed, participation.id] }
+    @seeded ||= Participation.in_seed_order(participations)
   end
 
   private def unseeded
-    @unseeded ||= participations.reject { |participation| participation.seed.present? }
+    @unseeded ||= participations.reject(&:seeded?)
       .sort_by { |participation| participation.full_name.to_s }
   end
 

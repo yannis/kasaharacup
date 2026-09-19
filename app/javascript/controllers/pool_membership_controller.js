@@ -12,6 +12,14 @@ import { Turbo } from '@hotwired/turbo-rails';
 // or an existing bracket) answers 422 with a message; we confirm and retry
 // with force=true. On success we render the returned Turbo Stream, which
 // replaces the affected pool cards (or removes an emptied one).
+//
+// The payload is tagged with a kind because the individual category's admin
+// page also renders the seeding panel, which drags under the same
+// application/json type. A seed row dropped on a pool card would otherwise be
+// PATCHed with to_pool_number, which the seeds endpoint reads as a blank
+// position and applies as a silent unseed.
+const KIND = 'pool-membership';
+
 export default class extends Controller {
   static values = { poolNumber: Number };
 
@@ -22,7 +30,7 @@ export default class extends Controller {
     dataTransfer.effectAllowed = 'move';
     dataTransfer.setData(
       'application/json',
-      JSON.stringify({ url: row.dataset.moveUrl, fromPool: Number(row.dataset.fromPool) }),
+      JSON.stringify({ kind: KIND, url: row.dataset.moveUrl, fromPool: Number(row.dataset.fromPool) }),
     );
   }
 
@@ -69,7 +77,8 @@ export default class extends Controller {
 
   readPayload(event) {
     try {
-      return JSON.parse(event.dataTransfer.getData('application/json'));
+      const payload = JSON.parse(event.dataTransfer.getData('application/json'));
+      return payload?.kind === KIND ? payload : null;
     } catch {
       return null;
     }

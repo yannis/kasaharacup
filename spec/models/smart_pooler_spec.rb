@@ -277,6 +277,22 @@ RSpec.describe SmartPooler do
         expect(participants.first.reload.pool_number).to eq SeedPoolOrder.order(4).first
       end
 
+      # Deliberate, and pinned because it falls out of two rules meeting rather
+      # than being stated anywhere: SeedPoolOrder always opens on pool 1, and
+      # short_pool_indices always makes pool 1 short when the sizes are uneven.
+      # Seed 1 therefore draws the smallest pool — one fight fewer on the way
+      # out. See the note on SmartPooler#place_seeds.
+      it "gives seed 1 the short pool when the pools are uneven" do
+        participants = Array.new(15) { add_participant }
+        participants.first.update!(seed: 1)
+
+        described_class.new(category).set_pools
+
+        sizes = pooled.transform_values(&:size)
+        expect(sizes.values.sort).to eq [3, 4, 4, 4]
+        expect(sizes[participants.first.reload.pool_number]).to eq 3
+      end
+
       it "heads its pool, so persist! gives it pool_position 1" do
         participants = Array.new(16) { add_participant }
         participants.first.update!(seed: 1)
@@ -313,6 +329,37 @@ RSpec.describe SmartPooler do
           expect(seed.reload.pool_number).to eq SeedPoolOrder.order(2).first
           expect(clubmate.reload.pool_number).not_to eq seed.reload.pool_number
           expect(pooled.values.map(&:size).sort).to eq [2, 2]
+        end
+
+        # The other half of the pinning rule, and the half the test above cannot
+        # reach: there every candidate in the roomy pool is unseeded, so
+        # trade_partners' `candidate.seeded?` guard never fires and dropping it
+        # changes nothing.
+        #
+        # The grades here make the SEED the trade best_club_trade would
+        # otherwise choose. Pool 1 holds 5Dan + kyu, pool 2 holds seed 2 (1Dan)
+        # + 6Dan; trading the kyu for seed 2 levels the pools exactly (6 and 6),
+        # while trading it for the 6Dan leaves 11 and 1. Without the guard the
+        # repair therefore drags seed 2 into seed 1's pool — the two strongest
+        # kenshis in one pool, which is the collision this whole feature exists
+        # to prevent.
+        it "does not trade a seed INTO the crowded pool, even as the best-balanced trade" do
+          club = create(:club)
+          first = add_participant(club: club, grade: "5Dan")
+          clubmate = add_participant(club: club, grade: "kyu")
+          second = add_participant(grade: "1Dan")
+          strongest = add_participant(grade: "6Dan")
+          first.update!(seed: 1)
+          second.update!(seed: 2)
+
+          described_class.new(category).set_pools
+
+          expect(first.reload.pool_number).to eq SeedPoolOrder.order(2).first
+          expect(second.reload.pool_number).to eq SeedPoolOrder.order(2).last
+          # The unseeded 6Dan is traded instead, so the clubmate is still
+          # separated — the repair is refused a partner, not abandoned.
+          expect(strongest.reload.pool_number).to eq first.reload.pool_number
+          expect(clubmate.reload.pool_number).to eq second.reload.pool_number
         end
       end
 

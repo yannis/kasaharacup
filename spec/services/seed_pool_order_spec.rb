@@ -3,11 +3,11 @@
 require "rails_helper"
 
 RSpec.describe SeedPoolOrder do
-  # BracketSeeder#assign_halves cuts the pool numbers with
-  # first((size / 2.0).ceil) and sends a low-block pool's winner to the top
-  # half of the tree, a high-block pool's winner to the bottom.
+  # Asks BracketSeeder for the cut rather than restating it: a private copy of
+  # the rule here would keep passing after the seeder's cut changed, while every
+  # category was being mis-seeded.
   def top_half?(pool, count)
-    pool <= (count / 2.0).ceil
+    BracketSeeder.low_block((1..count).to_a).include?(pool)
   end
 
   def halves(count)
