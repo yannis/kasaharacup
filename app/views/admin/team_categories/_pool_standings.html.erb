@@ -33,6 +33,12 @@
                     data-action="dragstart->pool-membership#dragStart">⠿</span>
             <% end %>
             <%= link_to row.team.name, [:admin, row.team] %>
+            <%# Admin only, like the individual pool card's badge: the seeding
+                is the organizers' reading of the field, not a result. %>
+            <% if admin && row.team.seeded? %>
+              <span class="pool-standings__seed" aria-label="Seed <%= row.team.seed %>"
+                    title="Seed <%= row.team.seed %>">S<%= row.team.seed %></span>
+            <% end %>
           </td>
           <td class="pool-standings__rank">
             <% if admin %>

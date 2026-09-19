@@ -48,7 +48,7 @@ module Admin
 
       # nil unseeds — SeedOrderMove reads a blank target that way.
       private def apply(to_position)
-        result = SeedOrderMove.new(participation: participation, to_position: to_position).call
+        result = SeedOrderMove.new(record: participation, to_position: to_position).call
         broadcast unless result.status == :noop
 
         respond_to do |format|

@@ -168,4 +168,54 @@ RSpec.describe EncounterTreeComponent, type: :component do
       expect(component.send(:swappable?, encounter, 1)).to be false
     end
   end
+
+  describe "the seed badge" do
+    it "badges a seeded team in the tree" do
+      a = ranked_team(1)
+      a.update!(seed: 1)
+      ranked_team(2)
+      TeamCategoryBracketBuilder.new(tc).call
+
+      render_inline(described_class.new(team_category: tc, admin: true))
+
+      expect(page).to have_css(".competition-tree__seed", text: "S1")
+    end
+
+    # Admin only, like CompetitionTreeComponent's: the seeding is the
+    # organizers' reading of the field, not a result.
+    it "keeps the badge off a non-admin render" do
+      a = ranked_team(1)
+      a.update!(seed: 1)
+      ranked_team(2)
+      TeamCategoryBracketBuilder.new(tc).call
+
+      render_inline(described_class.new(team_category: tc, admin: false))
+
+      expect(page).to have_no_css(".competition-tree__seed")
+    end
+
+    it "badges nobody when no one is seeded" do
+      ranked_team(1)
+      ranked_team(2)
+      TeamCategoryBracketBuilder.new(tc).call
+
+      render_inline(described_class.new(team_category: tc, admin: true))
+
+      expect(page).to have_no_css(".competition-tree__seed")
+    end
+
+    # The pool-position prefix only shows for a slot no team has reached yet and
+    # the badge only for one that has, so a resolved slot never wears both.
+    it "does not double up with the pool-position prefix" do
+      a = ranked_team(1)
+      a.update!(seed: 1)
+      ranked_team(2)
+      TeamCategoryBracketBuilder.new(tc).call
+
+      render_inline(described_class.new(team_category: tc, admin: true))
+
+      badged = page.find(".competition-tree__seed").find(:xpath, "..")
+      expect(badged).to have_no_css(".competition-tree__pool-position")
+    end
+  end
 end

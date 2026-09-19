@@ -33,6 +33,7 @@
                             title="Drag onto another team to swap them"
                             data-action="dragstart->bracket-swap#dragStart dragend->bracket-swap#dragEnd">⠿</span>
                     <% end %>
+                    <%= seed_badge(encounter, slot) %>
                     <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
                   <% end %>
                 </ol>
@@ -59,6 +60,7 @@
                       <% if (seed = seed_label(encounter, slot)) && encounter.public_send(:"resolved_team_#{slot}").blank? %>
                         <span class="competition-tree__pool-position"><%= seed %></span>
                       <% end %>
+                      <%= seed_badge(encounter, slot) %>
                       <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
                     <% end %>
                   <% end %>

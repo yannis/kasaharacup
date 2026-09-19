@@ -2,6 +2,7 @@
 
 class Team < ApplicationRecord
   include ActsAsFighter
+  include Seedable
 
   belongs_to :team_category, inverse_of: :teams
   has_many :participations, dependent: :destroy
@@ -44,6 +45,11 @@ class Team < ApplicationRecord
   def self.abandoned
     empty.where(rank: nil, pool_number: nil, seed: nil).where(NOT_DRAWN)
   end
+
+  # Seedable hooks: a team category owns the seed order its teams share.
+  def seed_group = team_category
+
+  def seed_siblings = team_category.teams
 
   def to_s
     name

@@ -58,6 +58,13 @@ ActiveAdmin.register TeamCategory do
       row :gender_restriction
     end
     if category.teams.present?
+      # Above the teams and the pools: seeding precedes the draw. Unlike the
+      # individual panel this is NOT behind a pool_size guard — a bracket-only
+      # category has no pools but still seeds, and its seeds decide the byes
+      # and the protected bracket positions.
+      panel "Seeding" do
+        render TeamSeedsComponent.new(category: category)
+      end
       panel "Teams" do
         table do
           thead do

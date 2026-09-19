@@ -27,7 +27,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant
 
-      described_class.new(participation: b, to_position: 2).call
+      described_class.new(record: b, to_position: 2).call
 
       expect(seeds_by_id).to eq(a.id => 1, b.id => 2)
     end
@@ -38,7 +38,7 @@ RSpec.describe SeedOrderMove do
       c = participant(seed: 3)
       d = participant(seed: 4)
 
-      described_class.new(participation: d, to_position: 2).call
+      described_class.new(record: d, to_position: 2).call
 
       expect(seeds_by_id).to eq(a.id => 1, d.id => 2, b.id => 3, c.id => 4)
     end
@@ -51,7 +51,7 @@ RSpec.describe SeedOrderMove do
       c = participant(seed: 3)
       d = participant(seed: 4)
 
-      described_class.new(participation: b, to_position: 4).call
+      described_class.new(record: b, to_position: 4).call
 
       expect(seeds_by_id).to eq(a.id => 1, c.id => 2, d.id => 3, b.id => 4)
     end
@@ -61,7 +61,7 @@ RSpec.describe SeedOrderMove do
       b = participant(seed: 2)
       c = participant(seed: 3)
 
-      described_class.new(participation: b, to_position: nil).call
+      described_class.new(record: b, to_position: nil).call
 
       expect(b.reload.seed).to be_nil
       expect(seeds_by_id).to eq(a.id => 1, c.id => 2)
@@ -72,9 +72,9 @@ RSpec.describe SeedOrderMove do
       b = participant(seed: 2)
       c = participant
 
-      described_class.new(participation: c, to_position: 3).call
-      described_class.new(participation: c, to_position: 1).call
-      described_class.new(participation: a, to_position: nil).call
+      described_class.new(record: c, to_position: 3).call
+      described_class.new(record: c, to_position: 1).call
+      described_class.new(record: a, to_position: nil).call
 
       expect(order).to eq [1, 2]
       expect(seeds_by_id).to eq(c.id => 1, b.id => 2)
@@ -87,7 +87,7 @@ RSpec.describe SeedOrderMove do
       b = participant(seed: 3)
       c = participant
 
-      described_class.new(participation: c, to_position: 3).call
+      described_class.new(record: c, to_position: 3).call
 
       expect(seeds_by_id).to eq(a.id => 1, b.id => 2, c.id => 3)
     end
@@ -96,7 +96,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant
 
-      described_class.new(participation: b, to_position: 99).call
+      described_class.new(record: b, to_position: 99).call
 
       expect(seeds_by_id).to eq(a.id => 1, b.id => 2)
     end
@@ -105,7 +105,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant(seed: 2)
 
-      described_class.new(participation: b, to_position: 0).call
+      described_class.new(record: b, to_position: 0).call
 
       expect(seeds_by_id).to eq(b.id => 1, a.id => 2)
     end
@@ -114,7 +114,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant
 
-      result = described_class.new(participation: b, to_position: 2).call
+      result = described_class.new(record: b, to_position: 2).call
 
       expect(result.status).to eq :ok
       expect(result.order.map(&:id)).to eq [a.id, b.id]
@@ -126,7 +126,7 @@ RSpec.describe SeedOrderMove do
       participant(seed: 1)
       b = participant(seed: 2)
 
-      result = described_class.new(participation: b, to_position: 2).call
+      result = described_class.new(record: b, to_position: 2).call
 
       expect(result.status).to eq :noop
       expect(b.reload.seed).to eq 2
@@ -135,7 +135,7 @@ RSpec.describe SeedOrderMove do
     it "reports an unseed of an already unseeded participation as a noop" do
       b = participant
 
-      expect(described_class.new(participation: b, to_position: nil).call.status).to eq :noop
+      expect(described_class.new(record: b, to_position: nil).call.status).to eq :noop
     end
 
     # A real request only ever carries strings: params[:to_position] comes off
@@ -144,7 +144,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant
 
-      described_class.new(participation: b, to_position: "2").call
+      described_class.new(record: b, to_position: "2").call
 
       expect(seeds_by_id).to eq(a.id => 1, b.id => 2)
     end
@@ -153,7 +153,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant(seed: 2)
 
-      described_class.new(participation: b, to_position: "").call
+      described_class.new(record: b, to_position: "").call
 
       expect(b.reload.seed).to be_nil
       expect(seeds_by_id).to eq(a.id => 1)
@@ -162,7 +162,7 @@ RSpec.describe SeedOrderMove do
     it "seeds the first participant of a category that has none" do
       a = participant
 
-      described_class.new(participation: a, to_position: 1).call
+      described_class.new(record: a, to_position: 1).call
 
       expect(seeds_by_id).to eq(a.id => 1)
     end
@@ -170,7 +170,7 @@ RSpec.describe SeedOrderMove do
     it "unseeds the last remaining seed" do
       a = participant(seed: 1)
 
-      described_class.new(participation: a, to_position: nil).call
+      described_class.new(record: a, to_position: nil).call
 
       expect(a.reload.seed).to be_nil
       expect(seeds_by_id).to be_empty
@@ -182,7 +182,7 @@ RSpec.describe SeedOrderMove do
       a = participant(seed: 1)
       b = participant(seed: 2)
 
-      described_class.new(participation: b, to_position: 3).call
+      described_class.new(record: b, to_position: 3).call
 
       expect(seeds_by_id).to eq(a.id => 1, b.id => 2)
     end
@@ -190,13 +190,44 @@ RSpec.describe SeedOrderMove do
     it "does not run a second call against the first call's stale plan" do
       a = participant(seed: 1)
       b = participant(seed: 2)
-      move = described_class.new(participation: b, to_position: 1)
+      move = described_class.new(record: b, to_position: 1)
 
       move.call
       a.update!(seed: nil)
       move.call
 
       expect(seeds_by_id).to eq(b.id => 1)
+    end
+
+    # The controller loads the record before the lock, so a move that commits
+    # in between leaves the in-memory copy holding a seed the database no
+    # longer agrees with. write_seed! skips a write whose target already
+    # matches, so without a re-read under the lock the stale value silently
+    # cancels this move and leaves the passed record duplicated.
+    it "moves a record whose seed changed under it since it was loaded" do
+      a = participant(seed: 1)
+      b = participant(seed: 2)
+      c = participant(seed: 3)
+      stale = Participation.find(c.id)
+
+      described_class.new(record: Participation.find(c.id), to_position: 2).call
+      described_class.new(record: stale, to_position: 3).call
+
+      expect(seeds_by_id).to eq(a.id => 1, b.id => 2, c.id => 3)
+    end
+
+    # The same staleness on the unseed path: clear_seed! reads the copy's seed
+    # to decide there is anything to clear, so a copy that still says
+    # "unseeded" would walk away leaving the row seeded.
+    it "clears a seed the stale copy does not know it has" do
+      a = participant(seed: 1)
+      b = participant
+      stale = Participation.find(b.id) # loaded while still unseeded
+
+      described_class.new(record: Participation.find(b.id), to_position: 2).call
+      described_class.new(record: stale, to_position: nil).call
+
+      expect(seeds_by_id).to eq(a.id => 1)
     end
   end
 end

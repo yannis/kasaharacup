@@ -57,4 +57,35 @@ RSpec.describe TeamPoolComponent, type: :component do
       expect(page).to have_link("#{t1.name} vs #{t2.name}")
     end
   end
+
+  describe "the seed badge" do
+    it "badges a seeded team on the pool card" do
+      tc = create(:team_category, pool_size: 3)
+      create(:team, team_category: tc, pool_number: 1, pool_position: 1, seed: 2)
+
+      render_inline(described_class.new(team_category: tc, pool_number: 1, admin: true))
+
+      expect(page).to have_css(".pool-standings__seed", text: "S2")
+    end
+
+    # Admin only, like the individual pool card's: the seeding is the
+    # organizers' reading of the field, not a result.
+    it "keeps the badge off a non-admin render" do
+      tc = create(:team_category, pool_size: 3)
+      create(:team, team_category: tc, pool_number: 1, pool_position: 1, seed: 2)
+
+      render_inline(described_class.new(team_category: tc, pool_number: 1, admin: false))
+
+      expect(page).to have_no_css(".pool-standings__seed")
+    end
+
+    it "badges nobody when no one is seeded" do
+      tc = create(:team_category, pool_size: 3)
+      create(:team, team_category: tc, pool_number: 1, pool_position: 1)
+
+      render_inline(described_class.new(team_category: tc, pool_number: 1, admin: true))
+
+      expect(page).to have_no_css(".pool-standings__seed")
+    end
+  end
 end
