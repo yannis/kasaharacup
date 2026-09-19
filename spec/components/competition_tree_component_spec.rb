@@ -331,4 +331,40 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     expect(rendered.to_html).to include("Fight #{bracket.number}")
   end
+
+  it "badges a seeded fighter in the tree" do
+    fight.fighter_1.participations.first.update!(seed: 1)
+
+    render_inline(described_class.new(category: category.reload, admin: true))
+
+    expect(page).to have_css(".competition-tree__seed", text: "S1")
+  end
+
+  # fighter_seed deliberately carries no `round == 1` guard, unlike
+  # fighter_pool_prefix: the badge follows a seed as far through the tree as
+  # they get. Without this, adding the guard back for symmetry would break
+  # nothing.
+  it "badges a seeded fighter in a later round too" do
+    fight.fighter_1.participations.first.update!(seed: 1)
+
+    render_inline(described_class.new(category: category.reload, admin: true))
+
+    expect(page).to have_css(".competition-tree__seed", text: "S1", count: 2)
+  end
+
+  # Same reading as the pool card: the seeding is the organizers', and a public
+  # tree that showed it would tell every competitor who the draw protects.
+  it "keeps the seed badge off the public tree" do
+    fight.fighter_1.participations.first.update!(seed: 1)
+
+    render_inline(described_class.new(category: category.reload, admin: false))
+
+    expect(page).to have_no_css(".competition-tree__seed")
+  end
+
+  it "badges nobody when no one is seeded" do
+    render_inline(described_class.new(category: category.reload, admin: true))
+
+    expect(page).to have_no_css(".competition-tree__seed")
+  end
 end

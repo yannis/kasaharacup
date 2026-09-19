@@ -230,5 +230,160 @@ RSpec.describe SmartPooler do
         expect(category.pools.size).to eq 8
       end
     end
+
+    context "with seeded participants" do
+      let(:pool_size) { 4 }
+
+      # Round-1 fights read in bracket order: the first half of the column is
+      # the top half of the tree. Reading the fights' own pool_number/pool_rank
+      # means the spec does not have to play out a pool phase first — the
+      # builder records them even with no rank entered.
+      def half_of(pool_number)
+        fights = category.bracket_fights.where(round: 1).order(:position).to_a
+        index = fights.index { |fight|
+          [[fight.fighter_1_pool_number, fight.fighter_1_pool_rank],
+            [fight.fighter_2_pool_number, fight.fighter_2_pool_rank]].include?([pool_number, 1])
+        }
+        (index < fights.size / 2) ? :top : :bottom
+      end
+
+      it "gives each seed its own pool" do
+        participants = Array.new(16) { add_participant }
+        participants.first(4).each_with_index { |p, i| p.update!(seed: i + 1) }
+
+        described_class.new(category).set_pools
+
+        pools = participants.first(4).map { |p| p.reload.pool_number }
+        expect(pools.uniq.size).to eq 4
+      end
+
+      it "puts the top two seeds in pools that feed opposite halves of the tree" do
+        participants = Array.new(16) { add_participant }
+        participants.first(2).each_with_index { |p, i| p.update!(seed: i + 1) }
+
+        described_class.new(category).set_pools
+        IndividualCategoryBracketBuilder.new(category).call
+
+        expect(half_of(participants[0].reload.pool_number))
+          .not_to eq half_of(participants[1].reload.pool_number)
+      end
+
+      it "seeds the first pool of the order with seed 1" do
+        participants = Array.new(16) { add_participant }
+        participants.first.update!(seed: 1)
+
+        described_class.new(category).set_pools
+
+        expect(participants.first.reload.pool_number).to eq SeedPoolOrder.order(4).first
+      end
+
+      # Deliberate, and pinned because it falls out of two rules meeting rather
+      # than being stated anywhere: SeedPoolOrder always opens on pool 1, and
+      # short_pool_indices always makes pool 1 short when the sizes are uneven.
+      # Seed 1 therefore draws the smallest pool — one fight fewer on the way
+      # out. See the note on SmartPooler#place_seeds.
+      it "gives seed 1 the short pool when the pools are uneven" do
+        participants = Array.new(15) { add_participant }
+        participants.first.update!(seed: 1)
+
+        described_class.new(category).set_pools
+
+        sizes = pooled.transform_values(&:size)
+        expect(sizes.values.sort).to eq [3, 4, 4, 4]
+        expect(sizes[participants.first.reload.pool_number]).to eq 3
+      end
+
+      it "heads its pool, so persist! gives it pool_position 1" do
+        participants = Array.new(16) { add_participant }
+        participants.first.update!(seed: 1)
+
+        described_class.new(category).set_pools
+
+        expect(participants.first.reload.pool_position).to eq 1
+      end
+
+      # The clubmate is the one that moves — the seed is pinned.
+      #
+      # The collision has to be forced. The placing pass already keeps
+      # clubmates apart whenever a pool without their club has room, so a
+      # roomy category never reaches the repair at all: the seed's pool has to
+      # be the only one left when the clubmate is placed. Four fighters in
+      # pools of two does it. The seed is pinned to pool 1; the two unrelated
+      # fighters are stronger, so LPT sends both to the emptier, weaker pool 2
+      # and fills it; the clubmate is weakest, placed last, and has nowhere to
+      # go but the seed's pool. The repair then has a trade available, and the
+      # seeded half of it must be the half that stays put.
+      context "when a clubmate is forced into the seed's pool" do
+        let(:pool_size) { 2 }
+
+        it "trades the clubmate away rather than the seed" do
+          club = create(:club)
+          seed = add_participant(club: club, grade: "5Dan")
+          clubmate = add_participant(club: club, grade: "kyu")
+          add_participant(grade: "4Dan")
+          add_participant(grade: "3Dan")
+          seed.update!(seed: 1)
+
+          described_class.new(category).set_pools
+
+          expect(seed.reload.pool_number).to eq SeedPoolOrder.order(2).first
+          expect(clubmate.reload.pool_number).not_to eq seed.reload.pool_number
+          expect(pooled.values.map(&:size).sort).to eq [2, 2]
+        end
+
+        # The other half of the pinning rule, and the half the test above cannot
+        # reach: there every candidate in the roomy pool is unseeded, so
+        # trade_partners' `candidate.seeded?` guard never fires and dropping it
+        # changes nothing.
+        #
+        # The grades here make the SEED the trade best_club_trade would
+        # otherwise choose. Pool 1 holds 5Dan + kyu, pool 2 holds seed 2 (1Dan)
+        # + 6Dan; trading the kyu for seed 2 levels the pools exactly (6 and 6),
+        # while trading it for the 6Dan leaves 11 and 1. Without the guard the
+        # repair therefore drags seed 2 into seed 1's pool — the two strongest
+        # kenshis in one pool, which is the collision this whole feature exists
+        # to prevent.
+        it "does not trade a seed INTO the crowded pool, even as the best-balanced trade" do
+          club = create(:club)
+          first = add_participant(club: club, grade: "5Dan")
+          clubmate = add_participant(club: club, grade: "kyu")
+          second = add_participant(grade: "1Dan")
+          strongest = add_participant(grade: "6Dan")
+          first.update!(seed: 1)
+          second.update!(seed: 2)
+
+          described_class.new(category).set_pools
+
+          expect(first.reload.pool_number).to eq SeedPoolOrder.order(2).first
+          expect(second.reload.pool_number).to eq SeedPoolOrder.order(2).last
+          # The unseeded 6Dan is traded instead, so the clubmate is still
+          # separated — the repair is refused a partner, not abandoned.
+          expect(strongest.reload.pool_number).to eq first.reload.pool_number
+          expect(clubmate.reload.pool_number).to eq second.reload.pool_number
+        end
+      end
+
+      # More seeds than pools wraps the order, and the target sizes still hold:
+      # 5 participants at pool_size 4 make pools of 2 and 3.
+      it "wraps the order without overfilling a short pool" do
+        participants = Array.new(5) { add_participant }
+        participants.each_with_index { |p, i| p.update!(seed: i + 1) }
+
+        described_class.new(category).set_pools
+
+        expect(pooled.values.map(&:size).sort).to eq [2, 3]
+        expect(pooled.values.sum(&:size)).to eq 5
+      end
+
+      it "places every participant when some are seeded" do
+        participants = Array.new(13) { add_participant }
+        participants.first(4).each_with_index { |p, i| p.update!(seed: i + 1) }
+
+        described_class.new(category).set_pools
+
+        expect(pooled.values.sum(&:size)).to eq 13
+        expect(pooled.values.map(&:size).max).to be <= pool_size
+      end
+    end
   end
 end

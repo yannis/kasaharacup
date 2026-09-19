@@ -12,6 +12,7 @@ import KenshiFormController from './kenshi_form_controller';
 import Select2SingleTagController from './select2_single_tag_controller';
 import LineupController from './lineup_controller';
 import PoolMembershipController from './pool_membership_controller';
+import SeedOrderController from './seed_order_controller';
 
 application.register('navigation-dropdown', NavigationDropdownController);
 application.register('navigation', NavigationController);
@@ -20,3 +21,4 @@ application.register('kenshi-form', KenshiFormController);
 application.register('select2-single-tag', Select2SingleTagController);
 application.register('lineup', LineupController);
 application.register('pool-membership', PoolMembershipController);
+application.register('seed-order', SeedOrderController);

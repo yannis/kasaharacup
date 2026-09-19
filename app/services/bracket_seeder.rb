@@ -33,6 +33,14 @@ class BracketSeeder
     2**Math.log2(@slots.size).ceil
   end
 
+  # The low/high cut over a category's pool numbers, public so SeedPoolOrder can
+  # seed into the same split assign_halves will later apply. One definition or
+  # the separation is a coincidence: a change here that the seeding service did
+  # not follow would mis-seed every category while both their specs stayed green.
+  def self.low_block(pool_numbers)
+    pool_numbers.first((pool_numbers.size / 2.0).ceil)
+  end
+
   # Derived from the input (was a DB query on the category in the old builder).
   private def pool_numbers
     @pool_numbers ||= @slots.map(&:pool_number).uniq.sort
@@ -46,7 +54,7 @@ class BracketSeeder
   # spans the whole pool-number range — lets evenly-spaced byes (see select_byes)
   # fall one per half.
   private def assign_halves(entries)
-    low_block = pool_numbers.first((pool_numbers.size / 2.0).ceil)
+    low_block = self.class.low_block(pool_numbers)
     top = []
     bottom = []
     entries.each do |slot|

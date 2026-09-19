@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Distributes a category's participants into pools, balancing three goals:
+# Distributes a category's participants into pools, balancing four goals:
 #
 #   1. Randomness    - a different valid layout on every reset.
 #   2. Club spread   - members of the same club land in different pools whenever
@@ -8,12 +8,19 @@
 #                      has more members than there are pools).
 #   3. Grade balance - strength is spread evenly so no pool is all-strong or
 #                      all-weak.
+#   4. Seed spread   - the seeded go into pools that feed opposite halves of the
+#                      bracket, so the top two meet no earlier than the final
+#                      whenever both win their pools. A seed that only comes
+#                      second is routed by its rank instead (see SeedPoolOrder),
+#                      and can then meet the other in a semifinal.
 #
-# Strategy: order participants strongest-first (randomised within equal grades),
-# then drop each into the weakest pool that still has room and does not already
-# hold their club (LPT balancing + club-aware placement). That single pass is
-# greedy, so a final repair pass trades clubmates apart where it painted itself
-# into a corner.
+# Strategy: the seeded go in first, into the pools SeedPoolOrder names, and
+# never move again — neither the placing pass nor the repair may touch them.
+# Then order the rest strongest-first (randomised within equal grades), and drop
+# each into the weakest pool that still has room and does not already hold their
+# club (LPT balancing + club-aware placement). That single pass is greedy, so a
+# final repair pass trades clubmates apart where it painted itself into a
+# corner.
 #
 # Pools number ceil(N / pool_size), so each holds either pool_size or
 # pool_size - 1 participants with the fewest short pools possible. The short
@@ -37,6 +44,7 @@ class SmartPooler
     return if participants.empty?
 
     build_empty_pools
+    place_seeds
     ordered_participants.each { |participation| pick_pool(participation).participations << participation }
     repair_club_spread!
     persist!
@@ -65,10 +73,30 @@ class SmartPooler
     Array.new(count) { |i| (i * total.to_f / count).round }
   end
 
+  # The seeded go in before anything else, into the pools SeedPoolOrder names,
+  # so the pools feeding opposite halves of the bracket hold the top two seeds.
+  # TeamPooler walks the same order through the same call.
+  #
+  # DELIBERATE: SeedPoolOrder always opens on pool 1, and short_pool_indices
+  # always makes pool 1 one of the short pools when the sizes are uneven, so
+  # seed 1 draws a short pool — one fight fewer on the way out. That is the
+  # usual reading of a top seeding rather than an accident of the two rules
+  # meeting, and the pooler spec pins it so it cannot change unnoticed.
+  private def place_seeds
+    SeedPoolOrder.assign(seeded.size, target_sizes).each_with_index do |index, i|
+      poules[index].participations << seeded[i]
+    end
+  end
+
+  private def seeded
+    @seeded ||= Participation.in_seed_order(participants)
+  end
+
   # Strongest first so LPT balancing spreads the top fighters across pools;
-  # the random key shuffles fighters of equal grade.
+  # the random key shuffles fighters of equal grade. The seeded are already
+  # placed and never move again.
   private def ordered_participants
-    participants.sort_by { |p| [-p.kenshi.grade.to_i, random.rand] }
+    (participants - seeded).sort_by { |p| [-p.kenshi.grade.to_i, random.rand] }
   end
 
   private def pick_pool(participation)
@@ -111,23 +139,32 @@ class SmartPooler
     }
   end
 
-  # Everyone in this pool whose club another of its members also belongs to.
+  # Everyone in this pool whose club another of its members also belongs to —
+  # minus the seeded, who are pinned. The rejection comes AFTER the grouping on
+  # purpose: a seed still counts towards its club's presence, so a seed and a
+  # clubmate are a collision, and the clubmate is the one offered up for trade.
   private def crowded_clubmates(pool)
     pool.participations
       .select { |participation| participation.kenshi.club.present? }
       .group_by { |participation| participation.kenshi.club }
       .select { |_club, members| members.size > 1 }
       .flat_map { |_club, members| members }
+      .reject(&:seeded?)
   end
 
-  # Who the duplicate can trade with: anyone whose own club is absent from the
-  # crowded pool once the duplicate leaves it, so the trade cannot introduce a
-  # fresh collision of its own.
+  # Who the duplicate can trade with: anyone unseeded whose own club is absent
+  # from the crowded pool once the duplicate leaves it, so the trade cannot
+  # introduce a fresh collision of its own. A seed is never traded in, which
+  # can leave a collision unrepaired — the pinning is worth more. Two seeded
+  # clubmates sharing a pool (only reachable when the seeds outnumber the pools
+  # and the order wraps) are left alone for the same reason: neither half of
+  # that pair may move.
   private def trade_partners(roomy, crowded, duplicate)
     staying = crowded.participations - [duplicate]
     roomy.participations.reject { |candidate|
-      candidate.kenshi.club.present? &&
-        staying.any? { |other| other.kenshi.club == candidate.kenshi.club }
+      candidate.seeded? ||
+        (candidate.kenshi.club.present? &&
+          staying.any? { |other| other.kenshi.club == candidate.kenshi.club })
     }
   end
 

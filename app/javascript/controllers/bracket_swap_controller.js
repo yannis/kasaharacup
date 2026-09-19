@@ -1,5 +1,12 @@
 import { Controller } from '@hotwired/stimulus';
 import { Turbo } from '@hotwired/turbo-rails';
+import { readDragPayload, writeDragPayload } from './drag_payload';
+
+// Tags every payload with this and ignores anything else — a team category's
+// admin page renders the pool cards beside the bracket, and they drag under the
+// same type. Without it a team row dropped on a bracket slot posts a swap with
+// an undefined team_id. See drag_payload.js.
+const KIND = 'bracket-swap';
 
 // Swaps two round-1 teams of a pool-less draw by dragging one slot's grip onto
 // another slot.
@@ -19,10 +26,10 @@ export default class extends Controller {
     if (!slot) return;
     const { dataTransfer } = event;
     dataTransfer.effectAllowed = 'move';
-    dataTransfer.setData('application/json', JSON.stringify({
+    writeDragPayload(dataTransfer, KIND, {
       encounterId: slot.dataset.encounterId,
       teamId: slot.dataset.teamId,
-    }));
+    });
   }
 
   dragEnd() {
@@ -68,11 +75,7 @@ export default class extends Controller {
   }
 
   readPayload(event) {
-    try {
-      return JSON.parse(event.dataTransfer.getData('application/json'));
-    } catch {
-      return null;
-    }
+    return readDragPayload(event, KIND);
   }
 
   async submit(slot, source) {

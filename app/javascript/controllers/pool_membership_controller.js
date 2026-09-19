@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Turbo } from '@hotwired/turbo-rails';
+import { readDragPayload, writeDragPayload } from './drag_payload';
 
 // Moves a team into another pool. Each pool card is its own controller
 // instance; a team row is dragged from its source card and dropped on a
@@ -12,6 +13,12 @@ import { Turbo } from '@hotwired/turbo-rails';
 // or an existing bracket) answers 422 with a message; we confirm and retry
 // with force=true. On success we render the returned Turbo Stream, which
 // replaces the affected pool cards (or removes an emptied one).
+//
+// Tags every payload with this and ignores anything else — the seeding panel
+// and the bracket drag under the same type on the same pages. See
+// drag_payload.js.
+const KIND = 'pool-membership';
+
 export default class extends Controller {
   static values = { poolNumber: Number };
 
@@ -20,10 +27,10 @@ export default class extends Controller {
     if (!row) return;
     const { dataTransfer } = event;
     dataTransfer.effectAllowed = 'move';
-    dataTransfer.setData(
-      'application/json',
-      JSON.stringify({ url: row.dataset.moveUrl, fromPool: Number(row.dataset.fromPool) }),
-    );
+    writeDragPayload(dataTransfer, KIND, {
+      url: row.dataset.moveUrl,
+      fromPool: Number(row.dataset.fromPool),
+    });
   }
 
   dragOver(event) {
@@ -68,11 +75,7 @@ export default class extends Controller {
   }
 
   readPayload(event) {
-    try {
-      return JSON.parse(event.dataTransfer.getData('application/json'));
-    } catch {
-      return null;
-    }
+    return readDragPayload(event, KIND);
   }
 
   async move(url, toPool, force = false) {

@@ -61,6 +61,12 @@
               <% else %>
                 <%= participation.full_name %>
               <% end %>
+              <%# Admin only, like the tree's badge: the seeding is the
+                  organizers' reading of the field, not a result. %>
+              <% if admin && participation.seeded? %>
+                <span class="pool-standings__seed" aria-label="Seed <%= participation.seed %>"
+                      title="Seed <%= participation.seed %>">S<%= participation.seed %></span>
+              <% end %>
             </td>
             <td><%= participation.grade %></td>
             <td><%= participation.club %></td>

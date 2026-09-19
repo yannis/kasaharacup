@@ -351,3 +351,13 @@
   font-size: 0.8125rem;
   margin-block-end: 0.5rem;
 }
+
+.competition-tree__seed {
+  margin-right: 0.25rem;
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+  background: #e5c9b1;
+  color: #27231f;
+  font-size: 0.75rem;
+  font-weight: 700;
+}

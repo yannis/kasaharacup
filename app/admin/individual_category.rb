@@ -69,6 +69,12 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       row :gender_restriction
     end
     if category.pool_size.to_i > 1
+      # Above the pools: seeding precedes the draw, and the seeds only take
+      # effect on the next Smart pool reset. Inside the same guard, because a
+      # pool-less category never runs the pooler.
+      panel "Seeding" do
+        render IndividualSeedsComponent.new(category: category)
+      end
       panel "Pools" do
         if category.pools.any? && category.pool_fights.empty?
           div do

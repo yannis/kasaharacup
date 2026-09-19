@@ -31,6 +31,7 @@
                     <% if (prefix = fighter_pool_prefix(fight, bye_slot)) %>
                       <span class="competition-tree__pool-position"><%= prefix %></span>
                     <% end %>
+                    <%= seed_badge(fight, bye_slot) %>
                     <%= fighter_name(fight, bye_slot) %>
                   </li>
                 </ol>
@@ -62,6 +63,7 @@
                             <% if (prefix = fighter_pool_prefix(fight, slot)) %>
                               <span class="competition-tree__pool-position"><%= prefix %></span>
                             <% end %>
+                            <%= seed_badge(fight, slot) %>
                             <%= poster_name_for(fighter) %>
                           </span>
                         </label>
@@ -93,6 +95,7 @@
                         <% if (prefix = fighter_pool_prefix(fight, slot)) %>
                           <span class="competition-tree__pool-position"><%= prefix %></span>
                         <% end %>
+                        <%= seed_badge(fight, slot) %>
                         <%= fighter_name(fight, slot) %>
                       </span>
                       <ol class="competition-tree__points">

@@ -254,6 +254,32 @@ RSpec.describe Participation do
         end
       end
     end
+
+    describe "#seed" do
+      let(:participation) { build(:participation, category: create(:individual_category)) }
+
+      it "is optional" do
+        participation.seed = nil
+        expect(participation).to be_valid
+      end
+
+      it "accepts a positive integer" do
+        participation.seed = 1
+        expect(participation).to be_valid
+      end
+
+      it "rejects zero and negatives" do
+        participation.seed = 0
+        expect(participation).not_to be_valid
+        participation.seed = -1
+        expect(participation).not_to be_valid
+      end
+
+      it "rejects a non-integer" do
+        participation.seed = 1.5
+        expect(participation).not_to be_valid
+      end
+    end
   end
 
   describe "#product" do
