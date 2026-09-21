@@ -92,6 +92,14 @@ export default class extends Controller {
         },
         body,
       });
+      // A frozen pool or bracket answers 403. Unlike a 422 this is NOT
+      // confirmable — no force gets through a freeze — so say why and stop.
+      // Checked before the 422 branch, which would otherwise offer a retry.
+      if (response.status === 403) {
+        const { message } = await response.json();
+        window.alert(message);
+        return;
+      }
       if (response.status === 422) {
         const { message } = await response.json();
         if (window.confirm(message)) this.move(url, toPool, true);

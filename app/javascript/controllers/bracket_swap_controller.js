@@ -123,6 +123,10 @@ export default class extends Controller {
         body,
       });
 
+      // A frozen bracket answers 403. Returned without `confirm`, so #submit
+      // shows the banner and never offers the retry a 422 would: there is no
+      // force that gets through a freeze.
+      if (response.status === 403) return await response.json();
       if (response.status === 422) return await response.json();
       if (!response.ok) {
         console.error('bracket swap failed:', response.status, await response.text());
