@@ -3,30 +3,6 @@
 require "rails_helper"
 
 RSpec.describe TeamCategoryPoolMatchesPdf do
-  # Prawn writes each text run as a hex-encoded string inside a `[...] TJ`
-  # operator, split into several chunks when kerning applies. Joining the chunks
-  # of one operator gives back the cell's text — in Windows-1252, the only
-  # encoding Prawn's built-in fonts speak, so an em dash arrives as one byte.
-  def texts_in(pdf)
-    pdf.render.scan(/\[(.*?)\]\s*TJ/m).flatten.map do |run|
-      run.scan(/<([0-9A-Fa-f]+)>/).flatten.map { |hex| [hex].pack("H*") }.join
-        .force_encoding(Encoding::WINDOWS_1252)
-        .encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
-    end
-  end
-
-  # Each text run is positioned by a `BT ... Td ... TJ ... ET` block; the second
-  # number of the Td is its baseline down the page.
-  def text_positions_in(pdf)
-    pdf.render.scan(/BT(.*?)ET/m).flatten.filter_map do |block|
-      baseline = block[/([\d.]+)\s+([\d.-]+)\s+Td/, 2]
-      text = block.scan(/<([0-9A-Fa-f]+)>/).flatten.map { |hex| [hex].pack("H*") }.join
-        .force_encoding(Encoding::WINDOWS_1252)
-        .encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
-      [baseline.to_f.round, text] if baseline && !text.empty?
-    end.sort
-  end
-
   let(:cup) { create(:cup) }
   let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 2, out_of_pool: 1) }
 

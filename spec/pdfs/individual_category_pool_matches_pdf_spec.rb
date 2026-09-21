@@ -3,15 +3,6 @@
 require "rails_helper"
 
 RSpec.describe IndividualCategoryPoolMatchesPdf do
-  # Prawn writes each text run as a hex-encoded string inside a `[...] TJ`
-  # operator, split into several chunks when kerning applies. Joining the chunks
-  # of one operator gives back the cell's text.
-  def texts_in(pdf)
-    pdf.render.scan(/\[(.*?)\]\s*TJ/m).flatten.map do |run|
-      run.scan(/<([0-9A-Fa-f]+)>/).flatten.map { |hex| [hex].pack("H*") }.join
-    end
-  end
-
   let(:cup) { create(:cup) }
   let(:category) { create(:individual_category, cup: cup, pool_size: 3) }
 
