@@ -27,6 +27,29 @@ RSpec.describe PoolEncounterOrder do
       .to eq [[1, 1], [2, 1], [1, 2], [2, 2], [1, 3], [2, 3]]
   end
 
+  it "interleaves the pools two at a time, so a pool's ties stay close together" do
+    4.times { |index| pool_of(index + 1, 3) }
+    PoolEncounterGenerator.new(category).call
+
+    # One tie of rest between a team's own two, not one from every pool in the
+    # category: pool 1 is done before pool 3 starts.
+    expect(places_of(described_class.new(category).call)).to eq [
+      [1, 1], [2, 1], [1, 2], [2, 2], [1, 3], [2, 3],
+      [3, 1], [4, 1], [3, 2], [4, 2], [3, 3], [4, 3]
+    ]
+  end
+
+  it "gives a pool left over by the pairing the company of the pair before it" do
+    3.times { |index| pool_of(index + 1, 3) }
+    PoolEncounterGenerator.new(category).call
+
+    # In a group of its own pool 3 would fight its three ties back to back, so
+    # it joins the last pair and the three interleave.
+    expect(places_of(described_class.new(category).call)).to eq [
+      [1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2], [1, 3], [2, 3], [3, 3]
+    ]
+  end
+
   it "numbers the ties 1..N in fighting order" do
     pool_of(1, 3)
     pool_of(2, 3)
