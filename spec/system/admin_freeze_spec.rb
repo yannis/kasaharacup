@@ -6,6 +6,9 @@ require "rails_helper"
 # when a surface is frozen, come back when it is unfrozen, and a drag issued
 # from a page opened before the freeze is refused with a reason rather than
 # snapping back in silence (R9, R10, R12).
+#
+# Controls are found by their container and their modifier class rather than
+# by label: the admin renders in French, so every label here is a translation.
 describe "Admin freeze", :js do
   let(:cup) { create(:cup) }
   let(:category) { create(:individual_category, cup: cup, pool_size: 3) }
@@ -23,23 +26,27 @@ describe "Admin freeze", :js do
     2.times { participant(pool: 2) }
   end
 
+  def pools_chrome = "#individual_pools_actions_#{category.id}"
+
+  def tree_chrome = "#individual_tree_actions_#{category.id}"
+
   it "takes the formation controls off the page and puts them back" do
     drawn_pools
 
     signin_and_visit(admin, admin_individual_category_path(category))
     expect(page).to have_css(".pool-standings__grip")
 
-    click_button "Freeze pools"
+    within(pools_chrome) { find(".freeze-control__button--freeze").click }
 
     # The badge replaces the button, and the grips and move selects are gone —
     # while the rank editor, which records results, stays.
-    expect(page).to have_css(".freeze-control__badge")
+    expect(page).to have_css("#{pools_chrome} .freeze-control__badge")
     expect(page).to have_no_css(".pool-standings__grip")
     expect(page).to have_no_css(".pool-standings__move-select")
     expect(page).to have_css(".pool-standings__editable")
     expect(category.reload).to be_pools_frozen
 
-    accept_confirm { click_button "Unfreeze pools" }
+    accept_confirm { within(pools_chrome) { find(".freeze-control__button--unfreeze").click } }
 
     expect(page).to have_css(".pool-standings__grip")
     expect(category.reload).not_to be_pools_frozen
@@ -52,8 +59,9 @@ describe "Admin freeze", :js do
     signin_and_visit(admin, admin_individual_category_path(category))
     expect(page).to have_text("Edit result")
 
-    click_button "Freeze bracket"
+    within(tree_chrome) { find(".freeze-control__button--freeze").click }
 
+    expect(page).to have_css("#{tree_chrome} .freeze-control__badge")
     expect(page).to have_no_text("Edit result")
     expect(page).to have_no_text("Force rebuild")
     expect(category.reload).to be_bracket_frozen
@@ -73,7 +81,7 @@ describe "Admin freeze", :js do
 
     moved = category.participations.where(pool_number: 1).order(:id).first
     grip = find("tr[data-participation-id='#{moved.id}'] .pool-standings__grip")
-    destination = find(".pool-card", match: :first)
+    destination = all(".pool-card").last
 
     message = accept_alert { grip.drag_to(destination, html5: true) }
 

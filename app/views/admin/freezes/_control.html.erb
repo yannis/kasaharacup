@@ -18,11 +18,15 @@
         <%= t("admin.freezes.badge", at: l(freeze_frozen_at(category, flag), format: :short)) %>
       </span>
       <%= button_to t("admin.freezes.unfreeze.#{flag}"), freeze_path(category, flag),
-            method: :delete, class: "freeze-control__button",
+            method: :delete,
+            class: "freeze-control__button freeze-control__button--unfreeze",
             form: {data: {turbo_confirm: t("admin.freezes.unfreeze_confirm.#{flag}")}} %>
     <% else %>
+      <%# The modifier classes distinguish the two directions without reading
+          the label, which is a translation. %>
       <%= button_to t("admin.freezes.freeze.#{flag}"), freeze_path(category, flag),
-            method: :post, class: "freeze-control__button" %>
+            method: :post,
+            class: "freeze-control__button freeze-control__button--freeze" %>
     <% end %>
   </span>
 <% end %>
