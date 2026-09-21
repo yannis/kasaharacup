@@ -16,6 +16,12 @@ class Encounter < ApplicationRecord
   # creates (no pool number and no round), which are not part of the tree.
   def bracket? = pool_number.nil? && round.present?
 
+  # A tree node whose tree is frozen. Every editing path on it is refused
+  # server-side (R3), so the admin views stop offering them — while a POOL
+  # encounter of the same frozen category stays fully editable, because the
+  # pool phase goes on being recorded after the bracket is settled.
+  def bracket_locked? = bracket? && team_category.bracket_frozen?
+
   validates :team_1, :team_2, presence: true, if: -> { pool_number.present? }
 
   scope :bracket_order, -> { order(:round, :position) }

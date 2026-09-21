@@ -96,4 +96,52 @@ RSpec.describe "Admin individual category show page" do
       expect(response.body).to include(admin_individual_category_bracket_freeze_path(category))
     end
   end
+
+  # R10 end to end: the panel chrome and the cards agree about the frozen state
+  # on a real page render, not just in isolation.
+  describe "when frozen" do
+    let(:category) { create(:individual_category, cup: cup, pool_size: 3) }
+
+    before do
+      2.times do |i|
+        create(:participation, category: category, kenshi: create(:kenshi, cup: cup),
+          pool_number: 1, pool_position: i + 1)
+      end
+      create(:fight, individual_category: category)
+    end
+
+    it "drops the formation controls and the smart reset when the pools are frozen" do
+      category.freeze_pools!
+
+      get admin_individual_category_path(category)
+
+      expect(response.body).not_to include("pool-standings__grip")
+      expect(response.body).not_to include(reset_smart_pools_admin_individual_category_path(category))
+      expect(response.body).to include(admin_individual_category_pool_freeze_path(category))
+    end
+
+    it "drops the tree rebuild links when the bracket is frozen" do
+      category.freeze_bracket!
+
+      get admin_individual_category_path(category)
+
+      expect(response.body).not_to include("Force rebuild")
+      expect(response.body).not_to include("Update tree")
+      expect(response.body).not_to include("Edit result")
+      expect(response.body).to include("Download PDF")
+    end
+
+    it "restores everything once unfrozen" do
+      category.freeze_pools!
+      category.freeze_bracket!
+      category.unfreeze_pools!
+      category.unfreeze_bracket!
+
+      get admin_individual_category_path(category)
+
+      expect(response.body).to include("pool-standings__grip")
+      expect(response.body).to include("Force rebuild")
+      expect(response.body).to include("Edit result")
+    end
+  end
 end

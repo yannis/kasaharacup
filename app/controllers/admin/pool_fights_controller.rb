@@ -70,13 +70,17 @@ module Admin
     # the action's own params; hence the explicit return.
     def regenerate
       category = IndividualCategory.find(params.expect(:id))
-      return if guard_frozen_pools!(category)
-
       pool_number = Integer(params[:pool_number], exception: false)
       if pool_number.nil?
         redirect_to admin_individual_category_path(category), alert: t(".alert")
         return
       end
+      # Only a redraw when there is something to destroy. The pool card's
+      # button posts here for first-time generation too — it relabels itself
+      # "Generate fights for this pool" while the pool has none — and that case
+      # is additive, so R2a keeps it available on a frozen category, exactly as
+      # the panel-level #generate is.
+      return if category.pool_fights.exists?(pool_number: pool_number) && guard_frozen_pools!(category)
       category.transaction do
         category.pool_fights.where(pool_number: pool_number).destroy_all
         PoolFightGenerator.new(category, pool_number: pool_number).call

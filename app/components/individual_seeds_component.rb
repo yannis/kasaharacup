@@ -39,6 +39,18 @@ class IndividualSeedsComponent < ViewComponent::Base
     seeded.size + 1
   end
 
+  # Either flag closes the seeding: on a pooled category the seeds drive the
+  # draw, on a bracket-only one they drive the byes and the protected bracket
+  # positions. Matches guard_frozen_seeds! on the server. Admin-only by
+  # construction, so there is no `admin` to combine with.
+  private def seeds_editable? = helpers.pool_formation_editable?(category)
+
+  private def panel_data
+    return {} unless seeds_editable?
+
+    {controller: "seed-order", seed_order_next_position_value: next_position}
+  end
+
   private def dom_id_for_seeds
     "individual_seeds_#{category.id}"
   end

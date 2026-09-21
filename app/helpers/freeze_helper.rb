@@ -33,6 +33,25 @@ module FreezeHelper
     (flag.to_sym == :bracket) ? category.bracket_freezable? : category.pools_freezable?
   end
 
+  # THE rule for "can the pool formation still be edited", in one place: the
+  # components, the ActiveAdmin partials and the broadcasts that re-render them
+  # all read it here rather than each spelling it out, because a divergence
+  # would be a hole rather than a difference.
+  #
+  # Both flags close the formation. A frozen draw refuses the move outright,
+  # and a frozen bracket refuses it too, because any move clears the tree as a
+  # side effect (R5). Callers that also have an `admin` flag combine the two.
+  #
+  # The seeding reads the same rule for different reasons: the seeds drive the
+  # draw on a pooled category and the byes on a bracket-only one.
+  def pool_formation_editable?(category)
+    !category.pools_frozen? && !category.bracket_frozen?
+  end
+
+  def bracket_structure_editable?(category)
+    !category.bracket_frozen?
+  end
+
   def freeze_frozen_at(category, flag)
     (flag.to_sym == :bracket) ? category.bracket_frozen_at : category.pools_frozen_at
   end

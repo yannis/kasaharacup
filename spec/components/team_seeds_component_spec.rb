@@ -107,4 +107,24 @@ RSpec.describe TeamSeedsComponent, type: :component do
       expect(page.find(".seed-panel__hint").text).to include("bracket build")
     end
   end
+
+  # Twin of the individual panel: either flag closes the seeding.
+  describe "when frozen" do
+    def panel
+      render_inline(described_class.new(category: category)).to_html
+    end
+
+    it "drops the seeding controls but keeps the list and the subscription" do
+      seeded_team if respond_to?(:seeded_team, true)
+      expect(panel).to include("seed-panel")
+
+      category.freeze_pools!
+
+      frozen = panel
+      expect(frozen).not_to include("seed-panel__grip")
+      expect(frozen).not_to include("seed-panel__add")
+      # The subscription must survive, or the category never hears its unfreeze.
+      expect(frozen).to include("turbo-cable-stream-source")
+    end
+  end
 end

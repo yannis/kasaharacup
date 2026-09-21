@@ -72,6 +72,21 @@ RSpec.describe "Admin pools freeze guard" do
       expect(category.pool_fights.pluck(:id)).to match_array before_ids
     end
 
+    # The pool card's own button posts to #regenerate for first-time
+    # generation too, relabelling itself while the pool has no fights. With
+    # nothing to destroy that is additive, so R2a keeps it available.
+    it "still allows regenerate for a pool that has no fights yet" do
+      drawn
+      category.freeze_pools!
+
+      expect {
+        post regenerate_pool_fights_admin_individual_category_path(category),
+          params: {pool_number: 1}, as: :turbo_stream
+      }.to change { category.pool_fights.count }.from(0)
+
+      expect(response).to have_http_status(:ok)
+    end
+
     # R2a: both generators skip pools that already have fights and destroy
     # nothing, so first-time generation cannot alter a frozen formation.
     it "still allows first-time pool fight generation" do

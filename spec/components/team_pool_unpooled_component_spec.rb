@@ -41,4 +41,29 @@ RSpec.describe TeamPoolUnpooledComponent, type: :component do
     expect(page).to have_text("Drag a team here to remove it from its pool.")
     expect(page).to have_css("[data-action*='drop->pool-membership#dropUnpool']")
   end
+
+  # Team twin of the individual staging area's frozen contract (R10).
+  describe "when frozen" do
+    def panel
+      create(:team, team_category: tc, pool_number: nil)
+      render_inline(described_class.new(team_category: tc.reload)).to_html
+    end
+
+    it "drops the grip, the add select and the drop-zone wiring" do
+      expect(panel).to include("pool-unpooled__grip")
+
+      tc.freeze_pools!
+
+      frozen = panel
+      expect(frozen).not_to include("pool-unpooled__grip")
+      expect(frozen).not_to include("pool-standings__move-select")
+      expect(frozen).not_to include("pool-membership")
+    end
+
+    it "is closed by the bracket flag as well" do
+      tc.freeze_bracket!
+
+      expect(panel).not_to include("pool-unpooled__grip")
+    end
+  end
 end

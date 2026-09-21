@@ -116,4 +116,39 @@ RSpec.describe IndividualSeedsComponent, type: :component do
 
     expect(page).to have_text("Smart pool reset")
   end
+
+  # R10: either flag closes the seeding — the seeds drive the draw on a pooled
+  # category and the byes on a bracket-only one.
+  describe "when frozen" do
+    def panel
+      participant(seed: 1)
+      participant
+      render_inline(described_class.new(category: category)).to_html
+    end
+
+    it "drops the grip, the reorder select, the unseed button and the add box" do
+      expect(panel).to include("seed-panel__grip")
+
+      category.freeze_pools!
+
+      frozen = panel
+      expect(frozen).not_to include("seed-panel__grip")
+      expect(frozen).not_to include("seed-panel__move-select")
+      expect(frozen).not_to include("seed-panel__unseed")
+      expect(frozen).not_to include("seed-panel__add")
+      expect(frozen).not_to include("seed-order")
+    end
+
+    it "is closed by the bracket flag too" do
+      category.freeze_bracket!
+
+      expect(panel).not_to include("seed-panel__grip")
+    end
+
+    it "still lists the seeds, which are worth reading while frozen" do
+      category.freeze_pools!
+
+      expect(panel).to include("seed-panel__list")
+    end
+  end
 end

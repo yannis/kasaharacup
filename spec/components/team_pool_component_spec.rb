@@ -88,4 +88,46 @@ RSpec.describe TeamPoolComponent, type: :component do
       expect(page).to have_no_css(".pool-standings__seed")
     end
   end
+
+  # Team twin of PoolComponent's frozen contract (R10).
+  describe "when frozen" do
+    let(:tc) { create(:team_category, pool_size: 3) }
+
+    before do
+      create(:team, team_category: tc, pool_number: 1, pool_position: 1)
+      create(:team, team_category: tc, pool_number: 1, pool_position: 2)
+      # A second pool, so the row's "Move to…" select has somewhere to offer.
+      create(:team, team_category: tc, pool_number: 2, pool_position: 1)
+    end
+
+    def card
+      render_inline(described_class.new(team_category: tc.reload, pool_number: 1, admin: true)).to_html
+    end
+
+    it "drops the grip, the move select and the drop wiring" do
+      expect(card).to include("pool-standings__grip")
+
+      tc.freeze_pools!
+
+      frozen = card
+      expect(frozen).not_to include("pool-standings__grip")
+      expect(frozen).not_to include("pool-standings__move-select")
+      expect(frozen).not_to include("data-move-url")
+    end
+
+    it "keeps the rank editor, and the subscription that carries the unfreeze" do
+      tc.freeze_pools!
+
+      frozen = card
+      expect(frozen).to include("best_in_place")
+      expect(frozen).to include("turbo-cable-stream-source")
+    end
+
+    # R5: a frozen bracket closes the formation too.
+    it "is closed by the bracket flag as well" do
+      tc.freeze_bracket!
+
+      expect(card).not_to include("pool-standings__grip")
+    end
+  end
 end

@@ -1,7 +1,7 @@
 <%# One controller instance on the panel (not per row): every row is both a
     drag source and a drop target, and a reorder replaces the whole panel. %>
 <%= tag.div id: dom_id_for_seeds, class: "seed-panel",
-      data: {controller: "seed-order", seed_order_next_position_value: next_position} do %>
+      data: panel_data do %>
   <% if seeded.any? %>
     <ol class="seed-panel__list">
       <%# A row's position is its RANK in this list, not its stored seed. The two
@@ -12,12 +12,14 @@
           drag would disagree with the "Move to position" select, which already
           offers ranks. %>
       <% seeded.each_with_index do |participation, index| %>
-        <li class="seed-panel__row" data-seed-url="<%= seed_url(participation) %>"
+        <li class="seed-panel__row"<% if seeds_editable? %> data-seed-url="<%= seed_url(participation) %>"
             data-position="<%= index + 1 %>"
-            data-action="dragover->seed-order#dragOver dragleave->seed-order#dragLeave drop->seed-order#drop">
-          <span class="seed-panel__grip pool-match__grip" draggable="true"
-                title="Drag onto the position it should take"
-                data-action="dragstart->seed-order#dragStart">⠿</span>
+            data-action="dragover->seed-order#dragOver dragleave->seed-order#dragLeave drop->seed-order#drop"<% end %>>
+          <% if seeds_editable? %>
+            <span class="seed-panel__grip pool-match__grip" draggable="true"
+                  title="Drag onto the position it should take"
+                  data-action="dragstart->seed-order#dragStart">⠿</span>
+          <% end %>
           <span class="seed-panel__number" aria-label="Seed <%= index + 1 %>"><%= index + 1 %></span>
           <% if participation.kenshi %>
             <%= link_to participation.full_name, helpers.admin_kenshi_path(participation.kenshi),
@@ -27,21 +29,23 @@
           <% end %>
           <span class="seed-panel__club"><%= participation.club %></span>
           <span class="seed-panel__grade"><%= participation.grade %></span>
-          <%# The keyboard path, matching the "Move to" select on pool rows. %>
-          <select class="seed-panel__move-select pool-standings__move-select"
-                  aria-label="Move <%= participation.full_name %> to another seed position"
-                  data-action="change->seed-order#moveViaSelect">
-            <option value="">Move to position…</option>
-            <% positions.each do |position| %>
-              <option value="<%= position %>"><%= position %></option>
-            <% end %>
-          </select>
-          <%# A plain DELETE form: this one works without JavaScript, and Turbo
-              renders the stream the controller answers with. %>
-          <%= helpers.button_to "✕", seed_url(participation), method: :delete,
-                class: "seed-panel__unseed",
-                form: {class: "seed-panel__unseed-form"},
-                aria: {label: "Unseed #{participation.full_name}"} %>
+          <% if seeds_editable? %>
+            <%# The keyboard path, matching the "Move to" select on pool rows. %>
+            <select class="seed-panel__move-select pool-standings__move-select"
+                    aria-label="Move <%= participation.full_name %> to another seed position"
+                    data-action="change->seed-order#moveViaSelect">
+              <option value="">Move to position…</option>
+              <% positions.each do |position| %>
+                <option value="<%= position %>"><%= position %></option>
+              <% end %>
+            </select>
+            <%# A plain DELETE form: this one works without JavaScript, and Turbo
+                renders the stream the controller answers with. %>
+            <%= helpers.button_to "✕", seed_url(participation), method: :delete,
+                  class: "seed-panel__unseed",
+                  form: {class: "seed-panel__unseed-form"},
+                  aria: {label: "Unseed #{participation.full_name}"} %>
+          <% end %>
         </li>
       <% end %>
     </ol>
@@ -49,16 +53,18 @@
     <p class="seed-panel__empty">No seeds yet. Seed last year's medalists so the draw keeps them apart.</p>
   <% end %>
 
-  <div class="seed-panel__add">
-    <select class="seed-panel__add-select pool-standings__move-select"
-            aria-label="Seed a participant"
-            data-action="change->seed-order#seedViaSelect">
-      <option value="">Seed a participant…</option>
-      <% unseeded.each do |participation| %>
-        <option value="<%= seed_url(participation) %>"><%= participation.full_name %></option>
-      <% end %>
-    </select>
-  </div>
+  <% if seeds_editable? %>
+    <div class="seed-panel__add">
+      <select class="seed-panel__add-select pool-standings__move-select"
+              aria-label="Seed a participant"
+              data-action="change->seed-order#seedViaSelect">
+        <option value="">Seed a participant…</option>
+        <% unseeded.each do |participation| %>
+          <option value="<%= seed_url(participation) %>"><%= participation.full_name %></option>
+        <% end %>
+      </select>
+    </div>
+  <% end %>
 
   <p class="seed-panel__hint">
     Seeds apply on the next <strong>Smart pool reset</strong> — they do not move anyone who is already pooled.

@@ -97,4 +97,30 @@ RSpec.describe "Admin team category show page" do
     expect(response).to have_http_status(:ok)
     expect(response.body).not_to include("team_seed")
   end
+
+  describe "when frozen" do
+    it "drops the pool formation controls and the redraw action item" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:team, team_category: category, name: "Kyoto", pool_number: 1)
+      category.freeze_pools!
+
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include("pool-unpooled__grip")
+      expect(response.body).not_to include(generate_pools_admin_team_category_path(category))
+      expect(response.body).to include(admin_team_category_pool_freeze_path(category))
+    end
+
+    it "drops the bracket rebuild links when the bracket is frozen" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+      category.freeze_bracket!
+
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include("Update bracket")
+      expect(response.body).not_to include("Force rebuild")
+      expect(response.body).to include("Download PDF")
+    end
+  end
 end

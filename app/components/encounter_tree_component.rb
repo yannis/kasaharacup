@@ -116,8 +116,12 @@ class EncounterTreeComponent < ViewComponent::Base
     swappable_slots.include?([encounter.id, slot])
   end
 
+  # Empty for a frozen bracket as well as for the public tree (R3): a swap is
+  # a draw correction, and the guard refuses it once the tree is settled. The
+  # template splats swap_data unconditionally, so an empty set is all it takes
+  # to make every slot an inert drop target.
   private def swappable_slots
-    @swappable_slots ||= if admin
+    @swappable_slots ||= if admin && !team_category.bracket_frozen?
       EncounterTeamSwap.swappable_slots(encounters, category: team_category)
     else
       Set.new

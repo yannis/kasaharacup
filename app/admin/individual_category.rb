@@ -53,13 +53,20 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     actions do |category|
       [
-        link_to("Smart reset", reset_smart_pools_admin_individual_category_path(category),
-          data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}),
+        # A redraw, so a frozen formation does not offer it (the guard refuses
+        # it either way; an offered control that always fails is the confusion
+        # this feature exists to remove).
+        (if category.pools_frozen? || category.bracket_frozen?
+           nil
+         else
+           link_to("Smart reset", reset_smart_pools_admin_individual_category_path(category),
+             data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."})
+         end),
         link_to("PDF", pdf_admin_individual_category_path(category)),
         link_to("PDF recap", pdf_recap_admin_individual_category_path(category)),
         link_to("Match sheet", sheet_admin_individual_category_path(category)),
         link_to("Pool match sheets", pool_sheets_admin_individual_category_path(category))
-      ].join(" ").html_safe
+      ].compact.join(" ").html_safe
     end
   end
 
@@ -162,7 +169,12 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     flash[:notice] = "Pool smartly reset" # rubocop:disable Rails/I18nLocaleTexts
     redirect_to action: "show"
   end
-  action_item :smart_pool_reset, only: :show do
+  # Hidden on a frozen category. Known limitation: action_items render in
+  # ActiveAdmin's page header, outside every replaceable container, so this
+  # reacts on page load but not to a freeze broadcast — a second admin's header
+  # keeps offering it until they reload, and the server guard refuses it.
+  action_item :smart_pool_reset, only: :show,
+    if: proc { !resource.pools_frozen? && !resource.bracket_frozen? } do
     link_to "Smart pool reset", reset_smart_pools_admin_individual_category_path(individual_category),
       data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}
   end

@@ -13,6 +13,12 @@ class EncounterComponent < ViewComponent::Base
 
   attr_reader :encounter, :admin, :result, :alert
 
+  # What the match partial gates its controls on. Distinct from `admin`, which
+  # still governs the display-only extras: a frozen bracket hides the hikiwake
+  # button, the fighter reordering and the point buttons, and changes nothing
+  # about a pool encounter.
+  def editable? = admin && !encounter.bracket_locked?
+
   # data-* for the encounter container: the lineup controller, plus the seed
   # endpoint it POSTs to on open when this is a freshly-opened editor with an
   # unset, unpopulated side that has a suggestion to lay down.
@@ -23,7 +29,7 @@ class EncounterComponent < ViewComponent::Base
   end
 
   def seed_on_open?
-    @auto_seed && admin && [1, 2].any? { |slot| seed_needed?(slot) }
+    @auto_seed && editable? && [1, 2].any? { |slot| seed_needed?(slot) }
   end
 
   # Reuse the association when the caller already preloaded it (pool view loads
@@ -79,7 +85,7 @@ class EncounterComponent < ViewComponent::Base
       # A prefill only appears where we also persist it (auto_seed) — otherwise
       # picking the already-suggested fighter would no-op (no change event) and
       # the bout would never be saved.
-      next nil unless admin && @auto_seed
+      next nil unless editable? && @auto_seed
       next nil if encounter.public_send(:"lineup_#{slot}_set?")
 
       EncounterLineupSuggestion.new(encounter).for_slot(slot)

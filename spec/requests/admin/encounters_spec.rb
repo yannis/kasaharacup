@@ -409,4 +409,42 @@ RSpec.describe "Admin encounters" do
       expect(render_summary(encounter.reload)).to include("hikiwake")
     end
   end
+
+  # R3/R10, and the distinction the UI is most likely to get wrong: a frozen
+  # bracket takes the editing controls off its OWN encounters and leaves a pool
+  # encounter of the same category untouched, because the pool phase goes on
+  # being recorded after the tree is settled.
+  describe "a frozen bracket's encounter editor" do
+    def editor_for(encounter)
+      get admin_team_category_encounter_path(tc, encounter)
+      response.body
+    end
+
+    def bracket_encounter
+      create(:encounter, team_category: tc, team_1: t1, team_2: t2, round: 1, position: 1)
+    end
+
+    def pool_encounter
+      create(:encounter, team_category: tc, team_1: t1, team_2: t2, pool_number: 1)
+    end
+
+    it "offers no lineup or daihyosen submit target on a bracket encounter" do
+      encounter = bracket_encounter
+      expect(editor_for(encounter))
+        .to include(admin_team_category_encounter_lineup_path(tc, encounter))
+
+      tc.freeze_bracket!
+
+      expect(editor_for(encounter))
+        .not_to include(admin_team_category_encounter_lineup_path(tc, encounter))
+    end
+
+    it "leaves a pool encounter's editor alone" do
+      encounter = pool_encounter
+      tc.freeze_bracket!
+
+      expect(editor_for(encounter))
+        .to include(admin_team_category_encounter_lineup_path(tc, encounter))
+    end
+  end
 end

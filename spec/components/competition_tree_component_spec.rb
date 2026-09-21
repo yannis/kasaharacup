@@ -367,4 +367,21 @@ RSpec.describe CompetitionTreeComponent, type: :component do
 
     expect(page).to have_no_css(".competition-tree__seed")
   end
+
+  # R3: no "Edit result" disclosure, no winner radios, no point buttons.
+  describe "when the bracket is frozen" do
+    it "drops the edit affordances and keeps the tree readable" do
+      editable = render_inline(described_class.new(category: category, admin: true)).to_html
+      expect(editable).to include("Edit result")
+
+      category.freeze_bracket!
+
+      frozen = render_inline(described_class.new(category: category.reload, admin: true)).to_html
+      expect(frozen).not_to include("Edit result")
+      expect(frozen).not_to include("competition-tree__point-button")
+      expect(frozen).to include("competition-tree")
+      # The subscription stays, or the unfreeze never reaches the page.
+      expect(frozen).to include("turbo-cable-stream-source")
+    end
+  end
 end

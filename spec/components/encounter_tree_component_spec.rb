@@ -218,4 +218,38 @@ RSpec.describe EncounterTreeComponent, type: :component do
       expect(badged).to have_no_css(".competition-tree__pool-position")
     end
   end
+
+  # R3: a swap is a draw correction, and a frozen tree refuses it. Reuses the
+  # bracket-only setup above, since that is the only shape a swap applies to.
+  describe "when the bracket is frozen" do
+    let(:frozen_only) { create(:team_category, pool_size: nil) }
+
+    before do
+      create_list(:team, 4, team_category: frozen_only)
+      TeamCategoryBracketBuilder.new(frozen_only, random: Random.new(1)).call
+    end
+
+    def round_one_slot
+      frozen_only.bracket_encounters.where(round: 1).order(:position).first
+    end
+
+    it "marks nothing swappable, the way a non-admin render does" do
+      expect(described_class.new(team_category: frozen_only, admin: true)
+        .send(:swappable?, round_one_slot, 1)).to be true
+
+      frozen_only.freeze_bracket!
+
+      expect(described_class.new(team_category: frozen_only.reload, admin: true)
+        .send(:swappable?, round_one_slot, 1)).to be false
+    end
+
+    it "still renders the tree and keeps its subscription" do
+      frozen_only.freeze_bracket!
+
+      html = render_inline(described_class.new(team_category: frozen_only.reload, admin: true)).to_html
+
+      expect(html).to include("competition-tree")
+      expect(html).to include("turbo-cable-stream-source")
+    end
+  end
 end

@@ -1,0 +1,42 @@
+/* The Freeze / Unfreeze control and the badge that replaces the button once a
+   surface is frozen (issue #1319). Lives in the Pools, Competition tree and
+   Bracket panel chrome, beside the existing Generate / Rebuild links. */
+
+.panel-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Pushed to the right so the freeze control reads as a state, not as one more
+   action in the row of links. */
+.freeze-control {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.freeze-control__button form,
+.freeze-control form {
+  display: inline;
+  margin: 0;
+}
+
+.freeze-control__badge {
+  border-radius: 3px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Cold blue rather than a warning colour: a freeze is the desired end state on
+   competition day, not an error. */
+.freeze-control__badge--frozen {
+  background: #e1effa;
+  border: 1px solid #a8cbe8;
+  color: #1c527a;
+}

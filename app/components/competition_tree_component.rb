@@ -10,6 +10,12 @@ class CompetitionTreeComponent < ViewComponent::Base
 
   private attr_reader :category, :admin
 
+  # A frozen bracket takes every editing affordance off the tree (R3): the
+  # "Edit result" disclosure, the winner radios and the point buttons. The
+  # subscription in the template keeps the bare `admin` check, or a frozen
+  # category would stop hearing its own unfreeze.
+  private def bracket_editable? = admin && helpers.bracket_structure_editable?(category)
+
   private def fights
     @fights ||= begin
       list = category.bracket_fights

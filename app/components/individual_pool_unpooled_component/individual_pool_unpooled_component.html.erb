@@ -1,37 +1,40 @@
 <%# Always-visible staging area: lists late registrants, and is itself a drop
     zone — dropping a pooled member here removes it from its pool (see
     pool_membership_controller#dropUnpool). %>
-<%= tag.div id: dom_id_for_unpooled, class: "pool-unpooled",
-      data: {controller: "pool-membership",
-             action: "dragover->pool-membership#dragOver " \
-               "dragleave->pool-membership#dragLeave drop->pool-membership#dropUnpool"} do %>
+<%= tag.div id: dom_id_for_unpooled, class: "pool-unpooled", data: drop_zone_data do %>
   <h3 class="pool-unpooled__title">Unpooled participants</h3>
   <% if participations.any? %>
     <ul class="pool-unpooled__list">
       <% participations.each do |participation| %>
-        <li class="pool-unpooled__team" data-participation-id="<%= participation.id %>"
-            data-move-url="<%= move_url(participation) %>">
-          <span class="pool-unpooled__grip pool-match__grip" draggable="true"
-                title="Drag onto a pool" data-action="dragstart->pool-membership#dragStart">⠿</span>
+        <li class="pool-unpooled__team"<% if pool_editable? %> data-participation-id="<%= participation.id %>"
+            data-move-url="<%= move_url(participation) %>"<% end %>>
+          <% if pool_editable? %>
+            <span class="pool-unpooled__grip pool-match__grip" draggable="true"
+                  title="Drag onto a pool" data-action="dragstart->pool-membership#dragStart">⠿</span>
+          <% end %>
           <% if participation.kenshi %>
             <%= link_to participation.full_name, helpers.admin_kenshi_path(participation.kenshi),
                   class: "pool-unpooled__name" %>
           <% else %>
             <span class="pool-unpooled__name"><%= participation.full_name %></span>
           <% end %>
-          <select class="pool-standings__move-select"
-                  aria-label="Add <%= participation.full_name %> to a pool"
-                  data-action="change->pool-membership#moveViaSelect">
-            <option value="">Add to…</option>
-            <% pool_numbers.each do |number| %>
-              <option value="<%= number %>">Pool <%= number %></option>
-            <% end %>
-            <option value="<%= next_pool_number %>">New pool (Pool <%= next_pool_number %>)</option>
-          </select>
+          <% if pool_editable? %>
+            <select class="pool-standings__move-select"
+                    aria-label="Add <%= participation.full_name %> to a pool"
+                    data-action="change->pool-membership#moveViaSelect">
+              <option value="">Add to…</option>
+              <% pool_numbers.each do |number| %>
+                <option value="<%= number %>">Pool <%= number %></option>
+              <% end %>
+              <option value="<%= next_pool_number %>">New pool (Pool <%= next_pool_number %>)</option>
+            </select>
+          <% end %>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <p class="pool-unpooled__hint">Drag a participant here to remove them from their pool.</p>
+    <p class="pool-unpooled__hint">
+      <%= pool_editable? ? "Drag a participant here to remove them from their pool." : "No unpooled participants." %>
+    </p>
   <% end %>
 <% end %>

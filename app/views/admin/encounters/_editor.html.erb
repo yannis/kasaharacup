@@ -5,8 +5,11 @@
 
 <%# Hidden targets for the in-table fighter dropdowns: each side's <select> in the
     match table carries form="<lineup_form_id>" and name="kenshi_ids[]", so picking
-    a fighter auto-submits that team's whole lineup (see lineup_controller.js). %>
-<% [encounter.team_1, encounter.team_2].compact.each do |team| %>
+    a fighter auto-submits that team's whole lineup (see lineup_controller.js).
+
+    A frozen bracket renders neither these nor the dropdowns that target them
+    (R3); a pool encounter of the same category keeps both. %>
+<% [encounter.team_1, encounter.team_2].compact.reject { encounter.bracket_locked? }.each do |team| %>
   <%= form_with url: admin_team_category_encounter_lineup_path(encounter.team_category, encounter),
         method: :patch, id: lineup_form_id(encounter, team) do |f| %>
     <%= f.hidden_field :team_id, value: team.id %>
@@ -16,7 +19,7 @@
 <%# Hidden target the in-table daihyōsen rep dropdowns associate with via
     form="<daihyosen_form_id>": picking a rep auto-PATCHes it (see
     lineup_controller.js). Rendered only once the daihyōsen bout exists. %>
-<% if encounter.team_fights.any?(&:daihyosen?) %>
+<% if encounter.team_fights.any?(&:daihyosen?) && !encounter.bracket_locked? %>
   <%= form_with url: admin_team_category_encounter_daihyosen_path(encounter.team_category, encounter),
         method: :patch, id: daihyosen_form_id(encounter) %>
 <% end %>

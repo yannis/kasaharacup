@@ -6,6 +6,11 @@
     back to the top. (A plain link here would be turned into a full-page form
     submit by ActiveAdmin's jquery_ujs.) %>
 <%= tag.div id: freeze_actions_dom_id(team_category, :bracket), class: "panel-actions" do %>
+  <%# A frozen tree offers neither update nor rebuild (R10); the PDF is a read
+      and stays. %>
+  <% if team_category.bracket_frozen? %>
+    <%= link_to "Download PDF", bracket_pdf_admin_team_category_path(team_category) %>
+  <% else %>
   <% unless team_category.bracket_only? %>
     <%= link_to "Update bracket", generate_bracket_admin_team_category_path(team_category),
           data: {controller: "stream-link", action: "stream-link#submit"} %>
@@ -22,5 +27,6 @@
                  "Scores on rebuilt encounters are lost."} %>
   |
   <%= link_to "Download PDF", bracket_pdf_admin_team_category_path(team_category) %>
+  <% end %>
   <%= render "admin/freezes/control", category: team_category, flag: :bracket %>
 <% end %>

@@ -171,7 +171,10 @@ ActiveAdmin.register TeamCategory do
     end
   end
 
-  action_item :generate_pools, only: :show, if: proc { !resource.bracket_only? } do
+  # Hidden on a frozen category; see the note on individual_category.rb's
+  # smart_pool_reset about action_items and broadcasts.
+  action_item :generate_pools, only: :show,
+    if: proc { !resource.bracket_only? && !resource.pools_frozen? && !resource.bracket_frozen? } do
     link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
       method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
   end
