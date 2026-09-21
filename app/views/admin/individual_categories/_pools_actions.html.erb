@@ -1,0 +1,17 @@
+<%# The Pools panel chrome, lifted out of app/admin/individual_category.rb so a
+    freeze broadcast can replace it — Arbre markup inside the panel carries no
+    dom id and nothing can target it. The container renders unconditionally,
+    even when it holds no link, so the broadcast never misses.
+
+    "Generate pool fights" stays available on a frozen category (R2a):
+    PoolFightGenerator skips pools that already have fights, so it is purely
+    additive, and the link is shown only while there are none anyway. %>
+<%= tag.div id: freeze_actions_dom_id(category, :pools), class: "panel-actions" do %>
+  <% if category.pools.any? && category.pool_fights.empty? %>
+    <%= link_to "Generate pool fights",
+          generate_pool_fights_admin_individual_category_path(category),
+          method: :post,
+          data: {confirm: "Generate the cyclic match list for all pools?"} %>
+  <% end %>
+  <%= render "admin/freezes/control", category: category, flag: :pools %>
+<% end %>

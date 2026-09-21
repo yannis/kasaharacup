@@ -1,0 +1,26 @@
+<%# The Bracket panel chrome, lifted out of app/admin/team_category.rb so a
+    freeze broadcast can replace it.
+
+    stream-link POSTs via fetch and renders the returned Turbo Stream in place,
+    so the bracket rebuilds without a full-page navigation that would scroll
+    back to the top. (A plain link here would be turned into a full-page form
+    submit by ActiveAdmin's jquery_ujs.) %>
+<%= tag.div id: freeze_actions_dom_id(team_category, :bracket), class: "panel-actions" do %>
+  <% unless team_category.bracket_only? %>
+    <%= link_to "Update bracket", generate_bracket_admin_team_category_path(team_category),
+          data: {controller: "stream-link", action: "stream-link#submit"} %>
+    |
+  <% end %>
+  <%# The confirm text is inlined rather than held in a local: erb_lint lints
+      each ERB tag on its own, so a local read by a later tag looks useless and
+      the pre-commit autocorrect deletes the assignment. %>
+  <%= link_to "Force rebuild", generate_bracket_admin_team_category_path(team_category, rebuild: 1),
+        data: {controller: "stream-link", action: "stream-link#submit",
+               stream_link_confirm_value: team_category.bracket_only? ?
+                 "Redraw the bracket? Scores are lost." :
+                 "Rebuild the bracket from current standings? " \
+                 "Scores on rebuilt encounters are lost."} %>
+  |
+  <%= link_to "Download PDF", bracket_pdf_admin_team_category_path(team_category) %>
+  <%= render "admin/freezes/control", category: team_category, flag: :bracket %>
+<% end %>

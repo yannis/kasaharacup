@@ -47,6 +47,8 @@ Rails.application.routes.draw do
       resources :videos
       resources :pool_memberships, only: :update, module: :team_categories
       resources :seeds, only: [:update, :destroy], module: :team_categories
+      resource :pool_freeze, only: [:create, :destroy], module: :team_categories
+      resource :bracket_freeze, only: [:create, :destroy], module: :team_categories
       resources :encounters, only: :show do
         resource :lineup, only: :update, module: :encounters
         resource :team_swap, only: :create, module: :encounters
@@ -69,6 +71,8 @@ Rails.application.routes.draw do
       end
       resources :pool_memberships, only: :update, module: :individual_categories
       resources :seeds, only: [:update, :destroy], module: :individual_categories
+      resource :pool_freeze, only: [:create, :destroy], module: :individual_categories
+      resource :bracket_freeze, only: [:create, :destroy], module: :individual_categories
       resources :documents
       resources :videos
     end

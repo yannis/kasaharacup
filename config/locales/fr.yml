@@ -128,6 +128,23 @@ fr:
     fights:
       update:
         notice: Combat mis à jour
+    freezes:
+      badge: Gelé — %{at}
+      freeze:
+        bracket: Geler l'arbre
+        pools: Geler les poules
+      frozen:
+        bracket: Arbre gelé.
+        pools: Composition des poules gelée.
+      unfreeze:
+        bracket: Dégeler l'arbre
+        pools: Dégeler les poules
+      unfreeze_confirm:
+        bracket: Dégeler rouvre les outils qui détruisent l'arbre et les résultats enregistrés. Continuer ?
+        pools: Dégeler rouvre les outils qui retirent les poules et effacent l'arbre. Continuer ?
+      unfrozen:
+        bracket: Arbre dégelé.
+        pools: Composition des poules dégelée.
     pool_fights:
       create:
         alert: Choisissez deux kenshis différents de cette poule pour le kettei-sen.

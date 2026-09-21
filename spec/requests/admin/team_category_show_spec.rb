@@ -46,6 +46,47 @@ RSpec.describe "Admin team category show page" do
     expect(response.body).not_to include("team_seeds_#{category.id}")
   end
 
+  # The Bracket panel chrome moved out of Arbre into a partial so a freeze
+  # broadcast can replace it; the Pools panel gained one it never had. These
+  # pin what the move carries.
+  describe "panel chrome" do
+    it "gives the Pools panel a freeze control once the draw exists" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:team, team_category: category, name: "Kyoto", pool_number: 1)
+
+      get admin_team_category_path(category)
+
+      expect(response.body).to include("team_pools_actions_#{category.id}")
+      # The control is asserted by its endpoint, not its label: the admin
+      # renders in French and the label is a translation.
+      expect(response.body).to include(admin_team_category_pool_freeze_path(category))
+    end
+
+    it "keeps the bracket links and adds the freeze control" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+
+      expect(response.body).to include("team_bracket_actions_#{category.id}")
+      expect(response.body).to include("Update bracket")
+      expect(response.body).to include("Force rebuild")
+      expect(response.body).to include("Download PDF")
+      expect(response.body).to include(admin_team_category_bracket_freeze_path(category))
+    end
+
+    # bracket_only? drops "Update bracket": there are no standings to fill in.
+    it "drops the update link on a bracket-only category" do
+      category = create(:team_category, cup: cup, pool_size: 1, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include("Update bracket")
+      expect(response.body).to include("Force rebuild")
+    end
+  end
+
   # The panel owns the seed order now; a free-text field on the team form could
   # set 7 with no 1..6 and the two paths would disagree about the draw.
   it "offers no seed field on the team form" do

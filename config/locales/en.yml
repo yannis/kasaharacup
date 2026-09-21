@@ -124,6 +124,23 @@ en:
     fights:
       update:
         notice: Fight updated
+    freezes:
+      badge: Frozen — %{at}
+      freeze:
+        bracket: Freeze bracket
+        pools: Freeze pools
+      frozen:
+        bracket: Bracket frozen.
+        pools: Pool formation frozen.
+      unfreeze:
+        bracket: Unfreeze bracket
+        pools: Unfreeze pools
+      unfreeze_confirm:
+        bracket: Unfreezing re-opens the tools that destroy the tree and its recorded winners. Continue?
+        pools: Unfreezing re-opens the tools that redraw the pools and clear the bracket. Continue?
+      unfrozen:
+        bracket: Bracket unfrozen.
+        pools: Pool formation unfrozen.
     pool_fights:
       create:
         alert: Pick two different kenshis from this pool for the kettei-sen.

@@ -99,6 +99,10 @@ ActiveAdmin.register TeamCategory do
     # initial pool creation. The _pools partial renders nothing when empty.
     if category.pool_size.to_i > 1
       panel "Pools" do
+        # Holds the freeze control, and gives the broadcast a dom id to target.
+        # The team-side redraw links are ActiveAdmin action_items in the page
+        # header rather than panel content, so there was nothing else to lift.
+        render partial: "admin/team_categories/pools_actions", locals: {team_category: category}
         render partial: "admin/team_categories/pools", locals: {team_category: category}
         # Late registrants (pool_number nil): drag onto a pool or use the
         # per-row "Add to…" select. Renders an empty container when there are none.
@@ -107,27 +111,9 @@ ActiveAdmin.register TeamCategory do
     end
     if category.bracket_encounters.any?
       panel "Bracket" do
-        div do
-          # stream-link POSTs via fetch and renders the returned Turbo Stream in
-          # place, so the bracket rebuilds without a full-page navigation that
-          # would scroll back to the top. (A plain link here would be turned into
-          # a full-page form submit by ActiveAdmin's jquery_ujs.)
-          unless category.bracket_only?
-            span(link_to("Update bracket", generate_bracket_admin_team_category_path(category),
-              data: {controller: "stream-link", action: "stream-link#submit"}))
-            span " | "
-          end
-          rebuild_confirm = if category.bracket_only?
-            "Redraw the bracket? Scores are lost."
-          else
-            "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
-          end
-          span(link_to("Force rebuild", generate_bracket_admin_team_category_path(category, rebuild: 1),
-            data: {controller: "stream-link", action: "stream-link#submit",
-                   stream_link_confirm_value: rebuild_confirm}))
-          span " | "
-          span(link_to("Download PDF", bracket_pdf_admin_team_category_path(category)))
-        end
+        # In a partial rather than inline Arbre so a freeze broadcast can
+        # replace it — see the Pools panel above.
+        render partial: "admin/team_categories/bracket_actions", locals: {team_category: category}
         render EncounterTreeComponent.new(team_category: category, admin: true)
         # Encounter editors load here (tree cards target this frame); kept as a
         # sibling of the tree frame so tree broadcasts can't wipe an open editor.

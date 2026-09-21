@@ -76,14 +76,10 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
         render IndividualSeedsComponent.new(category: category)
       end
       panel "Pools" do
-        if category.pools.any? && category.pool_fights.empty?
-          div do
-            span link_to("Generate pool fights",
-              generate_pool_fights_admin_individual_category_path(category),
-              method: :post,
-              data: {confirm: "Generate the cyclic match list for all pools?"})
-          end
-        end
+        # The panel's links live in a partial with a dom id, not in Arbre: a
+        # freeze broadcast has to be able to replace them, and Arbre markup
+        # inside a panel carries no id anything can target.
+        render partial: "admin/individual_categories/pools_actions", locals: {category: category}
         # Always rendered (even with zero pools) so the first new pool card can
         # land. The pool-membership controller re-renders this same partial to
         # add a new pool, so the container markup lives in one place.
@@ -96,24 +92,9 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
 
     panel "Competition tree" do
-      div do
-        if category.bracket_fights.none?
-          span link_to("Generate tree", generate_bracket_admin_individual_category_path(category), method: :post,
-            data: {confirm: "Generate the competition tree from current pool results?"})
-        else
-          span link_to("Update tree", generate_bracket_admin_individual_category_path(category),
-            method: :post,
-            data: {confirm: "Fill in the latest pool ranks. Recorded winners are kept."})
-          span " | "
-          span link_to("Force rebuild",
-            generate_bracket_admin_individual_category_path(category, rebuild_started: true),
-            method: :post,
-            data: {confirm: "This destroys the existing tree and recorded winners, " \
-              "and rebuilds from scratch. Continue?"})
-          span " | "
-          span link_to("Download PDF", competition_tree_pdf_admin_individual_category_path(category))
-        end
-      end
+      # In a partial rather than inline Arbre so a freeze broadcast can replace
+      # it — see the Pools panel above.
+      render partial: "admin/individual_categories/tree_actions", locals: {category: category}
       render CompetitionTreeComponent.new(category: category, admin: true)
     end
 

@@ -1,0 +1,8 @@
+<%# The team Pools panel chrome. Unlike its three siblings this one had no
+    markup to lift: the team-side "Generate pools" / "Generate pool encounters"
+    are ActiveAdmin action_items in the page header, not panel content. The
+    container exists so the freeze control has a home inside the panel (R9) and
+    a dom id a freeze broadcast can replace (R11). %>
+<%= tag.div id: freeze_actions_dom_id(team_category, :pools), class: "panel-actions" do %>
+  <%= render "admin/freezes/control", category: team_category, flag: :pools %>
+<% end %>

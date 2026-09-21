@@ -1,0 +1,28 @@
+<%# The Freeze button, or the badge that replaces it once frozen (R9).
+    Rendered by all four chrome partials so the surfaces cannot drift, and by
+    Admin::Freezing when it re-renders that chrome into a Turbo Stream.
+
+    Hidden entirely when there is nothing to freeze (R15) — no pools drawn, no
+    bracket generated, or a bracket-only category's absent pool phase.
+
+    Only the unfreeze side confirms (R14): freezing is harmless and reversible,
+    unfreezing re-opens the tools that destroy recorded work.
+
+    The state is read through FreezeHelper rather than into template locals:
+    erb_lint lints each ERB tag on its own, so a local read in a later tag
+    looks useless and the pre-commit autocorrect deletes it. %>
+<% if freeze_freezable?(category, flag) %>
+  <span class="freeze-control">
+    <% if freeze_frozen_at(category, flag) %>
+      <span class="freeze-control__badge freeze-control__badge--frozen">
+        <%= t("admin.freezes.badge", at: l(freeze_frozen_at(category, flag), format: :short)) %>
+      </span>
+      <%= button_to t("admin.freezes.unfreeze.#{flag}"), freeze_path(category, flag),
+            method: :delete, class: "freeze-control__button",
+            form: {data: {turbo_confirm: t("admin.freezes.unfreeze_confirm.#{flag}")}} %>
+    <% else %>
+      <%= button_to t("admin.freezes.freeze.#{flag}"), freeze_path(category, flag),
+            method: :post, class: "freeze-control__button" %>
+    <% end %>
+  </span>
+<% end %>
