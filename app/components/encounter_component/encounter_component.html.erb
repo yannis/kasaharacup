@@ -22,13 +22,13 @@
     <ol class="pool-matches">
       <% position_rows.each do |fight| %>
         <%= render "admin/encounters/match", encounter: encounter, fight: fight,
-              admin: admin, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis,
+              admin: editable?, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis,
               suggestions: suggestions %>
       <% end %>
 
       <% if daihyosen %>
         <%= render "admin/encounters/match", encounter: encounter, fight: daihyosen,
-              admin: admin, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis,
+              admin: editable?, point_codes: point_codes, teams: teams, team_kenshis: team_kenshis,
               suggestions: suggestions %>
       <% end %>
     </ol>

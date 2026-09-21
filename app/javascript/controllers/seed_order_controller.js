@@ -87,6 +87,14 @@ export default class extends Controller {
         body: new URLSearchParams({ to_position: position }),
       });
       if (response.status === 204) return; // no-op (already in that position)
+      // Frozen pools or a frozen bracket answer 403 with a reason. Reported in
+      // the panel's own banner rather than the generic "could not be saved"
+      // below, which would hide why.
+      if (response.status === 403) {
+        const { message } = await response.json();
+        this.report(message);
+        return;
+      }
       if (!response.ok) {
         console.error('seed move failed:', response.status, await response.text());
         this.report('The seed order could not be saved. Reload and try again.');

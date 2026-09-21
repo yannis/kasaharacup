@@ -127,6 +127,7 @@ ActiveAdmin.register Cup do
         )
       end
     end
+    render partial: "admin/cups/freeze_all", locals: {cup: cup}
     if cup.kenshis.present?
       panel "Kenshis" do
         table do

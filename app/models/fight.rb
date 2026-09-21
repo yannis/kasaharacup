@@ -65,6 +65,11 @@ class Fight < ApplicationRecord
     end
   end
 
+  # A tree fight, as opposed to one played inside a pool. The distinction the
+  # freeze guards turn on: Admin::FightPointsController serves both, and the
+  # pool phase goes on being recorded while the bracket is locked.
+  def bracket? = pool_number.nil?
+
   def fighters
     [resolved_fighter_1, resolved_fighter_2].compact
   end

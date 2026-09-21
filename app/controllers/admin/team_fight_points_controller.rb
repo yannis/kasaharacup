@@ -5,6 +5,8 @@ module Admin
     rescue_from ArgumentError, with: :render_unprocessable
     rescue_from ActiveRecord::RecordInvalid, with: :flash_validation_error
 
+    before_action :refuse_when_bracket_frozen
+
     def create
       team_fight.with_lock { team_fight.fight_points.create!(point_params) }
       respond_with_encounter(encounter)
@@ -14,6 +16,12 @@ module Admin
       point = team_fight.fight_points.find(params.expect(:id))
       point.destroy!
       respond_with_encounter(encounter)
+    end
+
+    # Serves pool encounters as well as bracket ones, so the guard turns on the
+    # encounter: a frozen bracket must not stop the pool phase being recorded.
+    private def refuse_when_bracket_frozen
+      guard_frozen_bracket!(team_category) if encounter.bracket?
     end
 
     private def team_fight

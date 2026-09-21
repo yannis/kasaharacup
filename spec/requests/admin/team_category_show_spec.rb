@@ -46,6 +46,47 @@ RSpec.describe "Admin team category show page" do
     expect(response.body).not_to include("team_seeds_#{category.id}")
   end
 
+  # The Bracket panel chrome moved out of Arbre into a partial so a freeze
+  # broadcast can replace it; the Pools panel gained one it never had. These
+  # pin what the move carries.
+  describe "panel chrome" do
+    it "gives the Pools panel a freeze control once the draw exists" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:team, team_category: category, name: "Kyoto", pool_number: 1)
+
+      get admin_team_category_path(category)
+
+      expect(response.body).to include("team_pools_actions_#{category.id}")
+      # The control is asserted by its endpoint, not its label: the admin
+      # renders in French and the label is a translation.
+      expect(response.body).to include(admin_team_category_pool_freeze_path(category))
+    end
+
+    it "keeps the bracket links and adds the freeze control" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+
+      expect(response.body).to include("team_bracket_actions_#{category.id}")
+      expect(response.body).to include("Update bracket")
+      expect(response.body).to include("Force rebuild")
+      expect(response.body).to include("Download PDF")
+      expect(response.body).to include(admin_team_category_bracket_freeze_path(category))
+    end
+
+    # bracket_only? drops "Update bracket": there are no standings to fill in.
+    it "drops the update link on a bracket-only category" do
+      category = create(:team_category, cup: cup, pool_size: 1, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include("Update bracket")
+      expect(response.body).to include("Force rebuild")
+    end
+  end
+
   # The panel owns the seed order now; a free-text field on the team form could
   # set 7 with no 1..6 and the two paths would disagree about the draw.
   it "offers no seed field on the team form" do
@@ -55,5 +96,66 @@ RSpec.describe "Admin team category show page" do
 
     expect(response).to have_http_status(:ok)
     expect(response.body).not_to include("team_seed")
+  end
+
+  describe "when frozen" do
+    it "drops the pool formation controls and the redraw action item" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:team, team_category: category, name: "Kyoto", pool_number: 1)
+      category.freeze_pools!
+
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include("pool-unpooled__grip")
+      expect(response.body).not_to include(generate_pools_admin_team_category_path(category))
+      expect(response.body).to include(admin_team_category_pool_freeze_path(category))
+    end
+
+    it "drops the bracket rebuild links when the bracket is frozen" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+      category.freeze_bracket!
+
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include("Update bracket")
+      expect(response.body).not_to include("Force rebuild")
+      expect(response.body).to include("Download PDF")
+    end
+
+    # The page-header action item, which the panel partial does not reach. The
+    # endpoint refuses it anyway, so leaving it on the page only offers a
+    # control that always fails.
+    it "drops the Generate bracket action item when the bracket is frozen" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+      expect(response.body).to include(generate_bracket_admin_team_category_path(category))
+
+      category.freeze_bracket!
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include(generate_bracket_admin_team_category_path(category))
+    end
+
+    # freezable? reads live state and the freeze endpoints do not require it,
+    # so a surface can be frozen and then stop being freezable. Gating the
+    # whole control on freezable? alone stranded such a category read-only with
+    # no unfreeze button on its own page.
+    it "keeps the unfreeze control on a frozen category that is no longer freezable" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:team, team_category: category, name: "Kyoto", pool_number: 1)
+      category.freeze_pools!
+      # delete_all, the way a cascade reaches these rows: the model guard
+      # exempts that path, which is how a frozen category loses its draw.
+      category.teams.delete_all
+
+      get admin_team_category_path(category)
+
+      expect(category.reload).to be_pools_frozen
+      expect(category).not_to be_pools_freezable
+      expect(response.body).to include(admin_team_category_pool_freeze_path(category))
+    end
   end
 end

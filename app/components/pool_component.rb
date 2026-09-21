@@ -50,8 +50,23 @@ class PoolComponent < ViewComponent::Base
 
   # Admin cards are drop targets for the pool-membership drag-and-drop: a
   # participation row dragged from another card drops here to join this pool.
+  # The formation controls (drag, move select, redraw) come off when EITHER
+  # flag is set: a frozen draw refuses the move, and so does a frozen bracket,
+  # which any move would clear (R5). The results controls — pool_rank, the
+  # fight winners, the kettei-sen form — deliberately keep the bare `admin`
+  # check, because the pool phase goes on being played after the draw settles.
+  #
+  # The public path is unaffected either way: `admin` is already false there.
+  private def pool_editable? = admin && helpers.pool_formation_editable?(category)
+
+  # The button relabels itself for a pool with no fights, and posts to
+  # #regenerate either way. Generating is additive and stays available on a
+  # frozen category (R2a); regenerating destroys the pool's fights first, so it
+  # goes. Mirrors the guard in Admin::PoolFightsController#regenerate.
+  private def regenerate_offered? = admin && (pool_fights.empty? || pool_editable?)
+
   private def container_data
-    return {} unless admin
+    return {} unless pool_editable?
 
     {
       controller: "pool-membership",

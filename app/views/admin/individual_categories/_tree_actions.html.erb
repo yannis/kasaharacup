@@ -1,0 +1,28 @@
+<%# The Competition tree panel chrome, lifted out of
+    app/admin/individual_category.rb so a freeze broadcast can replace it.
+    Same links as before; Arbre's structural <span> wrappers are dropped since
+    these are inline links in a div and nothing styled them. %>
+<%= tag.div id: freeze_actions_dom_id(category, :bracket), class: "panel-actions" do %>
+  <%# Generate, update and force rebuild all post to the same guarded action,
+      so a frozen tree offers none of them (R10). The PDF is a read and stays. %>
+  <% if category.bracket_frozen? %>
+    <%= link_to "Download PDF", competition_tree_pdf_admin_individual_category_path(category) %>
+  <% elsif category.bracket_fights.none? %>
+    <%= link_to "Generate tree", generate_bracket_admin_individual_category_path(category),
+          method: :post,
+          data: {confirm: "Generate the competition tree from current pool results?"} %>
+  <% else %>
+    <%= link_to "Update tree", generate_bracket_admin_individual_category_path(category),
+          method: :post,
+          data: {confirm: "Fill in the latest pool ranks. Recorded winners are kept."} %>
+    |
+    <%= link_to "Force rebuild",
+          generate_bracket_admin_individual_category_path(category, rebuild_started: true),
+          method: :post,
+          data: {confirm: "This destroys the existing tree and recorded winners, " \
+                          "and rebuilds from scratch. Continue?"} %>
+    |
+    <%= link_to "Download PDF", competition_tree_pdf_admin_individual_category_path(category) %>
+  <% end %>
+  <%= render "admin/freezes/control", category: category, flag: :bracket %>
+<% end %>

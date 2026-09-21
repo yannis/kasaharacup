@@ -17,6 +17,15 @@ class IndividualCategory < ApplicationRecord
     "#{name} (#{cup.year})"
   end
 
+  # Freezable's hooks (R15). The same question #pools answers — is there a
+  # draw — asked as an existence check: the cup panel's "N of M" summary calls
+  # this once per category, and #pools eager-loads every pooled participation
+  # with its kenshi, cup and club to build objects nobody reads. The pool_size
+  # half matches #pools, which returns nothing at all below 2.
+  def pools_freezable? = pool_size.to_i > 1 && participations.where.not(pool_number: nil).exists?
+
+  def bracket_freezable? = bracket_fights.exists?
+
   # All pool fights for the category, loaded once with their fighters/points and
   # grouped by pool number. PoolComponent reads its slice from here so rendering
   # every pool costs a single fights query instead of one per pool.

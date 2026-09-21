@@ -29,6 +29,20 @@ class TeamPoolUnpooledComponent < ViewComponent::Base
     (pool_numbers.max || 0) + 1
   end
 
+  # Admin-only by construction (nothing renders this publicly), so the freeze
+  # flags alone decide. Either one closes the formation: a frozen draw refuses
+  # the move, and a frozen bracket refuses it too because the move would clear
+  # the tree (R5).
+  private def pool_editable? = helpers.pool_formation_editable?(team_category)
+
+  private def drop_zone_data
+    return {} unless pool_editable?
+
+    {controller: "pool-membership",
+     action: "dragover->pool-membership#dragOver " \
+       "dragleave->pool-membership#dragLeave drop->pool-membership#dropUnpool"}
+  end
+
   private def dom_id_for_unpooled
     "team_pool_unpooled_#{team_category.id}"
   end

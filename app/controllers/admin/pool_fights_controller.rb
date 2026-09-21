@@ -61,6 +61,13 @@ module Admin
       respond_with_pool(category, pool_number, notice: "Tiebreaker removed.")
     end
 
+    # Guarded where #generate is not (R2a): this destroy_all's the pool's
+    # fights before rebuilding them, so it can alter a frozen formation, while
+    # PoolFightGenerator on its own skips pools that already have fights and is
+    # purely additive.
+    #
+    # In-action rather than a before_action because the category comes out of
+    # the action's own params; hence the explicit return.
     def regenerate
       category = IndividualCategory.find(params.expect(:id))
       pool_number = Integer(params[:pool_number], exception: false)
@@ -68,6 +75,16 @@ module Admin
         redirect_to admin_individual_category_path(category), alert: t(".alert")
         return
       end
+      # Only a redraw when there is something to destroy. The pool card's
+      # button posts here for first-time generation too — it relabels itself
+      # "Generate fights for this pool" while the pool has none — and that case
+      # is additive, so R2a keeps it available on a frozen category, exactly as
+      # the panel-level #generate is.
+      #
+      # guard_frozen_surface!, not guard_frozen_pools!: a redraw here destroys
+      # the pool's recorded fights but never touches the tree, so the refusal
+      # must not tell the admin this change would have cleared their bracket.
+      return if category.pool_fights.exists?(pool_number: pool_number) && guard_frozen_surface!(category)
       category.transaction do
         category.pool_fights.where(pool_number: pool_number).destroy_all
         PoolFightGenerator.new(category, pool_number: pool_number).call

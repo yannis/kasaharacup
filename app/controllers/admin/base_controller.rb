@@ -2,6 +2,8 @@
 
 module Admin
   class BaseController < ApplicationController
+    include Admin::FreezeGuard
+
     before_action :authenticate_admin_user!
 
     private def respond_with_tree(category, notice: nil)

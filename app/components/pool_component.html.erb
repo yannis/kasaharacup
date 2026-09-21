@@ -6,7 +6,7 @@
   <%= tag.div class: "pool-card", data: container_data do %>
     <div class="pool-card__header">
       <h3 class="pool-card__title">Pool <%= pool_number %> (total Dan: <%= pool&.total_dan %>)</h3>
-      <% if admin && participations.size >= 2 %>
+      <% if regenerate_offered? && participations.size >= 2 %>
         <%= helpers.button_to regenerate_button_label,
               helpers.regenerate_pool_fights_admin_individual_category_path(category),
               method: :post,
@@ -40,18 +40,19 @@
           <th>Pts+</th>
           <th>Pts−</th>
           <th>Rank</th>
-          <% if admin %><th><span class="pool-standings__sr-only">Move</span></th><th></th><% end %>
+          <% if pool_editable? %><th><span class="pool-standings__sr-only">Move</span></th><% end %>
+          <% if admin %><th></th><% end %>
         </tr>
       </thead>
       <tbody>
         <% standings_rows.each do |row| %>
           <% participation = row.participation # rubocop:disable Lint/UselessAssignment %>
           <% kenshi = participation.kenshi # rubocop:disable Lint/UselessAssignment %>
-          <tr<% if admin %> data-participation-id="<%= participation.id %>"
+          <tr<% if pool_editable? %> data-participation-id="<%= participation.id %>"
               data-move-url="<%= move_url(participation) %>"
               data-from-pool="<%= pool_number %>"<% end %>>
             <td>
-              <% if admin %>
+              <% if pool_editable? %>
                 <span class="pool-standings__grip pool-match__grip" draggable="true"
                       title="Drag to another pool"
                       data-action="dragstart->pool-membership#dragStart">⠿</span>
@@ -94,7 +95,7 @@
                 <span class="pool-standings__placeholder">—</span>
               <% end %>
             </td>
-            <% if admin %>
+            <% if pool_editable? %>
               <td class="pool-standings__move">
                 <% others = other_pool_numbers # rubocop:disable Lint/UselessAssignment %>
                 <% if others.any? %>

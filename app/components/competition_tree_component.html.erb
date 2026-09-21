@@ -38,7 +38,7 @@
               </article>
             <% else %>
               <article class="competition-tree__match" style="<%= match_style(fight) %>">
-                <% if admin && fight.fighters.any? %>
+                <% if bracket_editable? && fight.fighters.any? %>
                   <details class="competition-tree__admin-details"
                           data-controller="fight-winner"
                           data-fight-winner-url-value="<%= admin_individual_category_fight_path(category, fight) %>">

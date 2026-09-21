@@ -63,6 +63,8 @@ fr:
         remember_me: Garder en mémoire
     errors:
       messages:
+        pools_frozen: ne peut pas être modifié tant que la composition des poules est gelée
+        pools_frozen_destroy: ne peut pas être supprimé tant que la composition des poules est gelée
         record_invalid: 'La validation a échoué : %{errors}'
         restrict_dependent_destroy:
           has_many: Vous ne pouvez pas supprimer l'enregistrement parce que les %{record} dépendants existent
@@ -128,6 +130,49 @@ fr:
     fights:
       update:
         notice: Combat mis à jour
+    freezes:
+      all:
+        freeze:
+          bracket: Geler tous les arbres
+          pools: Geler toutes les poules
+        freeze_confirm:
+          bracket: Geler l'arbre de chaque catégorie de cette coupe qui en a un ?
+          pools: Geler la composition des poules de chaque catégorie tirée de cette coupe ?
+        frozen:
+          bracket: "%{count} arbre(s) gelé(s) ; %{skipped} ignoré(s), sans arbre."
+          pools: "%{count} composition(s) de poules gelée(s) ; %{skipped} ignorée(s), sans tirage."
+        summary:
+          bracket: "%{count} arbre(s) gelé(s) sur %{total}"
+          pools: "%{count} composition(s) de poules gelée(s) sur %{total}"
+        unfreeze:
+          bracket: Dégeler tous les arbres
+          pools: Dégeler toutes les poules
+        unfreeze_confirm:
+          bracket: Dégeler tous les arbres de cette coupe ? Cela rouvre les outils qui détruisent les résultats.
+          pools: Dégeler toutes les poules de cette coupe ? Cela rouvre les outils qui retirent les poules.
+        unfrozen:
+          bracket: "%{count} arbre(s) dégelé(s)."
+          pools: "%{count} composition(s) de poules dégelée(s)."
+      badge: Gelé — %{at}
+      freeze:
+        bracket: Geler l'arbre
+        pools: Geler les poules
+      frozen:
+        bracket: Arbre gelé.
+        pools: Composition des poules gelée.
+      refused:
+        bracket: L'arbre est gelé. Dégelez-le pour effectuer cette modification.
+        bracket_blocks_pools: L'arbre est gelé et cette modification l'effacerait. Dégelez d'abord l'arbre.
+        pools: La composition des poules est gelée. Dégelez-la pour effectuer cette modification.
+      unfreeze:
+        bracket: Dégeler l'arbre
+        pools: Dégeler les poules
+      unfreeze_confirm:
+        bracket: Dégeler rouvre les outils qui détruisent l'arbre et les résultats enregistrés. Continuer ?
+        pools: Dégeler rouvre les outils qui retirent les poules et effacent l'arbre. Continuer ?
+      unfrozen:
+        bracket: Arbre dégelé.
+        pools: Composition des poules dégelée.
     pool_fights:
       create:
         alert: Choisissez deux kenshis différents de cette poule pour le kettei-sen.

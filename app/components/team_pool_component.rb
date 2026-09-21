@@ -23,10 +23,16 @@ class TeamPoolComponent < ViewComponent::Base
     "team_pool_#{team_category.id}_#{pool_number}"
   end
 
+  # Team twin of PoolComponent#pool_editable?: the formation controls come off
+  # when either flag is set, while the results controls keep the bare `admin`
+  # check.
+  private def pool_editable? = admin && helpers.pool_formation_editable?(team_category)
+
   # Admin cards are drop targets for the pool-membership drag-and-drop: a team
-  # row dragged from another card drops here to join this pool.
+  # row dragged from another card drops here to join this pool. A frozen
+  # formation is not a drop target.
   private def container_data
-    return {} unless admin
+    return {} unless pool_editable?
 
     {
       controller: "pool-membership",

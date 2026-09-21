@@ -8,6 +8,10 @@ module Admin
     # work, the service returns :needs_confirmation and we answer 422 so the
     # client can confirm and retry with force=true.
     class PoolMembershipsController < Admin::BaseController
+      # A frozen formation refuses the move outright — and so does a frozen
+      # bracket, which this move would clear (R5).
+      before_action :refuse_when_frozen
+
       def update
         team = team_category.teams.find(params.expect(:id))
         result = TeamPoolMove.new(team: team, to_pool_number: params[:to_pool_number], force: forced?).call
@@ -23,6 +27,8 @@ module Admin
           render turbo_stream: streams
         end
       end
+
+      private def refuse_when_frozen = guard_frozen_pools!(team_category)
 
       private def forced?
         ActiveModel::Type::Boolean.new.cast(params[:force])

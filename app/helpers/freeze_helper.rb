@@ -1,0 +1,87 @@
+# frozen_string_literal: true
+
+# Paths and dom ids for the pool / bracket freeze controls (issue #1319).
+#
+# Both are needed in two view contexts that cannot share a `helpers.` prefix:
+# the ActiveAdmin show pages render the chrome partials from Arbre, and
+# Admin::Freezing re-renders the very same partials into a Turbo Stream. Keeping
+# the mapping here means the page and the broadcast cannot target different ids.
+module FreezeHelper
+  FREEZE_SURFACES = {
+    ["IndividualCategory", :pools] =>
+      {prefix: "individual_pools", path: :admin_individual_category_pool_freeze_path},
+    ["IndividualCategory", :bracket] =>
+      {prefix: "individual_tree", path: :admin_individual_category_bracket_freeze_path},
+    ["TeamCategory", :pools] =>
+      {prefix: "team_pools", path: :admin_team_category_pool_freeze_path},
+    ["TeamCategory", :bracket] =>
+      {prefix: "team_bracket", path: :admin_team_category_bracket_freeze_path}
+  }.freeze
+
+  def freeze_path(category, flag)
+    public_send(surface_for(category, flag)[:path], category)
+  end
+
+  # The flag's state, read through the flag rather than by name, so the control
+  # partial serves all four surfaces without a local variable per branch.
+  #
+  # Template locals are avoided here on purpose: erb_lint runs Rubocop over each
+  # ERB tag in isolation, so a local assigned in one tag and read in the next
+  # looks like a useless assignment, and the pre-commit hook's -a deletes the
+  # assignment and leaves the read behind.
+  def freeze_freezable?(category, flag)
+    (flag.to_sym == :bracket) ? category.bracket_freezable? : category.pools_freezable?
+  end
+
+  # THE rule for "can the pool formation still be edited", in one place: the
+  # components, the ActiveAdmin partials and the broadcasts that re-render them
+  # all read it here rather than each spelling it out, because a divergence
+  # would be a hole rather than a difference.
+  #
+  # Both flags close the formation. A frozen draw refuses the move outright,
+  # and a frozen bracket refuses it too, because any move clears the tree as a
+  # side effect (R5). Callers that also have an `admin` flag combine the two.
+  #
+  # The seeding reads the same rule for different reasons: the seeds drive the
+  # draw on a pooled category and the byes on a bracket-only one.
+  def pool_formation_editable?(category)
+    !category.pools_frozen? && !category.bracket_frozen?
+  end
+
+  def bracket_structure_editable?(category)
+    !category.bracket_frozen?
+  end
+
+  def freeze_frozen_at(category, flag)
+    (flag.to_sym == :bracket) ? category.bracket_frozen_at : category.pools_frozen_at
+  end
+
+  # The chrome container the freeze broadcast replaces. Always rendered, even
+  # when the panel has no links to show, so the broadcast never misses a target.
+  def freeze_actions_dom_id(category, flag)
+    "#{surface_for(category, flag)[:prefix]}_actions_#{category.id}"
+  end
+
+  # Counts behind the cup panel's "N of M" summary (R13). Both category types
+  # in one number, because the cup page reasons about "every category" rather
+  # than about the two tables behind them.
+  def cup_pools_frozen_count(cup) = cup_categories(cup).count(&:pools_frozen?)
+
+  def cup_brackets_frozen_count(cup) = cup_categories(cup).count(&:bracket_frozen?)
+
+  def cup_pool_freezable_count(cup) = cup_categories(cup).count(&:pools_freezable?)
+
+  def cup_bracket_freezable_count(cup) = cup_categories(cup).count(&:bracket_freezable?)
+
+  # Deliberately not memoized. Memoizing held the loaded category objects, so a
+  # second call in the same helper instance answered from before a freeze —
+  # and the number is never more worth reading than right after one. The cup
+  # page is not a hot path; six extra small queries are the better trade.
+  private def cup_categories(cup)
+    cup.individual_categories.to_a + cup.team_categories.to_a
+  end
+
+  private def surface_for(category, flag)
+    FREEZE_SURFACES.fetch([category.class.name, flag.to_sym])
+  end
+end

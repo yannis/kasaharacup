@@ -182,4 +182,71 @@ RSpec.describe PoolComponent, type: :component do
 
     expect(page).to have_no_css(".pool-standings__seed")
   end
+
+  # R10: a frozen pool card stops offering the formation controls the guards
+  # would refuse, and keeps every results control, because the pool phase goes
+  # on being played after the draw is settled.
+  describe "when the pools are frozen" do
+    before do
+      add_kenshi(pool: 1, position: 1)
+      add_kenshi(pool: 1, position: 2)
+      # A second pool, so the row's "Move to…" select has somewhere to offer.
+      add_kenshi(pool: 2, position: 1)
+      add_kenshi(pool: 2, position: 2)
+    end
+
+    def card
+      render_inline(described_class.new(category: category, pool_number: 1, admin: true)).to_html
+    end
+
+    it "drops the grip, the move select and the drag wiring" do
+      editable = card
+      expect(editable).to include("pool-standings__grip")
+      expect(editable).to include("pool-standings__move-select")
+      expect(editable).to include("data-move-url")
+
+      category.freeze_pools!
+
+      frozen = card
+      expect(frozen).not_to include("pool-standings__grip")
+      expect(frozen).not_to include("pool-standings__move-select")
+      expect(frozen).not_to include("data-move-url")
+      expect(frozen).not_to include("pool-membership")
+    end
+
+    it "keeps the rank editor and the kettei-sen form" do
+      category.freeze_pools!
+
+      frozen = card
+
+      expect(frozen).to include("best_in_place")
+      expect(frozen).to include("pool_fight")
+    end
+
+    # R5: a frozen bracket closes the formation too, because any move would
+    # clear the tree.
+    it "drops the same controls when only the bracket is frozen" do
+      category.freeze_bracket!
+
+      expect(card).not_to include("pool-standings__grip")
+    end
+
+    # R2a: the button relabels itself and posts to the same action, so it stays
+    # while it is generating and goes once it would be a redraw.
+    it "keeps the generate button but drops it once fights exist" do
+      category.freeze_pools!
+      expect(card).to include("Generate fights for this pool")
+
+      PoolFightGenerator.new(category).call
+      expect(card).not_to include("Regenerate this pool's fights")
+    end
+
+    it "restores every control once unfrozen" do
+      category.freeze_pools!
+      category.unfreeze_pools!
+
+      expect(card).to include("pool-standings__grip")
+      expect(card).to include("pool-standings__move-select")
+    end
+  end
 end

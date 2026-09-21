@@ -24,6 +24,11 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   end
 
   controller do
+    # ActiveAdmin member actions run here, in an ActiveAdmin::ResourceController
+    # — a sibling of Admin::BaseController, not a subclass — so the freeze
+    # guard has to be included again to reach reset_smart_pools below.
+    include Admin::FreezeGuard
+
     def scoped_collection
       super.includes(:cup, :participations)
     end
@@ -48,13 +53,20 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     actions do |category|
       [
-        link_to("Smart reset", reset_smart_pools_admin_individual_category_path(category),
-          data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}),
+        # A redraw, so a frozen formation does not offer it (the guard refuses
+        # it either way; an offered control that always fails is the confusion
+        # this feature exists to remove).
+        (if category.pools_frozen? || category.bracket_frozen?
+           nil
+         else
+           link_to("Generate pools", reset_smart_pools_admin_individual_category_path(category),
+             data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."})
+         end),
         link_to("PDF", pdf_admin_individual_category_path(category)),
         link_to("PDF recap", pdf_recap_admin_individual_category_path(category)),
         link_to("Match sheet", sheet_admin_individual_category_path(category)),
         link_to("Pool match sheets", pool_sheets_admin_individual_category_path(category))
-      ].join(" ").html_safe
+      ].compact.join(" ").html_safe
     end
   end
 
@@ -70,20 +82,16 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     if category.pool_size.to_i > 1
       # Above the pools: seeding precedes the draw, and the seeds only take
-      # effect on the next Smart pool reset. Inside the same guard, because a
+      # effect on the next Generate pools. Inside the same guard, because a
       # pool-less category never runs the pooler.
       panel "Seeding" do
         render IndividualSeedsComponent.new(category: category)
       end
       panel "Pools" do
-        if category.pools.any? && category.pool_fights.empty?
-          div do
-            span link_to("Generate pool fights",
-              generate_pool_fights_admin_individual_category_path(category),
-              method: :post,
-              data: {confirm: "Generate the cyclic match list for all pools?"})
-          end
-        end
+        # The panel's links live in a partial with a dom id, not in Arbre: a
+        # freeze broadcast has to be able to replace them, and Arbre markup
+        # inside a panel carries no id anything can target.
+        render partial: "admin/individual_categories/pools_actions", locals: {category: category}
         # Always rendered (even with zero pools) so the first new pool card can
         # land. The pool-membership controller re-renders this same partial to
         # add a new pool, so the container markup lives in one place.
@@ -96,24 +104,9 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
 
     panel "Competition tree" do
-      div do
-        if category.bracket_fights.none?
-          span link_to("Generate tree", generate_bracket_admin_individual_category_path(category), method: :post,
-            data: {confirm: "Generate the competition tree from current pool results?"})
-        else
-          span link_to("Update tree", generate_bracket_admin_individual_category_path(category),
-            method: :post,
-            data: {confirm: "Fill in the latest pool ranks. Recorded winners are kept."})
-          span " | "
-          span link_to("Force rebuild",
-            generate_bracket_admin_individual_category_path(category, rebuild_started: true),
-            method: :post,
-            data: {confirm: "This destroys the existing tree and recorded winners, " \
-              "and rebuilds from scratch. Continue?"})
-          span " | "
-          span link_to("Download PDF", competition_tree_pdf_admin_individual_category_path(category))
-        end
-      end
+      # In a partial rather than inline Arbre so a freeze broadcast can replace
+      # it — see the Pools panel above.
+      render partial: "admin/individual_categories/tree_actions", locals: {category: category}
       render CompetitionTreeComponent.new(category: category, admin: true)
     end
 
@@ -169,12 +162,20 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
 
   member_action :reset_smart_pools do
     @category = IndividualCategory.find params[:id]
+    # Redraws every pool from scratch, so a frozen formation refuses it.
+    return if guard_frozen_pools!(@category)
+
     @category.set_smart_pools
     flash[:notice] = "Pool smartly reset" # rubocop:disable Rails/I18nLocaleTexts
     redirect_to action: "show"
   end
-  action_item :smart_pool_reset, only: :show do
-    link_to "Smart pool reset", reset_smart_pools_admin_individual_category_path(individual_category),
+  # Hidden on a frozen category. Known limitation: action_items render in
+  # ActiveAdmin's page header, outside every replaceable container, so this
+  # reacts on page load but not to a freeze broadcast — a second admin's header
+  # keeps offering it until they reload, and the server guard refuses it.
+  action_item :smart_pool_reset, only: :show,
+    if: proc { !resource.pools_frozen? && !resource.bracket_frozen? } do
+    link_to "Generate pools", reset_smart_pools_admin_individual_category_path(individual_category),
       data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}
   end
 

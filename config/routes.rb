@@ -42,11 +42,20 @@ Rails.application.routes.draw do
   end
   ActiveAdmin.routes(self)
   namespace :admin do
+    # only: [] draws no cup routes of its own, so nothing collides with the
+    # ones ActiveAdmin already owns; the nesting just gives the two freeze-all
+    # shortcuts a home (R13).
+    resources :cups, only: [] do
+      resource :pool_freeze, only: [:create, :destroy], module: :cups
+      resource :bracket_freeze, only: [:create, :destroy], module: :cups
+    end
     resources :team_categories do
       resources :documents
       resources :videos
       resources :pool_memberships, only: :update, module: :team_categories
       resources :seeds, only: [:update, :destroy], module: :team_categories
+      resource :pool_freeze, only: [:create, :destroy], module: :team_categories
+      resource :bracket_freeze, only: [:create, :destroy], module: :team_categories
       resources :encounters, only: :show do
         resource :lineup, only: :update, module: :encounters
         resource :team_swap, only: :create, module: :encounters
@@ -69,6 +78,8 @@ Rails.application.routes.draw do
       end
       resources :pool_memberships, only: :update, module: :individual_categories
       resources :seeds, only: [:update, :destroy], module: :individual_categories
+      resource :pool_freeze, only: [:create, :destroy], module: :individual_categories
+      resource :bracket_freeze, only: [:create, :destroy], module: :individual_categories
       resources :documents
       resources :videos
     end

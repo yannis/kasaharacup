@@ -21,7 +21,11 @@
     would submit a verdict taken before the lineup existed. The wrapper renders
     even when there is nothing to swap, so the stream always has a target. %>
 <%= tag.div id: dom_id(encounter, :swap_team) do %>
-  <% if encounter.pool_number.blank? && encounter.round == 1 && encounter.team_category.bracket_only? %>
+  <%# bracket_frozen? is checked here as well as in
+      EncounterTreeComponent#swappable_slots: this page builds its own slot
+      list, so neutralising the tree alone would leave these forms standing. %>
+  <% if encounter.pool_number.blank? && encounter.round == 1 &&
+       encounter.team_category.bracket_only? && !encounter.team_category.bracket_frozen? %>
     <% swap = EncounterTeamSwap.new(encounter) # rubocop:disable Lint/UselessAssignment %>
     <% swappable_slots = [1, 2].select { |slot| swap.swappable?(slot) } # rubocop:disable Lint/UselessAssignment %>
     <% if swappable_slots.any? %>

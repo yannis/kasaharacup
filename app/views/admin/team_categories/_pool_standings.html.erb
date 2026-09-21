@@ -7,7 +7,7 @@
         <th>W</th><th>L</th><th>H</th>
         <th>iW</th><th>iL</th><th>iH</th>
         <th>Pts+</th><th>Pts−</th>
-        <% if admin %><th><span class="pool-standings__sr-only">Move</span></th><% end %>
+        <% if admin && pool_formation_editable?(team_category) %><th><span class="pool-standings__sr-only">Move</span></th><% end %>
       </tr>
     </thead>
     <tbody>
@@ -23,11 +23,14 @@
            teams: _pool&.teams || [],
            encounters: team_category.encounters_by_pool_number.fetch(pool_number, [])
          ).each do |row| %>
-        <tr<% if admin %> data-team-id="<%= row.team.id %>"
+        <tr<% if admin && pool_formation_editable?(team_category) %> data-team-id="<%= row.team.id %>"
             data-move-url="<%= admin_team_category_pool_membership_path(team_category, row.team) %>"
             data-from-pool="<%= pool_number %>"<% end %>>
           <td>
-            <% if admin %>
+            <%# Formation controls only; the rank editor and the seed badge
+                below keep the bare admin check, because the pool phase goes on
+                being recorded after the draw is frozen. %>
+            <% if admin && pool_formation_editable?(team_category) %>
               <span class="pool-standings__grip pool-match__grip" draggable="true"
                     title="Drag to another pool"
                     data-action="dragstart->pool-membership#dragStart">⠿</span>
@@ -57,7 +60,7 @@
           <td><%= row.individual_hikiwake %></td>
           <td><%= row.points_scored %></td>
           <td><%= row.points_conceded %></td>
-          <% if admin %>
+          <% if admin && pool_formation_editable?(team_category) %>
             <td class="pool-standings__move">
               <% others = _pools.map(&:number) - [pool_number] # rubocop:disable Lint/UselessAssignment %>
               <% if others.any? %>

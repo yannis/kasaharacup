@@ -31,6 +31,17 @@ class Encounter < ApplicationRecord
   # on the next unrelated save of that same object.
   after_rollback :clear_matchup_invalidated
 
+  # A tree node, matching the bracket_encounters scope on TeamCategory. The
+  # round guard excludes the ad-hoc encounters the manual "new encounter" form
+  # creates (no pool number and no round), which are not part of the tree.
+  def bracket? = pool_number.nil? && round.present?
+
+  # A tree node whose tree is frozen. Every editing path on it is refused
+  # server-side (R3), so the admin views stop offering them — while a POOL
+  # encounter of the same frozen category stays fully editable, because the
+  # pool phase goes on being recorded after the bracket is settled.
+  def bracket_locked? = bracket? && team_category.bracket_frozen?
+
   delegate :team_size, to: :team_category
 
   PARENT_ASSOCIATIONS = [:parent_encounter_1, :parent_encounter_2].freeze

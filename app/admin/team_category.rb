@@ -26,6 +26,10 @@ ActiveAdmin.register TeamCategory do
   end
 
   controller do
+    # See app/admin/individual_category.rb: member actions do not inherit
+    # Admin::BaseController, so the guard is included here too.
+    include Admin::FreezeGuard
+
     def scoped_collection
       super.includes(:cup, :participations, :teams)
     end
@@ -99,6 +103,10 @@ ActiveAdmin.register TeamCategory do
     # initial pool creation. The _pools partial renders nothing when empty.
     if category.pool_size.to_i > 1
       panel "Pools" do
+        # Holds the freeze control, and gives the broadcast a dom id to target.
+        # The team-side redraw links are ActiveAdmin action_items in the page
+        # header rather than panel content, so there was nothing else to lift.
+        render partial: "admin/team_categories/pools_actions", locals: {team_category: category}
         render partial: "admin/team_categories/pools", locals: {team_category: category}
         # Late registrants (pool_number nil): drag onto a pool or use the
         # per-row "Add to…" select. Renders an empty container when there are none.
@@ -107,27 +115,9 @@ ActiveAdmin.register TeamCategory do
     end
     if category.bracket_encounters.any?
       panel "Bracket" do
-        div do
-          # stream-link POSTs via fetch and renders the returned Turbo Stream in
-          # place, so the bracket rebuilds without a full-page navigation that
-          # would scroll back to the top. (A plain link here would be turned into
-          # a full-page form submit by ActiveAdmin's jquery_ujs.)
-          unless category.bracket_only?
-            span(link_to("Update bracket", generate_bracket_admin_team_category_path(category),
-              data: {controller: "stream-link", action: "stream-link#submit"}))
-            span " | "
-          end
-          rebuild_confirm = if category.bracket_only?
-            "Redraw the bracket? Scores are lost."
-          else
-            "Rebuild the bracket from current standings? Scores on rebuilt encounters are lost."
-          end
-          span(link_to("Force rebuild", generate_bracket_admin_team_category_path(category, rebuild: 1),
-            data: {controller: "stream-link", action: "stream-link#submit",
-                   stream_link_confirm_value: rebuild_confirm}))
-          span " | "
-          span(link_to("Download PDF", bracket_pdf_admin_team_category_path(category)))
-        end
+        # In a partial rather than inline Arbre so a freeze broadcast can
+        # replace it — see the Pools panel above.
+        render partial: "admin/team_categories/bracket_actions", locals: {team_category: category}
         render EncounterTreeComponent.new(team_category: category, admin: true)
         # Encounter editors load here (tree cards target this frame); kept as a
         # sibling of the tree frame so tree broadcasts can't wipe an open editor.
@@ -139,6 +129,10 @@ ActiveAdmin.register TeamCategory do
 
   member_action :generate_pools, method: :post do
     category = TeamCategory.find(params[:id])
+    # A redraw, so a frozen formation refuses it. generate_pool_encounters
+    # below stays open: it is additive and skips pools that already have them.
+    return if guard_frozen_pools!(category)
+
     if category.bracket_only?
       return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
     end
@@ -159,6 +153,9 @@ ActiveAdmin.register TeamCategory do
 
   member_action :generate_bracket, method: :post do
     category = TeamCategory.find(params[:id])
+    # Update and force rebuild both land here; a frozen tree refuses both.
+    return if guard_frozen_bracket!(category)
+
     TeamCategoryBracketBuilder.new(category, rebuild_started: params[:rebuild].present?).call
     respond_to do |format|
       # Swap just the bracket tree in place (stream-link fetches this) so the
@@ -174,7 +171,10 @@ ActiveAdmin.register TeamCategory do
     end
   end
 
-  action_item :generate_pools, only: :show, if: proc { !resource.bracket_only? } do
+  # Hidden on a frozen category; see the note on individual_category.rb's
+  # smart_pool_reset about action_items and broadcasts.
+  action_item :generate_pools, only: :show,
+    if: proc { !resource.bracket_only? && !resource.pools_frozen? && !resource.bracket_frozen? } do
     link_to "Generate pools", generate_pools_admin_team_category_path(team_category),
       method: :post, data: {confirm: "Redraw all pools? Manual pool assignments are lost."}
   end
@@ -184,7 +184,10 @@ ActiveAdmin.register TeamCategory do
       method: :post
   end
 
-  action_item :generate_bracket, only: :show do
+  # Hidden on a frozen bracket, like its two siblings above: the endpoint
+  # refuses it anyway, so leaving it in the header only offers a control that
+  # always fails.
+  action_item :generate_bracket, only: :show, if: proc { !resource.bracket_frozen? } do
     link_to "Generate bracket", generate_bracket_admin_team_category_path(team_category),
       method: :post
   end

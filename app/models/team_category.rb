@@ -31,6 +31,17 @@ class TeamCategory < ApplicationRecord
     pool_size.to_i <= 1
   end
 
+  # Freezable's hooks (R15). bracket_only? has to come first and is not merely
+  # the cheap half: dropping pool_size to 1 leaves the previous draw's pool
+  # numbers on the teams, so team_pools alone would offer a freeze for a pool
+  # phase that no longer exists. Same ordering as SeedsController#pool_cards?.
+  # An existence check rather than #team_pools.any?: the cup panel's "N of M"
+  # summary asks this once per category, and #team_pools loads every team to
+  # build TeamPool objects nobody reads.
+  def pools_freezable? = !bracket_only? && teams.where.not(pool_number: nil).exists?
+
+  def bracket_freezable? = bracket_encounters.exists?
+
   # NOT memoized: regeneration paths (TeamPoolMove -> PoolEncounterGenerator)
   # reuse one category instance and re-read this after mutating pool membership,
   # so a cached snapshot would regenerate pools from stale membership. Callers

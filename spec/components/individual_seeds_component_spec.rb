@@ -99,7 +99,7 @@ RSpec.describe IndividualSeedsComponent, type: :component do
     render_inline(described_class.new(category: category))
 
     expect(page).to have_css(".seed-panel__add-select")
-    expect(page).to have_text("Smart pool reset")
+    expect(page).to have_text("Generate pools")
     expect(page).to have_no_css(".seed-panel__row")
   end
 
@@ -111,9 +111,50 @@ RSpec.describe IndividualSeedsComponent, type: :component do
     expect(page).to have_text("No seeds yet")
   end
 
-  it "says that seeds apply on the next Smart pool reset" do
+  # The hint has to warn about the redraw, not just name the button:
+  # SmartPooler#set_pools builds empty pools and redistributes everyone, so a
+  # reader who takes "apply on the next Generate pools" as "nothing else
+  # moves" loses the whole draw.
+  it "says seeds apply on the next Generate pools, and that it redraws" do
     render_inline(described_class.new(category: category))
 
-    expect(page).to have_text("Smart pool reset")
+    hint = page.find(".seed-panel__hint").text
+    expect(hint).to include("Generate pools")
+    expect(hint).to include("manual pool assignments are lost")
+  end
+
+  # R10: either flag closes the seeding — the seeds drive the draw on a pooled
+  # category and the byes on a bracket-only one.
+  describe "when frozen" do
+    def panel
+      participant(seed: 1)
+      participant
+      render_inline(described_class.new(category: category)).to_html
+    end
+
+    it "drops the grip, the reorder select, the unseed button and the add box" do
+      expect(panel).to include("seed-panel__grip")
+
+      category.freeze_pools!
+
+      frozen = panel
+      expect(frozen).not_to include("seed-panel__grip")
+      expect(frozen).not_to include("seed-panel__move-select")
+      expect(frozen).not_to include("seed-panel__unseed")
+      expect(frozen).not_to include("seed-panel__add")
+      expect(frozen).not_to include("seed-order")
+    end
+
+    it "is closed by the bracket flag too" do
+      category.freeze_bracket!
+
+      expect(panel).not_to include("seed-panel__grip")
+    end
+
+    it "still lists the seeds, which are worth reading while frozen" do
+      category.freeze_pools!
+
+      expect(panel).to include("seed-panel__list")
+    end
   end
 end

@@ -3,6 +3,7 @@
 class Team < ApplicationRecord
   include ActsAsFighter
   include Seedable
+  include FreezablePoolMember
 
   belongs_to :team_category, inverse_of: :teams
   has_many :participations, dependent: :destroy
@@ -44,6 +45,21 @@ class Team < ApplicationRecord
 
   def self.abandoned
     empty.where(rank: nil, pool_number: nil, seed: nil).where(NOT_DRAWN)
+  end
+
+  # FreezablePoolMember hooks. team_category_id is permitted by
+  # app/admin/team.rb, so reassigning a pooled team is a formation change that
+  # the pool attributes never see.
+  private def freeze_category = team_category
+
+  private def freeze_category_moving? = will_save_change_to_team_category_id?
+
+  # Guarded on the previous id: on a create it is nil, and find_by(id: nil)
+  # still costs a WHERE id IS NULL round trip on every pooled row the pooler
+  # writes. Participation needs no equivalent — its category_type_was is nil
+  # there, so the case below falls through without querying.
+  private def freeze_category_left
+    TeamCategory.find_by(id: team_category_id_was) if team_category_id_was
   end
 
   # Seedable hooks: a team category owns the seed order its teams share.
