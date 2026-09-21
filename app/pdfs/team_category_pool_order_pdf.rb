@@ -56,7 +56,7 @@ class TeamCategoryPoolOrderPdf < Prawn::Document
   private def draw_order_table(ties)
     move_cursor_to bounds.top - TABLE_TOP_OFFSET
 
-    data = [["N°", "Pool", "Blanc", nil, "Rouge"]]
+    data = [["N°", "Pool", "White", nil, "Red"]]
     ties.each do |tie|
       data << [tie.order.to_s, tie.label,
         tie.encounter.team_1&.poster_name, "x", tie.encounter.team_2&.poster_name]

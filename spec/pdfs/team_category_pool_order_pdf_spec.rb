@@ -79,7 +79,7 @@ RSpec.describe TeamCategoryPoolOrderPdf do
 
     texts = texts_in(described_class.new(category))
 
-    expect(texts).to include("TEAM OPEN", "Ordre des combats / Order of fights", "Blanc", "Rouge")
+    expect(texts).to include("TEAM OPEN", "Ordre des combats / Order of fights", "White", "Red")
   end
 
   # The cup name above the list is drawn in the cup's red and leaves that
@@ -90,7 +90,7 @@ RSpec.describe TeamCategoryPoolOrderPdf do
 
     pdf = described_class.new(category)
 
-    expect(fill_colour_at(pdf, "Blanc")).to eq "0.0 0.0 0.0"
+    expect(fill_colour_at(pdf, "White")).to eq "0.0 0.0 0.0"
     expect(fill_colour_at(pdf, "ALPHA")).to eq "0.0 0.0 0.0"
   end
 
@@ -103,7 +103,7 @@ RSpec.describe TeamCategoryPoolOrderPdf do
     texts = texts_in(pdf)
 
     expect(pdf.page_count).to eq 2
-    expect(texts.count("Rouge")).to eq 2
+    expect(texts.count("Red")).to eq 2
   end
 
   it "renders a category with no pool ties rather than an empty document" do
