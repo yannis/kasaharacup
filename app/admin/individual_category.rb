@@ -59,7 +59,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
         (if category.pools_frozen? || category.bracket_frozen?
            nil
          else
-           link_to("Smart reset", reset_smart_pools_admin_individual_category_path(category),
+           link_to("Generate pools", reset_smart_pools_admin_individual_category_path(category),
              data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."})
          end),
         link_to("PDF", pdf_admin_individual_category_path(category)),
@@ -82,7 +82,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
     end
     if category.pool_size.to_i > 1
       # Above the pools: seeding precedes the draw, and the seeds only take
-      # effect on the next Smart pool reset. Inside the same guard, because a
+      # effect on the next Generate pools. Inside the same guard, because a
       # pool-less category never runs the pooler.
       panel "Seeding" do
         render IndividualSeedsComponent.new(category: category)
@@ -175,7 +175,7 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   # keeps offering it until they reload, and the server guard refuses it.
   action_item :smart_pool_reset, only: :show,
     if: proc { !resource.pools_frozen? && !resource.bracket_frozen? } do
-    link_to "Smart pool reset", reset_smart_pools_admin_individual_category_path(individual_category),
+    link_to "Generate pools", reset_smart_pools_admin_individual_category_path(individual_category),
       data: {confirm: "Regenerate all pools for this category? Manual pool assignments will be lost."}
   end
 

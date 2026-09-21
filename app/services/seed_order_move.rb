@@ -19,8 +19,8 @@
 # next change, instead of either needing a path of its own.
 #
 # Nothing here touches pools or the bracket: the seeds only take effect the
-# next time the category is drawn — a Smart pool reset or Generate pools on the
-# pooled path, a bracket build on the pool-less one.
+# next time the category is drawn — Generate pools on the pooled path (both
+# category types), a bracket build on the pool-less one.
 #
 # Returns a Result whose status is :noop when the move asked for the order that
 # was already in place, so the caller can skip re-rendering and broadcasting —

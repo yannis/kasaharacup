@@ -2,7 +2,7 @@
 
 # The seeding panel of an individual category's admin page: the seeded
 # participants in seed order, a select to seed another, and the reminder that
-# seeds only take effect on the next Smart pool reset.
+# seeds only take effect on the next Generate pools.
 #
 # Lists only the seeded. A category can hold 60 participants and typically has
 # 4 seeds, so a full list would be a long panel of empty fields.

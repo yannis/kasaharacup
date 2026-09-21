@@ -80,11 +80,10 @@ RSpec.describe TeamSeedsComponent, type: :component do
   end
 
   describe "the hint naming when seeds take effect" do
-    # "Generate pools", not the individual side's "Smart pool reset": that
-    # action_item exists only on IndividualCategory, so naming it here would
-    # send the admin looking for a button this page does not have. And the
-    # hint must not borrow the individual panel's "nobody already pooled
-    # moves" — TeamPooler redraws every pool from scratch.
+    # Both sides name the same button and both poolers redraw every pool from
+    # scratch, so this hint and the individual panel's now say the same thing.
+    # What must stay different is the bracket-only branch below, which never
+    # runs a pooler at all.
     it "names Generate pools, and warns it redraws, for a pooled category" do
       team(seed: 1)
 
@@ -93,7 +92,6 @@ RSpec.describe TeamSeedsComponent, type: :component do
       hint = page.find(".seed-panel__hint").text
       expect(hint).to include("Generate pools")
       expect(hint).to include("manual pool assignments are lost")
-      expect(hint).not_to include("Smart pool reset")
     end
 
     # A bracket-only category never runs the pooler, so pointing at it would be
@@ -104,7 +102,9 @@ RSpec.describe TeamSeedsComponent, type: :component do
 
       render_inline(described_class.new(category: category))
 
-      expect(page.find(".seed-panel__hint").text).to include("bracket build")
+      hint = page.find(".seed-panel__hint").text
+      expect(hint).to include("bracket build")
+      expect(hint).not_to include("Generate pools")
     end
   end
 

@@ -99,7 +99,7 @@ RSpec.describe IndividualSeedsComponent, type: :component do
     render_inline(described_class.new(category: category))
 
     expect(page).to have_css(".seed-panel__add-select")
-    expect(page).to have_text("Smart pool reset")
+    expect(page).to have_text("Generate pools")
     expect(page).to have_no_css(".seed-panel__row")
   end
 
@@ -111,10 +111,16 @@ RSpec.describe IndividualSeedsComponent, type: :component do
     expect(page).to have_text("No seeds yet")
   end
 
-  it "says that seeds apply on the next Smart pool reset" do
+  # The hint has to warn about the redraw, not just name the button:
+  # SmartPooler#set_pools builds empty pools and redistributes everyone, so a
+  # reader who takes "apply on the next Generate pools" as "nothing else
+  # moves" loses the whole draw.
+  it "says seeds apply on the next Generate pools, and that it redraws" do
     render_inline(described_class.new(category: category))
 
-    expect(page).to have_text("Smart pool reset")
+    hint = page.find(".seed-panel__hint").text
+    expect(hint).to include("Generate pools")
+    expect(hint).to include("manual pool assignments are lost")
   end
 
   # R10: either flag closes the seeding — the seeds drive the draw on a pooled
