@@ -11,6 +11,11 @@ class Encounter < ApplicationRecord
 
   validate :teams_differ
   validate :teams_in_category
+  # A tree node, matching the bracket_encounters scope on TeamCategory. The
+  # round guard excludes the ad-hoc encounters the manual "new encounter" form
+  # creates (no pool number and no round), which are not part of the tree.
+  def bracket? = pool_number.nil? && round.present?
+
   validates :team_1, :team_2, presence: true, if: -> { pool_number.present? }
 
   scope :bracket_order, -> { order(:round, :position) }

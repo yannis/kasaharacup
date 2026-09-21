@@ -7,6 +7,8 @@ module Admin
     # A swap that would discard a fighter order answers 422 with confirm: true
     # so the drag client can confirm and retry with force=true.
     class TeamSwapsController < Admin::BaseController
+      before_action :refuse_when_bracket_frozen
+
       def create
         team = team_category.teams.find(params.expect(:team_id))
         EncounterTeamSwap.new(encounter).swap(
@@ -31,6 +33,12 @@ module Admin
         end
       rescue EncounterTeamSwap::NeedsConfirmation, EncounterTeamSwap::InvalidSwap => e
         refuse(e)
+      end
+
+      # A swap only ever targets a bracket slot, but the guard reads the same
+      # predicate as its siblings so there is one rule to check.
+      private def refuse_when_bracket_frozen
+        guard_frozen_bracket!(team_category) if encounter.bracket?
       end
 
       # Both refusals answer 422 to the drag client; only NeedsConfirmation is

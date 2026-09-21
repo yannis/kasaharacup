@@ -7,6 +7,8 @@ module Admin
     # rejected. Locked once the bout has points (changing a scored rep would
     # orphan the result), mirroring EncounterLineup.
     class DaihyosensController < Admin::BaseController
+      before_action :refuse_when_bracket_frozen
+
       def update
         return head :unprocessable_content if daihyosen.fight_points.exists?
 
@@ -14,6 +16,11 @@ module Admin
         respond_with_encounter(encounter)
       rescue ActiveRecord::RecordNotFound
         head :unprocessable_content
+      end
+
+      # Serves pool encounters too, so the guard turns on the encounter.
+      private def refuse_when_bracket_frozen
+        guard_frozen_bracket!(team_category) if encounter.bracket?
       end
 
       private def rep_params

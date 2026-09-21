@@ -30,14 +30,14 @@ module Admin
     # team twin destroy the tree as a side effect of any move, so an unfrozen
     # pool would otherwise be a back door into a frozen bracket (R5).
     private def guard_frozen_pools!(category)
-      return refuse(t("admin.freezes.refused.pools")) if category.pools_frozen?
-      return refuse(t("admin.freezes.refused.bracket_blocks_pools")) if category.bracket_frozen?
+      return refuse_frozen(t("admin.freezes.refused.pools")) if category.pools_frozen?
+      return refuse_frozen(t("admin.freezes.refused.bracket_blocks_pools")) if category.bracket_frozen?
 
       false
     end
 
     private def guard_frozen_bracket!(category)
-      return refuse(t("admin.freezes.refused.bracket")) if category.bracket_frozen?
+      return refuse_frozen(t("admin.freezes.refused.bracket")) if category.bracket_frozen?
 
       false
     end
@@ -47,8 +47,8 @@ module Admin
     # they drive the byes and the protected bracket positions. So this reports
     # whichever flag is actually set rather than always blaming the pools.
     private def guard_frozen_seeds!(category)
-      return refuse(t("admin.freezes.refused.pools")) if category.pools_frozen?
-      return refuse(t("admin.freezes.refused.bracket")) if category.bracket_frozen?
+      return refuse_frozen(t("admin.freezes.refused.pools")) if category.pools_frozen?
+      return refuse_frozen(t("admin.freezes.refused.bracket")) if category.bracket_frozen?
 
       false
     end
@@ -59,7 +59,12 @@ module Admin
     # drag clients send Accept: text/vnd.turbo-stream.html only, so they land
     # in the first branch and read the same {message:} shape their 422 handler
     # already parses.
-    private def refuse(message)
+    # Named refuse_frozen, not refuse: Admin::Encounters::TeamSwapsController
+    # already defines its own private #refuse for the 422 confirm-and-retry
+    # flow, and a class's own method shadows an included module's. A guard
+    # calling a bare #refuse there would hand a String to a method expecting an
+    # exception.
+    private def refuse_frozen(message)
       respond_to do |format|
         format.turbo_stream { render json: {message: message}, status: :forbidden }
         format.json { render json: {message: message}, status: :forbidden }

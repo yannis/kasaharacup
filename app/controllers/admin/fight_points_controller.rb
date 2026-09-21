@@ -5,6 +5,11 @@ module Admin
     rescue_from ArgumentError, with: :render_unprocessable
     rescue_from ActiveRecord::RecordInvalid, with: :flash_validation_error
 
+    # Serves both pool and bracket fights, so the guard turns on the fight and
+    # not on the controller: a frozen bracket must not stop the pool phase
+    # being recorded.
+    before_action :refuse_when_bracket_frozen
+
     def create
       fight.with_lock { fight.fight_points.create!(point_params) }
       respond_after_change
@@ -14,6 +19,10 @@ module Admin
       point = fight.fight_points.find(params.expect(:id))
       point.destroy!
       respond_after_change
+    end
+
+    private def refuse_when_bracket_frozen
+      guard_frozen_bracket!(category) if fight.bracket?
     end
 
     private def flash_validation_error(exception)

@@ -153,6 +153,9 @@ ActiveAdmin.register TeamCategory do
 
   member_action :generate_bracket, method: :post do
     category = TeamCategory.find(params[:id])
+    # Update and force rebuild both land here; a frozen tree refuses both.
+    return if guard_frozen_bracket!(category)
+
     TeamCategoryBracketBuilder.new(category, rebuild_started: params[:rebuild].present?).call
     respond_to do |format|
       # Swap just the bracket tree in place (stream-link fetches this) so the

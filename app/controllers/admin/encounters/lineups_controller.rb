@@ -7,6 +7,8 @@ module Admin
     # unselected (forfeit) slots arrive as empty strings and map to nil, keeping
     # a blank at its position rather than shifting later fighters up.
     class LineupsController < Admin::BaseController
+      before_action :refuse_when_bracket_frozen
+
       def update
         team = team_category.teams.find(params.expect(:team_id))
         EncounterLineup.new(encounter).assign(team, lineup_kenshi_ids)
@@ -14,6 +16,12 @@ module Admin
       rescue EncounterLineup::InvalidLineup => e
         flash.now[:alert] = e.message
         respond_with_encounter(encounter)
+      end
+
+      # Serves pool encounters too, so the guard turns on the encounter: a
+      # frozen bracket must not stop a pool lineup being set.
+      private def refuse_when_bracket_frozen
+        guard_frozen_bracket!(team_category) if encounter.bracket?
       end
 
       private def lineup_kenshi_ids

@@ -12,6 +12,11 @@ class Fight < ApplicationRecord
   belongs_to :fighter_2, polymorphic: true, foreign_type: "fighter_type", optional: true
 
   validates :number, presence: true
+  # A tree fight, as opposed to one played inside a pool. The distinction the
+  # freeze guards turn on: Admin::FightPointsController serves both, and the
+  # pool phase goes on being recorded while the bracket is locked.
+  def bracket? = pool_number.nil?
+
   validates :round, presence: true, if: -> { pool_number.blank? }
   validates :position, presence: true, if: -> { pool_number.blank? }
   validates :number,
