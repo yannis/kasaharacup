@@ -109,6 +109,22 @@ RSpec.describe "Admin pool memberships" do
     expect(response.body).not_to include("target=\"team_pool_#{tc.id}_\"")
   end
 
+  # broadcast and render both asked for the same set, and each call rebuilt it:
+  # both pool cards, the unpooled panel and — when the move cleared the bracket
+  # — the whole tree, rendered twice per drag for byte-identical output. The
+  # unpooled panel's own query stands in for the whole set here.
+  it "builds its streams once for the response and the broadcast" do
+    team_in(1, 1)
+    b = team_in(1, 2)
+    team_in(2, 1)
+    create(:team, team_category: tc, pool_number: nil)
+
+    queries = count_queries { move(b, 2) }
+
+    unpooled = queries.grep(/SELECT "teams"\.\* .*"teams"\."pool_number" IS NULL/)
+    expect(unpooled.size).to eq 1
+  end
+
   it "redirects non-admins away" do
     sign_out admin
     sign_in create(:user)

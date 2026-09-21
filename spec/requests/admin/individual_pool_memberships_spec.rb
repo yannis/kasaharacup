@@ -99,6 +99,22 @@ RSpec.describe "Admin individual pool memberships" do
     expect(response.body).not_to include("action=\"append\"")
   end
 
+  # broadcast and render both asked for the same set, and each call rebuilt it:
+  # both pool cards, the unpooled panel and — when the move cleared the bracket
+  # — the whole tree, rendered twice per drag for byte-identical output. The
+  # unpooled panel's own query stands in for the whole set here.
+  it "builds its streams once for the response and the broadcast" do
+    member_in(1, 1)
+    b = member_in(1, 2)
+    member_in(2, 1)
+    create(:participation, category: category, kenshi: create(:kenshi, cup: cup), pool_number: nil)
+
+    queries = count_queries { move(b, 2) }
+
+    unpooled = queries.grep(/SELECT "participations"\.\* .*"participations"\."pool_number" IS NULL/)
+    expect(unpooled.size).to eq 1
+  end
+
   it "redirects non-admins away" do
     sign_out admin
     sign_in create(:user)

@@ -40,7 +40,16 @@ module Admin
         )
       end
 
+      # Memoised: broadcast and render both want the same set, and building it
+      # twice re-rendered both pool cards, the unpooled panel — and the whole
+      # bracket tree when the move cleared it — for identical output. Keying on
+      # nothing but the ivar is safe: a request only ever calls this with the
+      # one result of its own move.
       private def streams_for(result)
+        @streams_for ||= build_streams(result)
+      end
+
+      private def build_streams(result)
         tags = if result.created_pool
           # A brand-new pool: replace the whole container (re-rendering every
           # card) rather than appending one. The acting admin is subscribed to
