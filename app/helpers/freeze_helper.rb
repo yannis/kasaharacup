@@ -62,6 +62,25 @@ module FreezeHelper
     "#{surface_for(category, flag)[:prefix]}_actions_#{category.id}"
   end
 
+  # Counts behind the cup panel's "N of M" summary (R13). Both category types
+  # in one number, because the cup page reasons about "every category" rather
+  # than about the two tables behind them.
+  def cup_pools_frozen_count(cup) = cup_categories(cup).count(&:pools_frozen?)
+
+  def cup_brackets_frozen_count(cup) = cup_categories(cup).count(&:bracket_frozen?)
+
+  def cup_pool_freezable_count(cup) = cup_categories(cup).count(&:pools_freezable?)
+
+  def cup_bracket_freezable_count(cup) = cup_categories(cup).count(&:bracket_freezable?)
+
+  # Deliberately not memoized. Memoizing held the loaded category objects, so a
+  # second call in the same helper instance answered from before a freeze —
+  # and the number is never more worth reading than right after one. The cup
+  # page is not a hot path; six extra small queries are the better trade.
+  private def cup_categories(cup)
+    cup.individual_categories.to_a + cup.team_categories.to_a
+  end
+
   private def surface_for(category, flag)
     FREEZE_SURFACES.fetch([category.class.name, flag.to_sym])
   end

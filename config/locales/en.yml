@@ -126,6 +126,28 @@ en:
       update:
         notice: Fight updated
     freezes:
+      all:
+        freeze:
+          bracket: Freeze all brackets
+          pools: Freeze all pools
+        freeze_confirm:
+          bracket: Freeze the bracket of every category of this cup that has one?
+          pools: Freeze the pool formation of every category of this cup that has a draw?
+        frozen:
+          bracket: Froze %{count} bracket(s); skipped %{skipped} with no bracket yet.
+          pools: Froze %{count} pool formation(s); skipped %{skipped} with nothing drawn.
+        summary:
+          bracket: "%{count} of %{total} bracket(s) frozen"
+          pools: "%{count} of %{total} pool formation(s) frozen"
+        unfreeze:
+          bracket: Unfreeze all brackets
+          pools: Unfreeze all pools
+        unfreeze_confirm:
+          bracket: Unfreeze every bracket of this cup? This re-opens the tools that destroy recorded results.
+          pools: Unfreeze every pool formation of this cup? This re-opens the tools that redraw the pools.
+        unfrozen:
+          bracket: Unfroze %{count} bracket(s).
+          pools: Unfroze %{count} pool formation(s).
       badge: Frozen — %{at}
       freeze:
         bracket: Freeze bracket

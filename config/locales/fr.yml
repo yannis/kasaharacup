@@ -130,6 +130,28 @@ fr:
       update:
         notice: Combat mis à jour
     freezes:
+      all:
+        freeze:
+          bracket: Geler tous les arbres
+          pools: Geler toutes les poules
+        freeze_confirm:
+          bracket: Geler l'arbre de chaque catégorie de cette coupe qui en a un ?
+          pools: Geler la composition des poules de chaque catégorie tirée de cette coupe ?
+        frozen:
+          bracket: "%{count} arbre(s) gelé(s) ; %{skipped} ignoré(s), sans arbre."
+          pools: "%{count} composition(s) de poules gelée(s) ; %{skipped} ignorée(s), sans tirage."
+        summary:
+          bracket: "%{count} arbre(s) gelé(s) sur %{total}"
+          pools: "%{count} composition(s) de poules gelée(s) sur %{total}"
+        unfreeze:
+          bracket: Dégeler tous les arbres
+          pools: Dégeler toutes les poules
+        unfreeze_confirm:
+          bracket: Dégeler tous les arbres de cette coupe ? Cela rouvre les outils qui détruisent les résultats.
+          pools: Dégeler toutes les poules de cette coupe ? Cela rouvre les outils qui retirent les poules.
+        unfrozen:
+          bracket: "%{count} arbre(s) dégelé(s)."
+          pools: "%{count} composition(s) de poules dégelée(s)."
       badge: Gelé — %{at}
       freeze:
         bracket: Geler l'arbre

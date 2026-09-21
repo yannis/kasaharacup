@@ -1,0 +1,33 @@
+<%# Cup-level freeze shortcuts (R13). Competition day settles many categories
+    at once, and visiting each one's page to press its own button is the part
+    organizers would skip.
+
+    Both directions confirm (R14, Q2). Per category, only unfreezing is
+    consequential enough to ask; here freezing every category at once is too,
+    because it is not obvious from the cup page which ones are about to change.
+
+    No live rendering: this page is not a live-editing surface, so unlike the
+    per-category controls there is nothing here to broadcast. %>
+<div class="panel">
+  <h3>Freeze</h3>
+  <div class="panel_contents panel-actions">
+    <span><%= t("admin.freezes.all.summary.pools", count: cup_pools_frozen_count(cup),
+                total: cup_pool_freezable_count(cup)) %></span>
+    <%= button_to t("admin.freezes.all.freeze.pools"), admin_cup_pool_freeze_path(cup),
+          method: :post,
+          form: {data: {turbo_confirm: t("admin.freezes.all.freeze_confirm.pools")}} %>
+    <%= button_to t("admin.freezes.all.unfreeze.pools"), admin_cup_pool_freeze_path(cup),
+          method: :delete,
+          form: {data: {turbo_confirm: t("admin.freezes.all.unfreeze_confirm.pools")}} %>
+  </div>
+  <div class="panel_contents panel-actions">
+    <span><%= t("admin.freezes.all.summary.bracket", count: cup_brackets_frozen_count(cup),
+                total: cup_bracket_freezable_count(cup)) %></span>
+    <%= button_to t("admin.freezes.all.freeze.bracket"), admin_cup_bracket_freeze_path(cup),
+          method: :post,
+          form: {data: {turbo_confirm: t("admin.freezes.all.freeze_confirm.bracket")}} %>
+    <%= button_to t("admin.freezes.all.unfreeze.bracket"), admin_cup_bracket_freeze_path(cup),
+          method: :delete,
+          form: {data: {turbo_confirm: t("admin.freezes.all.unfreeze_confirm.bracket")}} %>
+  </div>
+</div>
