@@ -9,6 +9,10 @@ module Admin
     # and retry with force=true. Individual analog of
     # Admin::TeamCategories::PoolMembershipsController.
     class PoolMembershipsController < Admin::BaseController
+      # A frozen formation refuses the move outright — and so does a frozen
+      # bracket, which this move would clear (R5).
+      before_action :refuse_when_frozen
+
       def update
         participation = individual_category.participations.find(params.expect(:id))
         result = PoolMembershipMove.new(
@@ -26,6 +30,8 @@ module Admin
           render turbo_stream: streams
         end
       end
+
+      private def refuse_when_frozen = guard_frozen_pools!(individual_category)
 
       private def individual_category
         @individual_category ||= IndividualCategory.find(params.expect(:individual_category_id))

@@ -25,6 +25,11 @@ module Admin
     # No confirmation/422 flow, as on the individual side: nothing here discards
     # recorded work, so there is nothing to confirm.
     class SeedsController < Admin::BaseController
+      # Either flag blocks a seed change: on a pooled category the seeds drive
+      # the draw, on a bracket-only one they drive the byes and the protected
+      # bracket positions.
+      before_action :refuse_when_frozen
+
       def update
         apply(target_position)
       end
@@ -77,6 +82,8 @@ module Admin
 
         Turbo::StreamsChannel.broadcast_stream_to([team_category, name], content: content)
       end
+
+      private def refuse_when_frozen = guard_frozen_seeds!(team_category)
 
       private def team
         @team ||= team_category.teams.find(params.expect(:id))

@@ -3,6 +3,7 @@
 class Participation < ApplicationRecord
   include ActsAsFighter
   include Seedable
+  include FreezablePoolMember
 
   attr_writer :category_individual, :category_team
   belongs_to :category, polymorphic: true, autosave: true
@@ -28,6 +29,11 @@ class Participation < ApplicationRecord
   delegate :club, to: "kenshi", allow_nil: true
   delegate :cup, to: "kenshi", allow_nil: true
   delegate :product_individual_junior, :product_individual_adult, to: :cup
+
+  # FreezablePoolMember hook. Polymorphic, so this is a team category for a
+  # team member's participation — where pool_number means nothing, since the
+  # team carries it — and the guard is a no-op there rather than a special case.
+  private def freeze_category = category
 
   def self.no_pool
     where(pool_number: nil)

@@ -70,6 +70,51 @@ RSpec.describe Freezable do
       expect(described_class.bracket_frozen).to eq [other]
     end
 
+    # R7: pool_size and out_of_pool decide what a redraw produces and what the
+    # bracket reads off the pools, so they are part of the formation the freeze
+    # protects — changing them under a frozen draw makes the stored pools and
+    # the settings disagree.
+    describe "protected pool settings" do
+      it "refuses a pool_size change while the pools are frozen" do
+        category.freeze_pools!
+
+        category.pool_size = 5
+
+        expect(category).not_to be_valid
+        expect(category.errors[:pool_size]).to be_present
+      end
+
+      it "refuses an out_of_pool change while the pools are frozen" do
+        category.freeze_pools!
+
+        category.out_of_pool = 2
+
+        expect(category).not_to be_valid
+      end
+
+      it "accepts an unrelated change while the pools are frozen" do
+        category.freeze_pools!
+
+        expect(category.update(name: "Renamed while frozen")).to be true
+      end
+
+      it "accepts the same change once unfrozen" do
+        category.freeze_pools!
+        category.unfreeze_pools!
+
+        expect(category.update(pool_size: 5)).to be true
+      end
+
+      # A bracket freeze says nothing about the draw: R2/R7 scope these to the
+      # pools flag, so a pool_size change stays legal while only the bracket is
+      # locked.
+      it "accepts a pool_size change while only the bracket is frozen" do
+        category.freeze_bracket!
+
+        expect(category.update(pool_size: 5)).to be true
+      end
+    end
+
     # Freezable deliberately defines no #frozen? and no #freeze: they are Object
     # methods ActiveRecord itself relies on (ActiveRecord::Core#frozen? answers
     # @attributes.frozen?). Shadowing them breaks dup/clone and readonly

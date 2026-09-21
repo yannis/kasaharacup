@@ -24,6 +24,11 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
   end
 
   controller do
+    # ActiveAdmin member actions run here, in an ActiveAdmin::ResourceController
+    # — a sibling of Admin::BaseController, not a subclass — so the freeze
+    # guard has to be included again to reach reset_smart_pools below.
+    include Admin::FreezeGuard
+
     def scoped_collection
       super.includes(:cup, :participations)
     end
@@ -150,6 +155,9 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
 
   member_action :reset_smart_pools do
     @category = IndividualCategory.find params[:id]
+    # Redraws every pool from scratch, so a frozen formation refuses it.
+    return if guard_frozen_pools!(@category)
+
     @category.set_smart_pools
     flash[:notice] = "Pool smartly reset" # rubocop:disable Rails/I18nLocaleTexts
     redirect_to action: "show"

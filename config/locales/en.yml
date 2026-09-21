@@ -60,6 +60,7 @@ en:
         password_confirmation: Password confirmation
     errors:
       messages:
+        pools_frozen: cannot be changed while the pool formation is frozen
         record_invalid: 'Validation failed: %{errors}'
         restrict_dependent_destroy:
           has_many: Cannot delete record because dependent %{record} exist
@@ -132,6 +133,10 @@ en:
       frozen:
         bracket: Bracket frozen.
         pools: Pool formation frozen.
+      refused:
+        bracket: The bracket is frozen. Unfreeze it to make this change.
+        bracket_blocks_pools: The bracket is frozen, and this change would clear it. Unfreeze the bracket first.
+        pools: The pool formation is frozen. Unfreeze it to make this change.
       unfreeze:
         bracket: Unfreeze bracket
         pools: Unfreeze pools

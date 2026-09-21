@@ -24,6 +24,10 @@ module Admin
     # applying them twice — once from the response, once from the broadcast —
     # is idempotent.
     class SeedsController < Admin::BaseController
+      # Either flag blocks a seed change: on a pooled category the seeds drive
+      # the draw, on a bracket-only one they drive the byes.
+      before_action :refuse_when_frozen
+
       def update
         apply(target_position)
       end
@@ -66,6 +70,8 @@ module Admin
           [individual_category, :competition_tree], content: streams
         )
       end
+
+      private def refuse_when_frozen = guard_frozen_seeds!(individual_category)
 
       private def individual_category
         @individual_category ||= IndividualCategory.find(params.expect(:individual_category_id))

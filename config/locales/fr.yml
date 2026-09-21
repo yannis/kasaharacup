@@ -63,6 +63,7 @@ fr:
         remember_me: Garder en mémoire
     errors:
       messages:
+        pools_frozen: ne peut pas être modifié tant que la composition des poules est gelée
         record_invalid: 'La validation a échoué : %{errors}'
         restrict_dependent_destroy:
           has_many: Vous ne pouvez pas supprimer l'enregistrement parce que les %{record} dépendants existent
@@ -136,6 +137,10 @@ fr:
       frozen:
         bracket: Arbre gelé.
         pools: Composition des poules gelée.
+      refused:
+        bracket: L'arbre est gelé. Dégelez-le pour effectuer cette modification.
+        bracket_blocks_pools: L'arbre est gelé et cette modification l'effacerait. Dégelez d'abord l'arbre.
+        pools: La composition des poules est gelée. Dégelez-la pour effectuer cette modification.
       unfreeze:
         bracket: Dégeler l'arbre
         pools: Dégeler les poules

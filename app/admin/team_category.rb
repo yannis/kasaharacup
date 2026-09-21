@@ -26,6 +26,10 @@ ActiveAdmin.register TeamCategory do
   end
 
   controller do
+    # See app/admin/individual_category.rb: member actions do not inherit
+    # Admin::BaseController, so the guard is included here too.
+    include Admin::FreezeGuard
+
     def scoped_collection
       super.includes(:cup, :participations, :teams)
     end
@@ -125,6 +129,10 @@ ActiveAdmin.register TeamCategory do
 
   member_action :generate_pools, method: :post do
     category = TeamCategory.find(params[:id])
+    # A redraw, so a frozen formation refuses it. generate_pool_encounters
+    # below stays open: it is additive and skips pools that already have them.
+    return if guard_frozen_pools!(category)
+
     if category.bracket_only?
       return redirect_to admin_team_category_path(category), alert: "Bracket-only category — no pool phase." # rubocop:disable Rails/I18nLocaleTexts
     end

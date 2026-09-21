@@ -3,6 +3,7 @@
 class Team < ApplicationRecord
   include ActsAsFighter
   include Seedable
+  include FreezablePoolMember
 
   belongs_to :team_category, inverse_of: :teams
   has_many :participations, dependent: :destroy
@@ -45,6 +46,9 @@ class Team < ApplicationRecord
   def self.abandoned
     empty.where(rank: nil, pool_number: nil, seed: nil).where(NOT_DRAWN)
   end
+
+  # FreezablePoolMember hook.
+  private def freeze_category = team_category
 
   # Seedable hooks: a team category owns the seed order its teams share.
   def seed_group = team_category
