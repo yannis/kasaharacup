@@ -17,6 +17,13 @@ class IndividualCategory < ApplicationRecord
     "#{name} (#{cup.year})"
   end
 
+  # Freezable's hooks (R15). #pools already answers "is there a draw", and it
+  # reads nothing at all when pool_size <= 1, so a pool-less category never
+  # offers the button.
+  def pools_freezable? = pools.any?
+
+  def bracket_freezable? = bracket_fights.any?
+
   # All pool fights for the category, loaded once with their fighters/points and
   # grouped by pool number. PoolComponent reads its slice from here so rendering
   # every pool costs a single fights query instead of one per pool.

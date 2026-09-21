@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -214,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
   end
 
   create_table "individual_categories", id: :serial, force: :cascade do |t|
+    t.datetime "bracket_frozen_at"
     t.datetime "created_at", precision: nil
     t.integer "cup_id", null: false
     t.text "description_de"
@@ -225,6 +226,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
     t.string "name", limit: 255, null: false
     t.integer "out_of_pool"
     t.integer "pool_size"
+    t.datetime "pools_frozen_at"
     t.datetime "updated_at", precision: nil
     t.index ["cup_id", "name"], name: "index_individual_categories_on_cup_id_and_name", unique: true
     t.index ["cup_id"], name: "index_individual_categories_on_cup_id"
@@ -333,6 +335,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
   end
 
   create_table "team_categories", id: :serial, force: :cascade do |t|
+    t.datetime "bracket_frozen_at"
     t.datetime "created_at", precision: nil
     t.integer "cup_id", null: false
     t.text "description_de"
@@ -344,6 +347,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
     t.string "name", limit: 255, null: false
     t.integer "out_of_pool"
     t.integer "pool_size"
+    t.datetime "pools_frozen_at"
     t.integer "team_size", default: 5, null: false
     t.datetime "updated_at", precision: nil
     t.index ["cup_id", "name"], name: "index_team_categories_on_cup_id_and_name", unique: true

@@ -5,6 +5,10 @@ require "translate"
 module ActsAsCategory
   extend ActiveSupport::Concern
 
+  # Both category types freeze the same way; only "is there anything to freeze"
+  # differs, and each class answers that itself.
+  include Freezable
+
   included do
     has_many :fights, dependent: :destroy
 
