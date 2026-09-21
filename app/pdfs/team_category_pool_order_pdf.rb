@@ -32,7 +32,7 @@ class TeamCategoryPoolOrderPdf < Prawn::Document
       font_size 48
       text team_category.name.upcase
       font_size 24
-      text "Ordre des combats / Order of fights"
+      text I18n.t("pool_fight_order.title")
     end
 
     cup_name_and_logo(category: team_category)
@@ -56,7 +56,8 @@ class TeamCategoryPoolOrderPdf < Prawn::Document
   private def draw_order_table(ties)
     move_cursor_to bounds.top - TABLE_TOP_OFFSET
 
-    data = [["N°", "Pool", "White", nil, "Red"]]
+    data = [[I18n.t("pool_fight_order.number"), I18n.t("pool_fight_order.pool"),
+      I18n.t("pool_fight_order.white"), nil, I18n.t("pool_fight_order.red")]]
     ties.each do |tie|
       data << [tie.order.to_s, tie.label,
         tie.encounter.team_1&.poster_name, "x", tie.encounter.team_2&.poster_name]

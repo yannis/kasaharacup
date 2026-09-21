@@ -672,6 +672,12 @@ fr:
     form_fields:
       country_prompt: Sélectionner un pays
       email_helper: Une adresse email personnelle est requise pour recevoir le pass pour les transports publics genevois
+  pool_fight_order:
+    number: N°
+    pool: Poule
+    red: Rouge
+    title: Ordre des combats
+    white: Blanc
   purchases:
     destroy:
       confirm: Êtes-vous bien sûr de vouloir détruire cet extra ? Le processus est irréversible…

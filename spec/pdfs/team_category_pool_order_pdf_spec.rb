@@ -2,7 +2,9 @@
 
 require "rails_helper"
 
-RSpec.describe TeamCategoryPoolOrderPdf do
+# Printed in the language of the session that asked for it, so every example
+# states which one it reads: :en here, and one :fr example for the translation.
+RSpec.describe TeamCategoryPoolOrderPdf, :en do
   let(:cup) { create(:cup) }
   let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 3, out_of_pool: 1) }
 
@@ -69,6 +71,17 @@ RSpec.describe TeamCategoryPoolOrderPdf do
     expect(texts.index(tie.team_1.poster_name)).to be < texts.index(tie.team_2.poster_name)
   end
 
+  it "says what the list is in the language of the session", :fr do
+    category.update!(name: "Team open")
+    pool_of(1, "Alpha", "Bravo")
+    PoolEncounterGenerator.new(category).call
+
+    texts = texts_in(described_class.new(category))
+
+    expect(texts).to include("Ordre des combats", "Blanc", "Rouge")
+    expect(texts.grep(/\APoule /)).to eq ["Poule 1 — 1/1"]
+  end
+
   it "heads the list with the category and what the list is" do
     # Named here rather than by the factory: a title too long for the box is
     # drawn as one run per line, and this example is about what the header
@@ -79,7 +92,7 @@ RSpec.describe TeamCategoryPoolOrderPdf do
 
     texts = texts_in(described_class.new(category))
 
-    expect(texts).to include("TEAM OPEN", "Ordre des combats / Order of fights", "White", "Red")
+    expect(texts).to include("TEAM OPEN", "Order of fights", "White", "Red")
   end
 
   # The cup name above the list is drawn in the cup's red and leaves that

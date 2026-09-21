@@ -20,9 +20,11 @@
 # in the stack is the place the order gives it.
 class PoolEncounterOrder
   # `position` of `pool_count` is where the tie sits in its own pool; `order`
-  # is where it sits in the whole category's running order.
+  # is where it sits in the whole category's running order. The label is what
+  # both documents print, so the list's rows and the sheets in the stack name a
+  # tie the same way — in the language of the session that printed them.
   Tie = Data.define(:encounter, :pool_number, :position, :pool_count, :order) do
-    def label = "Pool #{pool_number} — #{position}/#{pool_count}"
+    def label = "#{I18n.t("pool_fight_order.pool")} #{pool_number} — #{position}/#{pool_count}"
   end
 
   def initialize(team_category)

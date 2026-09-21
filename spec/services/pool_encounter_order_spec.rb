@@ -93,13 +93,20 @@ RSpec.describe PoolEncounterOrder do
       .to eq category.encounters.order(:id).pluck(:id)
   end
 
-  it "labels a tie with its pool and its place in that pool" do
+  it "labels a tie with its pool and its place in that pool", :en do
     pool_of(1, 3)
     pool_of(2, 2)
     PoolEncounterGenerator.new(category).call
 
     expect(described_class.new(category).call.map(&:label))
       .to eq ["Pool 1 — 1/3", "Pool 2 — 1/1", "Pool 1 — 2/3", "Pool 1 — 3/3"]
+  end
+
+  it "names the pool in the language of the session", :fr do
+    pool_of(1, 3)
+    PoolEncounterGenerator.new(category).call
+
+    expect(described_class.new(category).call.first.label).to eq "Poule 1 — 1/3"
   end
 
   it "reads the ties off the encounter records rather than the pairing formula" do

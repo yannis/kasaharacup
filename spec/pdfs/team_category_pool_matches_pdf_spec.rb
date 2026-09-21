@@ -41,7 +41,9 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     end
   end
 
-  it "says which pool each sheet belongs to, stacked in fighting order" do
+  # The label names the pool in the language of the session; these two read it,
+  # so they state which language they expect.
+  it "says which pool each sheet belongs to, stacked in fighting order", :en do
     pool_of(1, "Alpha", "Bravo", "Charlie")
     pool_of(2, "Delta", "Echo")
     PoolEncounterGenerator.new(category).call
@@ -57,7 +59,7 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
 
   # The label is placed, not flowed: a line added to the header pushes the bout
   # number down into the top border of the table under it.
-  it "leaves every other line of the sheet exactly where the blank one has it" do
+  it "leaves every other line of the sheet exactly where the blank one has it", :en do
     pool_of(1, "Alpha", "Bravo")
     PoolEncounterGenerator.new(category).call
 
