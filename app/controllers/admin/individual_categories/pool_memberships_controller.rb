@@ -21,8 +21,9 @@ module Admin
         when :noop
           head :no_content
         else
-          broadcast(result)
-          render turbo_stream: streams_for(result)
+          streams = build_streams(result)
+          broadcast(streams)
+          render turbo_stream: streams
         end
       end
 
@@ -34,19 +35,12 @@ module Admin
         ActiveModel::Type::Boolean.new.cast(params[:force])
       end
 
-      private def broadcast(result)
+      # Built once by update and handed to both destinations — see the team
+      # sibling for why that is a local rather than a memo.
+      private def broadcast(streams)
         Turbo::StreamsChannel.broadcast_stream_to(
-          [individual_category, :competition_tree], content: streams_for(result)
+          [individual_category, :competition_tree], content: streams
         )
-      end
-
-      # Memoised: broadcast and render both want the same set, and building it
-      # twice re-rendered both pool cards, the unpooled panel — and the whole
-      # bracket tree when the move cleared it — for identical output. Keying on
-      # nothing but the ivar is safe: a request only ever calls this with the
-      # one result of its own move.
-      private def streams_for(result)
-        @streams_for ||= build_streams(result)
       end
 
       private def build_streams(result)

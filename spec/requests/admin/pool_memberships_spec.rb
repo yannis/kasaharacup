@@ -9,9 +9,11 @@ RSpec.describe "Admin pool memberships" do
 
   before { sign_in admin }
 
-  def team_in(pool, position)
-    create(:team, team_category: tc, pool_number: pool, pool_position: position)
+  def team_in(pool, position, **attrs)
+    create(:team, team_category: tc, pool_number: pool, pool_position: position, **attrs)
   end
+
+  def pools_stream = Turbo::StreamsChannel.send(:stream_name_from, [tc, :team_pools])
 
   def move(team, to_pool, **params)
     patch admin_team_category_pool_membership_path(tc, team),
@@ -109,20 +111,58 @@ RSpec.describe "Admin pool memberships" do
     expect(response.body).not_to include("target=\"team_pool_#{tc.id}_\"")
   end
 
-  # broadcast and render both asked for the same set, and each call rebuilt it:
-  # both pool cards, the unpooled panel and — when the move cleared the bracket
-  # — the whole tree, rendered twice per drag for byte-identical output. The
-  # unpooled panel's own query stands in for the whole set here.
-  it "builds its streams once for the response and the broadcast" do
+  # Asserted on the payload, not merely that something was published: naming the
+  # stream alone would pass just as well if the broadcast drifted from what the
+  # acting admin was sent.
+  it "broadcasts exactly the streams it renders" do
+    team_in(1, 1)
+    b = team_in(1, 2)
+    team_in(2, 1)
+
+    expect { move(b, 2) }
+      .to have_broadcasted_to(pools_stream)
+        .from_channel(Turbo::StreamsChannel)
+        .with { |payload| expect(payload).to eq response.body }
+  end
+
+  # update builds the set once and hands the same object to the broadcast and
+  # the response. Each surface is therefore rendered once per move — held here
+  # on the cheap path and on the two the issue named as costly, a new pool
+  # (every card re-rendered) and a cleared bracket (the whole tree).
+  it "renders the unpooled panel once when moving between existing pools" do
     team_in(1, 1)
     b = team_in(1, 2)
     team_in(2, 1)
     create(:team, team_category: tc, pool_number: nil)
 
-    queries = count_queries { move(b, 2) }
+    renders = count_renders { move(b, 2) }
 
-    unpooled = queries.grep(/SELECT "teams"\.\* .*"teams"\."pool_number" IS NULL/)
-    expect(unpooled.size).to eq 1
+    expect(response).to have_http_status(:ok)
+    expect(renders.count("admin/team_categories/pool_unpooled")).to eq 1
+  end
+
+  it "renders the pools container once when the move creates a pool" do
+    team_in(1, 1)
+    team_in(1, 2)
+    late = create(:team, team_category: tc, pool_number: nil)
+
+    renders = count_renders { move(late, 2) }
+
+    expect(response).to have_http_status(:ok)
+    expect(renders.count("admin/team_categories/pools")).to eq 1
+  end
+
+  it "renders the bracket tree once when the move clears it" do
+    team_in(1, 1, rank: 1)
+    b = team_in(1, 2, rank: 2)
+    team_in(2, 1, rank: 1)
+    team_in(2, 2, rank: 2)
+    TeamCategoryBracketBuilder.new(tc).call
+
+    renders = count_renders { move(b, 2, force: true) }
+
+    expect(response).to have_http_status(:ok)
+    expect(renders.count("team_bracket_trees/team_bracket_tree")).to eq 1
   end
 
   it "redirects non-admins away" do

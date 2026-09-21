@@ -9,10 +9,16 @@ RSpec.describe "Admin individual pool memberships" do
 
   before { sign_in admin }
 
-  def member_in(pool, position)
+  def member_in(pool, position, **attrs)
     create(:participation, category: category, kenshi: create(:kenshi, cup: cup),
-      pool_number: pool, pool_position: position)
+      pool_number: pool, pool_position: position, **attrs)
   end
+
+  def unpooled_member
+    create(:participation, category: category, kenshi: create(:kenshi, cup: cup), pool_number: nil)
+  end
+
+  def tree_stream = Turbo::StreamsChannel.send(:stream_name_from, [category, :competition_tree])
 
   def move(participation, to_pool, **params)
     patch admin_individual_category_pool_membership_path(category, participation),
@@ -87,7 +93,7 @@ RSpec.describe "Admin individual pool memberships" do
   it "creates a new pool by replacing the pools container (idempotent — no double-apply on the acting admin)" do
     member_in(1, 1)
     member_in(1, 2)
-    late = create(:participation, category: category, kenshi: create(:kenshi, cup: cup), pool_number: nil)
+    late = unpooled_member
 
     move(late, 2)
 
@@ -99,20 +105,54 @@ RSpec.describe "Admin individual pool memberships" do
     expect(response.body).not_to include("action=\"append\"")
   end
 
-  # broadcast and render both asked for the same set, and each call rebuilt it:
-  # both pool cards, the unpooled panel and — when the move cleared the bracket
-  # — the whole tree, rendered twice per drag for byte-identical output. The
-  # unpooled panel's own query stands in for the whole set here.
-  it "builds its streams once for the response and the broadcast" do
+  # The team sibling's spec explains both guards; the individual side is held
+  # to the same two.
+  it "broadcasts exactly the streams it renders" do
     member_in(1, 1)
     b = member_in(1, 2)
     member_in(2, 1)
-    create(:participation, category: category, kenshi: create(:kenshi, cup: cup), pool_number: nil)
 
-    queries = count_queries { move(b, 2) }
+    expect { move(b, 2) }
+      .to have_broadcasted_to(tree_stream)
+        .from_channel(Turbo::StreamsChannel)
+        .with { |payload| expect(payload).to eq response.body }
+  end
 
-    unpooled = queries.grep(/SELECT "participations"\.\* .*"participations"\."pool_number" IS NULL/)
-    expect(unpooled.size).to eq 1
+  it "renders the unpooled panel once when moving between existing pools" do
+    member_in(1, 1)
+    b = member_in(1, 2)
+    member_in(2, 1)
+    unpooled_member
+
+    renders = count_renders { move(b, 2) }
+
+    expect(response).to have_http_status(:ok)
+    expect(renders.count("IndividualPoolUnpooledComponent")).to eq 1
+  end
+
+  it "renders the pools container once when the move creates a pool" do
+    member_in(1, 1)
+    member_in(1, 2)
+    late = unpooled_member
+
+    renders = count_renders { move(late, 2) }
+
+    expect(response).to have_http_status(:ok)
+    expect(renders.count("admin/individual_categories/pools")).to eq 1
+  end
+
+  it "renders the bracket tree once when the move clears it" do
+    member_in(1, 1, rank: 1)
+    member_in(1, 2, rank: 2)
+    b = member_in(1, 3, rank: 3)
+    member_in(2, 1, rank: 1)
+    member_in(2, 2, rank: 2)
+    IndividualCategoryBracketBuilder.new(category).call
+
+    renders = count_renders { move(b, 2, force: true) }
+
+    expect(response).to have_http_status(:ok)
+    expect(renders.count("CompetitionTreeComponent")).to eq 1
   end
 
   it "redirects non-admins away" do
