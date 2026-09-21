@@ -25,6 +25,12 @@ class Encounter < ApplicationRecord
       (saved_change_to_winner_id? || saved_change_to_team_1_id? || saved_change_to_team_2_id?)
   }
 
+  after_commit :broadcast_invalidated_matchup, on: :update, if: -> { @matchup_invalidated }
+  # The flag lives on the instance, so a rolled-back invalidation (a swap whose
+  # second #assign_team_to_slot raises) would otherwise leave it set and repaint
+  # on the next unrelated save of that same object.
+  after_rollback :clear_matchup_invalidated
+
   delegate :team_size, to: :team_category
 
   PARENT_ASSOCIATIONS = [:parent_encounter_1, :parent_encounter_2].freeze
@@ -96,14 +102,24 @@ class Encounter < ApplicationRecord
   # Deliberately blind to the lineup flags. EncounterLineupSeeder confirms BOTH
   # lineups the moment an admin opens a panel, so gating on them made the swap
   # tool withdraw itself a second after anyone merely looked at an encounter. A
-  # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_slot
-  # clears the outgoing side's fighters, its points and its flag on every swap,
-  # and EncounterTeamSwap confirms before discarding the rest.
+  # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_matchup
+  # drops the stale bouts and both lineup flags on every swap, and
+  # EncounterTeamSwap confirms before discarding the rest.
   def unscored?
     winner_id.nil? &&
       # any? (not exists?) so a preloaded team_fights: :fight_points association is
       # read in memory instead of firing one EXISTS query per bout.
       team_fights.none? { |fight| fight.fight_points.any? || fight.draw? }
+  end
+
+  # Both sides' fighter orders are in. The single bar for reading a matchup as
+  # settled — forfeit resolution, hikiwake eligibility and encounter
+  # completeness all hinge on it, and they have to agree or #1310 comes back.
+  #
+  # NOT the negation of #pristine?'s lineup half below, which asks whether
+  # NEITHER side has been entered.
+  def lineups_confirmed?
+    lineup_1_set? && lineup_2_set?
   end
 
   # No work recorded AT ALL — #unscored? plus untouched lineups. The stricter
@@ -148,20 +164,28 @@ class Encounter < ApplicationRecord
   end
 
   # The single path for setting a bracket slot's team. First fill (nil -> team)
-  # just writes the column. Re-resolution (a different team, or nil) first
-  # invalidates the previous occupant's sub-state on that side, then writes the
-  # column and re-derives this encounter's winner. Both the winner-propagation
-  # callback and the builder's first-round re-resolve go through here, so stale
-  # state can never survive an advancement change.
+  # just writes the column. Re-resolution (a different team, or nil) writes the
+  # column, discards the now-stale matchup, then re-derives this encounter's
+  # winner. Both the winner-propagation callback and the builder's first-round
+  # re-resolve go through here, so stale state can never survive an advancement
+  # change.
+  #
+  # Wrapped in its own transaction so the three writes land together: a failure
+  # between them (a lock timeout, FK contention under concurrent scoring) would
+  # otherwise leave the encounter holding the NEW team with the OLD bouts — the
+  # #1310 state, reached by a partial failure instead of by design. It also
+  # gives #invalidate_matchup's flag a commit to ride on when the caller has no
+  # transaction of its own.
   def assign_team_to_slot(slot, team)
     column = :"team_#{slot}_id"
     return if public_send(column) == team&.id
 
     previous_id = public_send(column)
-    update!(column => team&.id)
+    transaction do
+      update!(column => team&.id)
+      next if previous_id.blank?
 
-    if previous_id.present? && team&.id != previous_id
-      invalidate_slot(slot)
+      invalidate_matchup
       recompute_winner!
     end
   end
@@ -178,17 +202,92 @@ class Encounter < ApplicationRecord
       .where("parent_encounter_1_id = :id OR parent_encounter_2_id = :id", id: id)
   end
 
-  # Wipe the previous occupant's data on side `slot`: kenshi, that side's
-  # fight_points (they are keyed by fighter_side, NOT by kenshi, so they would
-  # otherwise be counted for the new team), and the now-stale per-bout outcome.
-  private def invalidate_slot(slot)
-    side = (slot == 1) ? "fighter_1" : "fighter_2"
-    team_fights.each do |fight|
-      fight.fight_points.where(fighter_side: side).destroy_all
-      fight.update!("kenshi_#{slot}_id": nil)
-      fight.recompute_outcome_from_points!
+  # A slot's occupant changed, so the MATCHUP changed and the whole bout set is
+  # stale — not just the side being rewritten. The outgoing team's fighters and
+  # points obviously go (points are keyed by fighter_side, not by kenshi, so
+  # they would otherwise be credited to the incoming team); the opponent's go
+  # too, because that order was entered to face a team that is no longer there.
+  #
+  # Emptying only the rewritten side left every bout with one fighter and an
+  # empty seat, which TeamFight#forfeit read as a walkover: recompute_winner!
+  # then handed the untouched side a clean-sweep win nobody fought, and that
+  # phantom result advanced up the tree and made the slot unswappable for good
+  # (#1310).
+  #
+  # This reaches every RE-resolution caller — winner propagation, bye
+  # propagation and the builder's first-round re-resolve — but by construction
+  # it cannot reach a first fill (nil -> team), where a panel opened before both
+  # parents are decided seeds one side and leaves the other empty. So #1310 is
+  # closed in two places, and both are load-bearing: this one removes the stale
+  # matchup, and TeamFight#forfeit's own lineup gate stops a half-filled one
+  # being read as a walkover for as long as it legitimately exists.
+  private def invalidate_matchup
+    # Raised BEFORE the writes, not after: the after_commit guard is read at
+    # commit time, so a flag set after the last save never reaches it and the
+    # repaint below silently never fires.
+    @matchup_invalidated = true
+    log_discarded_matchup
+    team_fights.destroy_all
+    update!(lineup_1_set: false, lineup_2_set: false)
+  end
+
+  # Correcting an earlier round can reach a descendant that was already fought
+  # and scored, on a path that — unlike EncounterTeamSwap — has no unscored?
+  # guard and no confirmation prompt. Discarding those points is unavoidable
+  # (they are keyed by fighter_side, not by kenshi, so keeping the opponent's
+  # half would credit them to the incoming team), but it should not be silent:
+  # leave a trace for when someone asks where a scoresheet went.
+  private def log_discarded_matchup
+    fights = team_fights.to_a
+    # Read the points in memory where the caller preloaded them — the bracket
+    # builder loads team_fights: :fight_points for every encounter it
+    # re-resolves, and pays this on each of them for a line that is almost never
+    # written. One subquery COUNT otherwise. Same trade-off #unscored? documents.
+    points = if fights.all? { |fight| fight.fight_points.loaded? }
+      fights.sum { |fight| fight.fight_points.size }
+    else
+      FightPoint.where(scorable: fights).count
     end
-    update!("lineup_#{slot}_set": false)
+    return if points.zero?
+
+    bouts = fights.size
+    Rails.logger.warn(
+      "Encounter #{id}: matchup invalidated, discarding " \
+      "#{bouts} #{"bout".pluralize(bouts)} and " \
+      "#{points} recorded #{"fight point".pluralize(points)}"
+    )
+  end
+
+  # Repaint every screen showing this matchup — neither existing broadcast
+  # survives an invalidation. The bouts are DESTROYED, and TeamFight repaints the
+  # panel only from an after_update_commit, so an open editor keeps rendering
+  # bouts whose ids are gone (scoring one then 404s in TeamFightPointsController).
+  # The tree is exposed on the swap path for a different reason: the slot write is
+  # no longer the last save, so its saved_changes never reach commit and
+  # broadcast_bracket_tree's own condition reads false. Measured before this fix:
+  # a swap enqueued 0 panel and 0 tree broadcasts, a correction 0 panel.
+  #
+  # Re-sending a tree another record already broadcast is an idempotent morph, so
+  # this deliberately does not try to detect that.
+  private def broadcast_invalidated_matchup
+    clear_matchup_invalidated
+    broadcast_panel
+    broadcast_bracket_tree if pool_number.blank?
+  end
+
+  private def clear_matchup_invalidated
+    @matchup_invalidated = false
+  end
+
+  # Shared with TeamFight, which repaints the same panel after scoring.
+  def broadcast_panel
+    broadcast_replace_later_to(
+      [self, :panel],
+      target: ActionView::RecordIdentifier.dom_id(self),
+      partial: "admin/encounters/panel",
+      locals: {encounter: self, admin: true},
+      attributes: {method: :morph}
+    )
   end
 
   private def broadcast_bracket_tree

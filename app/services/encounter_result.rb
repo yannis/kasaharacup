@@ -41,7 +41,7 @@ class EncounterResult
   # Anchored on the lineup-submission flags (not bout presence): an empty
   # encounter is NOT a draw, and a void trailing bout does not block completeness.
   def complete?
-    @encounter.lineup_1_set? && @encounter.lineup_2_set? &&
+    @encounter.lineups_confirmed? &&
       regular.all? { |tf| tf.winner_id.present? || tf.draw || tf.void? }
   end
 

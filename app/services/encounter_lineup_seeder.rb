@@ -28,7 +28,19 @@ class EncounterLineupSeeder
     team = @encounter.public_send(:"resolved_team_#{slot}")
     return unless team
 
+    # A team with NO members has no lineup to lay down, but its side still has
+    # to be CONFIRMED: TeamFight#forfeit only reads a walkover once both flags
+    # are set (#1310), so leaving it unset strands the encounter — every bout
+    # holds one fighter, nothing completes, and the opponent never advances.
+    # The panel offers no way out either, since an empty roster gives that
+    # side's select no option to change to. So confirm the empty side with an
+    # all-blank order and let forfeit resolution award the walkover.
+    return EncounterLineup.new(@encounter).assign(team, []) if team.kenshis.empty?
+
     ids = @suggestion.for_slot(slot)
+    # A team that HAS members but no usable suggestion is different: the admin
+    # can still pick from the dropdown, so leave that side for manual entry
+    # rather than handing its opponent a walkover.
     return if ids.compact.empty?
 
     EncounterLineup.new(@encounter).assign(team, ids)

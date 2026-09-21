@@ -59,12 +59,12 @@ class EncounterLineup
       next unless confirm
 
       @encounter.update!("lineup_#{slot}_set": true)
-      resolve_forfeits if @encounter.lineup_1_set? && @encounter.lineup_2_set?
+      resolve_forfeits if @encounter.lineups_confirmed?
     end
 
     # Post-commit: recompute_winner! is documented as never landing its write
     # mid-transaction, so re-evaluate the daihyōsen need after the commit.
-    @encounter.recompute_winner! if confirm && @encounter.lineup_1_set? && @encounter.lineup_2_set?
+    @encounter.recompute_winner! if confirm && @encounter.lineups_confirmed?
   end
 
   private def resolve_forfeits

@@ -22,9 +22,11 @@ module Admin
           format.html { redirect_to admin_team_category_path(team_category), notice: t(".notice") }
           # The drag client renders this itself, so the acting admin sees the new
           # draw without waiting on a job. Every OTHER open session is covered by
-          # Encounter#broadcast_bracket_tree, which both assign_team_to_slot calls
-          # already fire — so unlike PoolMembershipsController we broadcast
-          # nothing by hand here.
+          # Encounter#broadcast_invalidated_matchup, which both assign_team_to_slot
+          # calls reach — NOT by #broadcast_bracket_tree, whose own condition reads
+          # false here (the slot write is no longer the last save, so its
+          # saved_changes never reach commit). So unlike PoolMembershipsController
+          # we broadcast nothing by hand.
           format.turbo_stream { render turbo_stream: tree_stream }
         end
       rescue EncounterTeamSwap::NeedsConfirmation, EncounterTeamSwap::InvalidSwap => e

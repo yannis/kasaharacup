@@ -146,10 +146,10 @@ class EncounterTeamSwap
 
     Encounter.transaction do
       # Lock EVERY row this swap can write — the two round-1 rows AND any
-      # bye-fed round-2 child, which #clear_seeded_lineup! wipes. Ascending id
-      # order: two opposing swaps take the rows in the same sequence, so they
-      # serialize instead of deadlocking. lock! reloads each row, which also
-      # clears the association cache we re-read below.
+      # bye-fed round-2 child, which Encounter#propagate_bye_to_children
+      # re-draws. Ascending id order: two opposing swaps take the rows in the
+      # same sequence, so they serialize instead of deadlocking. lock! reloads
+      # each row, which also clears the association cache we re-read below.
       impacted_encounters = (impacted(encounter) + impacted(other_encounter)).uniq
       impacted_encounters.sort_by(&:id).each(&:lock!)
 
@@ -167,10 +167,9 @@ class EncounterTeamSwap
       validate_unscored!(impacted_encounters)
       validate_confirmed_lineups!(impacted_encounters) unless force
 
-      # Re-drawing wipes whatever was seeded, on BOTH sides and on every
-      # impacted encounter — see #clear_seeded_lineup!.
-      impacted_encounters.each { |enc| clear_seeded_lineup!(enc) }
-
+      # Each assignment discards the encounter's stale matchup on its way
+      # through Encounter#invalidate_matchup, and a bye's round-2 child is
+      # re-drawn the same way by the bye-propagation callback.
       encounter.assign_team_to_slot(slot, team)
       other_encounter.assign_team_to_slot(other_slot, current)
     end
@@ -252,33 +251,16 @@ class EncounterTeamSwap
   # #unscored? deliberately ignores the lineup flags: EncounterLineupSeeder
   # confirms both the moment an admin opens a panel, so gating eligibility on
   # them made the tool withdraw itself on sight. The cost is that
-  # #clear_seeded_lineup! cannot tell a seeded fighter order from one an admin
-  # typed — so a hand-entered order is protected by this prompt rather than by
-  # the eligibility rule. Same shape as TeamPoolMove's :needs_confirmation.
+  # Encounter#invalidate_matchup cannot tell a seeded fighter order from one an
+  # admin typed — so a hand-entered order is protected by this prompt rather
+  # than by the eligibility rule. Same shape as TeamPoolMove's
+  # :needs_confirmation.
   private def validate_confirmed_lineups!(impacted_encounters)
     numbers = impacted_encounters.reject(&:pristine?).map(&:number).sort
     return if numbers.empty?
 
     subject = (numbers.size == 1) ? "encounter #{numbers.first}" : "encounters #{numbers.to_sentence}"
     raise NeedsConfirmation, "This clears the fighter order entered on #{subject}. Swap anyway?"
-  end
-
-  # A draw correction re-draws the encounter, so a lineup that was merely
-  # SEEDED (auto-filled the moment an admin opened the panel) has to go with it.
-  #
-  # #assign_team_to_slot invalidates only the side it rewrites. Left alone, the
-  # untouched side kept its fighters and its lineup flag, so every bout had
-  # exactly one side present — a forfeit (TeamFight#forfeit) — and
-  # recompute_winner! handed the incoming team a 3-0 defeat it never fought.
-  # The recorded winner then made the slot permanently unswappable, which is the
-  # dead end this whole feature exists to remove.
-  #
-  # #validate_unscored! has already proved there is no winner, no fight point
-  # and no hikiwake, so no RESULT can be lost here — only fighter assignments,
-  # which #validate_confirmed_lineups! has either found absent or had confirmed.
-  private def clear_seeded_lineup!(enc)
-    enc.team_fights.destroy_all
-    enc.update!(lineup_1_set: false, lineup_2_set: false)
   end
 
   # A bye's round-2 child slot changes with the bye's occupant, so it is part
