@@ -61,6 +61,7 @@ en:
     errors:
       messages:
         pools_frozen: cannot be changed while the pool formation is frozen
+        pools_frozen_destroy: cannot be removed while the pool formation is frozen
         record_invalid: 'Validation failed: %{errors}'
         restrict_dependent_destroy:
           has_many: Cannot delete record because dependent %{record} exist

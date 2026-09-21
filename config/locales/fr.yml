@@ -64,6 +64,7 @@ fr:
     errors:
       messages:
         pools_frozen: ne peut pas être modifié tant que la composition des poules est gelée
+        pools_frozen_destroy: ne peut pas être supprimé tant que la composition des poules est gelée
         record_invalid: 'La validation a échoué : %{errors}'
         restrict_dependent_destroy:
           has_many: Vous ne pouvez pas supprimer l'enregistrement parce que les %{record} dépendants existent

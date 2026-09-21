@@ -30,10 +30,27 @@ class Participation < ApplicationRecord
   delegate :cup, to: "kenshi", allow_nil: true
   delegate :product_individual_junior, :product_individual_adult, to: :cup
 
-  # FreezablePoolMember hook. Polymorphic, so this is a team category for a
+  # FreezablePoolMember hooks. Polymorphic, so this is a team category for a
   # team member's participation — where pool_number means nothing, since the
   # team carries it — and the guard is a no-op there rather than a special case.
   private def freeze_category = category
+
+  # category_id and category_type are both permitted by
+  # app/admin/participation.rb, and the category_individual / category_team
+  # writers reach the same pair through #assign_category, so any of them can
+  # move a pooled row out of a frozen draw.
+  private def freeze_category_moving?
+    will_save_change_to_category_id? || will_save_change_to_category_type?
+  end
+
+  # Spelled out rather than constantized: category_type_was is a database
+  # value, and the polymorphic pair is closed at two.
+  private def freeze_category_left
+    case category_type_was
+    when "IndividualCategory" then IndividualCategory.find_by(id: category_id_was)
+    when "TeamCategory" then TeamCategory.find_by(id: category_id_was)
+    end
+  end
 
   def self.no_pool
     where(pool_number: nil)

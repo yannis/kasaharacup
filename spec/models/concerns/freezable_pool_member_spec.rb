@@ -48,12 +48,16 @@ RSpec.describe FreezablePoolMember do
       expect(record.update(pool_rank: 1)).to be true
     end
 
+    # Its own message: the generic one reads "cannot be changed", which is not
+    # what the admin just tried to do.
     it "refuses destroying a record that sits in a frozen pool" do
       record = pooled_record
       category.freeze_pools!
 
       expect(record.destroy).to be false
       expect(record.reload).to be_persisted
+      expect(record.errors[:base])
+        .to include I18n.t("activerecord.errors.messages.pools_frozen_destroy")
     end
 
     # Nothing in the frozen formation changes when a record that was never in a
@@ -85,6 +89,73 @@ RSpec.describe FreezablePoolMember do
       expect { cup.destroy! }.not_to raise_error
       expect(described_class.where(id: record.id)).to be_empty
     end
+
+    # R5, and the rule Admin::FreezeGuard#guard_frozen_pools! already applies on
+    # the controller side: a frozen bracket closes the formation too, because
+    # any move would clear the tree. The ActiveAdmin form is the only path that
+    # reaches this one, which is exactly why it has to live here.
+    it "refuses a pool_number change while only the bracket is frozen" do
+      record = pooled_record
+      category.freeze_bracket!
+
+      record.pool_number = 2
+
+      expect(record).not_to be_valid
+      expect(record.errors[:pool_number]).to be_present
+    end
+
+    # The other half of the same back door. Both forms permit the category
+    # association — team_category_id on one side, category_id / category_type on
+    # the other — and reassigning a pooled record empties a slot in the
+    # formation it leaves without either pool attribute changing.
+    describe "moving between categories" do
+      it "refuses taking a pooled record out of a frozen formation" do
+        record = pooled_record
+        destination = another_category
+        category.freeze_pools!
+
+        expect(reparent(record, to: destination)).to be false
+        expect(category_of(record.reload)).to eq category
+      end
+
+      it "refuses putting a pooled record into a frozen formation" do
+        record = pooled_record
+        destination = another_category
+        destination.freeze_pools!
+
+        expect(reparent(record, to: destination)).to be false
+        expect(category_of(record.reload)).to eq category
+      end
+
+      it "refuses the move while only the bracket is frozen" do
+        record = pooled_record
+        destination = another_category
+        category.freeze_bracket!
+
+        expect(reparent(record, to: destination)).to be false
+      end
+
+      # An unpooled row is part of no formation, so re-categorising it changes
+      # nothing the freeze protects — and it is not a way around the rule
+      # either, since emptying a pooled row means writing pool_number.
+      it "allows moving a record that carries no pool number" do
+        record = unpooled_record
+        destination = another_category
+        category.freeze_pools!
+
+        expect(reparent(record, to: destination)).to be true
+        expect(category_of(record.reload)).to eq destination
+      end
+
+      it "allows the move once unfrozen" do
+        record = pooled_record
+        destination = another_category
+        category.freeze_pools!
+        category.unfreeze_pools!
+
+        expect(reparent(record, to: destination)).to be true
+      end
+    end
   end
 
   describe Participation do
@@ -103,6 +174,14 @@ RSpec.describe FreezablePoolMember do
       n = sequence.next
       create(:kenshi, cup: cup, first_name: "First#{n}", last_name: "Last#{n}")
     end
+
+    def another_category
+      create(:individual_category, cup: cup, pool_size: 3)
+    end
+
+    def reparent(record, to:) = record.update(category: to)
+
+    def category_of(record) = record.category
 
     it_behaves_like "a pool member of a freezable category"
 
@@ -126,6 +205,14 @@ RSpec.describe FreezablePoolMember do
     def unpooled_record
       create(:team, team_category: category, name: "Team #{sequence.next}", pool_number: nil)
     end
+
+    def another_category
+      create(:team_category, cup: cup, pool_size: 3)
+    end
+
+    def reparent(record, to:) = record.update(team_category: to)
+
+    def category_of(record) = record.team_category
 
     it_behaves_like "a pool member of a freezable category"
   end
