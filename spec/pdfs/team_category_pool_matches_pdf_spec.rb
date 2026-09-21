@@ -41,17 +41,18 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     end
   end
 
-  it "says which pool each sheet belongs to and where it sits in it" do
+  it "says which pool each sheet belongs to, stacked in fighting order" do
     pool_of(1, "Alpha", "Bravo", "Charlie")
     pool_of(2, "Delta", "Echo")
     PoolEncounterGenerator.new(category).call
 
     texts = texts_in(described_class.new(category))
 
-    # A stack of loose sheets has to be sortable back into pools without
-    # reading the team names off each one.
-    expect(texts.grep(/\APool /))
-      .to eq ["Pool 1 — 1/3", "Pool 1 — 2/3", "Pool 1 — 3/3", "Pool 2 — 1/1"]
+    # A stack of loose sheets has to be sortable back into fighting order
+    # without reading the team names off each one, and the running number is
+    # the number the order list calls the tie by.
+    expect(texts.grep(/Pool /))
+      .to eq ["1 — Pool 1 — 1/3", "2 — Pool 2 — 1/1", "3 — Pool 1 — 2/3", "4 — Pool 1 — 3/3"]
   end
 
   # The label is placed, not flowed: a line added to the header pushes the bout
@@ -64,7 +65,7 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     labelled = text_positions_in(described_class.new(category))
     added = ["ALPHA", "BRAVO"]
 
-    expect(labelled.reject { |_, text| text.start_with?("Pool ") || added.include?(text) })
+    expect(labelled.reject { |_, text| text.include?("Pool ") || added.include?(text) })
       .to eq(blank.reject { |_, text| added.include?(text) })
   end
 
