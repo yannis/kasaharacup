@@ -147,10 +147,9 @@ class EncounterTeamSwap
     Encounter.transaction do
       # Lock EVERY row this swap can write — the two round-1 rows AND any
       # bye-fed round-2 child, which Encounter#propagate_bye_to_children
-      # re-draws. Ascending id
-      # order: two opposing swaps take the rows in the same sequence, so they
-      # serialize instead of deadlocking. lock! reloads each row, which also
-      # clears the association cache we re-read below.
+      # re-draws. Ascending id order: two opposing swaps take the rows in the
+      # same sequence, so they serialize instead of deadlocking. lock! reloads
+      # each row, which also clears the association cache we re-read below.
       impacted_encounters = (impacted(encounter) + impacted(other_encounter)).uniq
       impacted_encounters.sort_by(&:id).each(&:lock!)
 

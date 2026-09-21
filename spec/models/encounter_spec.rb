@@ -176,7 +176,7 @@ RSpec.describe Encounter do
     # its bouts were gone. It kept rendering them, and scoring one 404'd in
     # Admin::TeamFightPointsController. The tree is just as exposed on the swap
     # path, where the slot write's saved_changes no longer reach commit.
-    it "repaints the panel and the tree when a slot re-resolution empties the matchup" do
+    it "repaints the panel when a slot re-resolution empties the matchup" do
       a = create(:team, team_category: tc)
       b = create(:team, team_category: tc)
       parent = create(:encounter, team_category: tc, team_1: a, team_2: b, round: 1, position: 1)
@@ -192,7 +192,58 @@ RSpec.describe Encounter do
       targets = ActiveJob::Base.queue_adapter.enqueued_jobs.map { |job| job[:args].to_s }
       expect(child.reload.team_fights).to be_empty
       expect(targets).to include(a_string_matching(/\bencounter_#{child.id}\b/))
+      # No tree assertion here: the PARENT's own after_update_commit already
+      # broadcasts the tree on its winner change, so it would pass whether or
+      # not the child contributed one. The example below pins that instead.
+    end
+
+    # Regression: the flag driving the broadcast used to be raised AFTER the last
+    # write, so the after_commit guard — read at commit time — saw nothing. It
+    # only worked because every caller happened to sit inside a transaction; a
+    # bare call silently destroyed the bouts and repainted nothing.
+    #
+    # Non-vacuous for the tree too: the slot write is not the last save here, so
+    # its saved_changes never reach commit and #broadcast_bracket_tree's own
+    # condition reads false. Anything on the tree stream came from the
+    # invalidation.
+    it "repaints the panel and the tree when re-resolved outside any transaction" do
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      child = create(:encounter, team_category: tc, team_1: a, team_2: nil, round: 2, position: 1)
+      create(:team_fight, encounter: child, position: 1)
+      child.update!(lineup_1_set: true, lineup_2_set: true)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+      child.assign_team_to_slot(1, b)
+
+      targets = ActiveJob::Base.queue_adapter.enqueued_jobs.map { |job| job[:args].to_s }
+      expect(child.reload.team_fights).to be_empty
+      expect(targets).to include(a_string_matching(/\bencounter_#{child.id}\b/))
       expect(targets).to include(a_string_matching(/encounter_tree_team_category_#{tc.id}/))
+    end
+
+    # The slot write, the bout destruction and the lineup reset have to land
+    # together: a failure between them would leave the encounter holding the NEW
+    # team with the OLD bouts — #1310 reached by partial failure. The rolled-back
+    # flag must not leak either, or the next unrelated save repaints for a change
+    # that never happened.
+    it "rolls the slot write back, and leaves no pending repaint, when invalidation fails" do
+      a = create(:team, team_category: tc)
+      b = create(:team, team_category: tc)
+      child = create(:encounter, team_category: tc, team_1: a, team_2: nil, round: 2, position: 1)
+      create(:team_fight, encounter: child, position: 1)
+      child.update!(lineup_1_set: true, lineup_2_set: true)
+      allow(child).to receive(:recompute_winner!).and_raise(ActiveRecord::LockWaitTimeout)
+
+      expect { child.assign_team_to_slot(1, b) }.to raise_error(ActiveRecord::LockWaitTimeout)
+
+      expect(child.reload).to have_attributes(team_1_id: a.id, lineup_1_set: true)
+      expect(child.team_fights).not_to be_empty
+
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+      child.update!(position: 9) # any later save of the same instance
+      targets = ActiveJob::Base.queue_adapter.enqueued_jobs.map { |job| job[:args].to_s }
+      expect(targets).not_to include(a_string_matching(/\bencounter_#{child.id}\b/))
     end
   end
 
@@ -302,11 +353,15 @@ RSpec.describe Encounter do
 
       # The wipe is unavoidable (points are keyed by fighter_side), so it is at
       # least recorded — this is the only trace of a destroyed scoresheet.
-      expect(Rails.logger).to receive(:warn)
-        .with(/Encounter #{final.id}: matchup invalidated, discarding 1 bout and 1 recorded fight point/)
+      # allow + have_received rather than a bare message expectation: the latter
+      # constrains EVERY warn for the example, so an unrelated one fails here
+      # instead of where it came from, and all other log output is swallowed.
+      allow(Rails.logger).to receive(:warn)
 
       r1.update!(winner: b) # the feeding result flips: b now advances, not a
 
+      expect(Rails.logger).to have_received(:warn)
+        .with(/Encounter #{final.id}: matchup invalidated, discarding 1 bout and 1 recorded fight point/)
       expect(final.reload.team_1_id).to eq b.id
       expect(final.team_fights).to be_empty
       expect(FightPoint.where(scorable: bout)).to be_empty

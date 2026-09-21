@@ -68,11 +68,35 @@ RSpec.describe EncounterLineupSeeder do
     expect(fresh.team_fights.order(:position).map(&:kenshi_1_id)).to eq reordered.map(&:id)
   end
 
-  it "is a no-op for a team with no members" do
+  # A team with nothing to seed still has to have its side CONFIRMED.
+  # TeamFight#forfeit reads a walkover only once both flags are set (#1310), so
+  # leaving this side unset strands the encounter: every bout holds one fighter,
+  # nothing completes and the opponent never advances. The panel can't rescue it
+  # either — an empty roster gives that side's select no option to change to, and
+  # the lineup form submits on change.
+  it "confirms an empty side and lets the opponent take the walkover" do
     members(t2, 3)
     fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
 
     expect { described_class.new(fresh).call }.not_to raise_error
+
     expect(fresh.team_fights.map(&:kenshi_1_id)).to all(be_nil)
+    expect(fresh.reload).to have_attributes(lineup_1_set: true, lineup_2_set: true)
+    expect(fresh.result).to be_complete
+    expect(fresh.winner).to eq t2
+  end
+
+  # The other side of that call: a team that HAS members but no usable
+  # suggestion is left for manual entry, not handed to its opponent.
+  it "leaves a side with members but no suggestion unconfirmed" do
+    members(t1, 3)
+    members(t2, 3)
+    fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+    allow_any_instance_of(EncounterLineupSuggestion).to receive(:for_slot).and_return([]) # rubocop:disable RSpec/AnyInstance
+
+    described_class.new(fresh).call
+
+    expect(fresh.reload).to have_attributes(lineup_1_set: false, lineup_2_set: false)
+    expect(fresh.winner).to be_nil
   end
 end

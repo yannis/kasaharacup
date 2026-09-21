@@ -25,7 +25,11 @@ class Encounter < ApplicationRecord
       (saved_change_to_winner_id? || saved_change_to_team_1_id? || saved_change_to_team_2_id?)
   }
 
-  after_commit :broadcast_invalidated_matchup, if: -> { @matchup_invalidated }
+  after_commit :broadcast_invalidated_matchup, on: :update, if: -> { @matchup_invalidated }
+  # The flag lives on the instance, so a rolled-back invalidation (a swap whose
+  # second #assign_team_to_slot raises) would otherwise leave it set and repaint
+  # on the next unrelated save of that same object.
+  after_rollback :clear_matchup_invalidated
 
   delegate :team_size, to: :team_category
 
@@ -108,6 +112,16 @@ class Encounter < ApplicationRecord
       team_fights.none? { |fight| fight.fight_points.any? || fight.draw? }
   end
 
+  # Both sides' fighter orders are in. The single bar for reading a matchup as
+  # settled — forfeit resolution, hikiwake eligibility and encounter
+  # completeness all hinge on it, and they have to agree or #1310 comes back.
+  #
+  # NOT the negation of #pristine?'s lineup half below, which asks whether
+  # NEITHER side has been entered.
+  def lineups_confirmed?
+    lineup_1_set? && lineup_2_set?
+  end
+
   # No work recorded AT ALL — #unscored? plus untouched lineups. The stricter
   # bar, used where re-resolving a slot would silently discard an order the
   # admin entered by hand and cannot recover: TeamCategoryBracketBuilder's
@@ -155,16 +169,25 @@ class Encounter < ApplicationRecord
   # winner. Both the winner-propagation callback and the builder's first-round
   # re-resolve go through here, so stale state can never survive an advancement
   # change.
+  #
+  # Wrapped in its own transaction so the three writes land together: a failure
+  # between them (a lock timeout, FK contention under concurrent scoring) would
+  # otherwise leave the encounter holding the NEW team with the OLD bouts — the
+  # #1310 state, reached by a partial failure instead of by design. It also
+  # gives #invalidate_matchup's flag a commit to ride on when the caller has no
+  # transaction of its own.
   def assign_team_to_slot(slot, team)
     column = :"team_#{slot}_id"
     return if public_send(column) == team&.id
 
     previous_id = public_send(column)
-    update!(column => team&.id)
-    return if previous_id.blank?
+    transaction do
+      update!(column => team&.id)
+      next if previous_id.blank?
 
-    invalidate_matchup
-    recompute_winner!
+      invalidate_matchup
+      recompute_winner!
+    end
   end
 
   def recompute_pool_standings!
@@ -199,10 +222,13 @@ class Encounter < ApplicationRecord
   # matchup, and TeamFight#forfeit's own lineup gate stops a half-filled one
   # being read as a walkover for as long as it legitimately exists.
   private def invalidate_matchup
+    # Raised BEFORE the writes, not after: the after_commit guard is read at
+    # commit time, so a flag set after the last save never reaches it and the
+    # repaint below silently never fires.
+    @matchup_invalidated = true
     log_discarded_matchup
     team_fights.destroy_all
     update!(lineup_1_set: false, lineup_2_set: false)
-    @matchup_invalidated = true
   end
 
   # Correcting an earlier round can reach a descendant that was already fought
@@ -212,10 +238,19 @@ class Encounter < ApplicationRecord
   # half would credit them to the incoming team), but it should not be silent:
   # leave a trace for when someone asks where a scoresheet went.
   private def log_discarded_matchup
-    points = FightPoint.where(scorable: team_fights).count
+    fights = team_fights.to_a
+    # Read the points in memory where the caller preloaded them — the bracket
+    # builder loads team_fights: :fight_points for every encounter it
+    # re-resolves, and pays this on each of them for a line that is almost never
+    # written. One subquery COUNT otherwise. Same trade-off #unscored? documents.
+    points = if fights.all? { |fight| fight.fight_points.loaded? }
+      fights.sum { |fight| fight.fight_points.size }
+    else
+      FightPoint.where(scorable: fights).count
+    end
     return if points.zero?
 
-    bouts = team_fights.size
+    bouts = fights.size
     Rails.logger.warn(
       "Encounter #{id}: matchup invalidated, discarding " \
       "#{bouts} #{"bout".pluralize(bouts)} and " \
@@ -235,9 +270,13 @@ class Encounter < ApplicationRecord
   # Re-sending a tree another record already broadcast is an idempotent morph, so
   # this deliberately does not try to detect that.
   private def broadcast_invalidated_matchup
-    @matchup_invalidated = false
+    clear_matchup_invalidated
     broadcast_panel
     broadcast_bracket_tree if pool_number.blank?
+  end
+
+  private def clear_matchup_invalidated
+    @matchup_invalidated = false
   end
 
   # Shared with TeamFight, which repaints the same panel after scoring.

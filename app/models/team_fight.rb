@@ -52,7 +52,7 @@ class TeamFight < ApplicationRecord
   # a pre-confirmation draw would be wiped by resolve_lineup! on confirmation.
   def hikiwake_eligible?
     !daihyosen? && !void? && forfeit.nil? && fight_points.none? &&
-      winner_id.nil? && encounter.lineup_1_set? && encounter.lineup_2_set?
+      winner_id.nil? && encounter.lineups_confirmed?
   end
 
   # Exactly one side empty => that side forfeits; the present kenshi wins.
@@ -63,10 +63,13 @@ class TeamFight < ApplicationRecord
   # been decided yet, or because a slot re-resolution just emptied the other.
   # Reading that as a forfeit let recompute_winner! record a clean-sweep win
   # nobody fought, which advanced up the tree and locked the slot (#1310).
-  # The genuine short-roster forfeit is unaffected: EncounterLineup resolves
-  # forfeits only after it has set both flags.
+  # The genuine forfeit is unaffected: EncounterLineup resolves forfeits only
+  # after it has set both flags, and EncounterLineupSeeder confirms a side even
+  # when the team has NO members to seed — otherwise a walkover against an empty
+  # roster would sit here forever, unresolvable (that side's panel select has no
+  # options, so it can never fire the change event the lineup form submits on).
   def forfeit
-    return nil unless encounter.lineup_1_set? && encounter.lineup_2_set?
+    return nil unless encounter.lineups_confirmed?
     return nil if kenshi_1_id.present? == kenshi_2_id.present?
 
     kenshi_1 || kenshi_2
