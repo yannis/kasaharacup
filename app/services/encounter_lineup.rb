@@ -13,9 +13,19 @@ class EncounterLineup
   end
 
   # Confirm a side's lineup: write the fighters AND mark the side set, which is
-  # what lets the tie/daihyōsen prompt and forfeit resolution kick in.
+  # what lets the tie/daihyōsen prompt and forfeit resolution kick in. This is
+  # the admin's own submission, so the side is credited to them
+  # (lineup_#{slot}_set_by_admin) — the signal that says this order is worth
+  # protecting from a swap or a pool move. See Encounter#hand_ordered?.
   def assign(team, kenshi_ids)
-    write_side(team, kenshi_ids, confirm: true)
+    write_side(team, kenshi_ids, confirm: true, by_admin: true)
+  end
+
+  # Confirm a SUGGESTED order (EncounterLineupSeeder's auto-fill): same writes
+  # as #assign, so an opened encounter is immediately usable, but nobody chose
+  # this order so the side is not credited to an admin.
+  def assign_suggested(team, kenshi_ids)
+    write_side(team, kenshi_ids, confirm: true, by_admin: false)
   end
 
   # Pre-fill a side's order without confirming it: the fighters land in their
@@ -23,10 +33,10 @@ class EncounterLineup
   # false, so an unfought encounter doesn't read as a complete (tied) one. The
   # admin confirms later by editing, dragging, or scoring.
   def seed(team, kenshi_ids)
-    write_side(team, kenshi_ids, confirm: false)
+    write_side(team, kenshi_ids, confirm: false, by_admin: false)
   end
 
-  private def write_side(team, kenshi_ids, confirm:)
+  private def write_side(team, kenshi_ids, confirm:, by_admin:)
     # Index i maps to position i+1; a nil/blank entry is a forfeit at THAT
     # position, so keep it (don't compact) — compacting would slide every later
     # fighter up a slot and push the gap to the end.
@@ -58,7 +68,12 @@ class EncounterLineup
       end
       next unless confirm
 
-      @encounter.update!("lineup_#{slot}_set": true)
+      # by_admin only ever goes up: a side an admin ordered stays credited to
+      # them even if a later suggestion rewrites it. It is cleared where the
+      # order itself is — Encounter#invalidate_matchup.
+      attributes = {"lineup_#{slot}_set": true}
+      attributes[:"lineup_#{slot}_set_by_admin"] = true if by_admin
+      @encounter.update!(attributes)
       resolve_forfeits if @encounter.lineups_confirmed?
     end
 

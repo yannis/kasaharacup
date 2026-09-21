@@ -110,13 +110,30 @@ RSpec.describe TeamPoolMove do
       team_in(1, 3)
       team_in(2, 1)
       PoolEncounterGenerator.new(tc).call
-      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true)
+      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
       result = described_class.new(team: b, to_pool_number: 2).call
 
       expect(result.status).to eq :needs_confirmation
       expect(b.reload.pool_number).to eq 1 # unchanged
       expect(tc.encounters.where(pool_number: 1).count).to eq 3 # unchanged
+    end
+
+    # Same bug as the bracket swap's prompt: opening a pool encounter's panel
+    # auto-seeds AND confirms both lineups, which used to make every later move
+    # ask about an order nobody typed.
+    it "moves without confirmation when an affected pool was only auto-seeded" do
+      team_in(1, 1)
+      b = team_in(1, 2)
+      team_in(1, 3)
+      team_in(2, 1)
+      PoolEncounterGenerator.new(tc).call
+      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true, lineup_2_set: true)
+
+      result = described_class.new(team: b, to_pool_number: 2).call
+
+      expect(result.status).to eq :ok
+      expect(b.reload.pool_number).to eq 2
     end
 
     it "needs confirmation when an affected pool has recorded fight points" do
@@ -140,7 +157,7 @@ RSpec.describe TeamPoolMove do
       team_in(1, 3)
       team_in(2, 1)
       PoolEncounterGenerator.new(tc).call
-      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true)
+      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
       result = described_class.new(team: b, to_pool_number: 2, force: true).call
 
@@ -210,7 +227,7 @@ RSpec.describe TeamPoolMove do
       team_in(1, 1)
       team_in(1, 2)
       PoolEncounterGenerator.new(tc).call
-      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true)
+      tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
       late = unpooled_team
 
       result = described_class.new(team: late, to_pool_number: 1).call

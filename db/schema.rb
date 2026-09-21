@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -109,7 +109,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_18_120000) do
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
     t.boolean "lineup_1_set", default: false, null: false
+    t.boolean "lineup_1_set_by_admin", default: false, null: false
     t.boolean "lineup_2_set", default: false, null: false
+    t.boolean "lineup_2_set_by_admin", default: false, null: false
     t.integer "number"
     t.bigint "parent_encounter_1_id"
     t.bigint "parent_encounter_2_id"

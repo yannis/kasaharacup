@@ -37,11 +37,25 @@ module Admin
             notice: notice
         end
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            helpers.dom_id(encounter),
-            EncounterComponent.new(encounter: encounter, admin: true, alert: flash[:alert]),
-            method: :morph
-          )
+          render turbo_stream: [
+            turbo_stream.replace(
+              helpers.dom_id(encounter),
+              EncounterComponent.new(encounter: encounter, admin: true, alert: flash[:alert]),
+              method: :morph
+            ),
+            # The bracket swap form sits OUTSIDE the panel this replaces and
+            # bakes its per-option confirmation verdicts in at render time, so
+            # a lineup entered here has to redraw it or the next swap submits a
+            # verdict taken before the lineup existed. A no-op everywhere the
+            # form is not on the page (pool encounters, the tree) — Turbo drops
+            # a stream whose target is missing, and the partial itself renders
+            # nothing but its wrapper unless the encounter is swappable.
+            turbo_stream.replace(
+              helpers.dom_id(encounter, :swap_team),
+              partial: "admin/encounters/swap_team",
+              locals: {encounter: encounter}
+            )
+          ]
         end
       end
     end

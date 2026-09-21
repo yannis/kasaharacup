@@ -47,7 +47,7 @@ RSpec.describe "Admin pool memberships" do
     team_in(1, 3)
     team_in(2, 1)
     PoolEncounterGenerator.new(tc).call
-    tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true)
+    tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
     move(b, 2)
 
@@ -62,7 +62,7 @@ RSpec.describe "Admin pool memberships" do
     team_in(1, 3)
     team_in(2, 1)
     PoolEncounterGenerator.new(tc).call
-    tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true)
+    tc.encounters.where(pool_number: 1).first.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
 
     move(b, 2, force: true)
 

@@ -116,18 +116,31 @@ class Encounter < ApplicationRecord
   # settled — forfeit resolution, hikiwake eligibility and encounter
   # completeness all hinge on it, and they have to agree or #1310 comes back.
   #
-  # NOT the negation of #pristine?'s lineup half below, which asks whether
-  # NEITHER side has been entered.
+  # Says nothing about WHO entered those orders, which is #hand_ordered? below:
+  # the seeder confirms both sides the moment a panel is opened.
   def lineups_confirmed?
     lineup_1_set? && lineup_2_set?
   end
 
-  # No work recorded AT ALL — #unscored? plus untouched lineups. The stricter
-  # bar, used where re-resolving a slot would silently discard an order the
-  # admin entered by hand and cannot recover: TeamCategoryBracketBuilder's
-  # non-force update, and TeamPoolMove's confirmation prompt.
+  # Someone chose this fighter order. Only an admin submission through
+  # EncounterLineup#assign sets these columns; EncounterLineupSeeder's
+  # auto-fill confirms a side (lineup_#{slot}_set) without claiming it, so
+  # merely opening a panel leaves an encounter un-hand-ordered.
+  #
+  # Read the flags, not the fighters: the suggestion the seeder used is not
+  # stable over time (it is the team's order in its most recently updated other
+  # encounter), so re-deriving it later cannot tell a typed order from a seeded
+  # one.
+  def hand_ordered?
+    lineup_1_set_by_admin? || lineup_2_set_by_admin?
+  end
+
+  # No work recorded AT ALL — #unscored? plus no fighter order anyone entered.
+  # The stricter bar, used where re-resolving a slot would silently discard an
+  # order the admin entered by hand and cannot recover: TeamCategoryBracketBuilder's
+  # non-force update, EncounterTeamSwap's confirmation prompt, and TeamPoolMove's.
   def pristine?
-    unscored? && !lineup_1_set? && !lineup_2_set?
+    unscored? && !hand_ordered?
   end
 
   # Persist the derived winning team; no-op when already current. Called
@@ -221,6 +234,10 @@ class Encounter < ApplicationRecord
   # closed in two places, and both are load-bearing: this one removes the stale
   # matchup, and TeamFight#forfeit's own lineup gate stops a half-filled one
   # being read as a walkover for as long as it legitimately exists.
+  #
+  # The hand-ordered credit goes with the fighters it described. Left behind on
+  # an encounter with no bouts at all, it would make every later swap or pool
+  # move ask to protect an order this one already threw away.
   private def invalidate_matchup
     # Raised BEFORE the writes, not after: the after_commit guard is read at
     # commit time, so a flag set after the last save never reaches it and the
@@ -228,7 +245,8 @@ class Encounter < ApplicationRecord
     @matchup_invalidated = true
     log_discarded_matchup
     team_fights.destroy_all
-    update!(lineup_1_set: false, lineup_2_set: false)
+    update!(lineup_1_set: false, lineup_2_set: false,
+      lineup_1_set_by_admin: false, lineup_2_set_by_admin: false)
   end
 
   # Correcting an earlier round can reach a descendant that was already fought

@@ -7,30 +7,41 @@
     the encounter panel frame — the redirect still lands on the whole category
     page with the flash above the updated bracket, exactly as before.
 
-    The prompt is unconditional and the form forces the swap, because the
-    partner encounter is only known once a team is picked — and opening this
-    very panel has already auto-confirmed both its lineups
-    (EncounterLineupSeeder), so a swap from here almost always has a fighter
-    order to discard. The drag path gets the precise, server-named prompt. %>
-<% swap = EncounterTeamSwap.new(encounter) # rubocop:disable Lint/UselessAssignment %>
-<% swappable_slots = [1, 2].select { |slot| swap.swappable?(slot) } # rubocop:disable Lint/UselessAssignment %>
-<% if swappable_slots.any? %>
-  <div class="swap-team">
-    <% swappable_slots.each do |slot| %>
-      <% current = encounter.public_send(:"team_#{slot}") # rubocop:disable Lint/UselessAssignment %>
-      <%= form_with url: admin_team_category_encounter_team_swap_path(encounter.team_category, encounter),
-            method: :post, class: "swap-team__form swap-team__form--slot_#{slot}",
-            data: {turbo_frame: "_top",
-                   turbo_confirm: "Swapping re-draws both encounters. Any fighter order already " \
-                                  "entered on them — or on a following bye match — is cleared. Continue?"} do |f| %>
-        <%= f.hidden_field :slot, value: slot %>
-        <%= f.hidden_field :force, value: true %>
-        <%= label_tag "team_id_#{slot}", "Swap #{current.name} with", class: "swap-team__label" %>
-        <%= select_tag :team_id,
-              options_from_collection_for_select(swap.candidates, :id, :name),
-              include_blank: true, id: "team_id_#{slot}", required: true, class: "swap-team__select" %>
-        <%= f.submit "Swap", class: "swap-team__submit" %>
-      <% end %>
+    The prompt used to be unconditional, and the form forced past the server's
+    own check, because the partner encounter is only known once a team is
+    picked. It now travels with the options: the server answers per candidate
+    (EncounterTeamSwap#confirmation_for) and swap_confirm_controller moves the
+    selected one onto the form, so picking a partner that costs nothing asks
+    nothing — and does not force either.
+
+    Those verdicts are read at render, so the wrapper below carries a stable id
+    and Admin::BaseController#respond_with_encounter re-renders it alongside the
+    panel. Without that the form is a SIBLING of the panel the lineup edit
+    morphs, and entering a lineup and then swapping — this feature's own flow —
+    would submit a verdict taken before the lineup existed. The wrapper renders
+    even when there is nothing to swap, so the stream always has a target. %>
+<%= tag.div id: dom_id(encounter, :swap_team) do %>
+  <% if encounter.pool_number.blank? && encounter.round == 1 && encounter.team_category.bracket_only? %>
+    <% swap = EncounterTeamSwap.new(encounter) # rubocop:disable Lint/UselessAssignment %>
+    <% swappable_slots = [1, 2].select { |slot| swap.swappable?(slot) } # rubocop:disable Lint/UselessAssignment %>
+    <% if swappable_slots.any? %>
+      <% options = swap.candidates.map { |team| [team.name, team.id, {data: {confirm_message: swap.confirmation_for(team)}}] } # rubocop:disable Lint/UselessAssignment %>
+      <div class="swap-team">
+        <% swappable_slots.each do |slot| %>
+          <% current = encounter.public_send(:"team_#{slot}") # rubocop:disable Lint/UselessAssignment %>
+          <%= form_with url: admin_team_category_encounter_team_swap_path(encounter.team_category, encounter),
+                method: :post, class: "swap-team__form swap-team__form--slot_#{slot}",
+                data: {turbo_frame: "_top", controller: "swap-confirm"} do |f| %>
+            <%= f.hidden_field :slot, value: slot %>
+            <%= f.hidden_field :force, value: false, data: {swap_confirm_target: "force"} %>
+            <%= label_tag "team_id_#{slot}", "Swap #{current.name} with", class: "swap-team__label" %>
+            <%= select_tag :team_id, options_for_select(options),
+                  include_blank: true, id: "team_id_#{slot}", required: true, class: "swap-team__select",
+                  data: {swap_confirm_target: "select", action: "change->swap-confirm#update"} %>
+            <%= f.submit "Swap", class: "swap-team__submit" %>
+          <% end %>
+        <% end %>
+      </div>
     <% end %>
-  </div>
+  <% end %>
 <% end %>

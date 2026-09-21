@@ -7,7 +7,10 @@
 # already-correct lineup. A side already set, already populated, or with no valid
 # suggestion is left untouched. Confirming is safe because the tie/daihyōsen
 # logic keys off EncounterResult#complete? (which still needs fought bouts), so
-# this never produces a premature tie on an unfought encounter.
+# this never produces a premature tie on an unfought encounter. What it does
+# NOT do is claim the order: #assign_suggested leaves lineup_#{slot}_set_by_admin
+# false, so an encounter someone merely opened stays pristine and a later swap
+# or pool move has nothing to warn about (see Encounter#hand_ordered?).
 # Best-effort: a suggestion gone stale (a member left the team) just skips that
 # side rather than failing the whole seed.
 class EncounterLineupSeeder
@@ -34,8 +37,9 @@ class EncounterLineupSeeder
     # holds one fighter, nothing completes, and the opponent never advances.
     # The panel offers no way out either, since an empty roster gives that
     # side's select no option to change to. So confirm the empty side with an
-    # all-blank order and let forfeit resolution award the walkover.
-    return EncounterLineup.new(@encounter).assign(team, []) if team.kenshis.empty?
+    # all-blank order and let forfeit resolution award the walkover — still
+    # #assign_suggested, since nobody entered that emptiness either.
+    return EncounterLineup.new(@encounter).assign_suggested(team, []) if team.kenshis.empty?
 
     ids = @suggestion.for_slot(slot)
     # A team that HAS members but no usable suggestion is different: the admin
@@ -43,7 +47,7 @@ class EncounterLineupSeeder
     # rather than handing its opponent a walkover.
     return if ids.compact.empty?
 
-    EncounterLineup.new(@encounter).assign(team, ids)
+    EncounterLineup.new(@encounter).assign_suggested(team, ids)
   rescue EncounterLineup::InvalidLineup
     nil # leave this side for manual entry
   rescue ActiveRecord::RecordNotUnique

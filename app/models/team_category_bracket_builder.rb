@@ -84,10 +84,14 @@ class TeamCategoryBracketBuilder
     category.bracket_encounters.where(round: 1)
       .includes(team_fights: :fight_points).find_each do |encounter|
       # A non-force update only fills freshly-resolved slots; it must never
-      # disturb an encounter with work in progress (a set lineup, scored bouts,
-      # or a recorded winner). Re-resolving such a slot would invalidate that
-      # side's lineup and destroy its points. Discarding that work is what the
-      # explicit "Force rebuild" path (rebuild_started) is for.
+      # disturb an encounter with work in progress (a hand-entered lineup,
+      # scored bouts, or a recorded winner). Re-resolving such a slot would
+      # invalidate that side's lineup and destroy its points. Discarding that
+      # work is what the explicit "Force rebuild" path (rebuild_started) is for.
+      #
+      # An order the panel merely auto-seeded is not work in progress: nobody
+      # chose it, and the slot it describes is about to hold another team
+      # anyway. See Encounter#hand_ordered?.
       next unless encounter.pristine?
 
       [1, 2].each { |slot| update_team_slot(encounter, slot) }

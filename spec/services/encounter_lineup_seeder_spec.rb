@@ -31,6 +31,19 @@ RSpec.describe EncounterLineupSeeder do
     expect(fresh.lineup_2_set?).to be true
   end
 
+  it "confirms what it seeds without crediting an admin" do
+    members(t1, 3)
+    members(t2, 3)
+    fresh = create(:encounter, team_category: tc, team_1: t1, team_2: t2)
+
+    described_class.new(fresh).call
+
+    # Merely opening the panel must leave the encounter pristine: nobody chose
+    # this order, so a swap that discards it has nothing to warn about.
+    expect(fresh.reload).to be_pristine
+    expect(fresh).not_to be_hand_ordered
+  end
+
   it "falls back to roster order for a team with no history" do
     roster = members(t1, 3)
     members(t2, 3)
