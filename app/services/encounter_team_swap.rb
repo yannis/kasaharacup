@@ -23,6 +23,11 @@ class EncounterTeamSwap
 
   SLOTS = [1, 2].freeze
 
+  # The tail of every confirmation message. A constant because the panel form's
+  # refusal path rewrites it into an instruction — the flash cannot be answered
+  # the way a confirm dialog can (Admin::Encounters::TeamSwapsController#refuse).
+  CONFIRM_QUESTION = "Swap anyway?"
+
   # Eligibility for a WHOLE bracket, answered from an already-loaded list.
   # The tree renders every node on every render and on every broadcast morph,
   # so a per-node service instance (each firing #children for a bye) would be
@@ -76,11 +81,20 @@ class EncounterTeamSwap
   # (#validate_confirmed_lineups!) and the panel form (#confirmation_for), so
   # what the form asks and what the server refuses can never disagree.
   def self.confirmation_message(impacted_encounters)
-    numbers = impacted_encounters.filter_map { |enc| enc.number if enc.hand_ordered? }.sort
-    return if numbers.empty?
+    # Decide on #hand_ordered? FIRST, label SECOND. encounters.number is
+    # nullable, so filter_mapping the label in one pass would drop a numberless
+    # row out of the check entirely and return nil — failing OPEN on exactly
+    # the order this exists to protect.
+    hand_ordered = impacted_encounters.select(&:hand_ordered?)
+    return if hand_ordered.empty?
 
-    subject = (numbers.size == 1) ? "encounter #{numbers.first}" : "encounters #{numbers.to_sentence}"
-    "This clears the fighter order entered on #{subject}. Swap anyway?"
+    numbers = hand_ordered.filter_map(&:number).sort
+    subject = case numbers.size
+    when 0 then "another encounter"
+    when 1 then "encounter #{numbers.first}"
+    else "encounters #{numbers.to_sentence}"
+    end
+    "This clears the fighter order entered on #{subject}. #{CONFIRM_QUESTION}"
   end
 
   # The bracket, loaded the way both entry points above need it.

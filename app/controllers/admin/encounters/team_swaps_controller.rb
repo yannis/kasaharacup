@@ -41,8 +41,23 @@ module Admin
           render json: {message: error.message, confirm: error.is_a?(EncounterTeamSwap::NeedsConfirmation)},
             status: :unprocessable_content
         else
-          redirect_to admin_team_category_path(team_category), alert: error.message
+          redirect_to admin_team_category_path(team_category), alert: flash_refusal(error)
         end
+      end
+
+      # The drag client turns NeedsConfirmation into a confirm dialog and
+      # retries; the panel form cannot — it has already navigated away, so the
+      # question would arrive as a flash nobody can answer. Swap the question
+      # for what to do about it. Reopening the panel re-renders the form with
+      # the verdict this refusal proves it was missing, and confirming there
+      # goes through.
+      private def flash_refusal(error)
+        return error.message unless error.is_a?(EncounterTeamSwap::NeedsConfirmation)
+
+        error.message.sub(
+          EncounterTeamSwap::CONFIRM_QUESTION,
+          "Reopen the encounter and swap again to confirm."
+        )
       end
 
       # permit (not params[...]) so a non-scalar value is dropped rather than

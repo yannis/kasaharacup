@@ -189,6 +189,60 @@ RSpec.describe "Admin encounters" do
       expect(first.reload.team_1).not_to eq second.team_1
     end
 
+    # The panel form always posts force=false (the Stimulus controller raises it
+    # to true only for an option the server marked as needing confirmation), so
+    # this is the literal every non-confirming submit sends. It must be REFUSED,
+    # not cast to a force — the old form hardcoded force=true and drove straight
+    # through, which is the bug this feature removes.
+    it "refuses a destructive swap the panel form submitted with force=false" do
+      first, second = round_one
+      second.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: second.team_1_id, force: "false"}
+
+      expect(response).to redirect_to(admin_team_category_path(bracket_only))
+      expect(first.reload.team_1).not_to eq second.team_1
+    end
+
+    # A flash cannot be answered the way the drag path's confirm dialog can, so
+    # the dangling question is replaced by what to do about it.
+    it "tells the admin how to confirm instead of flashing an unanswerable question" do
+      first, second = round_one
+      second.update!(lineup_1_set: true, lineup_1_set_by_admin: true)
+
+      post admin_team_category_encounter_team_swap_path(bracket_only, first),
+        params: {slot: 1, team_id: second.team_1_id, force: "false"}
+
+      expect(flash[:alert]).to include("fighter order")
+      expect(flash[:alert]).to include("Reopen the encounter")
+      expect(flash[:alert]).not_to include(EncounterTeamSwap::CONFIRM_QUESTION)
+    end
+
+    # The swap form bakes its per-option verdicts in at render and sits OUTSIDE
+    # the panel a lineup edit morphs. Entering a lineup and then swapping is
+    # this feature's own flow, so the edit has to redraw the form or the next
+    # submit carries a verdict taken before the lineup existed — and is refused.
+    it "redraws the swap form on a lineup edit so its verdicts cannot go stale" do
+      first, = round_one
+      fighters = Array.new(bracket_only.team_size) do
+        create(:kenshi, cup: cup).tap do |k|
+          create(:participation, category: bracket_only, team: first.team_1, kenshi: k)
+        end
+      end
+
+      patch admin_team_category_encounter_lineup_path(bracket_only, first),
+        params: {team_id: first.team_1_id, kenshi_ids: fighters.map(&:id)}, as: :turbo_stream
+
+      expect(response).to have_http_status(:ok)
+      expect(first.reload).to be_hand_ordered
+      expect(response.body).to include(ActionView::RecordIdentifier.dom_id(first, :swap_team))
+      # Every candidate now costs this encounter's own order, so each option
+      # carries the prompt the pre-edit render had no reason to write.
+      expect(response.body).to include("data-confirm-message")
+      expect(response.body).to include("fighter order")
+    end
+
     def turbo_headers
       {"Accept" => "text/vnd.turbo-stream.html"}
     end

@@ -15,6 +15,14 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
   static targets = ['select', 'force'];
 
+  // Sync at every mount, not just on change: the values written below are DOM
+  // properties, so a reload that restores the <select>'s chosen option fires no
+  // change event and would leave the server-rendered force="false" next to a
+  // selection that needs confirming. Also covers any Turbo morph of the form.
+  connect() {
+    this.update();
+  }
+
   update() {
     const message = this.selectTarget.selectedOptions[0]?.dataset.confirmMessage;
     if (message) {
