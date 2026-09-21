@@ -666,6 +666,12 @@ en:
     form_fields:
       country_prompt: Select country
       email_helper: A personal email address is required to receive the pass for Geneva's bus system
+  pool_fight_order:
+    number: N°
+    pool: Pool
+    red: Red
+    title: Order of fights
+    white: White
   purchases:
     destroy:
       confirm: Are you sure you want to destroy this extra? This is irreversible…
