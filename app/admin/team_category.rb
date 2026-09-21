@@ -184,7 +184,10 @@ ActiveAdmin.register TeamCategory do
       method: :post
   end
 
-  action_item :generate_bracket, only: :show do
+  # Hidden on a frozen bracket, like its two siblings above: the endpoint
+  # refuses it anyway, so leaving it in the header only offers a control that
+  # always fails.
+  action_item :generate_bracket, only: :show, if: proc { !resource.bracket_frozen? } do
     link_to "Generate bracket", generate_bracket_admin_team_category_path(team_category),
       method: :post
   end

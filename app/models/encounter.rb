@@ -11,17 +11,6 @@ class Encounter < ApplicationRecord
 
   validate :teams_differ
   validate :teams_in_category
-  # A tree node, matching the bracket_encounters scope on TeamCategory. The
-  # round guard excludes the ad-hoc encounters the manual "new encounter" form
-  # creates (no pool number and no round), which are not part of the tree.
-  def bracket? = pool_number.nil? && round.present?
-
-  # A tree node whose tree is frozen. Every editing path on it is refused
-  # server-side (R3), so the admin views stop offering them — while a POOL
-  # encounter of the same frozen category stays fully editable, because the
-  # pool phase goes on being recorded after the bracket is settled.
-  def bracket_locked? = bracket? && team_category.bracket_frozen?
-
   validates :team_1, :team_2, presence: true, if: -> { pool_number.present? }
 
   scope :bracket_order, -> { order(:round, :position) }
@@ -41,6 +30,17 @@ class Encounter < ApplicationRecord
   # second #assign_team_to_slot raises) would otherwise leave it set and repaint
   # on the next unrelated save of that same object.
   after_rollback :clear_matchup_invalidated
+
+  # A tree node, matching the bracket_encounters scope on TeamCategory. The
+  # round guard excludes the ad-hoc encounters the manual "new encounter" form
+  # creates (no pool number and no round), which are not part of the tree.
+  def bracket? = pool_number.nil? && round.present?
+
+  # A tree node whose tree is frozen. Every editing path on it is refused
+  # server-side (R3), so the admin views stop offering them — while a POOL
+  # encounter of the same frozen category stays fully editable, because the
+  # pool phase goes on being recorded after the bracket is settled.
+  def bracket_locked? = bracket? && team_category.bracket_frozen?
 
   delegate :team_size, to: :team_category
 

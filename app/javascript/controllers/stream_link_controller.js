@@ -25,6 +25,14 @@ export default class extends Controller {
           'X-CSRF-Token': csrfToken || '',
         },
       });
+      // A frozen bracket answers 403 with a reason. This link is hidden on a
+      // frozen category, but a page opened before the freeze still holds it, so
+      // report rather than fail silently.
+      if (response.status === 403) {
+        const { message } = await response.json();
+        if (message) window.alert(message);
+        return;
+      }
       if (!response.ok) {
         console.error('stream-link failed:', response.status, await response.text());
         return;

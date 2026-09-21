@@ -19,7 +19,8 @@
   margin-left: auto;
 }
 
-.freeze-control__button form,
+/* button_to puts the class on the button and builds the form around it, so the
+   form is the control's child, never the button's. */
 .freeze-control form {
   display: inline;
   margin: 0;

@@ -11,14 +11,13 @@ module Admin
     # that belongs to it — sending the whole set to each would apply the others
     # twice on a page holding more than one subscription.
     #
-    # The two flags do NOT send the same set, unlike the individual side:
-    #
-    #   pools freeze   -> the pool surfaces, and the seeds panel (seeds drive
-    #                     the draw). The bracket renders no differently.
-    #   bracket freeze -> the bracket, the seeds panel, AND the pool surfaces:
-    #                     R5 refuses a membership move while the bracket is
-    #                     frozen, because the move would clear it, so the grips
-    #                     have to go even though the pools are unfrozen.
+    # Both flags send the same set, as on the individual side, so #streams
+    # never reads the flag. A pools freeze closes the draw; a bracket freeze
+    # closes it too (R5), since any membership move would clear the tree — so
+    # the grips and the seed controls have to go either way, and the bracket
+    # chrome carries its own badge. What varies is the category, not the flag:
+    # the pool surfaces are skipped for a bracket-only category and the bracket
+    # for one with no tree yet.
     module FreezeStreams
       extend ActiveSupport::Concern
 
@@ -28,8 +27,13 @@ module Admin
 
       private def category_path = admin_team_category_path(category)
 
+      # Memoised: Admin::Freezing renders this twice — once to broadcast, once
+      # for the acting admin's own response — and building it twice would both
+      # double the render (every pool card, the unpooled panel, the seeds panel
+      # and the whole bracket) and open a window for the two to disagree, which
+      # is exactly what the module promises cannot happen.
       private def streams
-        {
+        @streams ||= {
           team_pools: pool_surfaces_stream,
           team_seeds: seeds_panel_stream,
           encounter_tree: bracket_stream

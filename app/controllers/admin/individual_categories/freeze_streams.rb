@@ -22,11 +22,24 @@ module Admin
 
       private def category_path = admin_individual_category_path(category)
 
+      # Memoised: Admin::Freezing renders this twice — once to broadcast, once
+      # for the acting admin's own response — and building it twice would both
+      # double the render (every pool card, the unpooled panel, the seeds panel
+      # and the whole tree) and open a window for the two to disagree, which is
+      # exactly what the module promises cannot happen.
       private def streams
-        {competition_tree: helpers.safe_join([
-          pools_actions_stream, pools_container_stream, unpooled_panel_stream,
-          seeds_panel_stream, tree_actions_stream, tree_stream
-        ])}
+        @streams ||= {competition_tree: helpers.safe_join(
+          [*pool_surface_streams, tree_actions_stream, tree_stream]
+        )}
+      end
+
+      # Skipped for a pool-less category: app/admin/individual_category.rb
+      # renders the Seeding and Pools panels only on pool_size > 1, so there is
+      # no target on the page and every card would be rendered into the void.
+      private def pool_surface_streams
+        return [] unless category.pool_size.to_i > 1
+
+        [pools_actions_stream, pools_container_stream, unpooled_panel_stream, seeds_panel_stream]
       end
 
       private def pools_actions_stream

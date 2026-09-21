@@ -57,6 +57,14 @@ export default class extends Controller {
         body,
       });
 
+      // A frozen bracket answers 403 with a reason. The radios are gone from a
+      // freshly rendered frozen tree, but a page opened before the freeze still
+      // has them, and a silent refusal would read as a recorded winner.
+      if (response.status === 403) {
+        const { message } = await response.json();
+        if (message) window.alert(message);
+        return;
+      }
       if (!response.ok) {
         console.error('fight-winner submit failed:', response.status, await response.text());
         return;

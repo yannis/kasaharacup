@@ -68,8 +68,38 @@ RSpec.describe "Admin pools freeze guard" do
       post regenerate_pool_fights_admin_individual_category_path(category),
         params: {pool_number: 1}, as: :turbo_stream
 
-      expect(response).to have_http_status(:forbidden)
+      expect(refusal(response)).to eq I18n.t("admin.freezes.refused.pools")
       expect(category.pool_fights.pluck(:id)).to match_array before_ids
+    end
+
+    # guard_frozen_surface!, not guard_frozen_pools!: #regenerate destroy_alls
+    # that one pool's fights and touches nothing else, so the refusal has no
+    # business claiming the change would clear the tree and telling the
+    # organizer to unfreeze a settled bracket for a pool-phase repair.
+    it "names the bracket, not the tree it would clear, when only the BRACKET is frozen" do
+      drawn
+      PoolFightGenerator.new(category).call
+      before_ids = category.pool_fights.pluck(:id)
+      category.freeze_bracket!
+
+      post regenerate_pool_fights_admin_individual_category_path(category),
+        params: {pool_number: 1}, as: :turbo_stream
+
+      expect(refusal(response)).to eq I18n.t("admin.freezes.refused.bracket")
+      expect(category.pool_fights.pluck(:id)).to match_array before_ids
+    end
+
+    # The R5 message stays where R5 actually applies: a membership move really
+    # does clear the tree as a side effect.
+    it "still tells a membership move that it would clear the tree" do
+      drawn
+      participation = category.participations.first
+      category.freeze_bracket!
+
+      patch admin_individual_category_pool_membership_path(category, participation),
+        params: {to_pool_number: 2}, as: :turbo_stream
+
+      expect(refusal(response)).to eq I18n.t("admin.freezes.refused.bracket_blocks_pools")
     end
 
     # The pool card's own button posts to #regenerate for first-time

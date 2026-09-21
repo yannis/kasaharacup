@@ -5,13 +5,20 @@
     Hidden entirely when there is nothing to freeze (R15) — no pools drawn, no
     bracket generated, or a bracket-only category's absent pool phase.
 
+    Unless it is already frozen. freezable? reads live state, and the freeze
+    endpoints do not require it, so a surface can be frozen and stop being
+    freezable: delete the pooled kenshis of a frozen category (the cascade is
+    exempt from the model guard) and pools.any? goes false. Gating the badge
+    and the Unfreeze button on freezable? alone stranded that category
+    read-only with no way back from its own page.
+
     Only the unfreeze side confirms (R14): freezing is harmless and reversible,
     unfreezing re-opens the tools that destroy recorded work.
 
     The state is read through FreezeHelper rather than into template locals:
     erb_lint lints each ERB tag on its own, so a local read in a later tag
     looks useless and the pre-commit autocorrect deletes it. %>
-<% if freeze_freezable?(category, flag) %>
+<% if freeze_freezable?(category, flag) || freeze_frozen_at(category, flag) %>
   <span class="freeze-control">
     <% if freeze_frozen_at(category, flag) %>
       <span class="freeze-control__badge freeze-control__badge--frozen">

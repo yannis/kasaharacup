@@ -55,6 +55,15 @@ export default class extends Controller {
           'X-CSRF-Token': csrfToken || '',
         },
       });
+      // A frozen bracket answers 403 with a reason. The freeze broadcast does
+      // not replace an open encounter editor (it is a sibling of the tree
+      // frame), so this panel can still be holding live controls; saying why
+      // is the difference between a refused write and one the admin believes
+      // landed.
+      if (response.status === 403) {
+        await this.refuse(response);
+        return;
+      }
       if (!response.ok) {
         console.error('lineup seed failed:', response.status, await response.text());
         return;
@@ -63,6 +72,14 @@ export default class extends Controller {
     } catch (error) {
       console.error('lineup seed error:', error);
     }
+  }
+
+  // No banner in this panel to write into — the editor is re-rendered wholesale
+  // by every other flow — so the refusal is surfaced the way the pool drag
+  // client surfaces its own.
+  async refuse(response) {
+    const { message } = await response.json();
+    if (message) window.alert(message);
   }
 
   async submit(event) {
@@ -80,6 +97,12 @@ export default class extends Controller {
         body: new FormData(form),
       });
 
+      // See #seed: a frozen bracket answers 403, and a silent one would leave
+      // the picked fighter sitting in the select as though it had been saved.
+      if (response.status === 403) {
+        await this.refuse(response);
+        return;
+      }
       if (!response.ok) {
         console.error('lineup submit failed:', response.status, await response.text());
         return;

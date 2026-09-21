@@ -88,4 +88,28 @@ describe "Admin freeze", :js do
     expect(message).to be_present
     expect(moved.reload.pool_number).to eq 1
   end
+
+  # The bracket half of R12. Three fetch clients other than the pool drag post
+  # to guarded endpoints — fight-winner here, plus stream-link and lineup — and
+  # all three used to console.error a 403 and return, which reads as a saved
+  # result. fight-winner stands in for the set: same three lines, same 403
+  # body, and the cheapest fixture that puts one of them on a page.
+  it "refuses a bracket result from a page opened before the freeze, with a reason" do
+    drawn_pools
+    fight = create(:fight, individual_category: category)
+
+    signin_and_visit(admin, admin_individual_category_path(category))
+    find(".competition-tree__admin-details summary").click
+    radio = first(".competition-tree__point-controls input[type='radio']")
+
+    # Frozen elsewhere — this page knows nothing about it yet. Freezing on the
+    # model rather than through the endpoint is what makes it stale: the
+    # broadcast that would strip these controls never fires.
+    category.freeze_bracket!
+
+    message = accept_alert { radio.click }
+
+    expect(message).to be_present
+    expect(fight.reload.winner_id).to be_nil
+  end
 end

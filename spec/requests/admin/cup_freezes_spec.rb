@@ -61,6 +61,26 @@ RSpec.describe "Admin cup freezes" do
       expect(individual.reload).not_to be_pools_frozen
     end
 
+    # applicable? is direction-aware: freezing skips what has nothing to
+    # freeze, unfreezing skips what is not frozen. Counting every category of
+    # the cup instead would lose the "all done" / "half of them are not drawn
+    # yet" distinction the summary exists for.
+    it "counts only the categories it actually unfroze" do
+      drawn_individual.freeze_pools!
+      drawn_individual
+
+      delete admin_cup_pool_freeze_path(cup)
+
+      expect(flash[:notice]).to eq I18n.t("admin.freezes.all.unfrozen.pools", count: 1)
+    end
+
+    it "does not write to a category it had no reason to unfreeze" do
+      untouched = drawn_individual
+
+      expect { delete admin_cup_pool_freeze_path(cup) }
+        .not_to change { untouched.reload.updated_at }
+    end
+
     it "leaves another cup's categories alone" do
       drawn_individual
       other_cup = create(:cup, year: cup.year + 1)

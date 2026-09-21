@@ -42,23 +42,36 @@ module Admin
       false
     end
 
-    # Either flag blocks a seed change, for two different reasons: on a pooled
-    # category the seeds drive the draw, and on a bracket-only team category
-    # they drive the byes and the protected bracket positions. So this reports
-    # whichever flag is actually set rather than always blaming the pools.
-    private def guard_frozen_seeds!(category)
+    # Refuses while EITHER flag is set, naming the one that is actually set
+    # rather than always blaming the pools. This is the form to use whenever
+    # the refusal is simply "that surface is closed": unlike
+    # guard_frozen_pools!, whose bracket branch tells the admin the change
+    # would have cleared the tree — true of a membership move and of nothing
+    # else.
+    private def guard_frozen_surface!(category)
       return refuse_frozen(t("admin.freezes.refused.pools")) if category.pools_frozen?
       return refuse_frozen(t("admin.freezes.refused.bracket")) if category.bracket_frozen?
 
       false
     end
 
+    # Either flag blocks a seed change, for two different reasons: on a pooled
+    # category the seeds drive the draw, and on a bracket-only team category
+    # they drive the byes and the protected bracket positions.
+    private def guard_frozen_seeds!(category) = guard_frozen_surface!(category)
+
     # 403, NOT 422. pool_membership_controller.js treats every 422 as
     # "destructive — confirm and retry with force=true", and a freeze must
-    # never be force-able, so it needs a status of its own (R12). The three
-    # drag clients send Accept: text/vnd.turbo-stream.html only, so they land
-    # in the first branch and read the same {message:} shape their 422 handler
-    # already parses.
+    # never be force-able, so it needs a status of its own (R12). The fetch
+    # clients send Accept: text/vnd.turbo-stream.html only, so they land in the
+    # first branch and read the same {message:} shape their 422 handler already
+    # parses.
+    #
+    # content_type is forced because the body is JSON whatever the request
+    # asked for: inside a turbo_stream collector Rails has already set the
+    # response type, and the json renderer leaves it alone, which would ship a
+    # JSON body labelled as a Turbo Stream.
+    #
     # Named refuse_frozen, not refuse: Admin::Encounters::TeamSwapsController
     # already defines its own private #refuse for the 422 confirm-and-retry
     # flow, and a class's own method shadows an included module's. A guard
@@ -66,11 +79,15 @@ module Admin
     # exception.
     private def refuse_frozen(message)
       respond_to do |format|
-        format.turbo_stream { render json: {message: message}, status: :forbidden }
-        format.json { render json: {message: message}, status: :forbidden }
+        format.turbo_stream { render_frozen_json(message) }
+        format.json { render_frozen_json(message) }
         format.html { redirect_back_or_to admin_root_path, alert: message }
       end
       true
+    end
+
+    private def render_frozen_json(message)
+      render json: {message: message}, status: :forbidden, content_type: "application/json"
     end
   end
 end

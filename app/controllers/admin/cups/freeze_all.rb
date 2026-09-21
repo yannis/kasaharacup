@@ -24,7 +24,7 @@ module Admin
 
         cup.transaction do
           categories.each do |category|
-            if freeze && !freezable?(category)
+            unless applicable?(category, freeze: freeze)
               skipped += 1
               next
             end
@@ -48,8 +48,20 @@ module Admin
       # category", not about the two tables behind them.
       private def categories = cup.individual_categories.to_a + cup.team_categories.to_a
 
+      # Freezing skips what has nothing to freeze; unfreezing skips what is not
+      # frozen, so the flash counts the categories the press actually changed
+      # rather than every category of the cup, and no untouched record is run
+      # through a pointless validation pass.
+      private def applicable?(category, freeze:)
+        freeze ? freezable?(category) : frozen?(category)
+      end
+
       private def freezable?(category)
         (flag == :bracket) ? category.bracket_freezable? : category.pools_freezable?
+      end
+
+      private def frozen?(category)
+        (flag == :bracket) ? category.bracket_frozen? : category.pools_frozen?
       end
 
       private def freeze_one(category)

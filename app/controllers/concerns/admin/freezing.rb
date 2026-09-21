@@ -7,7 +7,8 @@ module Admin
   # responds.
   #
   # The acting admin and every other open page get the identical set, built
-  # once, so the two can never drift: the response renders `streams` and the
+  # once (each FreezeStreams memoises it), so the two can never drift: the
+  # response renders `streams` and the
   # broadcast sends the same content on the same stream names. Every tag is a
   # replace, so the acting admin applying them twice — once from the response,
   # once from their own subscription — is idempotent.

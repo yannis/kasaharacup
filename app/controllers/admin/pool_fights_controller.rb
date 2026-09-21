@@ -80,7 +80,11 @@ module Admin
       # "Generate fights for this pool" while the pool has none — and that case
       # is additive, so R2a keeps it available on a frozen category, exactly as
       # the panel-level #generate is.
-      return if category.pool_fights.exists?(pool_number: pool_number) && guard_frozen_pools!(category)
+      #
+      # guard_frozen_surface!, not guard_frozen_pools!: a redraw here destroys
+      # the pool's recorded fights but never touches the tree, so the refusal
+      # must not tell the admin this change would have cleared their bracket.
+      return if category.pool_fights.exists?(pool_number: pool_number) && guard_frozen_surface!(category)
       category.transaction do
         category.pool_fights.where(pool_number: pool_number).destroy_all
         PoolFightGenerator.new(category, pool_number: pool_number).call

@@ -122,5 +122,40 @@ RSpec.describe "Admin team category show page" do
       expect(response.body).not_to include("Force rebuild")
       expect(response.body).to include("Download PDF")
     end
+
+    # The page-header action item, which the panel partial does not reach. The
+    # endpoint refuses it anyway, so leaving it on the page only offers a
+    # control that always fails.
+    it "drops the Generate bracket action item when the bracket is frozen" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+      expect(response.body).to include(generate_bracket_admin_team_category_path(category))
+
+      category.freeze_bracket!
+      get admin_team_category_path(category)
+
+      expect(response.body).not_to include(generate_bracket_admin_team_category_path(category))
+    end
+
+    # freezable? reads live state and the freeze endpoints do not require it,
+    # so a surface can be frozen and then stop being freezable. Gating the
+    # whole control on freezable? alone stranded such a category read-only with
+    # no unfreeze button on its own page.
+    it "keeps the unfreeze control on a frozen category that is no longer freezable" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:team, team_category: category, name: "Kyoto", pool_number: 1)
+      category.freeze_pools!
+      # delete_all, the way a cascade reaches these rows: the model guard
+      # exempts that path, which is how a frozen category loses its draw.
+      category.teams.delete_all
+
+      get admin_team_category_path(category)
+
+      expect(category.reload).to be_pools_frozen
+      expect(category).not_to be_pools_freezable
+      expect(response.body).to include(admin_team_category_pool_freeze_path(category))
+    end
   end
 end
