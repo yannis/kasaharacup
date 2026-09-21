@@ -6,6 +6,15 @@ RSpec.describe TeamCategoryPoolOrderPdf do
   let(:cup) { create(:cup) }
   let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 3, out_of_pool: 1) }
 
+  # The fill colour in effect when a run of text is drawn: Prawn emits an `scn`
+  # operator whenever the colour changes, so the last one before the run is the
+  # colour that run is printed in.
+  def fill_colour_at(pdf, text)
+    stream = pdf.render
+    stream[0, stream.index(/<#{text.unpack1("H*")}>/i)]
+      .scan(/([\d.]+ [\d.]+ [\d.]+) scn/).flatten.last
+  end
+
   def pool_of(number, *names)
     names.each_with_index.map do |name, index|
       create(:team, team_category: category, name: name, pool_number: number, pool_position: index + 1)
@@ -70,7 +79,19 @@ RSpec.describe TeamCategoryPoolOrderPdf do
 
     texts = texts_in(described_class.new(category))
 
-    expect(texts).to include("TEAM OPEN", "Ordre des combats", "Blanc", "Rouge")
+    expect(texts).to include("TEAM OPEN", "Ordre des combats / Order of fights", "Blanc", "Rouge")
+  end
+
+  # The cup name above the list is drawn in the cup's red and leaves that
+  # colour behind: printed as it first was, every row of the list came out red.
+  it "prints the list in black, under the red cup name" do
+    pool_of(1, "Alpha", "Bravo")
+    PoolEncounterGenerator.new(category).call
+
+    pdf = described_class.new(category)
+
+    expect(fill_colour_at(pdf, "Blanc")).to eq "0.0 0.0 0.0"
+    expect(fill_colour_at(pdf, "ALPHA")).to eq "0.0 0.0 0.0"
   end
 
   it "repeats the column headers when the order runs onto a second page" do

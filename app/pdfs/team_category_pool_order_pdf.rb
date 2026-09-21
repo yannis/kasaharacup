@@ -29,15 +29,19 @@ class TeamCategoryPoolOrderPdf < Prawn::Document
 
   private def draw_header
     bounding_box [bounds.left, bounds.top + 20], width: 400 do
-      fill_color "000000"
       font_size 48
       text team_category.name.upcase
       font_size 24
-      text "Ordre des combats"
+      text "Ordre des combats / Order of fights"
     end
 
     cup_name_and_logo(category: team_category)
 
+    # After the cup name, not before it: cup_name_and_logo leaves its own red
+    # as the fill colour, and everything below here — the whole list — would
+    # otherwise be printed in it. The match sheets re-assert black before each
+    # of their tables for the same reason.
+    fill_color "000000"
     font_size 12
   end
 
