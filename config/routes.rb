@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       resources :documents
       resources :videos
       resources :pool_memberships, only: :update, module: :team_categories
+      resource :pool_encounter_order, only: :show, module: :team_categories
       resources :seeds, only: [:update, :destroy], module: :team_categories
       resource :pool_freeze, only: [:create, :destroy], module: :team_categories
       resource :bracket_freeze, only: [:create, :destroy], module: :team_categories

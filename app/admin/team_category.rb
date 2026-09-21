@@ -232,4 +232,11 @@ ActiveAdmin.register TeamCategory do
   action_item :pool_sheets, only: :show, if: proc { !resource.bracket_only? } do
     link_to "Pool match sheets", pool_sheets_admin_team_category_path(team_category)
   end
+
+  # The order the sheets above are stacked in, as one list. A controller of its
+  # own rather than another member_action, per the seven-CRUD-actions rule; the
+  # sheets' member_action stays as it is.
+  action_item :pool_fight_order, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "Pool fight order", admin_team_category_pool_encounter_order_path(team_category)
+  end
 end
