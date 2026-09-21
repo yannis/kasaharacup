@@ -63,4 +63,9 @@ Rails.application.configure do
 
   config.active_job.queue_adapter = :test
   config.assets.css_compressor = nil
+
+  # Emits "render.view_component" so specs can count what a request rendered
+  # rather than infer it from the SQL a render happens to emit. Off in
+  # production, where the per-render instrument buys nothing.
+  config.view_component.instrumentation_enabled = true
 end

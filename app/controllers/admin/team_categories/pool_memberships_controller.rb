@@ -18,8 +18,9 @@ module Admin
         when :noop
           head :no_content
         else
-          broadcast(result)
-          render turbo_stream: streams_for(result)
+          streams = build_streams(result)
+          broadcast(streams)
+          render turbo_stream: streams
         end
       end
 
@@ -28,12 +29,16 @@ module Admin
       end
 
       # Identical actions to the acting admin (immediate) and every other open
-      # session (broadcast) — built once so the two can never drift.
-      private def broadcast(result)
-        Turbo::StreamsChannel.broadcast_stream_to([team_category, :team_pools], content: streams_for(result))
+      # session (broadcast) — built once so the two can never drift. update
+      # holds the set in a local and hands it to both, rather than the two
+      # asking a builder in turn: building it twice re-rendered both pool
+      # cards, the unpooled panel — and the whole bracket tree when the move
+      # cleared it — for identical output.
+      private def broadcast(streams)
+        Turbo::StreamsChannel.broadcast_stream_to([team_category, :team_pools], content: streams)
       end
 
-      private def streams_for(result)
+      private def build_streams(result)
         tags = if result.created_pool
           # A brand-new pool: replace the whole container (re-rendering every
           # card) rather than appending one. The acting admin is subscribed to

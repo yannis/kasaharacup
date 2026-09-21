@@ -21,8 +21,9 @@ module Admin
         when :noop
           head :no_content
         else
-          broadcast(result)
-          render turbo_stream: streams_for(result)
+          streams = build_streams(result)
+          broadcast(streams)
+          render turbo_stream: streams
         end
       end
 
@@ -34,13 +35,15 @@ module Admin
         ActiveModel::Type::Boolean.new.cast(params[:force])
       end
 
-      private def broadcast(result)
+      # Built once by update and handed to both destinations — see the team
+      # sibling for why that is a local rather than a memo.
+      private def broadcast(streams)
         Turbo::StreamsChannel.broadcast_stream_to(
-          [individual_category, :competition_tree], content: streams_for(result)
+          [individual_category, :competition_tree], content: streams
         )
       end
 
-      private def streams_for(result)
+      private def build_streams(result)
         tags = if result.created_pool
           # A brand-new pool: replace the whole container (re-rendering every
           # card) rather than appending one. The acting admin is subscribed to
