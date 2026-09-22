@@ -23,7 +23,7 @@ RSpec.describe SeedPoolOrder do
       expect(described_class.order(3)).to eq [1, 3, 2]
       expect(described_class.order(4)).to eq [1, 2, 4, 3]
       expect(described_class.order(5)).to eq [1, 3, 5, 4, 2]
-      expect(described_class.order(6)).to eq [1, 2, 6, 5, 3, 4]
+      expect(described_class.order(6)).to eq [1, 3, 6, 4, 5, 2]
       expect(described_class.order(8)).to eq [1, 2, 6, 5, 7, 8, 4, 3]
     end
 

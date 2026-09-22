@@ -8,9 +8,11 @@
 #
 # The draw is the organizers' own rule, recovered from the 2025 posters — see
 # docs/superpowers/specs/2026-09-22-compact-bracket-draw-design.md. Each half
-# reads down in ascending pool order and the tree is built by recursive halving
-# rather than padded to a power of two, so a field of 18 draws 8 round-1 fights
-# and 2 byes where the padded tree drew 2 fights and 14 byes.
+# reads down in ascending pool order, and a half is padded with byes up to a
+# power-of-two unit count WHEN THAT IS CHEAP, so that the only advantage anyone
+# carries is a bye held by a pool winner. Padding is refused once it would cost
+# more byes than fights: at nine pools it would draw 7 byes and 1 fight per
+# half, which is the padded tree this design replaced.
 #
 # ASSUMES complete rank layers: every pool_number it is fed appears at every
 # pool_rank. Sparse input — e.g. bracket-only slot lists — uses
@@ -35,19 +37,81 @@ class BracketSeeder
   #
   # Public because SeedPoolOrder seeds against it: the seeding and the draw must
   # share one definition of the cut, or a category is seeded for a tree the
-  # bracket does not build and nothing fails to say so. That is exactly what the
-  # low/high cut this replaced went on doing once the halves stopped being a
-  # low/high split: it still answered, with the wrong halves.
+  # bracket does not build and nothing fails to say so.
   def self.half_pools(pool_count)
-    (1..pool_count).partition { |ordinal| top_slot_index(ordinal, pool_count).even? }
+    ranks = top_ranks(pool_count)
+
+    (1..pool_count).partition { |pool| ranks[pool] == 1 }
   end
 
-  # Where a pool's top-half entry sits in that column. Roles alternate — an even
-  # index is a pool winner, an odd index a runner-up — and an odd pool count
-  # parks the half's bye at index 1, shifting every pool from the second on one
-  # slot along.
-  def self.top_slot_index(ordinal, pool_count)
-    (pool_count.odd? && ordinal >= 2) ? ordinal : ordinal - 1
+  # Units per half. A half of P entries needs at least ceil(P / 2) units;
+  # padding up to a power of two makes it a PERFECT tree, so no winner ever
+  # waits out a round and the only advantage in the draw is a bye — which
+  # bye_pools then hands to a pool winner. Without padding, a half of 3 units
+  # leaves one unit a level shallower and its winner skips a round, which can
+  # be a runner-up.
+  #
+  # Padding is refused once it would cost more byes than fights. Nine pools
+  # would draw 7 byes and 1 fight per half; that is the padded power-of-two
+  # tree this design exists to replace, and the organizers' own Ladies sheet
+  # declines it too.
+  def self.half_unit_count(pool_count)
+    natural = (pool_count / 2.0).ceil
+    padded = 2**Math.log2([natural, 1].max).ceil
+
+    ((2 * padded - pool_count) <= (pool_count - padded)) ? padded : natural
+  end
+
+  # The pool ORDINALS holding a bye in each half, as [top, bottom].
+  #
+  # A bye takes a whole unit, so the pools between two byes must still pair up:
+  # every gap has to be even, which puts consecutive byes an ODD number of pools
+  # apart. Spacing them by three satisfies that and spreads them, so no two byes
+  # ever share a round-2 node. The top counts up from the first pool and the
+  # bottom down from the last, mirroring each other. Where that would give one
+  # pool a bye in BOTH halves — impossible, since a pool sends its winner to
+  # only one of them — the bottom shifts two pools inward, which keeps every gap
+  # even.
+  def self.bye_pools(pool_count)
+    count = 2 * half_unit_count(pool_count) - pool_count
+    return [[], []] if count.zero?
+
+    top = Array.new(count) { |i| 1 + 3 * i }
+    bottom = Array.new(count) { |i| pool_count - 3 * i }.sort
+    bottom = Array.new(count) { |i| pool_count - 2 - 3 * i }.sort if (top & bottom).any?
+    [top, bottom]
+  end
+
+  # One half's units as groups of pool ordinals: a bye pool alone, the rest in
+  # consecutive pairs. Pools ascend, which is how every poster reads.
+  def self.unit_groups(pool_count, byes)
+    groups = []
+    pool = 1
+    while pool <= pool_count
+      groups << (byes.include?(pool) ? [pool] : [pool, pool + 1])
+      pool += groups.last.size
+    end
+    groups
+  end
+
+  # Each pool's rank in the TOP half; the bottom half takes the complement, so
+  # a pool's two qualifiers always land in opposite halves. A pool holding a bye
+  # must be the pool WINNER in that half, so those fix themselves first and the
+  # rest alternate, which keeps a unit reading winner against runner-up wherever
+  # the byes leave room.
+  def self.top_ranks(pool_count)
+    top_byes, bottom_byes = bye_pools(pool_count)
+    ranks = {}
+    top_byes.each { |pool| ranks[pool] = 1 }
+    bottom_byes.each { |pool| ranks[pool] = 2 }
+    unit_groups(pool_count, top_byes).each do |group|
+      next if group.size == 1
+
+      first, second = group
+      ranks[first] ||= (ranks[second] == 1) ? 2 : 1
+      ranks[second] = (ranks[first] == 1) ? 2 : 1 if ranks[second].nil?
+    end
+    ranks
   end
 
   private def unit_halves
@@ -69,30 +133,30 @@ class BracketSeeder
     ranks == [1, 2]
   end
 
-  # Step 1, for the two-qualifiers-per-pool draw every category uses. The top
-  # half alternates winner/runner-up down the column with the pools taking the
-  # free slots in ascending order; the bottom half takes the complementary rank
-  # for every pool, in the same order. Step 2 then pairs consecutive entries,
-  # and a column's empty slot becomes that half's bye.
+  # The two-qualifiers-per-pool draw every category uses. Each half is a column
+  # of units read top to bottom in ascending pool order: a bye unit holds one
+  # pool winner, every other unit holds two consecutive pools. The bottom half
+  # takes the complementary rank for every pool, so a pool's two qualifiers
+  # always land in opposite halves.
   private def rule_a_halves
-    [units(top_column), units(bottom_column)]
+    top_byes, bottom_byes = self.class.bye_pools(pool_numbers.size)
+    [half_units(top_byes, top: true), half_units(bottom_byes, top: false)]
   end
 
-  private def top_column
-    column = Array.new(pool_numbers.size + (pool_numbers.size.odd? ? 1 : 0))
-    pool_numbers.each_with_index do |pool_number, index|
-      slot_index = self.class.top_slot_index(index + 1, pool_numbers.size)
-      column[slot_index] = slot_for(pool_number, slot_index.even? ? 1 : 2)
+  private def half_units(byes, top:)
+    self.class.unit_groups(pool_numbers.size, byes).map do |group|
+      entries = group.map { |ordinal| slot_for(pool_numbers[ordinal - 1], rank_for(ordinal, top: top)) }
+      (entries.size == 1) ? [entries.first, nil] : entries
     end
-    column
   end
 
-  private def bottom_column
-    column = pool_numbers.each_with_index.map { |pool_number, index|
-      slot_index = self.class.top_slot_index(index + 1, pool_numbers.size)
-      slot_for(pool_number, slot_index.even? ? 2 : 1)
-    }
-    pool_numbers.size.odd? ? column + [nil] : column
+  private def rank_for(ordinal, top:)
+    rank = top_ranks.fetch(ordinal)
+    top ? rank : 3 - rank
+  end
+
+  private def top_ranks
+    @top_ranks ||= self.class.top_ranks(pool_numbers.size)
   end
 
   # out_of_pool other than 2 is out of scope for the poster rule: its
