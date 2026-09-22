@@ -158,4 +158,39 @@ RSpec.describe "Admin team category show page" do
       expect(response.body).to include(admin_team_category_pool_freeze_path(category))
     end
   end
+
+  # The state the organizers actually reorder in, end to end: pools drawn, the
+  # bracket built from their descriptors, and nobody resolved into a slot yet.
+  # Every unit test covers a piece of this; nothing else covers the page.
+  describe "a pooled bracket whose pools have not finished" do
+    let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 3, out_of_pool: 2) }
+
+    before do
+      (1..2).each do |pool|
+        (1..2).each { |rank| create(:team, team_category: category, pool_number: pool, pool_rank: rank) }
+      end
+      TeamCategoryBracketBuilder.new(category).call
+      # Un-resolve every slot: the labels stay, the teams go.
+      category.bracket_encounters.where(round: 1).find_each do |encounter|
+        encounter.update_columns(team_1_id: nil, team_2_id: nil) # rubocop:disable Rails/SkipsModelValidations
+      end
+    end
+
+    it "renders the tree with every slot reorderable, and the waiting panel" do
+      get admin_team_category_path(category)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include "competition-tree__grip"
+      expect(response.body).to include "competition-tree__move-select"
+      expect(response.body).to include BracketWaitingComponent.dom_id_for(category)
+      # Nothing was pulled out, so the area is empty and says so.
+      expect(response.body).to include "Drag an entry here"
+    end
+
+    it "wraps the tree and the waiting panel in one bracket-slot controller" do
+      get admin_team_category_path(category)
+
+      expect(response.body.scan('data-controller="bracket-slot"').size).to eq 1
+    end
+  end
 end
