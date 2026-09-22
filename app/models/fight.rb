@@ -3,6 +3,9 @@
 class Fight < ApplicationRecord
   include ActionView::RecordIdentifier
   include Scorable
+  include BracketSlots
+
+  SLOT_PREFIX = "fighter"
 
   belongs_to :individual_category
   belongs_to :winner, polymorphic: true, foreign_type: "fighter_type", optional: true

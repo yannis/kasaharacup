@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class Encounter < ApplicationRecord
+  include BracketSlots
+
+  # BracketSlots builds team_1_id / team_1_pool_number / team_1_pool_rank from
+  # this; Fight sets it to "fighter".
+  SLOT_PREFIX = "team"
+
   belongs_to :team_category
   belongs_to :team_1, class_name: "Team", optional: true
   belongs_to :team_2, class_name: "Team", optional: true
