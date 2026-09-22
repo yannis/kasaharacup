@@ -107,7 +107,7 @@ class TeamCategoryBracketBuilder
     pool_rank = encounter.public_send(:"team_#{slot}_pool_rank")
     return if pool_number.blank? || pool_rank.blank?
 
-    team = teams_by_slot[[pool_number, pool_rank]]
+    team = pool_slots.competitor_at(pool_number, pool_rank)
     encounter.assign_team_to_slot(slot, team)
   end
 
@@ -141,24 +141,18 @@ class TeamCategoryBracketBuilder
         BracketSeeder::Slot.new(
           pool_number: pool_number,
           pool_rank: pool_rank,
-          payload: teams_by_slot[[pool_number, pool_rank]]
+          payload: pool_slots.competitor_at(pool_number, pool_rank)
         )
       end
     end
   end
 
-  private def pool_numbers
-    @pool_numbers ||= category.teams
-      .where.not(pool_number: nil)
-      .distinct
-      .pluck(:pool_number)
-      .sort
+  # Shared with BracketWaitingEntries: one definition of "who is pool 3's
+  # runner-up", or the waiting area and this re-resolve would eventually
+  # disagree.
+  private def pool_slots
+    @pool_slots ||= CategoryPoolSlots.new(category)
   end
 
-  private def teams_by_slot
-    @teams_by_slot ||= category.teams
-      .where.not(pool_number: nil)
-      .where.not(pool_rank: nil)
-      .index_by { |team| [team.pool_number, team.pool_rank] }
-  end
+  private def pool_numbers = pool_slots.pool_numbers
 end
