@@ -58,10 +58,6 @@ module BracketLayout
     slot_height * (geometry.slot_center(node) + 0.5) - BracketLayout::MATCH_GAP / 2.0
   end
 
-  private def geometry
-    @geometry ||= BracketGeometry.new(bracket_nodes) { |node| node_parents(node) }
-  end
-
   def connector_paths
     rounds.values.flatten.filter_map do |node|
       next unless render_node?(node)
@@ -74,6 +70,12 @@ module BracketLayout
     rendered_node_ids.fetch(node.id) do
       rendered_node_ids[node.id] = node_has_own_identity?(node) || render_forecasted_node?(node)
     end
+  end
+
+  # Includers' nodes are not always records declaring PARENT_ASSOCIATIONS, so
+  # the parents come from the includer's own hook.
+  private def geometry
+    @geometry ||= BracketGeometry.new(bracket_nodes) { |node| node_parents(node) }
   end
 
   private def parent_paths(node)
@@ -100,6 +102,13 @@ module BracketLayout
     # pixel while parent and child sit one column apart, but a compact tree lets
     # a round-1 unit feed a node two or more columns along, and the midpoint of
     # that span lands inside the cards of the columns it crosses.
+    #
+    # The horizontal run reaching the elbow is clear too, and structurally so: a
+    # node in an intervening column is always on another branch, and branches
+    # cover disjoint bands of rows, so it is never within half a card of this
+    # run. Measured over every compact tree up to twelve units, the tightest
+    # clearance here is 132px against a card half-height of 40. Both printable
+    # trees anchor their elbow the same way, in their own units.
     elbow_x = end_x - BracketLayout::ROUND_GAP / 2
 
     "M #{start_x} #{start_y} H #{elbow_x} V #{end_y} H #{end_x}"

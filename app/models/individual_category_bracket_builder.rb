@@ -74,12 +74,12 @@ class IndividualCategoryBracketBuilder
     end
   end
 
+  # See TeamCategoryBracketBuilder#create_parent_rounds: BracketTree owns the
+  # round rule and the top-to-bottom ordering, and both builders only persist.
   private def create_parent_rounds(first_round)
-    pending = []
-    collect_nodes(tree_shape, first_round, pending)
     number = first_round.size
 
-    pending.group_by { |node| node[:round] }.sort.each do |round, nodes|
+    BracketTree.internal_nodes(tree_shape).group_by { |node| node[:round] }.sort.each do |round, nodes|
       nodes.each_with_index do |node, index|
         number += 1
         node[:record] = category.fights.create!(
@@ -87,26 +87,11 @@ class IndividualCategoryBracketBuilder
           round: round,
           position: index + 1,
           fighter_type: "Kenshi",
-          parent_fight_1: resolve_node(node[:parent_1]),
-          parent_fight_2: resolve_node(node[:parent_2])
+          parent_fight_1: BracketTree.parent_record(node[:parent_1], first_round),
+          parent_fight_2: BracketTree.parent_record(node[:parent_2], first_round)
         )
       end
     end
-  end
-
-  private def collect_nodes(shape, leaves, out)
-    return [leaves[shape], 1] if shape.is_a?(Integer)
-
-    node = {}
-    parent_1, round_1 = collect_nodes(shape.first, leaves, out)
-    out << node
-    parent_2, round_2 = collect_nodes(shape.last, leaves, out)
-    node.merge!(parent_1: parent_1, parent_2: parent_2, round: [round_1, round_2].max + 1)
-    [node, node[:round]]
-  end
-
-  private def resolve_node(node)
-    node.is_a?(Hash) ? node[:record] : node
   end
 
   private def seeder

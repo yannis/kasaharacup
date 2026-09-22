@@ -323,14 +323,10 @@ class TeamCategoryBracketPdf < Prawn::Document
     parent_y = panel_card_center_y(parent_encounter, panel)
     child_x = bounds.left + (encounter.round - 1) * (card_width + round_gap)
     child_y = panel_card_center_y(encounter, panel)
-    # A compact tree lets a connector span more than one column, so the
-    # midpoint of the span can fall inside the cards it crosses. Anchor the
-    # elbow beside the child instead, where no card of an intervening round
-    # ever sits. The horizontal run reaching it is clear too, and structurally
-    # so: a node in an intervening column is always on another branch, and
-    # branches cover disjoint bands of rows, so it is never within half a card
-    # of this run. Measured over every compact tree up to twelve units, the
-    # tightest clearance is 132px against a card half-height of 40.
+    # Beside the CHILD, not at the midpoint between the two — see
+    # BracketLayout#connector_path, where the rule and its clearance margin are
+    # stated once. A compact tree lets a connector span more than one column,
+    # and the midpoint of that span lands inside the cards it crosses.
     elbow = child_x - round_gap / 2.0
 
     stroke_color "000000"
@@ -373,9 +369,7 @@ class TeamCategoryBracketPdf < Prawn::Document
   end
 
   private def geometry
-    @geometry ||= BracketGeometry.new(encounters) { |encounter|
-      Encounter::PARENT_ASSOCIATIONS.map { |name| encounter.public_send(name) }
-    }
+    @geometry ||= BracketGeometry.new(encounters)
   end
 
   private def paginate_panels

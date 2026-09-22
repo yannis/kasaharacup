@@ -9,12 +9,20 @@
 # and there is one definition rather than three copies that cannot drift apart
 # without someone noticing.
 #
-# Built with the node list and a block returning a node's parents, so it serves
-# Encounters, Fights and anything else with the same shape.
+# Built with the node list, so it serves Encounters, Fights and anything else
+# declaring PARENT_ASSOCIATIONS. A block overrides that for callers whose nodes
+# do not — the on-screen layout's stand-ins, for one.
+#
+# ASSUMES the parents are already in memory: the walk below reaches every node
+# three times, so a node list whose parents still have to be fetched turns this
+# into a per-node query. Every caller loads its nodes and then wires them with
+# Fight.preload_parents / Encounter.preload_parents.
 class BracketGeometry
+  DEFAULT_PARENTS = ->(node) { node.class::PARENT_ASSOCIATIONS.map { |name| node.public_send(name) } }
+
   def initialize(nodes, &parents_of)
     @nodes = nodes
-    @parents_of = parents_of
+    @parents_of = parents_of || DEFAULT_PARENTS
     @slot_centers = {}
     @leaf_positions = {}
   end

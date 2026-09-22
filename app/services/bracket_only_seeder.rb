@@ -10,14 +10,13 @@
 #
 # teams.seed is an ordering hint, not an identifier: seeds order by [seed, id]
 # (lower = stronger; the id tie-break makes duplicate values deterministic).
-# The field splits in two and each half is drawn by recursive halving rather
-# than padded to a power of two, so byes are POSITIONAL: a half whose entries
-# are odd gives its outermost unit a bye, and a half whose entries are even
-# gives none — at most two in the whole draw, where the padded bracket drawn
-# for a field of nine scheduled seven. The seeds still collect those byes,
-# because a half's outermost unit is also its most-protected position and the
-# seeds take the protected positions first; the rest of the field fills what is
-# left.
+# The field splits in two and each half is padded to a power-of-two unit count,
+# exactly as a pooled category's is — BracketTree.half_size states the rule for
+# both — so no winner ever sits out a round once they have started fighting,
+# and the awkward field sizes are absorbed by byes: a field of nine schedules
+# seven. The seeds collect those byes, because BracketPositions hands out the
+# bye units most-protected first and the seeds take the protected positions
+# first; the rest of the field fills what is left.
 class BracketOnlySeeder
   def initialize(teams, random: Random.new)
     @teams = teams.to_a
@@ -32,7 +31,7 @@ class BracketOnlySeeder
   # BracketTree). The builders can no longer derive the shape by pairing
   # adjacent units, because the compact draw's halves are not the same size.
   def tree_shape
-    @tree_shape ||= BracketTree.shape(*unit_halves)
+    @tree_shape ||= BracketTree.shape(*half_sizes)
   end
 
   private attr_reader :teams, :random
@@ -55,10 +54,8 @@ class BracketOnlySeeder
 
     drawn.first(order.size).each_with_index { |team, index| units[order[index]] << team }
     rest = drawn.drop(order.size)
-    order.reverse_each do |position|
-      units[position] << rest.shift while units[position].size < caps[position] && rest.any?
-    end
-    units.map { |members| [members[0], members[1]] }
+    order.reverse_each { |position| units[position].concat(rest.shift(caps[position] - units[position].size)) }
+    units.map { |members| members.values_at(0, 1) }
   end
 
   # The draw order: seeds strongest first, then the shuffled unseeded.
@@ -69,39 +66,30 @@ class BracketOnlySeeder
   # How many teams each unit holds: one for a bye unit, two for a fight.
   # The capacities sum to the field size, so the draw fills exactly.
   private def capacities
-    top_byes, bottom_byes = bye_units
-    top = Array.new(units_per_half) { |unit| top_byes.include?(unit) ? 1 : 2 }
-    bottom = Array.new(units_per_half) { |unit| bottom_byes.include?(unit) ? 1 : 2 }
-    top + bottom
+    bye_units.flat_map { |byes| Array.new(units_per_half) { |unit| byes.include?(unit) ? 1 : 2 } }
   end
 
   # Which units hold a bye, most-protected first, so the seeds take them and no
-  # two byes meet earlier than the half allows. Mirrors BracketSeeder.
+  # two byes meet earlier than the half allows. An odd field splits unevenly, so
+  # unlike a pooled draw the two halves hold different entry counts.
   private def bye_units
-    @bye_units ||= begin
-      order = BracketPositions.spread_order(BracketTree.shape(units_per_half, units_per_half))
-      [order.select { |unit| unit < units_per_half }.first(2 * units_per_half - top_entries).sort,
-        order.filter_map { |unit| unit - units_per_half if unit >= units_per_half }
-          .first(2 * units_per_half - bottom_entries).sort]
-    end
+    @bye_units ||= BracketPositions.bye_units(units_per_half, top_entries, bottom_entries)
   end
 
-  # Units per half, as [top, bottom]. Under three teams there is nothing to
-  # halve: an empty field is no tree, and a two-team field is the single fight
-  # build_units carves out — halving would instead give each half a bye and draw
-  # a final between them. Same base case as BracketSeeder.
-  private def unit_halves
+  # Units per half, as [top, bottom] COUNTS for BracketTree.shape. Under three
+  # teams there is nothing to halve: an empty field is no tree, and a two-team
+  # field is the single fight build_units carves out — halving would instead
+  # give each half a bye and draw a final between them. Same base case as
+  # BracketSeeder.
+  private def half_sizes
     return [0, 0] if teams.size < 2
     return [0, 1] if teams.size == 2
 
     [units_per_half, units_per_half]
   end
 
-  # A power of two, so each half is a PERFECT tree and no winner ever sits out a
-  # round once they have started fighting. Byes absorb the awkward field sizes,
-  # exactly as they do for a pooled category.
   private def units_per_half
-    @units_per_half ||= 2**Math.log2([(top_entries / 2.0).ceil, 1].max).ceil
+    @units_per_half ||= BracketTree.half_size(top_entries)
   end
 
   private def top_entries = (teams.size / 2.0).ceil

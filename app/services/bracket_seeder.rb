@@ -8,11 +8,14 @@
 #
 # The draw is the organizers' own rule, recovered from the 2025 posters — see
 # docs/superpowers/specs/2026-09-22-compact-bracket-draw-design.md. Each half
-# reads down in ascending pool order, and a half is padded with byes up to a
-# power-of-two unit count WHEN THAT IS CHEAP, so that the only advantage anyone
-# carries is a bye held by a pool winner. Padding is refused once it would cost
-# more byes than fights: at nine pools it would draw 7 byes and 1 fight per
-# half, which is the padded tree this design replaced.
+# reads down in ascending pool order, and is ALWAYS padded with byes up to a
+# power-of-two unit count, so that the only advantage anyone carries is a
+# first-round bye and no winner ever sits out a round once they have started
+# fighting. The design document opened by arguing padding should go; checking
+# the generated brackets against the posters reversed that, because without it
+# the free round lands on a runner-up. The cost is byes at an awkward field
+# size — nine pools draw 7 a half, 33 pools draw 31 — and that trade is the
+# whole point rather than a regression.
 #
 # ASSUMES complete rank layers: every pool_number it is fed appears at every
 # pool_rank. Sparse input — e.g. bracket-only slot lists — uses
@@ -35,87 +38,75 @@ class BracketSeeder
   # The pool ORDINALS (1-based, in ascending pool-number order) whose WINNER
   # sits in each half, as [top, bottom].
   #
-  # Public because SeedPoolOrder seeds against it: the seeding and the draw must
-  # share one definition of the cut, or a category is seeded for a tree the
-  # bracket does not build and nothing fails to say so.
+  # The one piece of the draw anyone outside this class asks for: SeedPoolOrder
+  # seeds against it, because the seeding and the draw must share one definition
+  # of the cut, or a category is seeded for a tree the bracket does not build
+  # and nothing fails to say so. Everything it is built from lives in Halves.
   def self.half_pools(pool_count)
-    ranks = top_ranks(pool_count)
+    ranks = Halves.top_ranks(pool_count)
 
     (1..pool_count).partition { |pool| ranks[pool] == 1 }
   end
 
-  # Units per half, always a power of two, so the half is a PERFECT tree: byes
-  # exist only in round 1 and no winner ever sits out a round once they have
-  # started fighting. A ragged half would leave one unit a level shallower and
-  # its winner skipping a round, which is what the organizers never draw.
-  #
-  # The cost is byes. Nine pools draw 7 per half rather than 1, and 33 pools
-  # draw 31. That is accepted: a later-round skip is worse than a first-round
-  # bye, and a bye is what every poster uses to absorb an awkward field size.
-  def self.half_unit_count(pool_count)
-    2**Math.log2([(pool_count / 2.0).ceil, 1].max).ceil
-  end
-
-  # Which UNITS hold a bye in each half, most-protected first, so the byes are
-  # spread as widely as the half allows and meet each other as late as it can
-  # manage. Where byes outnumber the units' round-2 pairings they must meet
-  # earlier; nothing can be done about that.
-  def self.bye_units(pool_count)
-    units = half_unit_count(pool_count)
-    count = 2 * units - pool_count
-    return [[], []] if count.zero?
-
-    order = BracketPositions.spread_order(BracketTree.shape(units, units))
-    top = order.select { |unit| unit < units }.first(count).sort
-    bottom = order.filter_map { |unit| unit - units if unit >= units }.first(count).sort
-    [top, bottom]
-  end
-
-  # The pool ORDINALS holding a bye in each half. A bye unit takes one pool and
-  # a fight unit two, so walking the pools up the column fixes which pool each
-  # bye lands on.
-  def self.bye_pools(pool_count)
-    bye_units(pool_count).map do |byes|
-      unit_groups(pool_count, byes).each_with_index.filter_map { |group, unit| group.first if byes.include?(unit) }
+  # The pool-count arithmetic the draw is built from: pure functions of how many
+  # pools there are, with no Slots in sight. Nested because half_pools is the
+  # only part of it that is anyone else's business.
+  module Halves
+    # Units per half. Each half holds one qualifier from every pool, so the pool
+    # count IS its entry count; BracketTree.half_size states the padding rule
+    # that both seeders draw by.
+    module_function def unit_count(pool_count)
+      BracketTree.half_size(pool_count)
     end
-  end
 
-  # One half's units as groups of pool ordinals: a bye pool alone, the rest in
-  # consecutive pairs. Pools ascend, which is how every poster reads.
-  def self.unit_groups(pool_count, byes)
-    groups = []
-    pool = 1
-    unit = 0
-    while pool <= pool_count
-      groups << (byes.include?(unit) ? [pool] : [pool, pool + 1])
-      pool += groups.last.size
-      unit += 1
+    # Which UNITS hold a bye in each half. Both halves hold the same entries
+    # here — one qualifier per pool — where a bracket-only field splits
+    # unevenly.
+    module_function def bye_units(pool_count)
+      BracketPositions.bye_units(unit_count(pool_count), pool_count, pool_count)
     end
-    groups
-  end
 
-  # Each pool's rank in the TOP half; the bottom half takes the complement, so
-  # a pool's two qualifiers always land in opposite halves. A pool holding a bye
-  # should be the pool WINNER in that half, so those fix themselves first.
-  #
-  # Where a half needs more byes than the field has winners to give — nine pools
-  # want 7 byes a half out of 9 pools — a pool is claimed by both halves and
-  # only the top can have it. The bottom's bye then falls on a runner-up. That
-  # is unavoidable once byes outnumber pools, and it is the price of a perfect
-  # tree at an awkward field size.
-  def self.top_ranks(pool_count)
-    top_byes, bottom_byes = bye_pools(pool_count)
-    ranks = {}
-    top_byes.each { |pool| ranks[pool] = 1 }
-    bottom_byes.each { |pool| ranks[pool] ||= 2 }
-    unit_groups(pool_count, bye_units(pool_count).first).each do |group|
-      next if group.size == 1
-
-      first, second = group
-      ranks[first] ||= (ranks[second] == 1) ? 2 : 1
-      ranks[second] = (ranks[first] == 1) ? 2 : 1 if ranks[second].nil?
+    # One half's units as groups of pool ordinals: a bye pool alone, the rest in
+    # consecutive pairs. Pools ascend, which is how every poster reads.
+    module_function def unit_groups(pool_count, byes)
+      groups = []
+      pool = 1
+      unit = 0
+      while pool <= pool_count
+        groups << (byes.include?(unit) ? [pool] : [pool, pool + 1])
+        pool += groups.last.size
+        unit += 1
+      end
+      groups
     end
-    ranks
+
+    # Each pool's rank in the TOP half; the bottom half takes the complement, so
+    # a pool's two qualifiers always land in opposite halves. A pool holding a
+    # bye should be the pool WINNER in that half, so those fix themselves first.
+    #
+    # Where a half needs more byes than the field has winners to give — nine
+    # pools want 7 byes a half out of 9 pools — a pool is claimed by both halves
+    # and only the top can have it. The bottom's bye then falls on a runner-up.
+    # That is unavoidable once byes outnumber pools, and it is the price of a
+    # perfect tree at an awkward field size.
+    module_function def top_ranks(pool_count)
+      top_byes, bottom_byes = bye_units(pool_count)
+      top_groups = unit_groups(pool_count, top_byes)
+
+      ranks = {}
+      # A bye unit holds one pool, so its group is the one of size one — which
+      # is what a bye POOL is, with no second walk needed to name it.
+      top_groups.each { |group| ranks[group.first] = 1 if group.one? }
+      unit_groups(pool_count, bottom_byes).each { |group| ranks[group.first] ||= 2 if group.one? }
+      top_groups.each do |group|
+        next if group.one?
+
+        first, second = group
+        ranks[first] ||= (ranks[second] == 1) ? 2 : 1
+        ranks[second] ||= 3 - ranks[first]
+      end
+      ranks
+    end
   end
 
   private def unit_halves
@@ -143,12 +134,12 @@ class BracketSeeder
   # takes the complementary rank for every pool, so a pool's two qualifiers
   # always land in opposite halves.
   private def rule_a_halves
-    top_byes, bottom_byes = self.class.bye_units(pool_numbers.size)
+    top_byes, bottom_byes = Halves.bye_units(pool_numbers.size)
     [half_units(top_byes, top: true), half_units(bottom_byes, top: false)]
   end
 
   private def half_units(byes, top:)
-    self.class.unit_groups(pool_numbers.size, byes).map do |group|
+    Halves.unit_groups(pool_numbers.size, byes).map do |group|
       entries = group.map { |ordinal| slot_for(pool_numbers[ordinal - 1], rank_for(ordinal, top: top)) }
       (entries.size == 1) ? [entries.first, nil] : entries
     end
@@ -160,7 +151,7 @@ class BracketSeeder
   end
 
   private def top_ranks
-    @top_ranks ||= self.class.top_ranks(pool_numbers.size)
+    @top_ranks ||= Halves.top_ranks(pool_numbers.size)
   end
 
   # out_of_pool other than 2 is out of scope for the poster rule: its

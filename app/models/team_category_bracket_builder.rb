@@ -56,24 +56,21 @@ class TeamCategoryBracketBuilder
   end
 
   # Wires parent_encounter_1/2 for rounds >= 2 from the seeder's tree shape.
-  # `round` is a column index — max(parent rounds) + 1 — so a round-1 unit may
-  # feed a node several columns to its right. Nodes are collected in-order,
-  # which is top to bottom, and created round by round so `position` reads down
-  # each column and every parent exists before its child.
+  # BracketTree hands the internal nodes back in-order with their round already
+  # assigned; grouping by round creates them column by column, so `position`
+  # reads down each column and every parent exists before its child.
   #
   # A round-1 bye's occupant is deterministic and its winner never changes, so
   # seed it straight into the child slot at build time (first fill — no
   # sub-state to invalidate).
   private def create_parent_rounds(first_round)
-    pending = []
-    collect_nodes(tree_shape, first_round, pending)
     number = first_round.size
 
-    pending.group_by { |node| node[:round] }.sort.each do |round, nodes|
+    BracketTree.internal_nodes(tree_shape).group_by { |node| node[:round] }.sort.each do |round, nodes|
       nodes.each_with_index do |node, index|
         number += 1
-        parent_1 = resolve_node(node[:parent_1])
-        parent_2 = resolve_node(node[:parent_2])
+        parent_1 = BracketTree.parent_record(node[:parent_1], first_round)
+        parent_2 = BracketTree.parent_record(node[:parent_2], first_round)
         node[:record] = category.encounters.create!(
           number: number,
           round: round,
@@ -85,23 +82,6 @@ class TeamCategoryBracketBuilder
         )
       end
     end
-  end
-
-  # Walks the shape and appends every internal node to `out` in-order, which is
-  # top to bottom. Returns the subtree root and its round.
-  private def collect_nodes(shape, leaves, out)
-    return [leaves[shape], 1] if shape.is_a?(Integer)
-
-    node = {}
-    parent_1, round_1 = collect_nodes(shape.first, leaves, out)
-    out << node
-    parent_2, round_2 = collect_nodes(shape.last, leaves, out)
-    node.merge!(parent_1: parent_1, parent_2: parent_2, round: [round_1, round_2].max + 1)
-    [node, node[:round]]
-  end
-
-  private def resolve_node(node)
-    node.is_a?(Hash) ? node[:record] : node
   end
 
   private def update_existing_bracket
