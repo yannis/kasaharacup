@@ -23,17 +23,24 @@
             <% if fight.bye? %>
               <% bye_slot = fight.bye_slot %>
               <article class="competition-tree__match competition-tree__match--bye" style="<%= match_style(fight) %>">
-                <div class="competition-tree__match-header">
+                <%# The card keeps BYE_CARD_HEIGHT: the empty side is the HEADER
+                    line, which already occupies a row and already says what the
+                    empty side means. See the encounter tree's twin. %>
+                <%= tag.div class: ["competition-tree__match-header",
+                      ("competition-tree__bye-drop" if slot_target?(fight, empty_slot_of(fight)))],
+                      data: slot_data(fight, empty_slot_of(fight)) do %>
                   <span class="competition-tree__bye-label">Bye</span>
-                </div>
+                <% end %>
                 <ol class="competition-tree__fighters">
-                  <li class="competition-tree__fighter competition-tree__fighter--winner">
+                  <%= tag.li class: "competition-tree__fighter competition-tree__fighter--winner",
+                        data: slot_data(fight, bye_slot) do %>
+                    <%= render "brackets/slot_controls", tree: self, node: fight, slot: bye_slot %>
                     <% if (prefix = fighter_pool_prefix(fight, bye_slot)) %>
                       <span class="competition-tree__pool-position"><%= prefix %></span>
                     <% end %>
                     <%= seed_badge(fight, bye_slot) %>
                     <%= fighter_name(fight, bye_slot) %>
-                  </li>
+                  <% end %>
                 </ol>
               </article>
             <% else %>
@@ -90,7 +97,14 @@
                 <% end %>
                 <ol class="competition-tree__fighters">
                   <% [1, 2].each do |slot| %>
-                    <li class="competition-tree__fighter <%= "competition-tree__fighter--winner" if fighter_winner?(fight, slot) %>">
+                    <%# The slots are already OUTSIDE the "Edit result"
+                        disclosure, whose fighters.any? gate is false for exactly
+                        the pre-pools bracket this reorders — so the controls
+                        only need hanging on the row that is already here. %>
+                    <%= tag.li class: ["competition-tree__fighter",
+                          ("competition-tree__fighter--winner" if fighter_winner?(fight, slot))],
+                          data: slot_data(fight, slot) do %>
+                      <%= render "brackets/slot_controls", tree: self, node: fight, slot: slot %>
                       <span class="competition-tree__fighter-name">
                         <% if (prefix = fighter_pool_prefix(fight, slot)) %>
                           <span class="competition-tree__pool-position"><%= prefix %></span>
@@ -103,7 +117,7 @@
                           <%= tag.li point.code, class: ["competition-tree__point", "competition-tree__point--#{point.kind}", ("competition-tree__point--first" if first_scoring_point?(fight, point))] %>
                         <% end %>
                       </ol>
-                    </li>
+                    <% end %>
                   <% end %>
                 </ol>
               </article>
