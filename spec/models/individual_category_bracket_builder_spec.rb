@@ -22,10 +22,10 @@ RSpec.describe IndividualCategoryBracketBuilder do
         round_one = fights.select { |f| f.round == 1 }.sort_by(&:position)
 
         expect(round_one.map { |f| [f.fighter_1, f.fighter_2] }).to eq([
-          [p1_1.kenshi, p3_2.kenshi],
-          [p2_1.kenshi, p4_2.kenshi],
-          [p3_1.kenshi, p1_2.kenshi],
-          [p4_1.kenshi, p2_2.kenshi]
+          [p1_1.kenshi, p2_2.kenshi],
+          [p3_1.kenshi, p4_2.kenshi],
+          [p1_2.kenshi, p2_1.kenshi],
+          [p3_2.kenshi, p4_1.kenshi]
         ])
       end
 
@@ -99,15 +99,11 @@ RSpec.describe IndividualCategoryBracketBuilder do
 
       it "fills in the slots whose pool_rank is known and leaves the rest empty" do
         fights = described_class.new(category).call
-        round_one = fights.select { |f| f.round == 1 }
 
-        slot_1_1 = round_one.find { |f| f.fighter_1_pool_number == 1 && f.fighter_1_pool_rank == 1 }
-        slot_2_1 = round_one.find { |f| f.fighter_1_pool_number == 2 && f.fighter_1_pool_rank == 1 }
-
-        expect(slot_1_1.fighter_1).to eq p1_1.kenshi
-        expect(slot_1_1.fighter_2).to be_nil
-        expect(slot_2_1.fighter_1).to eq p2_1.kenshi
-        expect(slot_2_1.fighter_2).to be_nil
+        expect(occupants(fights.select { |f| f.round == 1 })).to eq({
+          [1, 1] => p1_1.kenshi, [2, 1] => p2_1.kenshi,
+          [1, 2] => nil, [2, 2] => nil
+        })
       end
     end
 
@@ -126,11 +122,9 @@ RSpec.describe IndividualCategoryBracketBuilder do
         described_class.new(category).call
 
         expect(category.fights.order(:id).pluck(:id)).to eq fight_ids_before
-        round_one = category.fights.where(round: 1)
-        slot_1_2 = round_one.find { |f| f.fighter_2_pool_number == 1 && f.fighter_2_pool_rank == 2 }
-        slot_2_2 = round_one.find { |f| f.fighter_2_pool_number == 2 && f.fighter_2_pool_rank == 2 }
-        expect(slot_1_2.fighter_2).to eq p1_2.kenshi
-        expect(slot_2_2.fighter_2).to eq p2_2.kenshi
+        filled = occupants(category.fights.where(round: 1))
+        expect(filled[[1, 2]]).to eq p1_2.kenshi
+        expect(filled[[2, 2]]).to eq p2_2.kenshi
       end
 
       it "preserves recorded winners when filling in new slots" do
@@ -311,29 +305,14 @@ RSpec.describe IndividualCategoryBracketBuilder do
     end
   end
 
-  describe "cross-pool matching fallback" do
-    # The greedy pass is a heuristic that can leave a same-pool pair even when a
-    # valid cross-pool matching exists; grouped_cross_pool is the guaranteed
-    # fallback. The half-split keeps such a `rest` from arising through the
-    # public path (a pool's ranks are spread across halves), so this exercises
-    # the safety net directly.
-    it "resolves a rest the greedy pass cannot pair without a clash" do
-      seeder = BracketSeeder.new([])
-      slot = lambda do |pool, rank|
-        BracketSeeder::Slot.new(pool_number: pool, pool_rank: rank, payload: nil)
-      end
-      # pools [1, 2, 3, 2]: greedy pairs 2.1 vs 2.2 (same pool); grouped resolves it.
-      rest = [slot.call(1, 1), slot.call(2, 1), slot.call(3, 1), slot.call(2, 2)]
-
-      greedy = seeder.send(:greedy_cross_pool, rest.dup)
-      expect(seeder.send(:same_pool?, greedy)).to be(true) # greedy alone clashes
-
-      fights = seeder.send(:cross_pool_match, rest)
-
-      expect(fights.flatten.map { |s| [s.pool_number, s.pool_rank] })
-        .to contain_exactly([1, 1], [2, 1], [3, 1], [2, 2])
-      expect(fights.any? { |a, b| a.pool_number == b.pool_number }).to be(false)
-    end
+  # Which kenshi (if any) occupies each (pool_number, pool_rank) slot of a
+  # round. Which SIDE of a unit a slot lands on is the draw's business, so the
+  # specs key on the slot itself rather than on fighter_1 / fighter_2.
+  def occupants(round_one)
+    round_one.flat_map { |f|
+      [[[f.fighter_1_pool_number, f.fighter_1_pool_rank], f.fighter_1],
+        [[f.fighter_2_pool_number, f.fighter_2_pool_rank], f.fighter_2]]
+    }.to_h
   end
 
   def create_qualified_participation(pool_number:, pool_rank:)

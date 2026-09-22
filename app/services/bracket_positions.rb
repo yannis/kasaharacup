@@ -6,8 +6,8 @@
 #
 # Taking the first N of the sequence gives N positions spread as widely as the
 # bracket allows, so the units placed there meet each other as late as possible.
-# Both seeders use it: BracketOnlySeeder to protect seeds, BracketSeeder to
-# spread byes.
+# BracketOnlySeeder uses it to protect seeds. The pooled BracketSeeder no longer
+# does: its compact draw leaves at most one bye per half, with nothing to spread.
 module BracketPositions
   # Build the replace-by-complement-pairs layout, mirror the bottom half so
   # seed 2 sits at the very bottom, then read off each seed's position.
