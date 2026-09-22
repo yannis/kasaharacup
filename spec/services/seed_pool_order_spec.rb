@@ -7,7 +7,7 @@ RSpec.describe SeedPoolOrder do
   # the rule here would keep passing after the seeder's cut changed, while every
   # category was being mis-seeded.
   def top_half?(pool, count)
-    BracketSeeder.low_block((1..count).to_a).include?(pool)
+    BracketSeeder.half_pools(count).first.include?(pool)
   end
 
   def halves(count)
@@ -21,10 +21,10 @@ RSpec.describe SeedPoolOrder do
       expect(described_class.order(1)).to eq [1]
       expect(described_class.order(2)).to eq [1, 2]
       expect(described_class.order(3)).to eq [1, 3, 2]
-      expect(described_class.order(4)).to eq [1, 3, 4, 2]
-      expect(described_class.order(5)).to eq [1, 4, 5, 3, 2]
-      expect(described_class.order(6)).to eq [1, 4, 6, 3, 2, 5]
-      expect(described_class.order(8)).to eq [1, 5, 7, 3, 4, 8, 6, 2]
+      expect(described_class.order(4)).to eq [1, 2, 4, 3]
+      expect(described_class.order(5)).to eq [1, 2, 4, 5, 3]
+      expect(described_class.order(6)).to eq [1, 3, 6, 4, 5, 2]
+      expect(described_class.order(8)).to eq [1, 2, 6, 5, 7, 8, 4, 3]
     end
 
     it "returns no pools for an empty category" do
@@ -47,18 +47,24 @@ RSpec.describe SeedPoolOrder do
     # The standard draw: seed 3 meets seed 2 and seed 4 meets seed 1, so the
     # projected semifinals are 1 v 4 and 2 v 3 (the layout BracketPositions
     # documents), not 1 v 3 and 2 v 4.
+    #
+    # Five pools is skipped for the same reason three is: padding the halves to
+    # a power-of-two unit count leaves its bottom half a single winner-pool, so
+    # seed 2 takes it and seed 3 has nowhere to go but beside seed 1. A property
+    # of the field size, not of the ordering.
     it "pairs seed 3 with seed 2 and seed 4 with seed 1" do
-      (4..16).each do |count|
+      ((4..16).to_a - [5]).each do |count|
         expect(halves(count)[2]).to eq(halves(count)[1]), "pool count #{count}"
         expect(halves(count)[3]).to eq(halves(count)[0]), "pool count #{count}"
       end
     end
 
-    # An odd count leaves the high block one pool short, and at three pools it
+    # An odd count leaves the bottom half one pool short, and at three pools it
     # is a single pool: seed 2 takes it, so seed 3 has nowhere to go but the
     # top half. The shape of the tree, not a flaw in the ordering.
-    it "puts seed 3 beside seed 1 at three pools, where the bottom half is one pool wide" do
+    it "puts seed 3 beside seed 1 where the bottom half is one winner-pool wide" do
       expect(halves(3)).to eq [true, false, true]
+      expect(halves(5).first(3)).to eq [true, false, true]
     end
   end
 
@@ -66,7 +72,7 @@ RSpec.describe SeedPoolOrder do
   # their own copy, which is how they drifted apart in the first place (#1312).
   describe ".assign" do
     it "hands out the order's pools, zero-based, in seed order" do
-      expect(described_class.assign(4, [4, 4, 4, 4])).to eq [0, 2, 3, 1]
+      expect(described_class.assign(4, [4, 4, 4, 4])).to eq [0, 1, 3, 2]
     end
 
     it "assigns nothing when nothing is seeded" do

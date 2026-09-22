@@ -57,7 +57,7 @@ class IndividualCategoryBracketBuilder
   end
 
   private def create_first_round_fights
-    BracketSeeder.new(slot_specs).first_round_pairs.map.with_index(1) do |(slot_1, slot_2), position|
+    seeder.first_round_pairs.map.with_index(1) do |(slot_1, slot_2), position|
       attrs = {
         number: position,
         round: 1,
@@ -74,25 +74,32 @@ class IndividualCategoryBracketBuilder
     end
   end
 
-  private def create_parent_rounds(child_fights)
-    fights = child_fights
-    round = 2
-    number = child_fights.size
+  # See TeamCategoryBracketBuilder#create_parent_rounds: BracketTree owns the
+  # round rule and the top-to-bottom ordering, and both builders only persist.
+  private def create_parent_rounds(first_round)
+    number = first_round.size
 
-    while fights.size > 1
-      fights = fights.each_slice(2).map.with_index(1) do |(parent_fight_1, parent_fight_2), position|
+    BracketTree.internal_nodes(tree_shape).group_by { |node| node[:round] }.sort.each do |round, nodes|
+      nodes.each_with_index do |node, index|
         number += 1
-        category.fights.create!(
+        node[:record] = category.fights.create!(
           number: number,
           round: round,
-          position: position,
+          position: index + 1,
           fighter_type: "Kenshi",
-          parent_fight_1: parent_fight_1,
-          parent_fight_2: parent_fight_2
+          parent_fight_1: BracketTree.parent_record(node[:parent_1], first_round),
+          parent_fight_2: BracketTree.parent_record(node[:parent_2], first_round)
         )
       end
-      round += 1
     end
+  end
+
+  private def seeder
+    @seeder ||= BracketSeeder.new(slot_specs)
+  end
+
+  private def tree_shape
+    seeder.tree_shape
   end
 
   private def slot_specs

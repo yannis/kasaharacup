@@ -28,41 +28,69 @@ RSpec.describe BracketOnlySeeder do
     expect(flat(pairs)).to match_array teams
   end
 
-  it "never duplicates or drops a team and pads to a power of two" do
-    [3, 5, 8, 9].each do |n|
-      teams = make_teams(n)
-      seeder = described_class.new(teams, random: Random.new(7))
-      pairs = seeder.first_round_pairs
+  # The tree has to describe the units the draw actually returned: halving a
+  # two-team field would claim two leaves for one unit, and the builder then
+  # wires a final to a parent that does not exist.
+  it "shapes the tree over the units it drew, down to the smallest fields" do
+    expect(described_class.new([]).tree_shape).to be_nil
+    expect(described_class.new(make_teams(1)).tree_shape).to be_nil
+    expect(described_class.new(make_teams(2)).tree_shape).to eq 0
+    expect(described_class.new(make_teams(3)).tree_shape).to eq [0, 1]
+  end
 
-      expect(pairs.size).to eq seeder.bracket_size / 2
+  it "never duplicates or drops a team and pads each half to a power of two" do
+    {3 => 2, 5 => 4, 8 => 4, 9 => 8, 12 => 8}.each do |teams_count, units|
+      teams = make_teams(teams_count)
+      pairs = described_class.new(teams, random: Random.new(7)).first_round_pairs
+
+      expect(pairs.size).to eq(units), "#{teams_count} teams"
       expect(flat(pairs)).to match_array teams
     end
   end
 
-  it "gives byes to seeded teams first" do
-    teams = make_teams(6, seeds: {0 => 1, 1 => 2}) # bracket of 8 -> 2 byes
+  it "gives a half's bye to its strongest team" do
+    teams = make_teams(6, seeds: {0 => 1, 1 => 2}) # halves of 3 -> one bye each
     pairs = described_class.new(teams, random: Random.new(3)).first_round_pairs
 
     bye_recipients = pairs.filter_map { |pair| pair.first if pair[1].nil? }
     expect(bye_recipients).to contain_exactly(teams[0], teams[1])
   end
 
-  it "spreads byes so no two byes meet in round 2 when avoidable" do
-    teams = make_teams(12) # bracket of 16 -> 4 byes across 8 units
-    pairs = described_class.new(teams, random: Random.new(3)).first_round_pairs
+  it "draws no byes at all when the field already fills a power-of-two bracket" do
+    [8, 16].each do |count|
+      pairs = described_class.new(make_teams(count), random: Random.new(3)).first_round_pairs
 
-    pairs.each_slice(2) do |unit_a, unit_b|
-      expect([unit_a, unit_b].count { |pair| pair[1].nil? }).to be <= 1
+      expect(pairs.count { |pair| pair[1].nil? }).to eq(0), "#{count} teams"
     end
   end
 
-  it "fills remaining byes with random unseeded teams after the seeds" do
-    teams = make_teams(5, seeds: {0 => 1}) # bracket of 8 -> 3 byes
-    pairs = described_class.new(teams, random: Random.new(3)).first_round_pairs
+  # The guarantee the padding exists for, and the same one the pooled seeder
+  # keeps: a team may sit out round 1, but never a later round.
+  it "never lets a winner wait out a round" do
+    waiting = [3, 5, 6, 9, 12, 15, 16].reject { |count|
+      seeder = described_class.new(make_teams(count), random: Random.new(5))
+      nodes = 0
+      walk = lambda do |shape|
+        next 1 if shape.is_a?(Integer)
 
-    bye_recipients = pairs.filter_map { |pair| pair.first if pair[1].nil? }
-    expect(bye_recipients.size).to eq 3
-    expect(bye_recipients).to include teams[0]
+        rounds = shape.map { |part| walk.call(part) }
+        nodes += 1 if rounds.uniq.size > 1
+        rounds.max + 1
+      end
+      walk.call(seeder.tree_shape)
+      nodes.zero?
+    }
+
+    expect(waiting).to eq []
+  end
+
+  it "absorbs an awkward field size with byes" do
+    counts = [3, 5, 6, 9, 12, 15].index_with { |count|
+      described_class.new(make_teams(count), random: Random.new(5))
+        .first_round_pairs.count { |pair| pair[1].nil? }
+    }
+
+    expect(counts).to eq({3 => 1, 5 => 3, 6 => 2, 9 => 7, 12 => 4, 15 => 1})
   end
 
   it "places seed 1 in the first unit and seed 2 in the last" do

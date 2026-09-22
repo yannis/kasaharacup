@@ -357,7 +357,11 @@ class CompetitionTreePdf < Prawn::Document
     parent_y = panel_card_center_y(parent_fight, panel)
     child_x = bounds.left + (fight.round - 1) * (card_width + round_gap)
     child_y = panel_card_center_y(fight, panel)
-    elbow = parent_x + (child_x - parent_x) / 2.0
+    # Beside the CHILD, not at the midpoint between the two — see
+    # BracketLayout#connector_path, where the rule and its clearance margin are
+    # stated once. A compact tree lets a connector span more than one column,
+    # and the midpoint of that span lands inside the cards it crosses.
+    elbow = child_x - round_gap / 2.0
 
     stroke_color "000000"
     line_width 0.75
@@ -370,11 +374,10 @@ class CompetitionTreePdf < Prawn::Document
   end
 
   private def panel_card_center_y(fight, panel)
-    span = 2**(fight.round - 1)
-    first_slot_index = (fight.position - 1) * span - panel[:slot_offset]
     slot_pitch = CARD_HEIGHT + MATCH_GAP
-    middle_offset = (span - 1) / 2.0
-    canvas_top - HEADER_HEIGHT - ROUND_LABEL_AREA - slot_pitch * (first_slot_index + middle_offset) - CARD_HEIGHT / 2.0
+    center = geometry.slot_center(fight) - panel[:slot_offset]
+
+    canvas_top - HEADER_HEIGHT - ROUND_LABEL_AREA - slot_pitch * center - CARD_HEIGHT / 2.0
   end
 
   private def canvas_top
@@ -386,11 +389,9 @@ class CompetitionTreePdf < Prawn::Document
   end
 
   private def fight_visible_on_panel?(fight, panel)
-    span = 2**(fight.round - 1)
-    first_slot_index = (fight.position - 1) * span - panel[:slot_offset]
-    middle_offset = (span - 1) / 2.0
-    combined = first_slot_index + middle_offset
-    combined >= 0 && combined < max_rows_per_page
+    center = geometry.slot_center(fight) - panel[:slot_offset]
+
+    center >= 0 && center < max_rows_per_page
   end
 
   private def same_panel?(parent_fight, fight, panel)
@@ -398,9 +399,11 @@ class CompetitionTreePdf < Prawn::Document
   end
 
   private def leaves_under_fight(fight)
-    span = 2**(fight.round - 1)
-    first = (fight.position - 1) * span + 1
-    (first...(first + span)).to_a
+    geometry.leaf_positions(fight)
+  end
+
+  private def geometry
+    @geometry ||= BracketGeometry.new(fights)
   end
 
   private def paginate_panels

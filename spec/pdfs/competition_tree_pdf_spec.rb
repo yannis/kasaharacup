@@ -15,9 +15,10 @@ RSpec.describe CompetitionTreePdf do
   end
 
   it "splits a bracket whose first round exceeds one page into multiple panels" do
-    # Each pool contributes one qualifier; with 20 pools the first round has
-    # 16 fights (bracket_size 32 / 2), which is more than max_rows_per_page (10).
-    20.times { |i| create_qualified_participation(pool_number: i + 1, pool_rank: 1) }
+    # Each pool contributes one qualifier, and the compact draw pairs them up
+    # without padding: 30 pools give 16 first-round fights, more than
+    # max_rows_per_page (14 on A4 landscape).
+    30.times { |i| create_qualified_participation(pool_number: i + 1, pool_rank: 1) }
     IndividualCategoryBracketBuilder.new(category).call
 
     expect(described_class.new(category).page_count).to be > 1

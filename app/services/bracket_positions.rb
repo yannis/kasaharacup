@@ -4,34 +4,74 @@
 # half (or a whole bracket), listed most-protected first — the classic layout
 # where projected semifinals are 1v4 and 2v3 and quarterfinals 1v8/4v5/3v6/2v7.
 #
-# Taking the first N of the sequence gives N positions spread as widely as the
-# bracket allows, so the units placed there meet each other as late as possible.
-# Both seeders use it: BracketOnlySeeder to protect seeds, BracketSeeder to
-# spread byes.
+# It reads that layout off the tree BracketTree.shape built, so it fits a
+# compact draw as well as a power-of-two one. Taking the first N of the sequence
+# gives N positions spread as widely as the tree allows, so the units placed
+# there meet each other as late as possible — which is what both seeders use to
+# place byes, and what BracketOnlySeeder additionally uses to protect seeds.
 module BracketPositions
-  # Build the replace-by-complement-pairs layout, mirror the bottom half so
-  # seed 2 sits at the very bottom, then read off each seed's position.
-  # `count` must be a power of two (a bracket half always is); anything else
-  # has no such layout and used to come back quietly padded with nils.
-  def self.spread_order(count)
-    return [] if count < 1
-    raise ArgumentError, "count must be a power of two, got #{count}" unless count.nobits?(count - 1)
-    return [0] if count == 1
+  # low, high, high, low — repeated.
+  SNAKE = [0, 1, 1, 0].freeze
+  private_constant :SNAKE
 
-    layout = [1]
-    while layout.size < count
-      doubled = layout.size * 2
-      layout = layout.flat_map { |seed| [seed, doubled + 1 - seed] }
-    end
-    half = count / 2
-    layout = layout.first(half) + layout.last(half).reverse
-    invert(layout)
+  # Unit positions, most-protected first, over the tree BracketTree.shape built.
+  # Taking the first N gives N units as far apart as the tree allows, so the
+  # units placed there meet each other as late as possible.
+  def self.spread_order(shape)
+    return [] if shape.nil?
+    return [shape] if shape.is_a?(Integer)
+
+    top, bottom = shape
+    snake(protected_order(top, mirror: false), protected_order(bottom, mirror: true))
   end
 
-  # seed-at-position => position-of-seed, in one pass rather than a scan per seed.
-  private_class_method def self.invert(layout)
-    positions = Array.new(layout.size)
-    layout.each_with_index { |seed, position| positions[seed - 1] = position }
-    positions
+  # The units holding a bye in each half, as indices within that half. A half of
+  # `units` units seats 2 * units competitors, so whatever it holds short of
+  # that it gives away as byes — taken most-protected first, so the byes are
+  # spread as widely as the half allows and meet each other as late as it can
+  # manage. Where byes outnumber the units' round-2 pairings they must meet
+  # earlier; nothing can be done about that.
+  #
+  # The two halves take separate entry counts because a bracket-only field of
+  # odd size splits unevenly; a pooled draw passes the same count twice.
+  def self.bye_units(units, top_entries, bottom_entries)
+    top_order, bottom_order = half_orders(units)
+
+    [top_order.first(2 * units - top_entries).sort,
+      bottom_order.first(2 * units - bottom_entries).sort]
+  end
+
+  # Each half's unit positions, most-protected first, renumbered from 0 within
+  # that half.
+  def self.half_orders(units)
+    top, bottom = spread_order(BracketTree.shape(units, units)).partition { |unit| unit < units }
+
+    [top, bottom.map { |unit| unit - units }]
+  end
+
+  # The bottom half is mirrored so seed 2 sits at the very bottom of the column
+  # rather than just below the middle — the classic layout, and the one the
+  # power-of-two sequences this replaces encoded by reversing their lower half.
+  #
+  # Public because SeedPoolOrder orders each half of the POOL numbers by the
+  # same recursion: seeding and the draw must read one layout, or a category is
+  # seeded for a tree the bracket does not build and nothing fails to say so.
+  def self.protected_order(shape, mirror:)
+    return [shape] if shape.is_a?(Integer)
+
+    first, second = mirror ? [shape.last, shape.first] : shape
+    snake(protected_order(first, mirror: mirror), protected_order(second, mirror: mirror))
+  end
+
+  # Interleaves two orders low/high/high/low, taking from whichever side still
+  # has entries when the other runs out — the two sides differ in length for an
+  # odd count. Public for the same reason protected_order is.
+  def self.snake(low, high)
+    blocks = [low.dup, high.dup]
+    Array.new(low.size + high.size) do |index|
+      block = blocks[SNAKE[index % 4]]
+      block = blocks.find(&:any?) if block.empty?
+      block.shift
+    end
   end
 end

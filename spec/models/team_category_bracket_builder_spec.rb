@@ -29,7 +29,7 @@ RSpec.describe TeamCategoryBracketBuilder do
 
       round_one.each do |enc|
         pools = [enc.team_1.pool_number, enc.team_2.pool_number]
-        expect(pools.uniq.size).to eq 2 # cross-pool
+        expect(pools.uniq.size).to eq 2 # a two-pool field draws 1.1 v 2.2 / 1.2 v 2.1
       end
     end
 
