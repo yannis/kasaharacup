@@ -91,7 +91,7 @@ class BracketOnlySeeder
     protected_units = with_seed.sort_by { |unit| seed_priority(unit) } + byes
 
     positions = Array.new(units.size)
-    sequence = BracketPositions.spread_order(units.size)
+    sequence = BracketPositions.spread_order(BracketTree.shape(units.size / 2, units.size - units.size / 2))
     protected_units.each_with_index { |unit, i| positions[sequence[i]] = unit }
     open = (0...units.size).select { |i| positions[i].nil? }.shuffle(random: random)
     fights.each { |unit| positions[open.shift] = unit }
