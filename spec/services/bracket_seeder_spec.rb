@@ -45,64 +45,92 @@ RSpec.describe BracketSeeder do
     end
   end
 
-  # The 2025 Ladies category, exactly as the organizers drew it. This is the
-  # rule's reason to exist; if it drifts, the tool has stopped reproducing the
-  # poster.
+  # The organizers drew the 2025 Ladies category compactly: 5 units a half,
+  # 2 byes and 8 round-1 fights, accepting that two of its winners then wait out
+  # a round. The tool deliberately does not reproduce it. Padding every half to
+  # a power of two is what guarantees nobody ever waits, and at nine pools that
+  # costs 14 byes and 2 fights. Recorded so a later change cannot quietly claim
+  # the sheet is reproduced.
   describe "the 2025 Ladies bracket (9 pools, 18 qualifiers)" do
-    it "draws both halves in ascending pool order with one bye each" do
-      expect(render(draw(9).first_round_pairs)).to eq [
-        "1.1 v bye", "2.1 v 3.2", "4.1 v 5.2", "6.1 v 7.2", "8.1 v 9.2",
-        "1.2 v 2.2", "3.1 v 4.2", "5.1 v 6.2", "7.1 v 8.2", "9.1 v bye"
-      ]
+    let(:poster) {
+      ["1.1 v bye", "2.1 v 3.2", "4.1 v 5.2", "6.1 v 7.2", "8.1 v 9.2",
+        "1.2 v 2.2", "3.1 v 4.2", "5.1 v 6.2", "7.1 v 8.2", "9.1 v bye"]
+    }
+
+    it "does not reproduce the compact sheet the organizers drew" do
+      expect(render(draw(9).first_round_pairs)).not_to eq poster
     end
 
-    it "builds the poster's tree" do
-      expect(draw(9).tree_shape).to eq [
-        [[[0, 1], 2], [3, 4]],
-        [[5, 6], [7, [8, 9]]]
-      ]
+    it "pads it instead, so that no winner waits a round" do
+      pairs = draw(9).first_round_pairs
+
+      expect(pairs.size).to eq 16
+      expect(pairs.count { |pair| pair.compact.size == 1 }).to eq 14
     end
   end
 
-  describe "bye counts" do
-    # A half is padded with byes up to a power-of-two unit count only where
-    # that costs no more byes than it leaves fights. Six pools pad (2 byes and
-    # 2 fights per half) and become a perfect tree; nine pools decline, because
-    # padding would draw 7 byes against 1 fight — the padded tree this design
-    # replaced.
-    it "pads a half only where padding costs no more than it leaves" do
+  describe "padding" do
+    # Every half is padded to a power-of-two unit count, which makes it a
+    # perfect tree. Byes absorb the awkward field sizes, and cost more at some
+    # counts than others.
+    it "pads every half to a power-of-two unit count" do
       counts = [5, 6, 7, 9, 10, 12].index_with { |pools|
         draw(pools).first_round_pairs.count { |pair| pair.compact.size == 1 }
       }
 
-      expect(counts).to eq({5 => 2, 6 => 4, 7 => 2, 9 => 2, 10 => 0, 12 => 8})
+      expect(counts).to eq({5 => 6, 6 => 4, 7 => 2, 9 => 14, 10 => 12, 12 => 8})
     end
 
-    it "still gives a field of 18 qualifiers 8 round-1 fights rather than 2" do
-      expect(draw(9).first_round_pairs.count { |pair| pair.compact.size == 2 }).to eq 8
-    end
-
-    # Where padding was affordable the half is a perfect tree, so nobody sits
-    # out a round once they have started fighting. Where it was not (9 and 33
-    # pools, matching the organizers' own Ladies and Open sheets) some winners
-    # do wait one round.
-    it "leaves no winner waiting a round wherever the half could be padded" do
-      waits = ->(pools) {
-        found = 0
+    # The guarantee the padding exists for, and the one every poster keeps: a
+    # competitor may sit out round 1, but never a later one.
+    it "never lets a winner wait out a round, at any pool count" do
+      waiting = (2..40).reject { |pools|
+        nodes = 0
         walk = lambda do |shape|
           next 1 if shape.is_a?(Integer)
 
           rounds = shape.map { |part| walk.call(part) }
-          found += 1 if rounds.uniq.size > 1
+          nodes += 1 if rounds.uniq.size > 1
           rounds.max + 1
         end
         walk.call(draw(pools).tree_shape)
-        found
+        nodes.zero?
       }
 
-      expect([4, 6, 7, 12, 13, 14].index_with { |pools| waits.call(pools) })
-        .to eq({4 => 0, 6 => 0, 7 => 0, 12 => 0, 13 => 0, 14 => 0})
-      expect(waits.call(9)).to be > 0
+      expect(waiting).to eq []
+    end
+  end
+
+  describe "byes" do
+    # A perfect half needs 2u - P byes, and at some field sizes that is more
+    # byes than the half has pool winners to hand them to: nine pools want 7 a
+    # half out of 9 pools. There a bye falls on a runner-up, and two byes have
+    # to share a node. Everywhere else both guarantees hold.
+    it "gives every bye to a pool winner except where byes outnumber the winners" do
+      spilled = (2..16).reject { |pools|
+        draw(pools).first_round_pairs.select { |pair| pair.compact.size == 1 }
+          .all? { |pair| pair.compact.first.pool_rank == 1 }
+      }
+
+      expect(spilled).to eq [5, 9, 10, 11]
+    end
+
+    it "keeps two byes off one node except where byes outnumber the pairings" do
+      crowded = (2..16).reject { |pools|
+        seeder = draw(pools)
+        units = seeder.first_round_pairs
+        shared = []
+        walk = lambda do |shape|
+          next units[shape].compact.size == 1 if shape.is_a?(Integer)
+
+          shared << shape if shape.map { |part| walk.call(part) }.all?(true)
+          false
+        end
+        walk.call(seeder.tree_shape)
+        shared.empty?
+      }
+
+      expect(crowded).to eq [5, 9, 10, 11]
     end
   end
 
@@ -122,36 +150,11 @@ RSpec.describe BracketSeeder do
           expect(top_half.flatten.compact.map(&:pool_number).sort).to eq (1..pools).to_a
         end
 
-        it "gives every bye to a pool winner" do
-          bye_holders = pairs.filter_map { |pair| pair.compact.first if pair.compact.size == 1 }
-
-          expect(bye_holders.map(&:pool_rank)).to all eq(1)
-        end
-
         it "reads each half down in ascending pool order" do
           halves.each do |half|
             pools_down = half.flatten.compact.map(&:pool_number)
             expect(pools_down).to eq pools_down.sort
           end
-        end
-
-        # Byes sit three pools apart, so their units are never adjacent and no
-        # node ever has two byes as parents — which would be two competitors
-        # who both sat out round 1 meeting each other, a fight that should
-        # simply have been drawn in round 1.
-        it "never gives two byes the same node" do
-          seeder = draw(pools)
-          units = seeder.first_round_pairs
-          shared = []
-          walk = lambda do |shape|
-            next units[shape].compact.size == 1 if shape.is_a?(Integer)
-
-            shared << shape if shape.map { |part| walk.call(part) }.all?(true)
-            false
-          end
-          walk.call(seeder.tree_shape)
-
-          expect(shared).to eq []
         end
       end
     end
@@ -160,7 +163,7 @@ RSpec.describe BracketSeeder do
   describe ".half_pools" do
     it "splits the pools whose winner sits in each half" do
       expect(described_class.half_pools(4)).to eq [[1, 3], [2, 4]]
-      expect(described_class.half_pools(9)).to eq [[1, 2, 4, 6, 8], [3, 5, 7, 9]]
+      expect(described_class.half_pools(9)).to eq [[1, 4, 5, 6, 7, 8, 9], [2, 3]]
     end
 
     it "agrees with the draw it describes, for every pool count" do

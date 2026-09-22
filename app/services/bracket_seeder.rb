@@ -44,42 +44,40 @@ class BracketSeeder
     (1..pool_count).partition { |pool| ranks[pool] == 1 }
   end
 
-  # Units per half. A half of P entries needs at least ceil(P / 2) units;
-  # padding up to a power of two makes it a PERFECT tree, so no winner ever
-  # waits out a round and the only advantage in the draw is a bye — which
-  # bye_pools then hands to a pool winner. Without padding, a half of 3 units
-  # leaves one unit a level shallower and its winner skips a round, which can
-  # be a runner-up.
+  # Units per half, always a power of two, so the half is a PERFECT tree: byes
+  # exist only in round 1 and no winner ever sits out a round once they have
+  # started fighting. A ragged half would leave one unit a level shallower and
+  # its winner skipping a round, which is what the organizers never draw.
   #
-  # Padding is refused once it would cost more byes than fights. Nine pools
-  # would draw 7 byes and 1 fight per half; that is the padded power-of-two
-  # tree this design exists to replace, and the organizers' own Ladies sheet
-  # declines it too.
+  # The cost is byes. Nine pools draw 7 per half rather than 1, and 33 pools
+  # draw 31. That is accepted: a later-round skip is worse than a first-round
+  # bye, and a bye is what every poster uses to absorb an awkward field size.
   def self.half_unit_count(pool_count)
-    natural = (pool_count / 2.0).ceil
-    padded = 2**Math.log2([natural, 1].max).ceil
-
-    ((2 * padded - pool_count) <= (pool_count - padded)) ? padded : natural
+    2**Math.log2([(pool_count / 2.0).ceil, 1].max).ceil
   end
 
-  # The pool ORDINALS holding a bye in each half, as [top, bottom].
-  #
-  # A bye takes a whole unit, so the pools between two byes must still pair up:
-  # every gap has to be even, which puts consecutive byes an ODD number of pools
-  # apart. Spacing them by three satisfies that and spreads them, so no two byes
-  # ever share a round-2 node. The top counts up from the first pool and the
-  # bottom down from the last, mirroring each other. Where that would give one
-  # pool a bye in BOTH halves — impossible, since a pool sends its winner to
-  # only one of them — the bottom shifts two pools inward, which keeps every gap
-  # even.
-  def self.bye_pools(pool_count)
-    count = 2 * half_unit_count(pool_count) - pool_count
+  # Which UNITS hold a bye in each half, most-protected first, so the byes are
+  # spread as widely as the half allows and meet each other as late as it can
+  # manage. Where byes outnumber the units' round-2 pairings they must meet
+  # earlier; nothing can be done about that.
+  def self.bye_units(pool_count)
+    units = half_unit_count(pool_count)
+    count = 2 * units - pool_count
     return [[], []] if count.zero?
 
-    top = Array.new(count) { |i| 1 + 3 * i }
-    bottom = Array.new(count) { |i| pool_count - 3 * i }.sort
-    bottom = Array.new(count) { |i| pool_count - 2 - 3 * i }.sort if (top & bottom).any?
+    order = BracketPositions.spread_order(BracketTree.shape(units, units))
+    top = order.select { |unit| unit < units }.first(count).sort
+    bottom = order.filter_map { |unit| unit - units if unit >= units }.first(count).sort
     [top, bottom]
+  end
+
+  # The pool ORDINALS holding a bye in each half. A bye unit takes one pool and
+  # a fight unit two, so walking the pools up the column fixes which pool each
+  # bye lands on.
+  def self.bye_pools(pool_count)
+    bye_units(pool_count).map do |byes|
+      unit_groups(pool_count, byes).each_with_index.filter_map { |group, unit| group.first if byes.include?(unit) }
+    end
   end
 
   # One half's units as groups of pool ordinals: a bye pool alone, the rest in
@@ -87,24 +85,30 @@ class BracketSeeder
   def self.unit_groups(pool_count, byes)
     groups = []
     pool = 1
+    unit = 0
     while pool <= pool_count
-      groups << (byes.include?(pool) ? [pool] : [pool, pool + 1])
+      groups << (byes.include?(unit) ? [pool] : [pool, pool + 1])
       pool += groups.last.size
+      unit += 1
     end
     groups
   end
 
   # Each pool's rank in the TOP half; the bottom half takes the complement, so
   # a pool's two qualifiers always land in opposite halves. A pool holding a bye
-  # must be the pool WINNER in that half, so those fix themselves first and the
-  # rest alternate, which keeps a unit reading winner against runner-up wherever
-  # the byes leave room.
+  # should be the pool WINNER in that half, so those fix themselves first.
+  #
+  # Where a half needs more byes than the field has winners to give — nine pools
+  # want 7 byes a half out of 9 pools — a pool is claimed by both halves and
+  # only the top can have it. The bottom's bye then falls on a runner-up. That
+  # is unavoidable once byes outnumber pools, and it is the price of a perfect
+  # tree at an awkward field size.
   def self.top_ranks(pool_count)
     top_byes, bottom_byes = bye_pools(pool_count)
     ranks = {}
     top_byes.each { |pool| ranks[pool] = 1 }
-    bottom_byes.each { |pool| ranks[pool] = 2 }
-    unit_groups(pool_count, top_byes).each do |group|
+    bottom_byes.each { |pool| ranks[pool] ||= 2 }
+    unit_groups(pool_count, bye_units(pool_count).first).each do |group|
       next if group.size == 1
 
       first, second = group
@@ -139,7 +143,7 @@ class BracketSeeder
   # takes the complementary rank for every pool, so a pool's two qualifiers
   # always land in opposite halves.
   private def rule_a_halves
-    top_byes, bottom_byes = self.class.bye_pools(pool_numbers.size)
+    top_byes, bottom_byes = self.class.bye_units(pool_numbers.size)
     [half_units(top_byes, top: true), half_units(bottom_byes, top: false)]
   end
 
