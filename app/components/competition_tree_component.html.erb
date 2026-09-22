@@ -35,11 +35,17 @@
                   <%= tag.li class: "competition-tree__fighter competition-tree__fighter--winner",
                         data: slot_data(fight, bye_slot) do %>
                     <%= render "brackets/slot_controls", tree: self, node: fight, slot: bye_slot %>
-                    <% if (prefix = fighter_pool_prefix(fight, bye_slot)) %>
-                      <span class="competition-tree__pool-position"><%= prefix %></span>
-                    <% end %>
-                    <%= seed_badge(fight, bye_slot) %>
-                    <%= fighter_name(fight, bye_slot) %>
+                    <%# Wrapped exactly as the regular row below wraps its own:
+                        .competition-tree__fighter is a space-between flex, so a
+                        bare prefix is pushed to the far edge and the controls
+                        float in the middle of the card. %>
+                    <span class="competition-tree__fighter-name">
+                      <% if (prefix = fighter_pool_prefix(fight, bye_slot)) %>
+                        <span class="competition-tree__pool-position"><%= prefix %></span>
+                      <% end %>
+                      <%= seed_badge(fight, bye_slot) %>
+                      <%= fighter_name(fight, bye_slot) %>
+                    </span>
                   <% end %>
                 </ol>
               </article>

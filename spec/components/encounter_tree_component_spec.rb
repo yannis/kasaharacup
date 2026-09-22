@@ -297,6 +297,24 @@ RSpec.describe EncounterTreeComponent, type: :component do
       expect(page.all(".competition-tree__match--bye")).to all(have_css(".competition-tree__fighter", count: 1))
     end
 
+    # Regression: the bye branch never drew the seed prefix its regular row
+    # draws, so a bye on a pooled bracket was a blank bar until the standings
+    # landed — and that is the state this tree is reordered in.
+    it "labels a bye whose competitor is not resolved yet" do
+      build_pooled(3)
+      pooled.bracket_encounters.where(round: 1).find_each do |encounter|
+        encounter.update_columns(team_1_id: nil, team_2_id: nil) # rubocop:disable Rails/SkipsModelValidations
+      end
+      bye = pooled.reload.bracket_encounters.where(round: 1).detect(&:bye?)
+      entry = bye.slot_entry(bye.bye_slot)
+      expected = "#{entry.pool_number}.#{entry.pool_rank}"
+
+      render_inline(described_class.new(team_category: pooled, admin: true))
+
+      within_bye = page.all(".competition-tree__match--bye .competition-tree__pool-position").map(&:text)
+      expect(within_bye).to include expected
+    end
+
     it "offers a Move to… select on every source slot" do
       build_pooled(2)
 

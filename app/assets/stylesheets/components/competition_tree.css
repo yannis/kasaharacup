@@ -338,27 +338,38 @@
   cursor: grabbing;
 }
 
-/* Narrow by default so it costs a 224px card almost nothing, and only as wide
-   as its options once it has focus — this is the keyboard path, so it has to be
-   reachable and readable, not prominent. */
+/* A caret beside the grip, not a labelled control: a 224px card has no room for
+   one, and the grip next to it already says this row can be moved.
+   
+   The LABEL is still "Move to…" in the markup — it is what the open list shows
+   and what a screen reader reads — so the closed box hides its text with
+   `color: transparent` rather than clipping it to a narrower box, which drew a
+   truncated "Mo" over every slot. Options get their colour back explicitly,
+   because Firefox otherwise inherits the transparent one into the popup. */
 .competition-tree__move-select {
   appearance: none;
-  background: transparent;
+  background: transparent
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2375716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat center / 0.5rem auto;
+  block-size: 1.125rem;
   border: 0;
-  color: #75716c;
+  border-radius: 0.25rem;
+  color: transparent;
   cursor: pointer;
   flex: 0 0 auto;
-  font-size: 0.75rem;
-  inline-size: 1.25rem;
+  inline-size: 1.125rem;
   padding: 0;
 }
 
+.competition-tree__move-select option {
+  color: #27231f;
+}
+
+.competition-tree__move-select:hover,
 .competition-tree__move-select:focus-visible {
-  background: #fff;
-  border: 1px solid #4a7dff;
-  border-radius: 0.25rem;
-  inline-size: auto;
-  outline: none;
+  background-color: #fff;
+  outline: 1px solid #4a7dff;
+  outline-offset: 0;
 }
 
 .competition-tree__fighter--drop {

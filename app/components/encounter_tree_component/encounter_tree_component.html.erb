@@ -34,6 +34,14 @@
                   <%= tag.li class: "competition-tree__fighter competition-tree__fighter--winner",
                         data: slot_data(encounter, slot) do %>
                     <%= render "brackets/slot_controls", tree: self, node: encounter, slot: slot %>
+                    <%# The seed prefix, exactly as the regular row below draws
+                        it. Without it a bye on a POOLED bracket is a blank bar
+                        until the standings land — which is the state this tree
+                        is reordered in, so there would be nothing to tell one
+                        bye from another. %>
+                    <% if (seed = seed_label(encounter, slot)) && encounter.public_send(:"resolved_team_#{slot}").blank? %>
+                      <span class="competition-tree__pool-position"><%= seed %></span>
+                    <% end %>
                     <%= seed_badge(encounter, slot) %>
                     <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
                   <% end %>
