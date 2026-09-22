@@ -116,13 +116,20 @@ class Fight < ApplicationRecord
     winner&.full_name
   end
 
-  # No real work recorded on this pool fight: no winner, not a draw, and no
-  # scored points. Used to decide whether rebuilding a pool (moving a
-  # participation between pools) is safe without explicit confirmation. Only
-  # meaningful for pool fights.
-  def pristine?
+  # No result recorded: no winner, not a draw, no scored points. The bar a draw
+  # correction has to clear before it may rewrite a slot, and the bar a pool
+  # rebuild has to clear before it may discard a fight.
+  #
+  # Named #unscored? to match Encounter, because BracketSlots asks both models
+  # the same question and BracketSlotMove refuses on the answer. Encounter keeps
+  # #unscored? and #pristine? apart — its #pristine? additionally excludes a
+  # hand-entered lineup, which is a prompt there and not a refusal — but a fight
+  # has no lineup, so here the two really are one method.
+  def unscored?
     winner_id.nil? && !draw && fight_points.none?
   end
+
+  alias_method :pristine?, :unscored?
 
   # --- Scorable hooks (preserve current individual-fight behavior) ---
   def scoring_fighter(slot)
@@ -237,10 +244,33 @@ class Fight < ApplicationRecord
     end
   end
 
-  private def fights_with_self_as_parent
+  # Public because BracketSlotMove walks a unit's blast radius through it, the
+  # way it does on Encounter.
+  def children
     self.class.where(individual_category_id: individual_category_id)
       .where("parent_fight_1_id = :id OR parent_fight_2_id = :id", id: id)
   end
+
+  private def fights_with_self_as_parent = children
+
+  # The Fight half of BracketSlots' contract. See Encounter for the
+  # counterparts, which do considerably more.
+
+  # A slot's occupant changed, so whatever was recorded against the old matchup
+  # is stale. Defence in depth rather than a live path: BracketSlotMove refuses
+  # a move over a scored fight, so in practice there is nothing here to discard.
+  # Encounter's equivalent is load-bearing because a bye's round-2 child is
+  # rewritten by propagation, on a path with no unscored? gate of its own.
+  private def invalidate_slot_matchup
+    fight_points.destroy_all
+    update!(winner: nil, draw: false) if winner_id.present? || draw
+  end
+
+  # A no-op, and deliberately so: a child fight reads its fighters lazily
+  # through parent_fight_N&.winner_or_bye and IndividualCategoryBracketBuilder
+  # seeds nothing into it, so there is no copy of a bye's occupant to keep
+  # current. Encounter forward-propagates instead, and pays for it there.
+  private def refresh_child_slot_from_bye = nil
 
   private def restore_fighter_type
     return if fighter_type.present?
