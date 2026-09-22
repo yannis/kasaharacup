@@ -220,6 +220,33 @@ class Encounter < ApplicationRecord
     end
   end
 
+  # The Encounter half of BracketSlots' contract.
+
+  # Nothing rides along with a team id.
+  private def slot_extra_attributes(_entry) = {}
+
+  # What #assign_team_to_slot does after a RE-resolve, in the same order: drop
+  # the stale bouts, then re-derive the winner from what is left.
+  private def invalidate_slot_matchup
+    invalidate_matchup
+    recompute_winner!
+  end
+
+  # A round-1 unit feeds exactly one child slot, and what belongs in it is
+  # decided entirely by whether this unit is a bye: the occupant when it is,
+  # nothing when it is not. #propagate_bye_to_children keeps that current while
+  # the unit STAYS a bye; this covers the two cases its guard cannot see — a
+  # unit that has just stopped being one (whose child still holds the occupant
+  # create_parent_rounds seeded) and a unit that has just become one after a
+  # move that changed no team id at all.
+  private def refresh_child_slot_from_bye
+    occupant = bye? ? bye_team : nil
+    children.find_each do |child|
+      slot = (child.parent_encounter_1_id == id) ? 1 : 2
+      child.assign_team_to_slot(slot, occupant)
+    end
+  end
+
   def recompute_pool_standings!
     pool_teams = team_category.teams.where(pool_number: pool_number).to_a
     pool_encounters = team_category.encounters.where(pool_number: pool_number)

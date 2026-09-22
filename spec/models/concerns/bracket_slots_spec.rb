@@ -59,6 +59,51 @@ RSpec.describe BracketSlots do
         expect(record.entry_slot_for("9.9")).to be_nil
       end
     end
+
+    describe "#assign_slot_entry" do
+      it "writes the descriptor and the competitor together" do
+        record = record_with(slot_1: nil, slot_2: nil)
+        entry = BracketEntry.for(pool_number: 4, pool_rank: 1, competitor: competitor_a)
+
+        expect(record.assign_slot_entry(1, entry)).to be true
+
+        record.reload
+        expect(record.slot_entry(1)).to have_attributes(
+          pool_number: 4, pool_rank: 1, competitor: competitor_a
+        )
+      end
+
+      # The case Encounter#assign_team_to_slot cannot serve: its opening
+      # `return if <id column> == team&.id` reads true when both ids are nil,
+      # which is every move made before the pools have finished.
+      it "moves a label-only entry, where no competitor id changes" do
+        record = record_with(slot_1: {pool_number: 3, pool_rank: 2}, slot_2: nil)
+
+        expect(record.assign_slot_entry(1, BracketEntry.for(pool_number: 5, pool_rank: 1, competitor: nil)))
+          .to be true
+
+        expect(record.reload.slot_entry(1).key).to eq "5.1"
+      end
+
+      it "clears both descriptor columns when the entry goes" do
+        record = record_with(slot_1: {pool_number: 3, pool_rank: 2, competitor: competitor_a},
+          slot_2: {pool_number: 5, pool_rank: 1})
+
+        record.clear_slot(1)
+
+        record.reload
+        expect(record.slot_entry(1)).to be_nil
+        expect(record.slot_occupied?(1)).to be false
+      end
+
+      it "reports false and writes nothing when the entry is already there" do
+        record = record_with(slot_1: {pool_number: 3, pool_rank: 2}, slot_2: nil)
+        entry = record.slot_entry(1)
+
+        expect { expect(record.assign_slot_entry(1, entry)).to be false }
+          .not_to(change { record.reload.updated_at })
+      end
+    end
   end
 
   context "on Encounter" do

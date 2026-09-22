@@ -275,6 +275,13 @@ class Fight < ApplicationRecord
   # current. Encounter forward-propagates instead, and pays for it there.
   private def refresh_child_slot_from_bye = nil
 
+  # fighter_type is ONE column shared by fighter_1, fighter_2 and winner, so it
+  # is set whenever a competitor lands and left alone when one leaves —
+  # #restore_fighter_type puts it back for any row that still holds an id.
+  private def slot_extra_attributes(entry)
+    entry.competitor ? {fighter_type: entry.competitor.class.name} : {}
+  end
+
   private def restore_fighter_type
     return if fighter_type.present?
     return unless fighter_1_id || fighter_2_id || winner_id
