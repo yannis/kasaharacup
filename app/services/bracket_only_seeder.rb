@@ -10,9 +10,14 @@
 #
 # teams.seed is an ordering hint, not an identifier: seeds order by [seed, id]
 # (lower = stronger; the id tie-break makes duplicate values deterministic).
-# Byes go to seeds first, then to randomly drawn unseeded teams. Units holding
-# a seed take the standard protected positions (top, bottom, quarter
-# boundaries, ...); the rest fill the remaining positions at random.
+# The field splits in two and each half is drawn by recursive halving rather
+# than padded to a power of two, so byes are POSITIONAL: a half whose entries
+# are odd gives its outermost unit a bye, and a half whose entries are even
+# gives none — at most two in the whole draw, where the padded bracket drawn
+# for a field of nine scheduled seven. The seeds still collect those byes,
+# because a half's outermost unit is also its most-protected position and the
+# seeds take the protected positions first; the rest of the field fills what is
+# left.
 class BracketOnlySeeder
   def initialize(teams, random: Random.new)
     @teams = teams.to_a
@@ -20,30 +25,75 @@ class BracketOnlySeeder
   end
 
   def first_round_pairs
-    @first_round_pairs ||= (teams.size < 2) ? [] : place(bye_units + fight_units)
-  end
-
-  def bracket_size
-    return 0 if teams.size < 2
-
-    2**Math.log2(teams.size).ceil
+    @first_round_pairs ||= build_units
   end
 
   # The tree built over first_round_pairs, as nested indices into it (see
   # BracketTree). The builders can no longer derive the shape by pairing
   # adjacent units, because the compact draw's halves are not the same size.
   def tree_shape
-    @tree_shape ||= BracketTree.shape(*unit_half_sizes)
+    @tree_shape ||= BracketTree.shape(*unit_halves)
   end
 
   private attr_reader :teams, :random
 
-  # Today's halves are equal powers of two; a later task replaces this with the
-  # real per-half unit counts once the halves can differ.
-  private def unit_half_sizes
-    count = first_round_pairs.size
-    [count / 2, count - count / 2]
+  # Seeds take the most-protected units one apiece, then the rest of the field
+  # fills what is left, least-protected unit first. The capacities sum to the
+  # field size, so every unit is filled whichever way round we go; going
+  # backwards is what gives the strongest unit the weakest team still in the
+  # draw, so an all-seeded field pairs 1v4 and 2v3 rather than 1v3 and 2v4.
+  # A half's bye unit holds one team rather than two, and those units are the
+  # first the protected order hands out — which is how the seeds still end up
+  # with the byes.
+  private def build_units
+    return [] if teams.size < 2
+    return [drawn.first(2)] if teams.size == 2
+
+    caps = capacities
+    units = Array.new(caps.size) { [] }
+    order = BracketPositions.spread_order(tree_shape)
+
+    drawn.first(order.size).each_with_index { |team, index| units[order[index]] << team }
+    rest = drawn.drop(order.size)
+    order.reverse_each do |position|
+      units[position] << rest.shift while units[position].size < caps[position] && rest.any?
+    end
+    units.map { |members| [members[0], members[1]] }
   end
+
+  # The draw order: seeds strongest first, then the shuffled unseeded.
+  private def drawn
+    @drawn ||= seeded + unseeded
+  end
+
+  # How many teams each unit holds. A half with an odd number of entries gives
+  # its outermost unit a bye, so that unit holds one.
+  private def capacities
+    top = Array.new(top_units, 2)
+    bottom = Array.new(bottom_units, 2)
+    top[0] = 1 if top_entries.odd?
+    bottom[-1] = 1 if bottom_entries.odd?
+    top + bottom
+  end
+
+  # Units per half, as [top, bottom]. Under three teams there is nothing to
+  # halve: an empty field is no tree, and a two-team field is the single fight
+  # build_units carves out — halving would instead give each half a bye and draw
+  # a final between them. Same base case as BracketSeeder.
+  private def unit_halves
+    return [0, 0] if teams.size < 2
+    return [0, 1] if teams.size == 2
+
+    [top_units, bottom_units]
+  end
+
+  private def top_entries = (teams.size / 2.0).ceil
+
+  private def bottom_entries = teams.size / 2
+
+  private def top_units = (top_entries / 2.0).ceil
+
+  private def bottom_units = (bottom_entries / 2.0).ceil
 
   # [seed, id] via Seedable, the one definition the panel and both poolers share.
   private def seeded
@@ -52,54 +102,5 @@ class BracketOnlySeeder
 
   private def unseeded
     @unseeded ||= (teams - seeded).shuffle(random: random)
-  end
-
-  # Seeds first; remaining byes go to (already shuffled) unseeded teams.
-  private def bye_teams
-    @bye_teams ||= (seeded + unseeded).first(bracket_size - teams.size)
-  end
-
-  private def bye_units
-    bye_teams.map { |team| [team, nil] }
-  end
-
-  # Each remaining seed fights an unseeded opponent while any remain; leftover
-  # seeds (an all-seeded field) pair strongest vs weakest among themselves, and
-  # leftover unseeded teams pair in their (random) draw order. The remainder
-  # after byes is even (bracket_size - 2 * byes), so nobody is left over.
-  private def fight_units
-    seeds = seeded - bye_teams
-    others = unseeded - bye_teams
-    seed_fights = seeds.first(others.size).map { |seed| [seed, others.shift] }
-    leftover_seeds = seeds.drop(seed_fights.size)
-    seed_fights + strongest_vs_weakest(leftover_seeds) + others.each_slice(2).to_a
-  end
-
-  private def strongest_vs_weakest(list)
-    (0...list.size / 2).map { |i| [list[i], list[list.size - 1 - i]] }
-  end
-
-  # Units holding a seed go to BracketPositions' protected positions in
-  # seed-priority order, and remaining bye units take the next protected
-  # positions — the sequence is maximally spread, so no two byes meet in round 2
-  # unless byes outnumber the round-2 slots. Only fights get random positions.
-  # (Seeded fight units and unseeded byes never coexist: byes go to seeds
-  # first, so an unseeded bye implies every seed already holds one.)
-  private def place(units)
-    with_seed, rest = units.partition { |unit| seed_priority(unit) }
-    byes, fights = rest.partition { |unit| unit.last.nil? }
-    protected_units = with_seed.sort_by { |unit| seed_priority(unit) } + byes
-
-    positions = Array.new(units.size)
-    sequence = BracketPositions.spread_order(BracketTree.shape(units.size / 2, units.size - units.size / 2))
-    protected_units.each_with_index { |unit, i| positions[sequence[i]] = unit }
-    open = (0...units.size).select { |i| positions[i].nil? }.shuffle(random: random)
-    fights.each { |unit| positions[open.shift] = unit }
-    positions
-  end
-
-  # A unit's priority is its strongest seed's index in the seed order.
-  private def seed_priority(unit)
-    unit.compact.filter_map { |team| seeded.index(team) }.min
   end
 end

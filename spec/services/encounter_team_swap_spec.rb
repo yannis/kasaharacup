@@ -305,15 +305,16 @@ RSpec.describe EncounterTeamSwap do
     # Regression: both byes propagate into the same round-2 slot, so writing the
     # first one tripped Encounter#teams_differ and raised RecordInvalid — a 500
     # the caller could not act on, since it is not an InvalidSwap.
+    #
+    # The compact draw no longer DRAWS such a pair — at most one bye per half,
+    # and two one-unit halves only occur in a two-team field, which is a single
+    # fight — so the pair is staged by hand here. The guard still earns its keep:
+    # brackets drawn under the padded tree are full of them.
     it "refuses two byes that already meet in round 2, without raising RecordInvalid" do
-      build_bracket(5)
-      children = Hash.new { |hash, key| hash[key] = [] }
-      round_one.each do |enc|
-        enc.children.each { |child| children[child.id] << enc }
-      end
-      pair = children.values.find { |parents| parents.size == 2 && parents.all?(&:bye?) }
-      expect(pair).to be_present
-      bye_a, bye_b = pair
+      build_bracket(4)
+      bye_a, bye_b = round_one
+      [bye_a, bye_b].each { |enc| enc.update_columns(team_2_id: nil) }
+      expect(bye_a.children.ids).to eq bye_b.children.ids # both feed the final
 
       expect { described_class.new(bye_b).swap(bye_b.bye_slot, bye_a.public_send(:"team_#{bye_a.bye_slot}")) }
         .to raise_error(described_class::InvalidSwap, /already meet in round 2/)
