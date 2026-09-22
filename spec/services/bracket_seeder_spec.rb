@@ -51,6 +51,52 @@ RSpec.describe BracketSeeder do
   # a power of two is what guarantees nobody ever waits, and at nine pools that
   # costs 14 byes and 2 fights. Recorded so a later change cannot quietly claim
   # the sheet is reproduced.
+  # Transcribed from the organizers' 2025 sheets, not from our own output — a
+  # golden master regenerated from the implementation pins nothing.
+  describe "the 2025 posters" do
+    it "reproduces the U12 bracket exactly (4 pools, 8 qualifiers)" do
+      expect(render(draw(4).first_round_pairs)).to eq [
+        "1.1 v 2.2", "3.1 v 4.2",
+        "1.2 v 2.1", "3.2 v 4.1"
+      ]
+      expect(draw(4).tree_shape).to eq [[0, 1], [2, 3]]
+    end
+
+    it "reproduces the U15 bracket exactly (7 pools, 14 qualifiers)" do
+      expect(render(draw(7).first_round_pairs)).to eq [
+        "1.1 v bye", "2.1 v 3.2", "4.1 v 5.2", "6.1 v 7.2",
+        "1.2 v 2.2", "3.1 v 4.2", "5.1 v 6.2", "7.1 v bye"
+      ]
+      expect(draw(7).tree_shape).to eq [[[0, 1], [2, 3]], [[4, 5], [6, 7]]]
+    end
+
+    # U18's bottom half runs pools 1, 3, 2, 4, 5, 6 rather than ascending — a
+    # hand adjustment the tool does not copy. It does now match the sheet's
+    # SHAPE: four units a half, every bye on a pool winner.
+    it "matches the U18 sheet's shape but not its hand-adjusted order" do
+      pairs = draw(6).first_round_pairs
+      poster = ["1.1 v bye", "2.2 v 3.1", "4.2 v 5.2", "6.1 v bye",
+        "1.2 v 3.2", "2.1 v bye", "4.1 v bye", "5.1 v 6.2"]
+
+      expect(pairs.size).to eq 8
+      expect(pairs.count { |pair| pair.compact.size == 1 }).to eq 4
+      expect(pairs.filter_map { |pair| pair.compact.first.pool_rank if pair.compact.size == 1 })
+        .to all eq(1)
+      expect(render(pairs)).not_to eq poster
+    end
+
+    # The 2025 Open was 31 pools drawn across four sheets as one 32-unit tree.
+    # Padding reaches the same size; the pool ORDER differs, because the sheets
+    # group pools eight to a quarter while the rule reads them down the column.
+    it "reaches the Open sheet's size at 31 pools without copying its order" do
+      pairs = draw(31).first_round_pairs
+
+      expect(pairs.size).to eq 32
+      expect(pairs.count { |pair| pair.compact.size == 1 }).to eq 2
+      expect(render(pairs).first).to eq "1.1 v bye"
+    end
+  end
+
   describe "the 2025 Ladies bracket (9 pools, 18 qualifiers)" do
     let(:poster) {
       ["1.1 v bye", "2.1 v 3.2", "4.1 v 5.2", "6.1 v 7.2", "8.1 v 9.2",
