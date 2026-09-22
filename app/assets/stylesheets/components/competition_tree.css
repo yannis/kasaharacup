@@ -324,8 +324,9 @@
   color: #1e3a8a;
 }
 
-/* Drag-to-swap affordances on a bracket-only draw (admin only). The keyboard
-   path is the encounter panel's swap form, not these. */
+/* Manual reordering affordances (admin, unfrozen bracket only). The keyboard
+   path is the per-slot "Move to…" select beside each grip, not a separate
+   form: a bye card opens no panel and the individual tree has none at all. */
 .competition-tree__grip {
   cursor: grab;
   color: #75716c;
@@ -337,12 +338,50 @@
   cursor: grabbing;
 }
 
+/* Narrow by default so it costs a 224px card almost nothing, and only as wide
+   as its options once it has focus — this is the keyboard path, so it has to be
+   reachable and readable, not prominent. */
+.competition-tree__move-select {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: #75716c;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  inline-size: 1.25rem;
+  padding: 0;
+}
+
+.competition-tree__move-select:focus-visible {
+  background: #fff;
+  border: 1px solid #4a7dff;
+  border-radius: 0.25rem;
+  inline-size: auto;
+  outline: none;
+}
+
 .competition-tree__fighter--drop {
   outline: 2px dashed #4a7dff;
   outline-offset: -2px;
 }
 
-.competition-tree__fighter[aria-busy="true"] {
+/* A bye's EMPTY side. The header line already occupies a row and already says
+   what that side means, so it doubles as the drop target and the card keeps
+   BYE_CARD_HEIGHT — the compact draw's geometry is laid out against it. */
+.competition-tree__bye-drop {
+  border-radius: 0.25rem;
+  cursor: copy;
+}
+
+.competition-tree__bye-drop.competition-tree__fighter--drop {
+  background: #eef2ff;
+  outline: 2px dashed #4a7dff;
+  outline-offset: -2px;
+}
+
+.competition-tree__fighter[aria-busy="true"],
+.competition-tree__bye-drop[aria-busy="true"] {
   opacity: 0.5;
 }
 
