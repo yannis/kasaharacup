@@ -11,7 +11,6 @@
     <%# Unconditional: the partial owns the bracket-only/round-1 test now, so it
         always renders its wrapper and respond_with_encounter's stream always
         finds a target. %>
-    <%= render "admin/encounters/swap_team", encounter: @encounter %>
   <% end %>
 <% else %>
   <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>

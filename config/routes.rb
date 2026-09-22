@@ -61,7 +61,6 @@ Rails.application.routes.draw do
       resource :bracket_freeze, only: [:create, :destroy], module: :team_categories
       resources :encounters, only: :show do
         resource :lineup, only: :update, module: :encounters
-        resource :team_swap, only: :create, module: :encounters
         resource :lineup_seed, only: :create, module: :encounters
         resource :daihyosen, only: :update, module: :encounters
         resources :team_fights, only: [:update] do

@@ -130,7 +130,7 @@ class Encounter < ApplicationRecord
   # tool withdraw itself a second after anyone merely looked at an encounter. A
   # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_matchup
   # drops the stale bouts and both lineup flags on every swap, and
-  # EncounterTeamSwap confirms before discarding the rest.
+  # BracketSlotMove confirms before discarding the rest.
   def unscored?
     winner_id.nil? &&
       # any? (not exists?) so a preloaded team_fights: :fight_points association is
@@ -164,7 +164,7 @@ class Encounter < ApplicationRecord
   # No work recorded AT ALL — #unscored? plus no fighter order anyone entered.
   # The stricter bar, used where re-resolving a slot would silently discard an
   # order the admin entered by hand and cannot recover: TeamCategoryBracketBuilder's
-  # non-force update, EncounterTeamSwap's confirmation prompt, and TeamPoolMove's.
+  # non-force update, BracketSlotMove's confirmation prompt, and TeamPoolMove's.
   def pristine?
     unscored? && !hand_ordered?
   end
@@ -310,7 +310,7 @@ class Encounter < ApplicationRecord
   end
 
   # Correcting an earlier round can reach a descendant that was already fought
-  # and scored, on a path that — unlike EncounterTeamSwap — has no unscored?
+  # and scored, on a path that — unlike BracketSlotMove — has no unscored?
   # guard and no confirmation prompt. Discarding those points is unavoidable
   # (they are keyed by fighter_side, not by kenshi, so keeping the opponent's
   # half would credit them to the incoming team), but it should not be silent:

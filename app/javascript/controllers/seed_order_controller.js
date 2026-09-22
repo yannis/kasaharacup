@@ -109,7 +109,7 @@ export default class extends Controller {
 
   // Nothing in the panel moves until the server's stream comes back, so a
   // failed drag is indistinguishable from a missed drop target unless we say
-  // so. Same banner bracket_swap_controller raises for the same reason. The
+  // so. Same banner bracket_slot_controller raises for the same reason. The
   // next successful stream replaces the panel and takes the banner with it,
   // which is what we want: it only describes the attempt that failed.
   report(message) {

@@ -51,6 +51,41 @@ RSpec.describe "Admin bracket slots" do
       expect(response.parsed_body["message"]).to include("not waiting to be placed")
     end
 
+    it "answers 422 when the client's expected entry is stale" do
+      first, second = round_one
+
+      patch slot_path(first, 1),
+        params: {source_slot: "#{second.id}-1", expected_entry: "9.9"},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["message"]).to include("reload and try again")
+    end
+
+    it "answers 422 when the SOURCE has moved since the tree was drawn" do
+      first, second = round_one
+
+      patch slot_path(first, 1),
+        params: {source_slot: "#{second.id}-1", expected_source_entry: "9.9"},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["message"]).to include("reload and try again")
+    end
+
+    # #slot_params permits rather than reading params[...] directly, so a
+    # non-scalar is DROPPED instead of reaching #split in the service, where
+    # `source_slot[]=1` would raise NoMethodError and 500.
+    it "drops a non-scalar parameter rather than raising" do
+      first, = round_one
+
+      patch slot_path(first, 1), params: {source_slot: ["1"]},
+        headers: {"Accept" => "text/vnd.turbo-stream.html"}
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["message"]).to include("nothing to put in this slot")
+    end
+
     # 403, NOT 422: bracket_slot_controller.js offers a retry on every 422 that
     # carries confirm, and a freeze must never be force-able (R12).
     it "answers 403 on a frozen bracket" do
