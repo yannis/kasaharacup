@@ -18,9 +18,11 @@ RSpec.describe TeamPooler do
   end
 
   # The regression #1312 asks for. Distinct pools was never the hard part —
-  # consecutive pool numbers are exactly the ones BracketSeeder.low_block sends
-  # to the SAME half, so the old `i % pool_count` put seeds 1 and 2 both in the
-  # top half and they met in the semifinal.
+  # BracketSeeder.half_pools decides which half a pool feeds, not the pool
+  # numbering, and under the low/high cut in force when #1312 was filed
+  # consecutive pools shared a half: the old `i % pool_count` put seeds 1 and 2
+  # both in the top half and they met in the semifinal. At eight pools all four
+  # medalists shared a half.
   #
   # Reads the encounters' own pool_number/pool_rank rather than playing out a
   # pool phase: the builder records them even with no rank entered, and round-1

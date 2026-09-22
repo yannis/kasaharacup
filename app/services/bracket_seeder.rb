@@ -36,7 +36,8 @@ class BracketSeeder
   # Public because SeedPoolOrder seeds against it: the seeding and the draw must
   # share one definition of the cut, or a category is seeded for a tree the
   # bracket does not build and nothing fails to say so. That is exactly what the
-  # low_block cut below did once the halves stopped being a low/high split.
+  # low/high cut this replaced went on doing once the halves stopped being a
+  # low/high split: it still answered, with the wrong halves.
   def self.half_pools(pool_count)
     (1..pool_count).partition { |ordinal| top_slot_index(ordinal, pool_count).even? }
   end
@@ -47,15 +48,6 @@ class BracketSeeder
   # slot along.
   def self.top_slot_index(ordinal, pool_count)
     (pool_count.odd? && ordinal >= 2) ? ordinal : ordinal - 1
-  end
-
-  # DEPRECATED, deleted by the SeedPoolOrder task. The halves are no longer a
-  # low/high cut over the pool numbers, and nothing in here uses this any more —
-  # but SeedPoolOrder and its spec still call it, and moving them onto
-  # half_pools changes how every category is seeded, which belongs in its own
-  # commit rather than buried in this one.
-  def self.low_block(pool_numbers)
-    pool_numbers.first((pool_numbers.size / 2.0).ceil)
   end
 
   private def unit_halves

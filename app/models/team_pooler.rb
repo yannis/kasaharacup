@@ -7,10 +7,13 @@
 # layout is reproducible.
 #
 # The seeds go into the pools SeedPoolOrder names, not into consecutive ones.
-# Consecutive pool numbers are exactly the ones BracketSeeder.low_block sends to
-# the SAME half of the tree, so "one seed per pool" used to mean seeds 1 and 2
-# both in the top half — meeting in the semifinal, with the final decided
-# against seed 3. At eight pools all four medalists shared a half.
+# Which half of the tree a pool feeds is BracketSeeder.half_pools' business, and
+# consecutive pool numbers say nothing about how deep in the tree two pools
+# meet, so "one seed per pool" is no separation on its own. Under the low/high
+# cut the draw used when #1312 was filed, consecutive pools shared a half
+# outright: `i % pool_count` put seeds 1 and 2 both in the top half — meeting in
+# the semifinal, with the final decided against seed 3. At eight pools all four
+# medalists shared a half.
 class TeamPooler
   def initialize(team_category, random: Random.new)
     @team_category = team_category
