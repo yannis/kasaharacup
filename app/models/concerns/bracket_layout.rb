@@ -54,10 +54,12 @@ module BracketLayout
 
   def node_center_y(node)
     slot_height = BracketLayout::CARD_HEIGHT + BracketLayout::MATCH_GAP
-    span = 2**(node.round - 1)
-    first_slot = (node.position - 1) * span
 
-    slot_height * (first_slot + (span / 2.0)) - BracketLayout::MATCH_GAP / 2.0
+    slot_height * (geometry.slot_center(node) + 0.5) - BracketLayout::MATCH_GAP / 2.0
+  end
+
+  private def geometry
+    @geometry ||= BracketGeometry.new(bracket_nodes) { |node| node_parents(node) }
   end
 
   def connector_paths
@@ -94,7 +96,11 @@ module BracketLayout
     start_y = BracketLayout::PADDING + node_center_y(parent_node).round
     end_x = match_left(node)
     end_y = BracketLayout::PADDING + node_center_y(node).round
-    elbow_x = start_x + (end_x - start_x) / 2
+    # Beside the CHILD, not at the midpoint between the two. They are the same
+    # pixel while parent and child sit one column apart, but a compact tree lets
+    # a round-1 unit feed a node two or more columns along, and the midpoint of
+    # that span lands inside the cards of the columns it crosses.
+    elbow_x = end_x - BracketLayout::ROUND_GAP / 2
 
     "M #{start_x} #{start_y} H #{elbow_x} V #{end_y} H #{end_x}"
   end
