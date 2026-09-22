@@ -97,6 +97,156 @@ RSpec.describe BracketSlotMove do
       end
     end
 
+    describe "#place into an empty slot" do
+      it "moves the entry and leaves the source unit a bye" do
+        build_bracket(pools: 2)
+        first, second = round_one
+        first.clear_slot(2)
+        moving = second.slot_entry(1)
+
+        described_class.new(category).place(target: ref(first, 2), source: ref(second, 1))
+
+        expect(first.reload.slot_entry(2).key).to eq moving.key
+        expect(second.reload).to be_bye
+      end
+
+      it "stops the unit being a bye" do
+        build_bracket(pools: 3)
+        bye = round_one.detect(&:bye?)
+        other = round_one.detect { |record| !record.bye? }
+        empty_slot = (bye.bye_slot == 1) ? 2 : 1
+
+        described_class.new(category).place(target: ref(bye, empty_slot), source: ref(other, 1))
+
+        expect(bye.reload).not_to be_bye
+      end
+    end
+
+    describe "#remove" do
+      it "empties the slot and leaves the partner with a bye" do
+        build_bracket(pools: 2)
+        unit = round_one.first
+        survivor = unit.slot_entry(2)
+
+        described_class.new(category).remove(target: ref(unit, 1))
+
+        unit.reload
+        expect(unit.slot_entry(1)).to be_nil
+        expect(unit).to be_bye
+        expect(unit.slot_entry(unit.bye_slot).key).to eq survivor.key
+      end
+
+      it "refuses to empty the last entry of a unit" do
+        build_bracket(pools: 3)
+        bye = round_one.detect(&:bye?)
+
+        expect { described_class.new(category).remove(target: ref(bye, bye.bye_slot)) }
+          .to raise_error(described_class::InvalidMove, /nobody in it/)
+      end
+
+      it "refuses to empty a slot that is already empty" do
+        build_bracket(pools: 3)
+        bye = round_one.detect(&:bye?)
+        empty_slot = (bye.bye_slot == 1) ? 2 : 1
+
+        expect { described_class.new(category).remove(target: ref(bye, empty_slot)) }
+          .to raise_error(described_class::InvalidMove, /already empty/)
+      end
+    end
+
+    describe "the empty-unit refusal" do
+      it "refuses to move a bye's only entry into another slot" do
+        build_bracket(pools: 3)
+        bye = round_one.detect(&:bye?)
+        other = round_one.detect { |record| !record.bye? }
+        other.clear_slot(2)
+
+        expect {
+          described_class.new(category).place(target: ref(other, 2), source: ref(bye, bye.bye_slot))
+        }.to raise_error(described_class::InvalidMove, /nobody in it/)
+      end
+
+      # A SWAP hands the source unit the displaced entry, so its count is
+      # unchanged and a bye may still take part in one. Without this
+      # distinction the empty-unit rule would make every bye immovable.
+      it "allows a bye's entry to be swapped with an occupied slot" do
+        build_bracket(pools: 3)
+        bye = round_one.detect(&:bye?)
+        other = round_one.detect { |record| !record.bye? }
+
+        expect {
+          described_class.new(category).place(target: ref(other, 1), source: ref(bye, bye.bye_slot))
+        }.not_to raise_error
+        expect(bye.reload).to be_bye
+      end
+    end
+
+    describe "#place from the waiting area" do
+      it "places a waiting entry into an empty slot" do
+        build_bracket(pools: 2)
+        unit = round_one.first
+        pulled = unit.slot_entry(2)
+        unit.clear_slot(2)
+
+        described_class.new(category).place(target: ref(unit, 2), entry_key: pulled.key)
+
+        expect(unit.reload.slot_entry(2).key).to eq pulled.key
+        expect(BracketWaitingEntries.for(category)).to be_empty
+      end
+
+      it "displaces the occupant back into the waiting area" do
+        build_bracket(pools: 2)
+        first, second = round_one
+        pulled = first.slot_entry(1)
+        first.clear_slot(1)
+        displaced = second.slot_entry(1)
+
+        described_class.new(category).place(target: ref(second, 1), entry_key: pulled.key)
+
+        expect(second.reload.slot_entry(1).key).to eq pulled.key
+        expect(BracketWaitingEntries.for(category).map(&:key)).to eq [displaced.key]
+      end
+
+      # THE refusal the waiting area needs and the swap tool never did. A swap
+      # exchanges two occupants, so nothing can be duplicated; a placement has
+      # no source row for an expectation hint to describe, and nothing in the
+      # schema objects — Encounter#teams_differ compares one row's two slots and
+      # no more. Two admins on the same waiting row, or one admin on a stale
+      # tree, would write 3.2 into two slots and the next Update bracket would
+      # resolve the same competitor into both.
+      it "refuses to place an entry that already occupies a slot" do
+        build_bracket(pools: 2)
+        first, second = round_one
+        first.clear_slot(1) # make room, so the refusal is about the DUPLICATE
+        placed = second.slot_entry(1)
+
+        expect { described_class.new(category).place(target: ref(first, 1), entry_key: placed.key) }
+          .to raise_error(described_class::InvalidMove, /not waiting to be placed/)
+      end
+
+      it "refuses an entry key nothing in the category answers to" do
+        build_bracket(pools: 2)
+        unit = round_one.first
+        unit.clear_slot(1)
+
+        expect { described_class.new(category).place(target: ref(unit, 1), entry_key: "42.7") }
+          .to raise_error(described_class::InvalidMove, /not waiting to be placed/)
+      end
+
+      it "honours an empty expectation hint on the target" do
+        build_bracket(pools: 2)
+        first, second = round_one
+        pulled = first.slot_entry(1)
+        first.clear_slot(1)
+
+        # The client drew a tree in which second's slot 1 was EMPTY. It is not.
+        expect {
+          described_class.new(category)
+            .place(target: ref(second, 1), entry_key: pulled.key, expected_entry: "")
+        }.to raise_error(described_class::InvalidMove, /reload and try again/)
+      end
+    end
+
     describe "a bye" do
       it "re-seeds the child slot when a bye's occupant is swapped out" do
         build_bracket(pools: 3)
@@ -197,6 +347,99 @@ RSpec.describe BracketSlotMove do
           source: ref(second, second.bye_slot))
       }.not_to raise_error
       expect(first.reload.slot_entry(first.bye_slot).key).to eq moving_in.key
+    end
+  end
+
+  describe ".eligibility" do
+    let(:category) { create(:team_category, cup: cup, pool_size: 3, out_of_pool: 2) }
+
+    def build_bracket(pools)
+      (1..pools).each do |pool|
+        (1..2).each { |rank| create(:team, team_category: category, pool_number: pool, pool_rank: rank) }
+      end
+      TeamCategoryBracketBuilder.new(category).call
+      described_class.bracket_for(category.reload)
+    end
+
+    it "offers both slots of an untouched unit as source and target" do
+      records = build_bracket(2)
+      unit = records.detect { |record| record.round == 1 }
+
+      eligibility = described_class.eligibility(records)
+
+      expect(eligibility.sources).to include([unit.id, 1], [unit.id, 2])
+      expect(eligibility.targets).to include([unit.id, 1], [unit.id, 2])
+    end
+
+    # The distinction the single swappable_slots set could not express, and the
+    # reason the tree never offered an empty slot at all.
+    it "offers a bye's empty side as a target but never as a source" do
+      records = build_bracket(3)
+      bye = records.detect { |record| record.round == 1 && record.bye? }
+      empty_slot = (bye.bye_slot == 1) ? 2 : 1
+
+      eligibility = described_class.eligibility(records)
+
+      expect(eligibility.targets).to include([bye.id, empty_slot])
+      expect(eligibility.sources).not_to include([bye.id, empty_slot])
+    end
+
+    it "offers nothing on a unit whose child is scored" do
+      build_bracket(3)
+      bye = category.bracket_encounters.where(round: 1).detect(&:bye?)
+      # The bye's OWN child: it is the node a move of this bye would rewrite,
+      # and scoring it is what puts the bye out of reach.
+      child = bye.children.first
+      child.update!(winner: child.team_1 || child.team_2)
+
+      eligibility = described_class.eligibility(described_class.bracket_for(category.reload))
+
+      expect(eligibility.sources).not_to include([bye.id, bye.bye_slot])
+    end
+
+    it "offers nothing outside round 1" do
+      records = build_bracket(2)
+      final = records.detect { |record| record.round == 2 }
+
+      eligibility = described_class.eligibility(records)
+
+      expect(eligibility.targets.map(&:first)).not_to include final.id
+    end
+  end
+
+  # What makes the duplicate refusal correct when two admins race: the waiting
+  # set is derived from rows this transaction already HOLDS, so the second
+  # placement cannot read a snapshot taken before the first one landed.
+  #
+  # Asserted as an ordering rather than with two threads: the suite runs on
+  # use_transactional_fixtures, so a second connection would not see this
+  # example's bracket at all and the test would pass for the wrong reason.
+  describe "the lock that the duplicate refusal rests on" do
+    let(:category) { create(:team_category, cup: cup, pool_size: 3, out_of_pool: 2) }
+
+    it "locks the whole of round 1 before deriving the waiting set" do
+      (1..2).each do |pool|
+        (1..2).each { |rank| create(:team, team_category: category, pool_number: pool, pool_rank: rank) }
+      end
+      TeamCategoryBracketBuilder.new(category).call
+      unit = category.bracket_encounters.where(round: 1).order(:position).first
+      pulled = unit.slot_entry(1)
+      unit.clear_slot(1)
+
+      queries = []
+      collect = ->(*, payload) { queries << payload[:sql] }
+      ActiveSupport::Notifications.subscribed(collect, "sql.active_record") do
+        described_class.new(category).place(target: "#{unit.id}-1", entry_key: pulled.key)
+      end
+
+      lock_at = queries.index { |sql| sql.include?("FOR UPDATE") }
+      # The waiting set resolves its competitors through CategoryPoolSlots, so
+      # the first read of the teams table is the earliest it can have run.
+      derive_at = queries.index { |sql| sql.match?(/SELECT .*FROM "teams"/) }
+
+      expect(lock_at).to be_present
+      expect(derive_at).to be_present
+      expect(lock_at).to be < derive_at
     end
   end
 
