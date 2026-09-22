@@ -3,8 +3,7 @@
   <% if admin %>
     <%= helpers.turbo_stream_from team_category, :encounter_tree %>
   <% end %>
-  <div id="<%= tree_dom_id %>" class="competition-tree"
-      data-controller="bracket-swap">
+  <div id="<%= tree_dom_id %>" class="competition-tree">
     <% if rounds.empty? %>
       <p class="competition-tree__empty">No bracket yet.</p>
     <% else %>
@@ -20,19 +19,21 @@
             <% next unless render_node?(encounter) %>
 
             <% if encounter.bye? %>
+              <%# The card keeps BYE_CARD_HEIGHT: the empty side is the HEADER
+                  line, which already occupies a row and already says what the
+                  empty side means. A second full-height row would change the
+                  compact draw's geometry for no gain. %>
               <article class="competition-tree__match competition-tree__match--bye" style="<%= match_style(encounter) %>">
-                <div class="competition-tree__match-header">
+                <%= tag.div class: ["competition-tree__match-header",
+                      ("competition-tree__bye-drop" if slot_target?(encounter, empty_slot_of(encounter)))],
+                      data: slot_data(encounter, empty_slot_of(encounter)) do %>
                   <span class="competition-tree__bye-label">Bye</span>
-                </div>
+                <% end %>
                 <ol class="competition-tree__fighters">
                   <% slot = encounter.bye_slot %>
                   <%= tag.li class: "competition-tree__fighter competition-tree__fighter--winner",
-                        data: swap_data(encounter, slot) do %>
-                    <% if swappable?(encounter, slot) %>
-                      <span class="competition-tree__grip" draggable="true" aria-hidden="true"
-                            title="Drag onto another team to swap them"
-                            data-action="dragstart->bracket-swap#dragStart dragend->bracket-swap#dragEnd">⠿</span>
-                    <% end %>
+                        data: slot_data(encounter, slot) do %>
+                    <%= render "brackets/slot_controls", tree: self, node: encounter, slot: slot %>
                     <%= seed_badge(encounter, slot) %>
                     <span class="competition-tree__fighter-name"><%= team_name(encounter, slot) %></span>
                   <% end %>
@@ -51,12 +52,8 @@
                   <% [1, 2].each do |slot| %>
                     <%= tag.li class: ["competition-tree__fighter",
                           ("competition-tree__fighter--winner" if team_winner?(encounter, slot))],
-                          data: swap_data(encounter, slot) do %>
-                      <% if swappable?(encounter, slot) %>
-                        <span class="competition-tree__grip" draggable="true" aria-hidden="true"
-                              title="Drag onto another team to swap them"
-                              data-action="dragstart->bracket-swap#dragStart dragend->bracket-swap#dragEnd">⠿</span>
-                      <% end %>
+                          data: slot_data(encounter, slot) do %>
+                      <%= render "brackets/slot_controls", tree: self, node: encounter, slot: slot %>
                       <% if (seed = seed_label(encounter, slot)) && encounter.public_send(:"resolved_team_#{slot}").blank? %>
                         <span class="competition-tree__pool-position"><%= seed %></span>
                       <% end %>

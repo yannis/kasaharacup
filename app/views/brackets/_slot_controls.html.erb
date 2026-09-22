@@ -1,0 +1,23 @@
+<%# The grip and the keyboard path for one round-1 slot, shared by both trees.
+    `node` is an Encounter or a Fight — BracketSlots is what lets one partial
+    serve both — and `tree` is the component, which the partial reaches through
+    public methods because it renders in the view context rather than as a
+    component method.
+
+    Both controls are gated on the SOURCE set, not the target set: an empty slot
+    receives an entry but never gives one up. %>
+<% if tree.slot_source?(node, slot) %>
+  <span class="competition-tree__grip" draggable="true" aria-hidden="true"
+        title="Drag onto another slot or into the waiting area"
+        <%= tag.attributes(data: tree.grip_data) %>>⠿</span>
+  <select class="competition-tree__move-select"
+          aria-label="Move <%= tree.node_label(node) %> slot <%= slot %> elsewhere"
+          data-action="change->bracket-slot#moveViaSelect"
+          data-source-slot="<%= node.id %>-<%= slot %>"
+          data-source-entry-key="<%= node.slot_entry(slot)&.key %>">
+    <option value="">Move to…</option>
+    <% tree.move_options(node, slot).each do |label, value, expected| %>
+      <option value="<%= value %>" data-expected-entry="<%= expected %>"><%= label %></option>
+    <% end %>
+  </select>
+<% end %>

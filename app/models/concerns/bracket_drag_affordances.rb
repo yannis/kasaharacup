@@ -22,8 +22,13 @@ module BracketDragAffordances
   # draw correction, and the guard refuses it once the tree is settled. Every
   # helper below splats or short-circuits off this, so an empty pair is all it
   # takes to make the whole tree inert.
+  #
+  # Reads #bracket_frozen? directly rather than through
+  # FreezeHelper#bracket_structure_editable?, which is the same negation: this
+  # is a question about records, and going through `helpers` would make it
+  # answerable only from inside a render.
   def slot_eligibility
-    @slot_eligibility ||= if admin? && helpers.bracket_structure_editable?(category)
+    @slot_eligibility ||= if admin? && !category.bracket_frozen?
       BracketSlotMove.eligibility(bracket_records)
     else
       BracketSlotMove::Eligibility.new(sources: Set.new, targets: Set.new)

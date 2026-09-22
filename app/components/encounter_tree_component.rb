@@ -3,6 +3,7 @@
 class EncounterTreeComponent < ViewComponent::Base
   include ActionView::RecordIdentifier
   include BracketLayout
+  include BracketDragAffordances
 
   def initialize(team_category:, admin: false)
     @team_category = team_category
@@ -112,36 +113,27 @@ class EncounterTreeComponent < ViewComponent::Base
     visible_connector_parent(encounter).first if hidden_pass_through_node?(encounter)
   end
 
-  private def swappable?(encounter, slot)
-    swappable_slots.include?([encounter.id, slot])
+  # BracketDragAffordances' contract.
+  private def category = team_category
+
+  private def admin? = admin
+
+  private def bracket_records = encounters
+
+  # Public: the _slot_controls partial renders in the view context, not as a
+  # component method, so it reaches the component through `tree.`.
+  def node_label(encounter)
+    return "Bye" if encounter.bye?
+
+    "Encounter #{display_number(encounter)}"
   end
 
-  # Empty for a frozen bracket as well as for the public tree (R3): a swap is
-  # a draw correction, and the guard refuses it once the tree is settled. The
-  # template splats swap_data unconditionally, so an empty set is all it takes
-  # to make every slot an inert drop target.
-  private def swappable_slots
-    @swappable_slots ||= if admin && !team_category.bracket_frozen?
-      EncounterTeamSwap.swappable_slots(encounters, category: team_category)
-    else
-      Set.new
-    end
+  private def slot_url(encounter, slot)
+    helpers.admin_team_category_bracket_slot_path(team_category, "#{encounter.id}-#{slot}")
   end
 
-  # Drag/drop wiring for one slot. Empty for a slot that cannot move, so the
-  # template can splat it unconditionally and non-swappable slots are inert
-  # drop targets.
-  private def swap_data(encounter, slot)
-    return {} unless swappable?(encounter, slot)
-
-    {
-      encounter_id: encounter.id,
-      slot: slot,
-      team_id: encounter.public_send(:"team_#{slot}").id,
-      swap_url: helpers.admin_team_category_encounter_team_swap_path(team_category, encounter),
-      action: "dragover->bracket-swap#dragOver dragleave->bracket-swap#dragLeave drop->bracket-swap#drop"
-    }
-  end
+  # A bye's empty side is the one the drop strip covers.
+  private def empty_slot_of(encounter) = (encounter.bye_slot == 1) ? 2 : 1
 
   private def encounter_path(encounter)
     helpers.admin_team_category_encounter_path(team_category, encounter)
