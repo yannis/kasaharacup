@@ -54,6 +54,9 @@ Rails.application.routes.draw do
       resources :videos
       resources :pool_memberships, only: :update, module: :team_categories
       resources :seeds, only: [:update, :destroy], module: :team_categories
+      # The SLOT is the resource: update puts an entry in, destroy takes it out.
+      # :id is "<record id>-<slot>", e.g. "482-2".
+      resources :bracket_slots, only: [:update, :destroy], module: :team_categories
       resource :pool_freeze, only: [:create, :destroy], module: :team_categories
       resource :bracket_freeze, only: [:create, :destroy], module: :team_categories
       resources :encounters, only: :show do
@@ -78,6 +81,7 @@ Rails.application.routes.draw do
       end
       resources :pool_memberships, only: :update, module: :individual_categories
       resources :seeds, only: [:update, :destroy], module: :individual_categories
+      resources :bracket_slots, only: [:update, :destroy], module: :individual_categories
       resource :pool_freeze, only: [:create, :destroy], module: :individual_categories
       resource :bracket_freeze, only: [:create, :destroy], module: :individual_categories
       resources :documents

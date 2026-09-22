@@ -1,0 +1,32 @@
+<%# Always-visible staging area for entries pulled out of the bracket, and
+    itself the drop zone that pulls one out — see
+    bracket_slot_controller#dropToWaiting. Mirrors TeamPoolUnpooledComponent. %>
+<%= tag.div id: dom_id_for_waiting, class: "bracket-waiting", data: drop_zone_data do %>
+  <h3 class="bracket-waiting__title">Waiting entries</h3>
+  <% if entries.any? %>
+    <ul class="bracket-waiting__list">
+      <% entries.each do |entry| %>
+        <li class="bracket-waiting__entry"<% if editable? %> data-entry-key="<%= entry.key %>"<% end %>>
+          <% if editable? %>
+            <span class="bracket-waiting__grip competition-tree__grip" draggable="true"
+                  title="Drag onto a bracket slot" data-action="dragstart->bracket-slot#dragStartWaiting">⠿</span>
+          <% end %>
+          <span class="bracket-waiting__label"><%= entry_label(entry) %></span>
+          <% if editable? %>
+            <select class="bracket-waiting__select" aria-label="Add <%= entry_label(entry) %> to a slot"
+                    data-action="change->bracket-slot#placeViaSelect">
+              <option value="">Add to…</option>
+              <% placement_options.each do |label, url, expected| %>
+                <option value="<%= url %>" data-expected-entry="<%= expected %>"><%= label %></option>
+              <% end %>
+            </select>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="bracket-waiting__hint">
+      <%= editable? ? "Drag an entry here to take it out of the draw." : "No waiting entries." %>
+    </p>
+  <% end %>
+<% end %>
