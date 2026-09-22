@@ -99,13 +99,15 @@ RSpec.describe "Admin bracket freeze guard" do
       expect(flash[:alert]).to be_present
     end
 
-    it "refuses a team swap" do
+    it "refuses a bracket slot move" do
       encounter = bracket_encounter
       category.freeze_bracket!
 
-      post admin_team_category_encounter_team_swap_path(category, encounter),
-        params: {slot: 1, team_id: team_2.id}, as: :turbo_stream
+      patch admin_team_category_bracket_slot_path(category, "#{encounter.id}-1"),
+        params: {source_slot: "#{encounter.id}-2"}, as: :turbo_stream
+      expect(response).to have_http_status(:forbidden)
 
+      delete admin_team_category_bracket_slot_path(category, "#{encounter.id}-1"), as: :turbo_stream
       expect(response).to have_http_status(:forbidden)
     end
 

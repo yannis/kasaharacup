@@ -384,4 +384,83 @@ RSpec.describe CompetitionTreeComponent, type: :component do
       expect(frozen).to include("turbo-cable-stream-source")
     end
   end
+
+  describe "manual reordering affordances" do
+    let(:reorderable) { create(:individual_category, pool_size: 3, out_of_pool: 2) }
+
+    def build_bracket(pools)
+      (1..pools).each do |pool|
+        (1..2).each do |rank|
+          create(:participation, category: reorderable, pool_number: pool, pool_position: rank, pool_rank: rank)
+        end
+      end
+      IndividualCategoryBracketBuilder.new(reorderable).call
+      reorderable.reload
+    end
+
+    # This tree had no drag affordance of any kind before.
+    it "grips a round-1 slot" do
+      build_bracket(2)
+
+      render_inline(described_class.new(category: reorderable, admin: true))
+
+      expect(page).to have_css ".competition-tree__grip", count: 4
+    end
+
+    it "makes a bye's empty side a drop target" do
+      build_bracket(3)
+      bye = reorderable.bracket_fights.where(round: 1).detect(&:bye?)
+      empty_slot = (bye.bye_slot == 1) ? 2 : 1
+
+      render_inline(described_class.new(category: reorderable, admin: true))
+
+      strip = page.find("[data-slot-id='#{bye.id}-#{empty_slot}']")
+      expect(strip[:class]).to include "competition-tree__bye-drop"
+      expect(strip["data-entry-key"]).to eq ""
+    end
+
+    it "offers a Move to… select on every source slot" do
+      build_bracket(2)
+
+      render_inline(described_class.new(category: reorderable, admin: true))
+
+      expect(page).to have_css ".competition-tree__move-select", count: 4
+    end
+
+    # Unlike the team tree, this one really is rendered for non-admins, so the
+    # guard is live rather than hypothetical.
+    it "shows no affordance at all outside the admin" do
+      build_bracket(2)
+
+      render_inline(described_class.new(category: reorderable, admin: false))
+
+      expect(page).to have_no_css ".competition-tree__grip"
+      expect(page).to have_no_css "[data-slot-id]"
+    end
+
+    it "shows no affordance at all on a frozen bracket" do
+      build_bracket(2)
+      reorderable.update!(bracket_frozen_at: Time.current)
+
+      render_inline(described_class.new(category: reorderable.reload, admin: true))
+
+      expect(page).to have_no_css ".competition-tree__grip"
+      expect(page).to have_no_css ".competition-tree__move-select"
+    end
+
+    # The state the organizers actually work in: pools running, nobody resolved.
+    # The "Edit result" disclosure never renders here (fighters.any? is false),
+    # which is why the controls hang off the slot row instead.
+    it "grips a round-1 slot whose fighter is not resolved yet" do
+      build_bracket(2)
+      reorderable.bracket_fights.where(round: 1).find_each do |fight|
+        fight.update_columns(fighter_1_id: nil, fighter_2_id: nil) # rubocop:disable Rails/SkipsModelValidations
+      end
+
+      render_inline(described_class.new(category: reorderable.reload, admin: true))
+
+      expect(page).to have_no_css ".competition-tree__admin-details"
+      expect(page).to have_css ".competition-tree__grip", count: 4
+    end
+  end
 end

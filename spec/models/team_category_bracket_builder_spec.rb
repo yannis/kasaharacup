@@ -200,4 +200,60 @@ RSpec.describe TeamCategoryBracketBuilder do
       expect(category.bracket_encounters.pluck(:id)).not_to match_array original_ids
     end
   end
+
+  describe "a manual layout and a later update" do
+    let(:category) { create(:team_category, cup: cup, pool_size: 3, out_of_pool: 2) }
+
+    before do
+      (1..2).each do |pool|
+        (1..2).each { |rank| ranked_team(pool_number: pool, pool_rank: rank) }
+      end
+      described_class.new(category).call
+    end
+
+    def round_one = category.bracket_encounters.where(round: 1).order(:position).to_a
+
+    def layout = round_one.map { |e| [e.slot_entry(1)&.key, e.slot_entry(2)&.key] }
+
+    # The whole point of moving the descriptor with the entry. Before it, a
+    # swapped slot kept its OLD descriptor and the next update re-resolved it —
+    # silently undoing the admin's work, which is why pooled categories were
+    # refused a swap outright.
+    it "keeps the admin's layout" do
+      first, second = round_one
+      BracketSlotMove.new(category).place(target: "#{first.id}-1", source: "#{second.id}-1")
+      after_move = layout
+
+      described_class.new(category.reload).call
+
+      expect(layout).to eq after_move
+    end
+
+    it "flows corrected standings into the slot the admin chose" do
+      first, second = round_one
+      BracketSlotMove.new(category).place(target: "#{first.id}-1", source: "#{second.id}-1")
+      moved = first.reload.slot_entry(1)
+      # The pool re-ranks: its two qualifiers change places.
+      was_here = category.teams.find_by(pool_number: moved.pool_number, pool_rank: moved.pool_rank)
+      other_rank = (moved.pool_rank == 1) ? 2 : 1
+      now_here = category.teams.find_by(pool_number: moved.pool_number, pool_rank: other_rank)
+      was_here.update!(pool_rank: other_rank)
+      now_here.update!(pool_rank: moved.pool_rank)
+
+      described_class.new(category.reload).call
+
+      expect(first.reload.slot_entry(1)).to have_attributes(
+        pool_number: moved.pool_number, pool_rank: moved.pool_rank, competitor: now_here
+      )
+    end
+
+    it "leaves an emptied slot empty" do
+      first, = round_one
+      BracketSlotMove.new(category).remove(target: "#{first.id}-1")
+
+      described_class.new(category.reload).call
+
+      expect(round_one.first.slot_entry(1)).to be_nil
+    end
+  end
 end

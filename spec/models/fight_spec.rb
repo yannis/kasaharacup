@@ -646,6 +646,59 @@ RSpec.describe Fight do
     end
   end
 
+  describe "#unscored?" do
+    let(:category) { create(:individual_category, pool_size: 2) }
+
+    it "is true for a fight nobody has touched" do
+      expect(create(:fight, individual_category: category).unscored?).to be true
+    end
+
+    it "is false once a winner is recorded" do
+      fight = create(:fight, individual_category: category)
+      fight.update_column(:winner_id, fight.fighter_1_id)
+
+      expect(fight.reload.unscored?).to be false
+    end
+
+    # #pristine? is the name the pool callers (PoolMembershipMove) use and it
+    # has to keep working; this pins that the two stay one method.
+    it "is what #pristine? answers" do
+      fight = create(:fight, individual_category: category)
+
+      expect(fight.pristine?).to eq fight.unscored?
+    end
+  end
+
+  describe "#children" do
+    let(:category) { create(:individual_category, pool_size: 2) }
+
+    it "finds the fights this one is a parent of, on either side" do
+      parent = create(:fight, individual_category: category)
+      other = create(:fight, individual_category: category)
+      child = create(:fight, individual_category: category, round: 2,
+        fighter_1: nil, fighter_2: nil, parent_fight_1: parent, parent_fight_2: other)
+
+      expect(parent.children).to contain_exactly(child)
+      expect(other.children).to contain_exactly(child)
+      expect(child.children).to be_empty
+    end
+  end
+
+  describe "#invalidate_slot_matchup" do
+    let(:category) { create(:individual_category, pool_size: 2) }
+
+    it "destroys the recorded points and clears the winner" do
+      fight = create(:fight, individual_category: category)
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
+      expect(fight.reload.winner_id).to eq fight.fighter_1_id
+
+      fight.send(:invalidate_slot_matchup)
+
+      expect(fight.reload).to have_attributes(winner_id: nil, draw: false)
+      expect(fight.fight_points).to be_empty
+    end
+  end
+
   describe "destroying a fight that has recorded points" do
     let(:cup) { create(:cup) }
     let(:category) { create(:individual_category, cup: cup) }

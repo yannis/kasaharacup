@@ -22,6 +22,16 @@ function sameOrigin(url) {
   }
 }
 
+// Whether a drag carries one of our payloads AT ALL. getData is unreadable
+// during dragover — the browser protects the drag data until the drop — so a
+// drop zone that wants to preventDefault a dragover has only the type list to
+// go on. It is enough to keep a file or a text selection out, which a zone
+// that preventDefaults everything would otherwise let the browser open in the
+// tab when the drop turns out to carry nothing it recognises.
+export function carriesDragPayload(event) {
+  return Array.from(event.dataTransfer?.types || []).includes(TYPE);
+}
+
 export function writeDragPayload(dataTransfer, kind, data) {
   dataTransfer.setData(TYPE, JSON.stringify({ kind, ...data }));
 }

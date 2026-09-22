@@ -107,7 +107,11 @@ ActiveAdmin.register IndividualCategory, as: "IndividualCategory" do
       # In a partial rather than inline Arbre so a freeze broadcast can replace
       # it — see the Pools panel above.
       render partial: "admin/individual_categories/tree_actions", locals: {category: category}
-      render CompetitionTreeComponent.new(category: category, admin: true)
+      # See the team page: one controller over both replace targets.
+      div "data-controller": "bracket-slot" do
+        render CompetitionTreeComponent.new(category: category, admin: true)
+        render BracketWaitingComponent.new(category: category)
+      end
     end
 
     if category.pool_size.to_i <= 1 && category.participations.no_pool.present?

@@ -120,9 +120,6 @@ en:
       lineups:
         update:
           notice: Lineup set.
-      team_swaps:
-        create:
-          notice: Teams swapped.
     fights:
       update:
         notice: Fight updated

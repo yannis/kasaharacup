@@ -2,6 +2,7 @@
 
 class CompetitionTreeComponent < ViewComponent::Base
   include BracketLayout
+  include BracketDragAffordances
 
   def initialize(category:, admin: false)
     @category = category
@@ -15,6 +16,32 @@ class CompetitionTreeComponent < ViewComponent::Base
   # subscription in the template keeps the bare `admin` check, or a frozen
   # category would stop hearing its own unfreeze.
   private def bracket_editable? = admin && helpers.bracket_structure_editable?(category)
+
+  # BracketDragAffordances' contract. #admin? is the bare flag; the freeze half
+  # is the concern's own, which is why this is not #bracket_editable?.
+  private def admin? = admin
+
+  private def bracket_records = fights
+
+  # Public: the brackets/slot_controls partial renders in the view context, not
+  # as a component method, so it reaches the component through `tree.`.
+  def node_label(fight)
+    return "Bye" if fight.bye?
+
+    "Fight #{display_number(fight)}"
+  end
+
+  private def slot_url(fight, slot)
+    helpers.admin_individual_category_bracket_slot_path(category, "#{fight.id}-#{slot}")
+  end
+
+  # A kenshi's poster name, which is what this tree shows everywhere else.
+  private def entry_label(entry)
+    return entry.label unless entry.competitor.is_a?(Kenshi)
+
+    name = poster_name_for(entry.competitor)
+    entry.descriptor? ? "#{entry.label} · #{name}" : name
+  end
 
   private def fights
     @fights ||= begin

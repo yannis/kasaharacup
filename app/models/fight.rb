@@ -3,6 +3,9 @@
 class Fight < ApplicationRecord
   include ActionView::RecordIdentifier
   include Scorable
+  include BracketSlots
+
+  SLOT_PREFIX = "fighter"
 
   belongs_to :individual_category
   belongs_to :winner, polymorphic: true, foreign_type: "fighter_type", optional: true
@@ -49,6 +52,10 @@ class Fight < ApplicationRecord
     if: -> { pool_number.present? && (saved_change_to_winner_id? || saved_change_to_draw?) }
 
   scope :bracket_order, -> { order(:round, :position) }
+
+  # See Encounter.with_slot_competitors / .with_slot_move_context.
+  scope :with_slot_competitors, -> { includes(:fighter_1, :fighter_2) }
+  scope :with_slot_move_context, -> { with_slot_competitors.includes(:fight_points) }
 
   PARENT_ASSOCIATIONS = [:parent_fight_1, :parent_fight_2].freeze
 
@@ -116,13 +123,20 @@ class Fight < ApplicationRecord
     winner&.full_name
   end
 
-  # No real work recorded on this pool fight: no winner, not a draw, and no
-  # scored points. Used to decide whether rebuilding a pool (moving a
-  # participation between pools) is safe without explicit confirmation. Only
-  # meaningful for pool fights.
-  def pristine?
+  # No result recorded: no winner, not a draw, no scored points. The bar a draw
+  # correction has to clear before it may rewrite a slot, and the bar a pool
+  # rebuild has to clear before it may discard a fight.
+  #
+  # Named #unscored? to match Encounter, because BracketSlots asks both models
+  # the same question and BracketSlotMove refuses on the answer. Encounter keeps
+  # #unscored? and #pristine? apart — its #pristine? additionally excludes a
+  # hand-entered lineup, which is a prompt there and not a refusal — but a fight
+  # has no lineup, so here the two really are one method.
+  def unscored?
     winner_id.nil? && !draw && fight_points.none?
   end
+
+  alias_method :pristine?, :unscored?
 
   # --- Scorable hooks (preserve current individual-fight behavior) ---
   def scoring_fighter(slot)
@@ -237,9 +251,44 @@ class Fight < ApplicationRecord
     end
   end
 
-  private def fights_with_self_as_parent
+  # Public because BracketSlotMove walks a unit's blast radius through it, the
+  # way it does on Encounter.
+  def children
     self.class.where(individual_category_id: individual_category_id)
       .where("parent_fight_1_id = :id OR parent_fight_2_id = :id", id: id)
+  end
+
+  private def fights_with_self_as_parent = children
+
+  # The Fight half of BracketSlots' contract. See Encounter for the
+  # counterparts, which do considerably more.
+
+  # A slot's occupant changed, so whatever was recorded against the old matchup
+  # is stale. Defence in depth rather than a live path: BracketSlotMove refuses
+  # a move over a scored fight, so in practice there is nothing here to discard.
+  # Encounter's equivalent is load-bearing because a bye's round-2 child is
+  # rewritten by propagation, on a path with no unscored? gate of its own.
+  private def invalidate_slot_matchup
+    fight_points.destroy_all
+    update!(winner: nil, draw: false) if winner_id.present? || draw
+  end
+
+  # A no-op, and deliberately so: a child fight reads its fighters lazily
+  # through parent_fight_N&.winner_or_bye and IndividualCategoryBracketBuilder
+  # seeds nothing into it, so there is no copy of a bye's occupant to keep
+  # current. Encounter forward-propagates instead, and pays for it there.
+  private def refresh_child_slot_from_bye = nil
+
+  # See Encounter#seeds_child_slots?. False here: #resolved_fighter_N reads
+  # parent_fight_N&.winner_or_bye on demand, so nothing is stored to go stale
+  # and nothing can collide.
+  def seeds_child_slots? = false
+
+  # fighter_type is ONE column shared by fighter_1, fighter_2 and winner, so it
+  # is set whenever a competitor lands and left alone when one leaves —
+  # #restore_fighter_type puts it back for any row that still holds an id.
+  private def slot_extra_attributes(entry)
+    entry.competitor ? {fighter_type: entry.competitor.class.name} : {}
   end
 
   private def restore_fighter_type

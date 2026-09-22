@@ -26,6 +26,9 @@ class IndividualCategory < ApplicationRecord
 
   def bracket_freezable? = bracket_fights.exists?
 
+  # See TeamCategory#bracket_records.
+  def bracket_records = bracket_fights
+
   # All pool fights for the category, loaded once with their fighters/points and
   # grouped by pool number. PoolComponent reads its slice from here so rendering
   # every pool costs a single fights query instead of one per pool.

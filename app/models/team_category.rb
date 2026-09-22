@@ -42,6 +42,10 @@ class TeamCategory < ApplicationRecord
 
   def bracket_freezable? = bracket_encounters.exists?
 
+  # The tree's nodes, under the one name BracketSlotMove and
+  # BracketWaitingEntries can ask either category kind for.
+  def bracket_records = bracket_encounters
+
   # NOT memoized: regeneration paths (TeamPoolMove -> PoolEncounterGenerator)
   # reuse one category instance and re-read this after mutating pool membership,
   # so a cached snapshot would regenerate pools from stale membership. Callers

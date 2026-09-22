@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class Encounter < ApplicationRecord
+  include BracketSlots
+
+  # BracketSlots builds team_1_id / team_1_pool_number / team_1_pool_rank from
+  # this; Fight sets it to "fighter".
+  SLOT_PREFIX = "team"
+
   belongs_to :team_category
   belongs_to :team_1, class_name: "Team", optional: true
   belongs_to :team_2, class_name: "Team", optional: true
@@ -14,6 +20,15 @@ class Encounter < ApplicationRecord
   validates :team_1, :team_2, presence: true, if: -> { pool_number.present? }
 
   scope :bracket_order, -> { order(:round, :position) }
+
+  # The occupants a slot_entry resolves. Anything that reads slot entries over a
+  # list needs this, or it fires one query per slot — which the query-count
+  # guard catches on the admin page and a live cup would feel.
+  scope :with_slot_competitors, -> { includes(:team_1, :team_2) }
+
+  # The above plus enough of the bouts for #unscored? to be read in memory:
+  # what BracketSlotMove and the tree need to answer eligibility without an N+1.
+  scope :with_slot_move_context, -> { with_slot_competitors.includes(team_fights: :fight_points) }
 
   after_update :propagate_winner_to_children, if: :saved_change_to_winner_id?
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?
@@ -115,7 +130,7 @@ class Encounter < ApplicationRecord
   # tool withdraw itself a second after anyone merely looked at an encounter. A
   # seeded lineup is not a result: #assign_team_to_slot -> #invalidate_matchup
   # drops the stale bouts and both lineup flags on every swap, and
-  # EncounterTeamSwap confirms before discarding the rest.
+  # BracketSlotMove confirms before discarding the rest.
   def unscored?
     winner_id.nil? &&
       # any? (not exists?) so a preloaded team_fights: :fight_points association is
@@ -149,7 +164,7 @@ class Encounter < ApplicationRecord
   # No work recorded AT ALL — #unscored? plus no fighter order anyone entered.
   # The stricter bar, used where re-resolving a slot would silently discard an
   # order the admin entered by hand and cannot recover: TeamCategoryBracketBuilder's
-  # non-force update, EncounterTeamSwap's confirmation prompt, and TeamPoolMove's.
+  # non-force update, BracketSlotMove's confirmation prompt, and TeamPoolMove's.
   def pristine?
     unscored? && !hand_ordered?
   end
@@ -214,6 +229,40 @@ class Encounter < ApplicationRecord
     end
   end
 
+  # The Encounter half of BracketSlots' contract.
+
+  # A bye's occupant is COPIED into the child slot here (create_parent_rounds
+  # seeds it, propagate_bye_to_children keeps it current), where Fight reads it
+  # through the parent on demand. Two byes feeding one child therefore collide
+  # on this side and not on that one — see
+  # BracketSlotMove#validate_distinct_bye_children!.
+  def seeds_child_slots? = true
+
+  # Nothing rides along with a team id.
+  private def slot_extra_attributes(_entry) = {}
+
+  # What #assign_team_to_slot does after a RE-resolve, in the same order: drop
+  # the stale bouts, then re-derive the winner from what is left.
+  private def invalidate_slot_matchup
+    invalidate_matchup
+    recompute_winner!
+  end
+
+  # A round-1 unit feeds exactly one child slot, and what belongs in it is
+  # decided entirely by whether this unit is a bye: the occupant when it is,
+  # nothing when it is not. #propagate_bye_to_children keeps that current while
+  # the unit STAYS a bye; this covers the two cases its guard cannot see — a
+  # unit that has just stopped being one (whose child still holds the occupant
+  # create_parent_rounds seeded) and a unit that has just become one after a
+  # move that changed no team id at all.
+  private def refresh_child_slot_from_bye
+    occupant = bye? ? bye_team : nil
+    children.find_each do |child|
+      slot = (child.parent_encounter_1_id == id) ? 1 : 2
+      child.assign_team_to_slot(slot, occupant)
+    end
+  end
+
   def recompute_pool_standings!
     pool_teams = team_category.teams.where(pool_number: pool_number).to_a
     pool_encounters = team_category.encounters.where(pool_number: pool_number)
@@ -261,7 +310,7 @@ class Encounter < ApplicationRecord
   end
 
   # Correcting an earlier round can reach a descendant that was already fought
-  # and scored, on a path that — unlike EncounterTeamSwap — has no unscored?
+  # and scored, on a path that — unlike BracketSlotMove — has no unscored?
   # guard and no confirmation prompt. Discarding those points is unavoidable
   # (they are keyed by fighter_side, not by kenshi, so keeping the opponent's
   # half would credit them to the incoming team), but it should not be silent:

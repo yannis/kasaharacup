@@ -1,0 +1,53 @@
+/* The staging area beside a bracket: entries an admin pulled out of the draw.
+   Mirrors .pool-unpooled, which does the same job beside the pools. */
+.bracket-waiting {
+  border: 1px dashed #d6d3d1;
+  border-radius: 0.375rem;
+  margin-block-start: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.bracket-waiting__title {
+  color: #57524f;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.bracket-waiting__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bracket-waiting__entry {
+  align-items: center;
+  background: #f5f4f1;
+  border-radius: 0.25rem;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.bracket-waiting__label {
+  font-size: 0.8125rem;
+}
+
+.bracket-waiting__select {
+  font-size: 0.75rem;
+}
+
+.bracket-waiting__hint {
+  color: #75716c;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.bracket-waiting--over {
+  background: #eef2ff;
+  border-color: #4a7dff;
+}

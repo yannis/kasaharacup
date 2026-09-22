@@ -324,8 +324,9 @@
   color: #1e3a8a;
 }
 
-/* Drag-to-swap affordances on a bracket-only draw (admin only). The keyboard
-   path is the encounter panel's swap form, not these. */
+/* Manual reordering affordances (admin, unfrozen bracket only). The keyboard
+   path is the per-slot "Move to…" select beside each grip, not a separate
+   form: a bye card opens no panel and the individual tree has none at all. */
 .competition-tree__grip {
   cursor: grab;
   color: #75716c;
@@ -337,12 +338,61 @@
   cursor: grabbing;
 }
 
+/* A caret beside the grip, not a labelled control: a 224px card has no room for
+   one, and the grip next to it already says this row can be moved.
+   
+   The LABEL is still "Move to…" in the markup — it is what the open list shows
+   and what a screen reader reads — so the closed box hides its text with
+   `color: transparent` rather than clipping it to a narrower box, which drew a
+   truncated "Mo" over every slot. Options get their colour back explicitly,
+   because Firefox otherwise inherits the transparent one into the popup. */
+.competition-tree__move-select {
+  appearance: none;
+  background: transparent
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2375716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat center / 0.5rem auto;
+  block-size: 1.125rem;
+  border: 0;
+  border-radius: 0.25rem;
+  color: transparent;
+  cursor: pointer;
+  flex: 0 0 auto;
+  inline-size: 1.125rem;
+  padding: 0;
+}
+
+.competition-tree__move-select option {
+  color: #27231f;
+}
+
+.competition-tree__move-select:hover,
+.competition-tree__move-select:focus-visible {
+  background-color: #fff;
+  outline: 1px solid #4a7dff;
+  outline-offset: 0;
+}
+
 .competition-tree__fighter--drop {
   outline: 2px dashed #4a7dff;
   outline-offset: -2px;
 }
 
-.competition-tree__fighter[aria-busy="true"] {
+/* A bye's EMPTY side. The header line already occupies a row and already says
+   what that side means, so it doubles as the drop target and the card keeps
+   BYE_CARD_HEIGHT — the compact draw's geometry is laid out against it. */
+.competition-tree__bye-drop {
+  border-radius: 0.25rem;
+  cursor: copy;
+}
+
+.competition-tree__bye-drop.competition-tree__fighter--drop {
+  background: #eef2ff;
+  outline: 2px dashed #4a7dff;
+  outline-offset: -2px;
+}
+
+.competition-tree__fighter[aria-busy="true"],
+.competition-tree__bye-drop[aria-busy="true"] {
   opacity: 0.5;
 }
 

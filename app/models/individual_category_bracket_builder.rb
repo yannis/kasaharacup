@@ -42,8 +42,7 @@ class IndividualCategoryBracketBuilder
     pool_rank = fight.public_send(:"fighter_#{slot}_pool_rank")
     return if pool_number.blank? || pool_rank.blank?
 
-    participation = participations_by_slot[[pool_number, pool_rank]]
-    new_kenshi_id = participation&.kenshi_id
+    new_kenshi_id = pool_slots.competitor_at(pool_number, pool_rank)&.id
     return if new_kenshi_id == fight.public_send(:"fighter_#{slot}_id")
 
     # The kenshi is sourced from a valid participation in the category, so we can
@@ -68,8 +67,8 @@ class IndividualCategoryBracketBuilder
         fighter_2_pool_number: slot_2&.pool_number,
         fighter_2_pool_rank: slot_2&.pool_rank
       }
-      attrs[:fighter_1_id] = slot_1.payload&.kenshi_id if slot_1
-      attrs[:fighter_2_id] = slot_2.payload&.kenshi_id if slot_2
+      attrs[:fighter_1_id] = slot_1.payload&.id if slot_1
+      attrs[:fighter_2_id] = slot_2.payload&.id if slot_2
       category.fights.create!(attrs)
     end
   end
@@ -108,25 +107,17 @@ class IndividualCategoryBracketBuilder
         BracketSeeder::Slot.new(
           pool_number: pool_number,
           pool_rank: pool_rank,
-          payload: participations_by_slot[[pool_number, pool_rank]]
+          payload: pool_slots.competitor_at(pool_number, pool_rank)
         )
       end
     end
   end
 
-  private def pool_numbers
-    @pool_numbers ||= category.participations
-      .where.not(pool_number: nil)
-      .distinct
-      .pluck(:pool_number)
-      .sort
+  # See TeamCategoryBracketBuilder#pool_slots. It hands back the KENSHI, not the
+  # participation, which is what a fighter column holds.
+  private def pool_slots
+    @pool_slots ||= CategoryPoolSlots.new(category)
   end
 
-  private def participations_by_slot
-    @participations_by_slot ||= category.participations
-      .includes(:kenshi)
-      .where.not(pool_number: nil)
-      .where.not(pool_rank: nil)
-      .index_by { |p| [p.pool_number, p.pool_rank] }
-  end
+  private def pool_numbers = pool_slots.pool_numbers
 end

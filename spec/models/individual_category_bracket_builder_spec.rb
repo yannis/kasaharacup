@@ -315,6 +315,67 @@ RSpec.describe IndividualCategoryBracketBuilder do
     }.to_h
   end
 
+  # The twin of TeamCategoryBracketBuilder's "a manual layout and a later
+  # update". Asserts the same OUTCOMES rather than the same road, because the
+  # two builders do not agree on how they get there: the team one skips a
+  # non-pristine? encounter and writes through assign_team_to_slot, this one
+  # skips only a fight with a winner and writes with update_columns.
+  describe "a manual layout and a later update" do
+    let(:reorderable) { create(:individual_category, cup: cup, pool_size: 3, out_of_pool: 2) }
+
+    before do
+      (1..2).each do |pool|
+        (1..2).each do |rank|
+          create(:participation, category: reorderable, pool_number: pool,
+            pool_position: rank, pool_rank: rank)
+        end
+      end
+      described_class.new(reorderable).call
+    end
+
+    def round_one = reorderable.bracket_fights.where(round: 1).order(:position).to_a
+
+    def layout = round_one.map { |f| [f.slot_entry(1)&.key, f.slot_entry(2)&.key] }
+
+    it "keeps the admin's layout" do
+      first, second = round_one
+      BracketSlotMove.new(reorderable).place(target: "#{first.id}-1", source: "#{second.id}-1")
+      after_move = layout
+
+      described_class.new(reorderable.reload).call
+
+      expect(layout).to eq after_move
+    end
+
+    it "flows corrected standings into the slot the admin chose" do
+      first, second = round_one
+      BracketSlotMove.new(reorderable).place(target: "#{first.id}-1", source: "#{second.id}-1")
+      moved = first.reload.slot_entry(1)
+      other_rank = (moved.pool_rank == 1) ? 2 : 1
+      was_here = reorderable.participations
+        .find_by(pool_number: moved.pool_number, pool_rank: moved.pool_rank)
+      now_here = reorderable.participations
+        .find_by(pool_number: moved.pool_number, pool_rank: other_rank)
+      was_here.update!(pool_rank: other_rank)
+      now_here.update!(pool_rank: moved.pool_rank)
+
+      described_class.new(reorderable.reload).call
+
+      expect(first.reload.slot_entry(1)).to have_attributes(
+        pool_number: moved.pool_number, pool_rank: moved.pool_rank, competitor: now_here.kenshi
+      )
+    end
+
+    it "leaves an emptied slot empty" do
+      first, = round_one
+      BracketSlotMove.new(reorderable).remove(target: "#{first.id}-1")
+
+      described_class.new(reorderable.reload).call
+
+      expect(round_one.first.slot_entry(1)).to be_nil
+    end
+  end
+
   def create_qualified_participation(pool_number:, pool_rank:)
     create(:participation,
       category: category,
