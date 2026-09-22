@@ -20,9 +20,7 @@ class BracketOnlySeeder
   end
 
   def first_round_pairs
-    return [] if teams.size < 2
-
-    place(bye_units + fight_units)
+    @first_round_pairs ||= (teams.size < 2) ? [] : place(bye_units + fight_units)
   end
 
   def bracket_size
@@ -31,7 +29,21 @@ class BracketOnlySeeder
     2**Math.log2(teams.size).ceil
   end
 
+  # The tree built over first_round_pairs, as nested indices into it (see
+  # BracketTree). The builders can no longer derive the shape by pairing
+  # adjacent units, because the compact draw's halves are not the same size.
+  def tree_shape
+    @tree_shape ||= BracketTree.shape(*unit_half_sizes)
+  end
+
   private attr_reader :teams, :random
+
+  # Today's halves are equal powers of two; a later task replaces this with the
+  # real per-half unit counts once the halves can differ.
+  private def unit_half_sizes
+    count = first_round_pairs.size
+    [count / 2, count - count / 2]
+  end
 
   # [seed, id] via Seedable, the one definition the panel and both poolers share.
   private def seeded

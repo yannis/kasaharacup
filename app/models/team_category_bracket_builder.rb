@@ -55,29 +55,53 @@ class TeamCategoryBracketBuilder
     end
   end
 
-  # Wires parent_encounter_1/2 for rounds >= 2. A round-1 bye's occupant is
-  # deterministic and its winner never changes, so seed it straight into the
-  # child slot at build time (first fill — no sub-state to invalidate).
-  private def create_parent_rounds(child_encounters)
-    encounters = child_encounters
-    round = 2
-    number = child_encounters.size
+  # Wires parent_encounter_1/2 for rounds >= 2 from the seeder's tree shape.
+  # `round` is a column index — max(parent rounds) + 1 — so a round-1 unit may
+  # feed a node several columns to its right. Nodes are collected in-order,
+  # which is top to bottom, and created round by round so `position` reads down
+  # each column and every parent exists before its child.
+  #
+  # A round-1 bye's occupant is deterministic and its winner never changes, so
+  # seed it straight into the child slot at build time (first fill — no
+  # sub-state to invalidate).
+  private def create_parent_rounds(first_round)
+    pending = []
+    collect_nodes(tree_shape, first_round, pending)
+    number = first_round.size
 
-    while encounters.size > 1
-      encounters = encounters.each_slice(2).map.with_index(1) do |(parent_1, parent_2), position|
+    pending.group_by { |node| node[:round] }.sort.each do |round, nodes|
+      nodes.each_with_index do |node, index|
         number += 1
-        category.encounters.create!(
+        parent_1 = resolve_node(node[:parent_1])
+        parent_2 = resolve_node(node[:parent_2])
+        node[:record] = category.encounters.create!(
           number: number,
           round: round,
-          position: position,
+          position: index + 1,
           parent_encounter_1: parent_1,
           parent_encounter_2: parent_2,
-          team_1_id: (parent_1.bye_team&.id if parent_1&.bye?),
-          team_2_id: (parent_2.bye_team&.id if parent_2&.bye?)
+          team_1_id: (parent_1.bye_team&.id if parent_1.bye?),
+          team_2_id: (parent_2.bye_team&.id if parent_2.bye?)
         )
       end
-      round += 1
     end
+  end
+
+  # Walks the shape and appends every internal node to `out` in-order, which is
+  # top to bottom. Returns the subtree root and its round.
+  private def collect_nodes(shape, leaves, out)
+    return [leaves[shape], 1] if shape.is_a?(Integer)
+
+    node = {}
+    parent_1, round_1 = collect_nodes(shape.first, leaves, out)
+    out << node
+    parent_2, round_2 = collect_nodes(shape.last, leaves, out)
+    node.merge!(parent_1: parent_1, parent_2: parent_2, round: [round_1, round_2].max + 1)
+    [node, node[:round]]
+  end
+
+  private def resolve_node(node)
+    node.is_a?(Hash) ? node[:record] : node
   end
 
   private def update_existing_bracket
@@ -107,19 +131,27 @@ class TeamCategoryBracketBuilder
     encounter.assign_team_to_slot(slot, team)
   end
 
-  private def first_round_pairs
-    @first_round_pairs ||= if category.bracket_only?
-      bracket_only_pairs
+  private def seeder
+    @seeder ||= if category.bracket_only?
+      BracketOnlySeeder.new(category.teams.order(:id), random: random)
     else
-      BracketSeeder.new(slot_specs).first_round_pairs
+      BracketSeeder.new(slot_specs)
     end
   end
 
-  # Bracket-only round-1 slots carry no pool metadata; wrapping teams in
-  # nil-filled Slots keeps create_first_round_encounters shared between modes.
-  private def bracket_only_pairs
-    BracketOnlySeeder.new(category.teams.order(:id), random: random).first_round_pairs.map do |pair|
-      pair.map { |team| team && BracketSeeder::Slot.new(pool_number: nil, pool_rank: nil, payload: team) }
+  private def tree_shape
+    seeder.tree_shape
+  end
+
+  private def first_round_pairs
+    @first_round_pairs ||= if category.bracket_only?
+      # Bracket-only round-1 slots carry no pool metadata; wrapping teams in
+      # nil-filled Slots keeps create_first_round_encounters shared between modes.
+      seeder.first_round_pairs.map { |pair|
+        pair.map { |team| team && BracketSeeder::Slot.new(pool_number: nil, pool_rank: nil, payload: team) }
+      }
+    else
+      seeder.first_round_pairs
     end
   end
 

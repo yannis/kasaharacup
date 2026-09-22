@@ -33,12 +33,26 @@ class BracketSeeder
     2**Math.log2(@slots.size).ceil
   end
 
+  # The tree built over first_round_pairs, as nested indices into it (see
+  # BracketTree). The builders can no longer derive the shape by pairing
+  # adjacent units, because the compact draw's halves are not the same size.
+  def tree_shape
+    @tree_shape ||= BracketTree.shape(*unit_half_sizes)
+  end
+
   # The low/high cut over a category's pool numbers, public so SeedPoolOrder can
   # seed into the same split assign_halves will later apply. One definition or
   # the separation is a coincidence: a change here that the seeding service did
   # not follow would mis-seed every category while both their specs stayed green.
   def self.low_block(pool_numbers)
     pool_numbers.first((pool_numbers.size / 2.0).ceil)
+  end
+
+  # Today's halves are equal powers of two; a later task replaces this with the
+  # real per-half unit counts once the halves can differ.
+  private def unit_half_sizes
+    count = first_round_pairs.size
+    [count / 2, count - count / 2]
   end
 
   # Derived from the input (was a DB query on the category in the old builder).
