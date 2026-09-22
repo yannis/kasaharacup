@@ -21,10 +21,14 @@ class Encounter < ApplicationRecord
 
   scope :bracket_order, -> { order(:round, :position) }
 
-  # What BracketSlotMove and the tree both need loaded to answer eligibility
-  # without an N+1: the occupants, and enough of the bouts for #unscored? to be
-  # read in memory.
-  scope :with_slot_move_context, -> { includes(:team_1, :team_2, team_fights: :fight_points) }
+  # The occupants a slot_entry resolves. Anything that reads slot entries over a
+  # list needs this, or it fires one query per slot — which the query-count
+  # guard catches on the admin page and a live cup would feel.
+  scope :with_slot_competitors, -> { includes(:team_1, :team_2) }
+
+  # The above plus enough of the bouts for #unscored? to be read in memory:
+  # what BracketSlotMove and the tree need to answer eligibility without an N+1.
+  scope :with_slot_move_context, -> { with_slot_competitors.includes(team_fights: :fight_points) }
 
   after_update :propagate_winner_to_children, if: :saved_change_to_winner_id?
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?

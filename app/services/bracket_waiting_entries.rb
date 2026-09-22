@@ -76,8 +76,11 @@ class BracketWaitingEntries
     }.to_set
   end
 
+  # with_slot_competitors, not a bare where: #placed_keys reads a slot entry for
+  # every slot, and each one resolves its competitor. Without it that is one
+  # query per slot, which is what the admin page's query-count guard catches.
   private def round_one
-    @round_one ||= category.bracket_records.where(round: 1).to_a
+    @round_one ||= category.bracket_records.with_slot_competitors.where(round: 1).to_a
   end
 
   private def pool_slots

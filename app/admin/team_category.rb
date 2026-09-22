@@ -118,7 +118,15 @@ ActiveAdmin.register TeamCategory do
         # In a partial rather than inline Arbre so a freeze broadcast can
         # replace it — see the Pools panel above.
         render partial: "admin/team_categories/bracket_actions", locals: {team_category: category}
-        render EncounterTreeComponent.new(team_category: category, admin: true)
+        # ONE bracket-slot controller over the tree AND the waiting panel: a
+        # drag crosses both, and they are two separate Turbo replace targets, so
+        # the payload has to be read by the controller that wrote it. An
+        # explicit div because an Arbre panel carries no id or data attributes
+        # anything can hang off.
+        div "data-controller": "bracket-slot" do
+          render EncounterTreeComponent.new(team_category: category, admin: true)
+          render BracketWaitingComponent.new(category: category)
+        end
         # Encounter editors load here (tree cards target this frame); kept as a
         # sibling of the tree frame so tree broadcasts can't wipe an open editor.
         # The editor scrolls itself into view on load (encounter_panel controller).

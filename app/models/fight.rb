@@ -53,8 +53,9 @@ class Fight < ApplicationRecord
 
   scope :bracket_order, -> { order(:round, :position) }
 
-  # See Encounter.with_slot_move_context.
-  scope :with_slot_move_context, -> { includes(:fighter_1, :fighter_2, :fight_points) }
+  # See Encounter.with_slot_competitors / .with_slot_move_context.
+  scope :with_slot_competitors, -> { includes(:fighter_1, :fighter_2) }
+  scope :with_slot_move_context, -> { with_slot_competitors.includes(:fight_points) }
 
   PARENT_ASSOCIATIONS = [:parent_fight_1, :parent_fight_2].freeze
 
