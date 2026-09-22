@@ -66,14 +66,24 @@ class BracketOnlySeeder
     @drawn ||= seeded + unseeded
   end
 
-  # How many teams each unit holds. A half with an odd number of entries gives
-  # its outermost unit a bye, so that unit holds one.
+  # How many teams each unit holds: one for a bye unit, two for a fight.
+  # The capacities sum to the field size, so the draw fills exactly.
   private def capacities
-    top = Array.new(top_units, 2)
-    bottom = Array.new(bottom_units, 2)
-    top[0] = 1 if top_entries.odd?
-    bottom[-1] = 1 if bottom_entries.odd?
+    top_byes, bottom_byes = bye_units
+    top = Array.new(units_per_half) { |unit| top_byes.include?(unit) ? 1 : 2 }
+    bottom = Array.new(units_per_half) { |unit| bottom_byes.include?(unit) ? 1 : 2 }
     top + bottom
+  end
+
+  # Which units hold a bye, most-protected first, so the seeds take them and no
+  # two byes meet earlier than the half allows. Mirrors BracketSeeder.
+  private def bye_units
+    @bye_units ||= begin
+      order = BracketPositions.spread_order(BracketTree.shape(units_per_half, units_per_half))
+      [order.select { |unit| unit < units_per_half }.first(2 * units_per_half - top_entries).sort,
+        order.filter_map { |unit| unit - units_per_half if unit >= units_per_half }
+          .first(2 * units_per_half - bottom_entries).sort]
+    end
   end
 
   # Units per half, as [top, bottom]. Under three teams there is nothing to
@@ -84,16 +94,19 @@ class BracketOnlySeeder
     return [0, 0] if teams.size < 2
     return [0, 1] if teams.size == 2
 
-    [top_units, bottom_units]
+    [units_per_half, units_per_half]
+  end
+
+  # A power of two, so each half is a PERFECT tree and no winner ever sits out a
+  # round once they have started fighting. Byes absorb the awkward field sizes,
+  # exactly as they do for a pooled category.
+  private def units_per_half
+    @units_per_half ||= 2**Math.log2([(top_entries / 2.0).ceil, 1].max).ceil
   end
 
   private def top_entries = (teams.size / 2.0).ceil
 
   private def bottom_entries = teams.size / 2
-
-  private def top_units = (top_entries / 2.0).ceil
-
-  private def bottom_units = (bottom_entries / 2.0).ceil
 
   # [seed, id] via Seedable, the one definition the panel and both poolers share.
   private def seeded

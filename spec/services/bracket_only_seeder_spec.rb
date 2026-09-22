@@ -38,8 +38,8 @@ RSpec.describe BracketOnlySeeder do
     expect(described_class.new(make_teams(3)).tree_shape).to eq [0, 1]
   end
 
-  it "never duplicates or drops a team and draws a compact tree" do
-    {3 => 2, 5 => 3, 8 => 4, 9 => 5, 12 => 6}.each do |teams_count, units|
+  it "never duplicates or drops a team and pads each half to a power of two" do
+    {3 => 2, 5 => 4, 8 => 4, 9 => 8, 12 => 8}.each do |teams_count, units|
       teams = make_teams(teams_count)
       pairs = described_class.new(teams, random: Random.new(7)).first_round_pairs
 
@@ -56,34 +56,41 @@ RSpec.describe BracketOnlySeeder do
     expect(bye_recipients).to contain_exactly(teams[0], teams[1])
   end
 
-  it "draws no byes at all when both halves hold an even number of teams" do
-    pairs = described_class.new(make_teams(12), random: Random.new(3)).first_round_pairs
+  it "draws no byes at all when the field already fills a power-of-two bracket" do
+    [8, 16].each do |count|
+      pairs = described_class.new(make_teams(count), random: Random.new(3)).first_round_pairs
 
-    expect(pairs.count { |pair| pair[1].nil? }).to eq 0
+      expect(pairs.count { |pair| pair[1].nil? }).to eq(0), "#{count} teams"
+    end
   end
 
-  # A bye can only sit on a half's OUTERMOST unit: the first of the whole
-  # column or the last. Anywhere else means the capacities were built wrong.
-  it "puts a bye only on an outermost unit" do
-    offenders = [3, 5, 6, 9, 12, 15].reject { |count|
-      pairs = described_class.new(make_teams(count), random: Random.new(5)).first_round_pairs
-      pairs.each_index.select { |i| pairs[i][1].nil? }
-        .all? { |i| i.zero? || i == pairs.size - 1 }
+  # The guarantee the padding exists for, and the same one the pooled seeder
+  # keeps: a team may sit out round 1, but never a later round.
+  it "never lets a winner wait out a round" do
+    waiting = [3, 5, 6, 9, 12, 15, 16].reject { |count|
+      seeder = described_class.new(make_teams(count), random: Random.new(5))
+      nodes = 0
+      walk = lambda do |shape|
+        next 1 if shape.is_a?(Integer)
+
+        rounds = shape.map { |part| walk.call(part) }
+        nodes += 1 if rounds.uniq.size > 1
+        rounds.max + 1
+      end
+      walk.call(seeder.tree_shape)
+      nodes.zero?
     }
 
-    expect(offenders).to eq []
+    expect(waiting).to eq []
   end
 
-  # The sweep above asserts "no offenders", which an all-bye-free field would
-  # satisfy without testing anything.
-  it "draws byes at some of those sizes, and never more than two" do
-    counts = [3, 5, 6, 9, 12, 15].map { |count|
+  it "absorbs an awkward field size with byes" do
+    counts = [3, 5, 6, 9, 12, 15].index_with { |count|
       described_class.new(make_teams(count), random: Random.new(5))
         .first_round_pairs.count { |pair| pair[1].nil? }
     }
 
-    expect(counts.sum).to be > 0
-    expect(counts.max).to be <= 2
+    expect(counts).to eq({3 => 1, 5 => 3, 6 => 2, 9 => 7, 12 => 4, 15 => 1})
   end
 
   it "places seed 1 in the first unit and seed 2 in the last" do
