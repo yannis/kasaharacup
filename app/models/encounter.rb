@@ -21,6 +21,11 @@ class Encounter < ApplicationRecord
 
   scope :bracket_order, -> { order(:round, :position) }
 
+  # What BracketSlotMove and the tree both need loaded to answer eligibility
+  # without an N+1: the occupants, and enough of the bouts for #unscored? to be
+  # read in memory.
+  scope :with_slot_move_context, -> { includes(:team_1, :team_2, team_fights: :fight_points) }
+
   after_update :propagate_winner_to_children, if: :saved_change_to_winner_id?
   after_update :cascade_winner_clear_to_descendants, if: :saved_change_to_winner_id?
   after_update :propagate_bye_to_children, if: :bye_occupant_changed?
@@ -221,6 +226,13 @@ class Encounter < ApplicationRecord
   end
 
   # The Encounter half of BracketSlots' contract.
+
+  # A bye's occupant is COPIED into the child slot here (create_parent_rounds
+  # seeds it, propagate_bye_to_children keeps it current), where Fight reads it
+  # through the parent on demand. Two byes feeding one child therefore collide
+  # on this side and not on that one — see
+  # BracketSlotMove#validate_distinct_bye_children!.
+  def seeds_child_slots? = true
 
   # Nothing rides along with a team id.
   private def slot_extra_attributes(_entry) = {}

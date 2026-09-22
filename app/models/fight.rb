@@ -53,6 +53,9 @@ class Fight < ApplicationRecord
 
   scope :bracket_order, -> { order(:round, :position) }
 
+  # See Encounter.with_slot_move_context.
+  scope :with_slot_move_context, -> { includes(:fighter_1, :fighter_2, :fight_points) }
+
   PARENT_ASSOCIATIONS = [:parent_fight_1, :parent_fight_2].freeze
 
   # Wires each fight's parent_fight_1 / parent_fight_2 to the already-loaded
@@ -274,6 +277,11 @@ class Fight < ApplicationRecord
   # seeds nothing into it, so there is no copy of a bye's occupant to keep
   # current. Encounter forward-propagates instead, and pays for it there.
   private def refresh_child_slot_from_bye = nil
+
+  # See Encounter#seeds_child_slots?. False here: #resolved_fighter_N reads
+  # parent_fight_N&.winner_or_bye on demand, so nothing is stored to go stale
+  # and nothing can collide.
+  def seeds_child_slots? = false
 
   # fighter_type is ONE column shared by fighter_1, fighter_2 and winner, so it
   # is set whenever a competitor lands and left alone when one leaves —
