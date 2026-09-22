@@ -52,6 +52,21 @@ RSpec.describe BracketSlotMove do
           .to raise_error(described_class::InvalidMove, /already in this slot/)
       end
 
+      # The drag client cannot express this through the "Move to…" select — it
+      # leaves a unit's own slots out — but a grip dropped on the row below it
+      # can, and on an Encounter the first write puts one team id into BOTH
+      # columns, which #teams_differ rejects as an ActiveRecord::RecordInvalid
+      # the controller does not rescue. The refusal is what keeps it a 422.
+      it "rejects a move between the two slots of one unit" do
+        build_bracket(pools: 2)
+        unit = round_one.first
+
+        expect { described_class.new(category).place(target: ref(unit, 2), source: ref(unit, 1)) }
+          .to raise_error(described_class::InvalidMove, /already in this/)
+        expect(unit.reload.slot_entry(1)).to be_present
+        expect(unit.slot_entry(2)).to be_present
+      end
+
       it "rejects a move when an impacted record is scored" do
         build_bracket(pools: 2)
         first, second = round_one

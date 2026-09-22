@@ -71,10 +71,9 @@ module BracketDragAffordances
   # to read it from, and without it the keyboard path would silently overwrite
   # whoever someone else had just put there.
   def move_options(node, slot)
-    options = slot_eligibility.targets
-      .reject { |(node_id, _)| node_id == node.id }
-      .sort
-      .map { |(node_id, target_slot)| place_option(node_id, target_slot) }
+    options = target_options
+      .reject { |(node_id, _label, _url, _expected)| node_id == node.id }
+      .map { |(_node_id, label, url, expected)| [label, "place:#{url}", expected] }
 
     if node.slot_occupied?(other_slot(slot))
       options << ["Remove from bracket", "remove:#{slot_url(node, slot)}", node.slot_entry(slot)&.key.to_s]
@@ -83,23 +82,42 @@ module BracketDragAffordances
   end
 
   # The waiting panel's half of the same question: where may THIS entry land?
+  # The answer does not depend on the entry, which is why it is the memoized
+  # list below with the verb left off.
   def placement_options
-    slot_eligibility.targets.sort.map do |(node_id, slot)|
-      node = bracket_records_by_id[node_id]
-      [option_label(node, slot), slot_url(node, slot), node.slot_entry(slot)&.key.to_s]
-    end
+    target_options.map { |(_node_id, label, url, expected)| [label, url, expected] }
   end
 
   def entry_label(entry) = entry.label
 
-  private def place_option(node_id, slot)
-    node = bracket_records_by_id[node_id]
-    [option_label(node, slot), "place:#{slot_url(node, slot)}", node.slot_entry(slot)&.key.to_s]
+  # A bye's empty side: the one its occupant is NOT in. Here rather than in each
+  # tree, because "the other slot" is one question and both trees ask it.
+  def empty_slot_of(node) = other_slot(node.bye_slot)
+
+  # Every destination, as [node_id, label, url, expected_entry], built ONCE per
+  # render. The tree asks for it at every source slot and the waiting panel at
+  # every waiting row; rebuilding it each time made a render quadratic in the
+  # number of slots, and each rebuilt option re-read a slot entry.
+  private def target_options
+    @target_options ||= slot_eligibility.targets.sort.map do |(node_id, slot)|
+      node = bracket_records_by_id[node_id]
+      [node_id, option_label(node, slot), slot_url(node, slot), node.slot_entry(slot)&.key.to_s]
+    end
   end
 
+  # BracketDisplayNumbering skips byes, so #node_label has nothing to call one
+  # but "Bye" — and an empty bye side then reads "Bye · empty" on every bye in
+  # the draw. Name it by the entry on its other side, which is the only thing
+  # that tells two of them apart, or the select (the keyboard and touch path)
+  # offers a row of identical options.
   private def option_label(node, slot)
     entry = node.slot_entry(slot)
-    "#{node_label(node)} · #{entry ? entry_label(entry) : "empty"}"
+    return "#{node_label(node)} · #{entry_label(entry)}" if entry
+
+    partner = node.slot_entry(other_slot(slot))
+    return "#{node_label(node)} · empty" if partner.nil?
+
+    "#{node_label(node)} (#{entry_label(partner)}) · empty"
   end
 
   private def other_slot(slot) = (slot == 1) ? 2 : 1

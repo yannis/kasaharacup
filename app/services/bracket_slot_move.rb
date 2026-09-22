@@ -142,8 +142,17 @@ class BracketSlotMove
 
   private def writes_for_slot_source(target_record, target_slot, source, expected_source_entry)
     source_record, source_slot = locate!(source)
-    if source_record.id == target_record.id && source_slot == target_slot
-      raise InvalidMove, "that entry is already in this slot"
+    if source_record.id == target_record.id
+      raise InvalidMove, "that entry is already in this slot" if source_slot == target_slot
+
+      # The whole UNIT, not just the slot. Exchanging a unit's two sides only
+      # flips which is slot 1, and on an Encounter the first write puts one team
+      # id into both columns, which #teams_differ rejects — an
+      # ActiveRecord::RecordInvalid that escapes the caller's rescue as a 500.
+      # #move_options leaves a unit's own slots out for the same reason; this is
+      # the write path saying so too, since the drag client is not the rule.
+      raise InvalidMove,
+        "that entry is already in this #{target_record.model_name.human.downcase}"
     end
 
     check_expectation!(source_record, source_slot, expected_source_entry)

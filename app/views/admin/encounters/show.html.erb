@@ -8,9 +8,6 @@
     <button type="button" class="encounter__close-panel"
         data-controller="encounter-panel" data-action="encounter-panel#close">Close</button>
     <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>
-    <%# Unconditional: the partial owns the bracket-only/round-1 test now, so it
-        always renders its wrapper and respond_with_encounter's stream always
-        finds a target. %>
   <% end %>
 <% else %>
   <%= render "admin/encounters/editor", encounter: @encounter, auto_seed: true %>

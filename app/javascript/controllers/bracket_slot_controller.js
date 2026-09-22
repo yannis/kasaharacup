@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Turbo } from '@hotwired/turbo-rails';
-import { readDragPayload, writeDragPayload } from './drag_payload';
+import { carriesDragPayload, readDragPayload, writeDragPayload } from './drag_payload';
 
 // Tags every payload with this and ignores anything else — a team category's
 // admin page renders the pool cards beside the bracket and they drag under the
@@ -81,9 +81,15 @@ export default class extends Controller {
 
     const source = this.readPayload(event);
     if (!source) return;
-    // Dropping a slot on itself is a gesture with no meaning; the server
-    // refuses it and there is nothing worth reporting.
-    if (source.sourceSlot && source.sourceSlot === target.dataset.slotId) return;
+    // Any slot of the SAME unit, not just the one dragged: exchanging a unit's
+    // two sides only flips which is slot 1, and on an encounter it writes one
+    // team id into both columns, which Encounter#teams_differ rejects. The
+    // "Move to…" select leaves its own unit out for the same reason. The
+    // server refuses it too; suppress it here so a meaningless gesture is
+    // silent.
+    if (source.sourceSlot && this.unitOf(source.sourceSlot) === this.unitOf(target.dataset.slotId)) {
+      return;
+    }
 
     this.submit(target, 'PATCH', target.dataset.slotUrl, {
       source_slot: source.sourceSlot,
@@ -95,7 +101,13 @@ export default class extends Controller {
 
   // --- the waiting area as a drop target ---------------------------------
 
+  // Only a drag carrying one of our payloads. getData is unreadable during
+  // dragover (the browser protects the drag data until the drop), so the type
+  // list is all a zone can test — but it is enough to rule out a file or a
+  // selection, which a bare preventDefault would otherwise let the browser
+  // OPEN in this tab when #dropToWaiting finds nothing it recognises.
   dragOverWaiting(event) {
+    if (!carriesDragPayload(event)) return;
     event.preventDefault();
     const { dataTransfer } = event;
     dataTransfer.dropEffect = 'move';
@@ -110,11 +122,16 @@ export default class extends Controller {
   dropToWaiting(event) {
     const zone = event.currentTarget;
     zone.classList.remove('bracket-waiting--over');
+    if (!carriesDragPayload(event)) return;
+    // BEFORE the early return below, not after: dragOverWaiting has already
+    // told the browser this zone owns the drop, so bailing without this hands
+    // the gesture back to the browser's own drop behaviour.
+    event.preventDefault();
+
     const source = this.readPayload(event);
     // A waiting row dropped back onto the waiting area carries no slot and
     // means nothing.
     if (!source || !source.sourceSlot) return;
-    event.preventDefault();
 
     this.submit(zone, 'DELETE', source.url, { expected_entry: source.sourceEntryKey });
   }
@@ -168,6 +185,12 @@ export default class extends Controller {
   splitOption(value) {
     const index = value.indexOf(':');
     return [value.slice(0, index), value.slice(index + 1)];
+  }
+
+  // The record half of a "<record id>-<slot>" slot ref. Two slots of one unit
+  // share it, which is what makes a drop between them a no-op gesture.
+  unitOf(slotId) {
+    return String(slotId).split('-')[0];
   }
 
   canDrop(target) {

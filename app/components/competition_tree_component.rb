@@ -35,8 +35,6 @@ class CompetitionTreeComponent < ViewComponent::Base
     helpers.admin_individual_category_bracket_slot_path(category, "#{fight.id}-#{slot}")
   end
 
-  private def empty_slot_of(fight) = (fight.bye_slot == 1) ? 2 : 1
-
   # A kenshi's poster name, which is what this tree shows everywhere else.
   private def entry_label(entry)
     return entry.label unless entry.competitor.is_a?(Kenshi)

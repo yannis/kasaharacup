@@ -9,7 +9,8 @@
         <li class="bracket-waiting__entry"<% if editable? %> data-entry-key="<%= entry.key %>"<% end %>>
           <% if editable? %>
             <span class="bracket-waiting__grip competition-tree__grip" draggable="true"
-                  title="Drag onto a bracket slot" data-action="dragstart->bracket-slot#dragStartWaiting">⠿</span>
+                  title="Drag onto a bracket slot"
+                  data-action="dragstart->bracket-slot#dragStartWaiting dragend->bracket-slot#dragEnd">⠿</span>
           <% end %>
           <span class="bracket-waiting__label"><%= entry_label(entry) %></span>
           <% if editable? %>

@@ -72,11 +72,10 @@ module Admin
     # response type, and the json renderer leaves it alone, which would ship a
     # JSON body labelled as a Turbo Stream.
     #
-    # Named refuse_frozen, not refuse: Admin::Encounters::TeamSwapsController
-    # already defines its own private #refuse for the 422 confirm-and-retry
-    # flow, and a class's own method shadows an included module's. A guard
-    # calling a bare #refuse there would hand a String to a method expecting an
-    # exception.
+    # Named refuse_frozen, not refuse: Admin::BracketSlotActions already defines
+    # its own private #refuse for the 422 confirm-and-retry flow, and an
+    # includer's own method shadows an included module's. A guard calling a bare
+    # #refuse there would hand a String to a method expecting an exception.
     private def refuse_frozen(message)
       respond_to do |format|
         format.turbo_stream { render_frozen_json(message) }

@@ -132,9 +132,6 @@ class EncounterTreeComponent < ViewComponent::Base
     helpers.admin_team_category_bracket_slot_path(team_category, "#{encounter.id}-#{slot}")
   end
 
-  # A bye's empty side is the one the drop strip covers.
-  private def empty_slot_of(encounter) = (encounter.bye_slot == 1) ? 2 : 1
-
   private def encounter_path(encounter)
     helpers.admin_team_category_encounter_path(team_category, encounter)
   end
