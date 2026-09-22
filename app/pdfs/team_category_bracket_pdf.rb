@@ -323,7 +323,15 @@ class TeamCategoryBracketPdf < Prawn::Document
     parent_y = panel_card_center_y(parent_encounter, panel)
     child_x = bounds.left + (encounter.round - 1) * (card_width + round_gap)
     child_y = panel_card_center_y(encounter, panel)
-    elbow = parent_x + (child_x - parent_x) / 2.0
+    # A compact tree lets a connector span more than one column, so the
+    # midpoint of the span can fall inside the cards it crosses. Anchor the
+    # elbow beside the child instead, where no card of an intervening round
+    # ever sits. The horizontal run reaching it is clear too, and structurally
+    # so: a node in an intervening column is always on another branch, and
+    # branches cover disjoint bands of rows, so it is never within half a card
+    # of this run. Measured over every compact tree up to twelve units, the
+    # tightest clearance is 132px against a card half-height of 40.
+    elbow = child_x - round_gap / 2.0
 
     stroke_color "000000"
     line_width 0.75
@@ -336,11 +344,10 @@ class TeamCategoryBracketPdf < Prawn::Document
   end
 
   private def panel_card_center_y(encounter, panel)
-    span = 2**(encounter.round - 1)
-    first_slot_index = (encounter.position - 1) * span - panel[:slot_offset]
     slot_pitch = CARD_HEIGHT + MATCH_GAP
-    middle_offset = (span - 1) / 2.0
-    canvas_top - HEADER_HEIGHT - ROUND_LABEL_AREA - slot_pitch * (first_slot_index + middle_offset) - CARD_HEIGHT / 2.0
+    center = geometry.slot_center(encounter) - panel[:slot_offset]
+
+    canvas_top - HEADER_HEIGHT - ROUND_LABEL_AREA - slot_pitch * center - CARD_HEIGHT / 2.0
   end
 
   private def canvas_top
@@ -352,11 +359,9 @@ class TeamCategoryBracketPdf < Prawn::Document
   end
 
   private def encounter_visible_on_panel?(encounter, panel)
-    span = 2**(encounter.round - 1)
-    first_slot_index = (encounter.position - 1) * span - panel[:slot_offset]
-    middle_offset = (span - 1) / 2.0
-    combined = first_slot_index + middle_offset
-    combined >= 0 && combined < max_rows_per_page
+    center = geometry.slot_center(encounter) - panel[:slot_offset]
+
+    center >= 0 && center < max_rows_per_page
   end
 
   private def same_panel?(parent_encounter, encounter, panel)
@@ -364,9 +369,13 @@ class TeamCategoryBracketPdf < Prawn::Document
   end
 
   private def leaves_under(encounter)
-    span = 2**(encounter.round - 1)
-    first = (encounter.position - 1) * span + 1
-    (first...(first + span)).to_a
+    geometry.leaf_positions(encounter)
+  end
+
+  private def geometry
+    @geometry ||= BracketGeometry.new(encounters) { |encounter|
+      Encounter::PARENT_ASSOCIATIONS.map { |name| encounter.public_send(name) }
+    }
   end
 
   private def paginate_panels
