@@ -73,9 +73,21 @@ RSpec.describe TeamPoolStandings do
     described_class.persist_ranks!(teams: teams, encounters: encounters)
     expect(teams.map { |t| t.reload.pool_rank }).to eq [1, 2, 3]
 
-    described_class.persist_ranks!(teams: teams, encounters: [])
+    described_class.persist_ranks!(teams: teams, encounters: [], clear_unranked: true)
 
     expect(teams.map { |t| t.reload.pool_rank }).to all(be_nil)
+  end
+
+  # The mirror of the individual side's default: a caller that did not ask to
+  # clear leaves a hand-set tie-break rank standing (this class's own contract
+  # invites the admin to type one).
+  it "keeps a hand-set rank by default" do
+    teams
+    teams.each_with_index { |team, i| team.update!(pool_rank: i + 1) }
+
+    described_class.persist_ranks!(teams: teams, encounters: [])
+
+    expect(teams.map { |t| t.reload.pool_rank }).to eq [1, 2, 3]
   end
 
   it "returns unranked rows when no encounter is complete" do

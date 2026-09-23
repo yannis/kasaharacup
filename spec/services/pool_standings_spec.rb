@@ -166,16 +166,18 @@ RSpec.describe PoolStandings do
 
       fight.update!(winner: nil)
       fight.fight_points.destroy_all
-      described_class.persist_ranks!(participations: [p1, p2], fights: category.pool_fights.reload)
+      described_class.persist_ranks!(participations: [p1, p2], fights: category.pool_fights.reload,
+        clear_unranked: true)
 
       expect(p1.reload.pool_rank).to be_nil
       expect(p2.reload.pool_rank).to be_nil
     end
 
-    # What an admin typed into the panel's Rank field is not a stale rank. The
-    # caller that cannot have unranked anybody — a pool fight being CREATED —
-    # says so, and the hand-set values stay.
-    it "keeps a hand-set rank when the caller asks not to clear" do
+    # What an admin typed into the panel's Rank field is not a stale rank, and
+    # clearing is opt-in precisely so a caller that recorded nothing leaves it
+    # alone. This is the DEFAULT, so a caller added later that forgets to think
+    # about it is non-destructive rather than silently wiping the column.
+    it "keeps a hand-set rank by default" do
       p1, k1 = participate(pool: 1, position: 1)
       p2, k2 = participate(pool: 1, position: 2)
       p1.update!(pool_rank: 1)
@@ -183,8 +185,7 @@ RSpec.describe PoolStandings do
       create(:fight, :pool_fight, individual_category: category, pool_number: 1,
         fighter_1: k1, fighter_2: k2)
 
-      described_class.persist_ranks!(participations: [p1, p2], fights: category.pool_fights,
-        clear_unranked: false)
+      described_class.persist_ranks!(participations: [p1, p2], fights: category.pool_fights)
 
       expect(p1.reload.pool_rank).to eq 1
       expect(p2.reload.pool_rank).to eq 2

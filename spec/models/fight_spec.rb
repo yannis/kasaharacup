@@ -500,6 +500,51 @@ RSpec.describe Fight do
       expect(participation1.reload.pool_rank).to eq 1
       expect(participation2.reload.pool_rank).to eq 2
     end
+
+    # "Regenerate this pool's fights" destroy_all's the pool's fights before
+    # rebuilding them, and removing a kettei-sen nobody fought does the same on
+    # a smaller scale. Neither records anything, so neither may unrank anybody.
+    it "leaves pool ranks untouched when an unscored fight is destroyed" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      participation1.update!(pool_rank: 1)
+      participation2.update!(pool_rank: 2)
+
+      fight.destroy!
+
+      expect(participation1.reload.pool_rank).to eq 1
+      expect(participation2.reload.pool_rank).to eq 2
+    end
+
+    # The other half of the same rule: destroying a fight that DID carry a
+    # result takes that result back, so the ranks it supported must go.
+    it "clears pool ranks when a scored fight is destroyed" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      fight.update!(winner: kenshi1)
+      expect(participation1.reload.pool_rank).to eq 1
+
+      fight.destroy!
+
+      expect(participation1.reload.pool_rank).to be_nil
+      expect(participation2.reload.pool_rank).to be_nil
+    end
+
+    # A hansoku scores for nobody, so it changes no outcome and reaches the
+    # standings through #refresh_after_points rather than the winner/draw
+    # callback. Recording a penalty must not wipe the panel's Rank field.
+    it "leaves pool ranks untouched when a point changes no outcome" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      participation1.update!(pool_rank: 1)
+      participation2.update!(pool_rank: 2)
+
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
+
+      expect(fight.reload.winner_id).to be_nil
+      expect(participation1.reload.pool_rank).to eq 1
+      expect(participation2.reload.pool_rank).to eq 2
+    end
   end
 
   describe "Pool match outcome from points" do

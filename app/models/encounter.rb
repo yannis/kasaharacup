@@ -263,11 +263,16 @@ class Encounter < ApplicationRecord
     end
   end
 
+  # clear_unranked: the only caller is #recompute_winner!, which reaches here
+  # exactly when this encounter has just become complete or has just stopped
+  # being one — i.e. always off a result appearing or disappearing, so a rank
+  # the standings no longer support is genuinely stale and must go.
   def recompute_pool_standings!
     pool_teams = team_category.teams.where(pool_number: pool_number).to_a
     pool_encounters = team_category.encounters.where(pool_number: pool_number)
       .includes(team_fights: :fight_points).to_a
-    TeamPoolStandings.persist_ranks!(teams: pool_teams, encounters: pool_encounters)
+    TeamPoolStandings.persist_ranks!(teams: pool_teams, encounters: pool_encounters,
+      clear_unranked: true)
   end
 
   def children

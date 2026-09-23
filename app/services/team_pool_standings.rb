@@ -23,13 +23,22 @@ class TeamPoolStandings
   end
 
   # Writes each team's distinct rank into pool_rank, the column the bracket
-  # builder and the waiting area both seed from. A pool with no complete
-  # encounter ranks nobody, and its teams' ranks are CLEARED rather than left
-  # standing: results do get taken back (a point entered on the wrong tablet, a
-  # bout re-run), and a rank the standings no longer support went on putting the
-  # former leader of an unfinished pool into the tree on every rebuild.
-  def self.persist_ranks!(teams:, encounters:)
+  # builder and the waiting area both seed from.
+  #
+  # `clear_unranked: true` additionally CLEARS a rank the standings no longer
+  # support: results do get taken back (a point entered on the wrong tablet, a
+  # bout re-run), and a rank left behind went on putting the former leader of an
+  # unfinished pool into the tree on every rebuild.
+  #
+  # Opt-in for the same reason as PoolStandings' twin: this pool ranks nobody
+  # both when its results were taken back and when it never had any. The one
+  # caller today (Encounter#recompute_pool_standings!) only runs off an
+  # encounter completing or un-completing, so it asks; a generation-time caller
+  # added here later must not, or the tie-break ranks this class's own contract
+  # invites the admin to type would be wiped by an event that recorded nothing.
+  def self.persist_ranks!(teams:, encounters:, clear_unranked: false)
     self.for(teams: teams, encounters: encounters).each do |row|
+      next if row.rank.nil? && !clear_unranked
       next if row.team.pool_rank == row.rank
 
       row.team.update_column(:pool_rank, row.rank) # rubocop:disable Rails/SkipsModelValidations

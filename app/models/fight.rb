@@ -38,10 +38,17 @@ class Fight < ApplicationRecord
   after_update_commit :broadcast_competition_tree,
     if: -> { saved_change_to_winner_id? && pool_number.blank? }
 
-  after_commit :recompute_pool_ranks_on_creation,
+  # Read the scored state while the points are still there: Scorable's
+  # `dependent: :destroy` is itself a before_destroy, registered where the
+  # concern is included at the top of this class, so without `prepend: true`
+  # #unscored? would run after the points were deleted and call every fight
+  # unscored.
+  before_destroy :remember_scored_state, prepend: true, if: -> { pool_number.present? }
+
+  after_commit :recompute_pool_ranks,
     on: :create,
     if: -> { pool_number.present? }
-  after_commit :recompute_pool_ranks,
+  after_commit :recompute_pool_ranks_on_destroy,
     on: :destroy,
     if: -> { pool_number.present? }
   after_commit :recompute_pool_ranks_on_change,
@@ -167,6 +174,11 @@ class Fight < ApplicationRecord
   # point's own transaction, letting the job render before the write committed
   # and push stale data to a second viewer. No-op for bracket fights, which have
   # no pool panel.
+  #
+  # Does not clear: FightPoint only calls this when the outcome did NOT change
+  # (a hansoku, which no count scores), and a point that unranked nobody must
+  # not wipe the ranks an admin typed. A point that does change the outcome goes
+  # through the winner/draw update callback, which clears.
   def refresh_pool_standings
     return if pool_number.blank?
 
@@ -194,9 +206,15 @@ class Fight < ApplicationRecord
   # into pool_rank, so the merged Rank column (and the bracket it seeds) always
   # reflects the latest results — including downwards: a pool whose results are
   # taken back ranks nobody, and the ranks it used to have are cleared. Admins
-  # can still override pool_rank in place; the override holds until the next
-  # result change recomputes it.
-  private def recompute_pool_ranks(clear_unranked: true)
+  # can still override pool_rank in place; the override holds until a result
+  # change recomputes it.
+  #
+  # Which is why clearing is opt-in (see PoolStandings.persist_ranks!) and only
+  # the two callers below that follow a result disappearing ask for it. The
+  # others here record nothing — a fight being created, a fight dropped
+  # unscored, a point that changed no outcome — and must leave a hand-set rank
+  # standing.
+  private def recompute_pool_ranks(clear_unranked: false)
     pool_participations = individual_category.participations.where(pool_number: pool_number).to_a
     pool_fights = individual_category.pool_fights.where(pool_number: pool_number)
       .includes(:fight_points).to_a
@@ -204,12 +222,17 @@ class Fight < ApplicationRecord
       clear_unranked: clear_unranked)
   end
 
-  private alias_method :recompute_pool_ranks_on_change, :recompute_pool_ranks
+  # A result appeared or disappeared — winner or draw changed — so a rank the
+  # standings no longer support is genuinely stale and goes.
+  private def recompute_pool_ranks_on_change = recompute_pool_ranks(clear_unranked: true)
 
-  # A pool fight that has just been CREATED carries no result, so it cannot have
-  # unranked anybody: generating a pool's fights must leave hand-set ranks
-  # alone. Every other caller here follows a result appearing or disappearing.
-  private def recompute_pool_ranks_on_creation = recompute_pool_ranks(clear_unranked: false)
+  # Only a SCORED fight's removal can unrank anybody. Dropping a kettei-sen
+  # nobody fought, or redrawing a pool's fights (Admin::PoolFightsController
+  # #regenerate destroy_all's them before regenerating), records nothing and
+  # must leave the ranks an admin typed alone.
+  private def recompute_pool_ranks_on_destroy = recompute_pool_ranks(clear_unranked: @scored_before_destroy)
+
+  private def remember_scored_state = @scored_before_destroy = !unscored?
 
   private def broadcast_pool_panel
     broadcast_replace_later_to(
