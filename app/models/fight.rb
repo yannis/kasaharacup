@@ -38,8 +38,11 @@ class Fight < ApplicationRecord
   after_update_commit :broadcast_competition_tree,
     if: -> { saved_change_to_winner_id? && pool_number.blank? }
 
+  after_commit :recompute_pool_ranks_on_creation,
+    on: :create,
+    if: -> { pool_number.present? }
   after_commit :recompute_pool_ranks,
-    on: [:create, :destroy],
+    on: :destroy,
     if: -> { pool_number.present? }
   after_commit :recompute_pool_ranks_on_change,
     on: :update,
@@ -189,16 +192,24 @@ class Fight < ApplicationRecord
 
   # Re-derives the pool's standings and persists each fighter's distinct rank
   # into pool_rank, so the merged Rank column (and the bracket it seeds) always
-  # reflects the latest results. Admins can still override pool_rank in place;
-  # the override holds until the next result change recomputes it.
-  private def recompute_pool_ranks
+  # reflects the latest results — including downwards: a pool whose results are
+  # taken back ranks nobody, and the ranks it used to have are cleared. Admins
+  # can still override pool_rank in place; the override holds until the next
+  # result change recomputes it.
+  private def recompute_pool_ranks(clear_unranked: true)
     pool_participations = individual_category.participations.where(pool_number: pool_number).to_a
     pool_fights = individual_category.pool_fights.where(pool_number: pool_number)
       .includes(:fight_points).to_a
-    PoolStandings.persist_ranks!(participations: pool_participations, fights: pool_fights)
+    PoolStandings.persist_ranks!(participations: pool_participations, fights: pool_fights,
+      clear_unranked: clear_unranked)
   end
 
   private alias_method :recompute_pool_ranks_on_change, :recompute_pool_ranks
+
+  # A pool fight that has just been CREATED carries no result, so it cannot have
+  # unranked anybody: generating a pool's fights must leave hand-set ranks
+  # alone. Every other caller here follows a result appearing or disappearing.
+  private def recompute_pool_ranks_on_creation = recompute_pool_ranks(clear_unranked: false)
 
   private def broadcast_pool_panel
     broadcast_replace_later_to(

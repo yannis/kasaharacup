@@ -476,6 +476,20 @@ RSpec.describe Fight do
       expect(participation1.reload.pool_rank).to eq 2
     end
 
+    it "clears pool ranks when the pool's last result is taken back" do
+      fight = create(:fight, :pool_fight, individual_category: category, pool_number: 1,
+        fighter_1: kenshi1, fighter_2: kenshi2)
+      fight.update!(winner: kenshi1)
+      expect(participation1.reload.pool_rank).to eq 1
+
+      fight.update!(winner: nil)
+
+      expect(participation1.reload.pool_rank).to be_nil
+      expect(participation2.reload.pool_rank).to be_nil
+    end
+
+    # Generating a pool's fights cannot unrank anybody: a new fight carries no
+    # result. Ranks an admin typed into the panel by hand survive it.
     it "leaves pool ranks untouched while the pool has no recorded result" do
       participation1.update!(pool_rank: 1)
       participation2.update!(pool_rank: 2)
