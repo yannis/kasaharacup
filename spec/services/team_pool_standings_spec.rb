@@ -64,6 +64,32 @@ RSpec.describe TeamPoolStandings do
     expect(rows.map(&:rank)).to eq [1, 2, 3] # distinct ranks despite the tie
   end
 
+  # Persisting only upwards left a pool that lost its results carrying the ranks
+  # it used to have, and both bracket builders seed straight from that column.
+  it "clears a rank the current results no longer support" do
+    teams
+    encounters = [encounter_between(0, 1, [1, 1, 2]), encounter_between(0, 2, [1, 1, 1]),
+      encounter_between(1, 2, [1, 1, 2])]
+    described_class.persist_ranks!(teams: teams, encounters: encounters)
+    expect(teams.map { |t| t.reload.pool_rank }).to eq [1, 2, 3]
+
+    described_class.persist_ranks!(teams: teams, encounters: [], clear_unranked: true)
+
+    expect(teams.map { |t| t.reload.pool_rank }).to all(be_nil)
+  end
+
+  # The mirror of the individual side's default: a caller that did not ask to
+  # clear leaves a hand-set tie-break rank standing (this class's own contract
+  # invites the admin to type one).
+  it "keeps a hand-set rank by default" do
+    teams
+    teams.each_with_index { |team, i| team.update!(pool_rank: i + 1) }
+
+    described_class.persist_ranks!(teams: teams, encounters: [])
+
+    expect(teams.map { |t| t.reload.pool_rank }).to eq [1, 2, 3]
+  end
+
   it "returns unranked rows when no encounter is complete" do
     teams
     enc = create(:encounter, team_category: tc, pool_number: 1, team_1: teams[0], team_2: teams[1])

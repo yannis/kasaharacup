@@ -75,6 +75,20 @@ RSpec.describe "Admin team category show page" do
       expect(response.body).to include(admin_team_category_bracket_freeze_path(category))
     end
 
+    # The two stream-link links point at a POST-only endpoint. Turbo prefetches
+    # a plain link on hover, which GETs that endpoint and raises a routing
+    # error before the admin has even clicked, so both must opt out.
+    it "opts the bracket links out of Turbo's hover prefetch" do
+      category = create(:team_category, cup: cup, pool_size: 3, team_size: 3)
+      create(:encounter, team_category: category, round: 1, position: 1)
+
+      get admin_team_category_path(category)
+
+      links = response.parsed_body.css("a[data-controller='stream-link']")
+      expect(links.size).to eq 2
+      expect(links.pluck("data-turbo-prefetch")).to all(eq("false"))
+    end
+
     # bracket_only? drops "Update bracket": there are no standings to fill in.
     it "drops the update link on a bracket-only category" do
       category = create(:team_category, cup: cup, pool_size: 1, team_size: 3)

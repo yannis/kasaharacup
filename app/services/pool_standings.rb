@@ -13,11 +13,22 @@ class PoolStandings
   end
 
   # Recomputes the standings and persists each participation's distinct rank into
-  # its pool_rank column (the value that seeds the elimination bracket). Pools
-  # without any recorded result are left untouched.
-  def self.persist_ranks!(participations:, fights:)
+  # its pool_rank column (the value that seeds the elimination bracket).
+  #
+  # `clear_unranked: true` additionally CLEARS a rank the standings no longer
+  # support: results do get taken back (a winner entered on the wrong fight, a
+  # bout re-run), and a rank left behind went on seeding the tree with the
+  # leader of an unfinished pool.
+  #
+  # Clearing is OPT-IN because only a caller that follows a result DISAPPEARING
+  # may do it. A pool ranks nobody both when its results were taken back and
+  # when it never had any, and this method cannot tell those apart — so a caller
+  # that cannot have unranked anybody (a fight being created or dropped unscored,
+  # a point that changed no outcome) must not ask, or the ranks an admin typed
+  # into the panel's Rank field are destroyed by an event that recorded nothing.
+  def self.persist_ranks!(participations:, fights:, clear_unranked: false)
     self.for(participations: participations, fights: fights).each do |row|
-      next if row.rank.nil?
+      next if row.rank.nil? && !clear_unranked
       next if row.participation.pool_rank == row.rank
 
       row.participation.update_column(:pool_rank, row.rank) # rubocop:disable Rails/SkipsModelValidations

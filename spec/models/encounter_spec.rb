@@ -95,21 +95,40 @@ RSpec.describe Encounter do
     let(:t1) { create(:team, team_category: pool_tc, pool_number: 1, pool_position: 1) }
     let(:t2) { create(:team, team_category: pool_tc, pool_number: 1, pool_position: 2) }
 
-    it "persists pool_rank for the pool's teams when a pool encounter completes" do
+    # t1 wins two bouts, the third is a hikiwake -> t1 wins the encounter.
+    # Builds the bouts directly (no EncounterLineup membership setup needed here).
+    def complete_pool_encounter
       encounter = create(:encounter, team_category: pool_tc, pool_number: 1, team_1: t1, team_2: t2)
-      # Build the bouts directly (no EncounterLineup membership setup needed here).
       fights = (1..3).map do |pos|
         encounter.team_fights.create!(position: pos,
           kenshi_1: create(:kenshi, cup: pool_tc.cup), kenshi_2: create(:kenshi, cup: pool_tc.cup))
       end
       encounter.update!(lineup_1_set: true, lineup_2_set: true)
-      # t1 wins two bouts, the third is a hikiwake -> t1 wins the encounter
       create(:fight_point, scorable: fights[0], fighter_side: "fighter_1", kind: "men")
       create(:fight_point, scorable: fights[1], fighter_side: "fighter_1", kind: "men")
       fights[2].update!(draw: true) # draw change fires the post-commit recompute chain
+      fights
+    end
+
+    it "persists pool_rank for the pool's teams when a pool encounter completes" do
+      complete_pool_encounter
 
       expect(t1.reload.pool_rank).to eq 1
       expect(t2.reload.pool_rank).to eq 2
+    end
+
+    # Results get taken back — a point entered on the wrong tablet, a bout
+    # re-run. The pool then has no standings at all, and a rank left behind goes
+    # on seeding the bracket: "Force rebuild" put the former leader in the tree
+    # for a pool nobody had finished.
+    it "clears pool_rank when the pool's results are taken back" do
+      fights = complete_pool_encounter
+
+      fights.each { |fight| fight.fight_points.destroy_all }
+      fights[2].update!(draw: false)
+
+      expect(t1.reload.pool_rank).to be_nil
+      expect(t2.reload.pool_rank).to be_nil
     end
   end
 
