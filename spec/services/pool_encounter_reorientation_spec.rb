@@ -10,7 +10,7 @@ RSpec.describe PoolEncounterReorientation do
   end
 
   # The sides CyclicPairing's order gave a pool of three before
-  # Pools::TeamFightOrder: (1,2), (3,2), (3,1), team_1 first.
+  # Pools::FightOrder: (1,2), (3,2), (3,1), team_1 first.
   def draw_the_old_way
     [[0, 1], [2, 1], [2, 0]].map do |white, red|
       category.encounters.create!(pool_number: 1, team_1: teams[white], team_2: teams[red])

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Puts a team category's existing pool encounters on the sides
-# Pools::TeamFightOrder gives them. PoolEncounterGenerator draws new pools that
+# Pools::FightOrder gives them. PoolEncounterGenerator draws new pools that
 # way; pools drawn before it keep the sides CyclicPairing's order gave them
 # until this runs over them (see lib/tasks/temporary/pools.rake).
 #
@@ -38,7 +38,7 @@ class PoolEncounterReorientation
 
   private attr_reader :team_category
 
-  # The encounters whose red team is the one TeamFightOrder puts on white.
+  # The encounters whose red team is the one FightOrder puts on white.
   private def misoriented
     encounters = team_category.encounters.where.not(pool_number: nil)
       .includes(team_fights: :fight_points).group_by(&:pool_number)
@@ -53,7 +53,7 @@ class PoolEncounterReorientation
   # {pair of team ids => the white one's id}, for every tie of the pool.
   private def expected_whites(pool)
     ids = pool.teams.map(&:id)
-    Pools::TeamFightOrder.sides_for(ids.size).to_h do |white, red|
+    Pools::FightOrder.sides_for(ids.size).to_h do |white, red|
       [[ids[white - 1], ids[red - 1]].to_set, ids[white - 1]]
     end
   end

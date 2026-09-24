@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Pools::TeamFightOrder do
+RSpec.describe Pools::FightOrder do
   describe ".sides_for(size)" do
     it "fights a pool of 3 as 1 <> 2, 1 <> 3, 2 <> 3, [white, red]" do
       expect(described_class.sides_for(3)).to eq [[2, 1], [3, 1], [3, 2]]
