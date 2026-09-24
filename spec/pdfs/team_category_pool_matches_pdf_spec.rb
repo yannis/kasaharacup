@@ -3,30 +3,6 @@
 require "rails_helper"
 
 RSpec.describe TeamCategoryPoolMatchesPdf do
-  # Prawn writes each text run as a hex-encoded string inside a `[...] TJ`
-  # operator, split into several chunks when kerning applies. Joining the chunks
-  # of one operator gives back the cell's text — in Windows-1252, the only
-  # encoding Prawn's built-in fonts speak, so an em dash arrives as one byte.
-  def texts_in(pdf)
-    pdf.render.scan(/\[(.*?)\]\s*TJ/m).flatten.map do |run|
-      run.scan(/<([0-9A-Fa-f]+)>/).flatten.map { |hex| [hex].pack("H*") }.join
-        .force_encoding(Encoding::WINDOWS_1252)
-        .encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
-    end
-  end
-
-  # Each text run is positioned by a `BT ... Td ... TJ ... ET` block; the second
-  # number of the Td is its baseline down the page.
-  def text_positions_in(pdf)
-    pdf.render.scan(/BT(.*?)ET/m).flatten.filter_map do |block|
-      baseline = block[/([\d.]+)\s+([\d.-]+)\s+Td/, 2]
-      text = block.scan(/<([0-9A-Fa-f]+)>/).flatten.map { |hex| [hex].pack("H*") }.join
-        .force_encoding(Encoding::WINDOWS_1252)
-        .encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
-      [baseline.to_f.round, text] if baseline && !text.empty?
-    end.sort
-  end
-
   let(:cup) { create(:cup) }
   let(:category) { create(:team_category, cup: cup, team_size: 3, pool_size: 2, out_of_pool: 1) }
 
@@ -65,22 +41,25 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     end
   end
 
-  it "says which pool each sheet belongs to and where it sits in it" do
+  # The label names the pool in the language of the session; these two read it,
+  # so they state which language they expect.
+  it "says which pool each sheet belongs to, stacked in fighting order", :en do
     pool_of(1, "Alpha", "Bravo", "Charlie")
     pool_of(2, "Delta", "Echo")
     PoolEncounterGenerator.new(category).call
 
     texts = texts_in(described_class.new(category))
 
-    # A stack of loose sheets has to be sortable back into pools without
-    # reading the team names off each one.
-    expect(texts.grep(/\APool /))
-      .to eq ["Pool 1 — 1/3", "Pool 1 — 2/3", "Pool 1 — 3/3", "Pool 2 — 1/1"]
+    # A stack of loose sheets has to be sortable back into fighting order
+    # without reading the team names off each one, and the running number is
+    # the number the order list calls the tie by.
+    expect(texts.grep(/Pool /))
+      .to eq ["1 — Pool 1 — 1/3", "2 — Pool 1 — 2/3", "3 — Pool 1 — 3/3", "4 — Pool 2 — 1/1"]
   end
 
   # The label is placed, not flowed: a line added to the header pushes the bout
   # number down into the top border of the table under it.
-  it "leaves every other line of the sheet exactly where the blank one has it" do
+  it "leaves every other line of the sheet exactly where the blank one has it", :en do
     pool_of(1, "Alpha", "Bravo")
     PoolEncounterGenerator.new(category).call
 
@@ -88,7 +67,7 @@ RSpec.describe TeamCategoryPoolMatchesPdf do
     labelled = text_positions_in(described_class.new(category))
     added = ["ALPHA", "BRAVO"]
 
-    expect(labelled.reject { |_, text| text.start_with?("Pool ") || added.include?(text) })
+    expect(labelled.reject { |_, text| text.include?("Pool ") || added.include?(text) })
       .to eq(blank.reject { |_, text| added.include?(text) })
   end
 

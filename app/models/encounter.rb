@@ -57,6 +57,15 @@ class Encounter < ApplicationRecord
   # pool phase goes on being recorded after the bracket is settled.
   def bracket_locked? = bracket? && team_category.bracket_frozen?
 
+  # Where a pool encounter falls in its pool's fighting order: the classical
+  # order of its teams' pool positions, 1 <> 2, 1 <> 3, 2 <> 3, whichever side
+  # each team is on (see Pools::TeamFightOrder). A team moved out of the pool
+  # since the draw has no position and sorts its encounter last.
+  def pool_order_key
+    positions = [team_1, team_2].map { |team| team&.pool_position || Float::INFINITY }
+    [*positions.sort, id]
+  end
+
   delegate :team_size, to: :team_category
 
   PARENT_ASSOCIATIONS = [:parent_encounter_1, :parent_encounter_2].freeze

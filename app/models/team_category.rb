@@ -56,11 +56,14 @@ class TeamCategory < ApplicationRecord
     end
   end
 
+  # Each pool's encounters in fighting order (Encounter#pool_order_key), the
+  # order the pool cards list them and the pool documents print them in.
   def encounters_by_pool_number
     @encounters_by_pool_number ||= encounters.where.not(pool_number: nil)
       .includes(:winner, team_1: :kenshis, team_2: :kenshis,
         team_fights: [:fight_points, :kenshi_1, :kenshi_2, :winner])
       .group_by(&:pool_number)
+      .transform_values { |pool| pool.sort_by(&:pool_order_key) }
   end
 
   # The category's encounters that carry a confirmed lineup, newest first, with
