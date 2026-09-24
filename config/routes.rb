@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       resources :documents
       resources :videos
       resources :pool_memberships, only: :update, module: :team_categories
+      resource :pool_encounter_order, only: :show, module: :team_categories
       resources :seeds, only: [:update, :destroy], module: :team_categories
       # The SLOT is the resource: update puts an entry in, destroy takes it out.
       # :id is "<record id>-<slot>", e.g. "482-2".

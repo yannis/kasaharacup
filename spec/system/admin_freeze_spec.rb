@@ -83,9 +83,17 @@ describe "Admin freeze", :js do
     grip = find("tr[data-participation-id='#{moved.id}'] .pool-standings__grip")
     destination = all(".pool-card").last
 
-    message = accept_alert { grip.drag_to(destination, html5: true) }
+    # Recorded rather than opened: Capybara's HTML5 drag sends a last mouse
+    # release after the drop, and the refused move's alert can open before it
+    # does. A native alert open at that moment fails the release with
+    # UnexpectedAlertOpenError before accept_alert can take it.
+    page.execute_script("window.alertMessages = []; window.alert = (message) => window.alertMessages.push(message)")
+    grip.drag_to(destination, html5: true)
 
-    expect(message).to be_present
+    messages = page.document.synchronize do
+      page.evaluate_script("window.alertMessages").presence || raise(Capybara::ExpectationNotMet, "no alert yet")
+    end
+    expect(messages.sole).to be_present
     expect(moved.reload.pool_number).to eq 1
   end
 

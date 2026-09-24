@@ -45,7 +45,7 @@ RSpec.describe "PDF downloads" do
       get "/admin/individual_categories/#{individual_category.id}/#{action}"
       sent_filename
     end
-    team = %w[pdf team_match_sheet pool_sheets bracket_pdf].map do |action|
+    team = %w[pdf pdf_recap team_match_sheet pool_sheets bracket_pdf].map do |action|
       get "/admin/team_categories/#{team_category.id}/#{action}"
       sent_filename
     end
@@ -66,6 +66,7 @@ RSpec.describe "PDF downloads" do
     "an individual category's tree" =>
       ->(c) { "/admin/individual_categories/#{c[:individual].id}/competition_tree_pdf" },
     "a team category's boards" => ->(c) { "/admin/team_categories/#{c[:team_category].id}/pdf" },
+    "a team category's recap" => ->(c) { "/admin/team_categories/#{c[:team_category].id}/pdf_recap" },
     "a team category's match sheet" => ->(c) { "/admin/team_categories/#{c[:team_category].id}/team_match_sheet" },
     "a team category's pool sheets" => ->(c) { "/admin/team_categories/#{c[:team_category].id}/pool_sheets" },
     "a team category's bracket" => ->(c) { "/admin/team_categories/#{c[:team_category].id}/bracket_pdf" },

@@ -13,7 +13,9 @@ RSpec.describe PoolFightGenerator do
     kenshi
   end
 
-  it "creates pool fights for a pool of 3" do
+  # fighter_1 is red: the pool's first fighter starts on red, and a fighter
+  # fighting twice in a row keeps its side (Pools::FightOrder).
+  it "creates a pool of 3's fights 1 <> 2, 1 <> 3, 2 <> 3, red first" do
     k1 = participate(category, pool_number: 1, pool_position: 1)
     k2 = participate(category, pool_number: 1, pool_position: 2)
     k3 = participate(category, pool_number: 1, pool_position: 3)
@@ -23,7 +25,7 @@ RSpec.describe PoolFightGenerator do
     fights = category.pool_fights.where(pool_number: 1).order(:number)
     expect(fights.size).to eq 3
     expect(fights.map { |f| [f.fighter_1_id, f.fighter_2_id] })
-      .to eq [[k1.id, k2.id], [k3.id, k2.id], [k3.id, k1.id]]
+      .to eq [[k1.id, k2.id], [k1.id, k3.id], [k2.id, k3.id]]
     expect(fights.map(&:number)).to eq [1, 2, 3]
     expect(fights).to all(have_attributes(round: nil, position: nil, tiebreaker: false, draw: false))
   end
@@ -58,7 +60,7 @@ RSpec.describe PoolFightGenerator do
     expect([fights.first.fighter_1_id, fights.first.fighter_2_id]).to eq [k1.id, k2.id]
   end
 
-  it "handles pool of 4" do
+  it "handles pool of 4, keeping a fighter on its side over two fights in a row" do
     kenshis = (1..4).map { |pos| participate(category, pool_number: 1, pool_position: pos) }
 
     described_class.new(category).call
@@ -68,9 +70,9 @@ RSpec.describe PoolFightGenerator do
     expect(fights.map { |f| [f.fighter_1_id, f.fighter_2_id] })
       .to eq [
         [kenshis[0].id, kenshis[1].id],
-        [kenshis[2].id, kenshis[1].id],
-        [kenshis[2].id, kenshis[3].id],
-        [kenshis[0].id, kenshis[3].id]
+        [kenshis[0].id, kenshis[3].id],
+        [kenshis[1].id, kenshis[2].id],
+        [kenshis[3].id, kenshis[2].id]
       ]
   end
 

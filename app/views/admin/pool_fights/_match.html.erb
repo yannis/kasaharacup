@@ -3,19 +3,20 @@
   <header class="pool-match__header">
     <span class="pool-match__position">
       <% if fight.tiebreaker %>
-        Kettei-sen — <%= poster_names[fight.fighter_1_id] %> vs <%= poster_names[fight.fighter_2_id] %>
+        Kettei-sen — <%= poster_names[fight.fighter_2_id] %> vs <%= poster_names[fight.fighter_1_id] %>
       <% else %>
         Match <%= fight.number %>
       <% end %>
     </span>
     <% if admin %>
       <div class="pool-match__outcome">
-        <%= button_to "#{poster_names[fight.fighter_1_id]} wins",
+        <%# In the order of the sides below: white, hikiwake, red. %>
+        <%= button_to "#{poster_names[fight.fighter_2_id]} wins",
               admin_individual_category_pool_fight_path(category, fight),
               method: :patch,
-              params: {pool_fight: {winner_id: fight.fighter_1_id}},
+              params: {pool_fight: {winner_id: fight.fighter_2_id}},
               class: ["pool-match__outcome-btn",
-                ("pool-match__outcome-btn--active" if fight.winner_id == fight.fighter_1_id)],
+                ("pool-match__outcome-btn--active" if fight.winner_id == fight.fighter_2_id)],
               form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
         <%= button_to "Hikiwake",
               admin_individual_category_pool_fight_path(category, fight),
@@ -24,12 +25,12 @@
               class: ["pool-match__outcome-btn",
                 ("pool-match__outcome-btn--active" if fight.draw)],
               form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
-        <%= button_to "#{poster_names[fight.fighter_2_id]} wins",
+        <%= button_to "#{poster_names[fight.fighter_1_id]} wins",
               admin_individual_category_pool_fight_path(category, fight),
               method: :patch,
-              params: {pool_fight: {winner_id: fight.fighter_2_id}},
+              params: {pool_fight: {winner_id: fight.fighter_1_id}},
               class: ["pool-match__outcome-btn",
-                ("pool-match__outcome-btn--active" if fight.winner_id == fight.fighter_2_id)],
+                ("pool-match__outcome-btn--active" if fight.winner_id == fight.fighter_1_id)],
               form: {class: "pool-match__outcome-form", data: {turbo: true}} %>
         <%= button_to "Clear",
               admin_individual_category_pool_fight_path(category, fight),
@@ -50,13 +51,15 @@
   </header>
 
   <div class="pool-match__sides">
-    <% [1, 2].each do |slot| %>
+    <%# fighter_2 is white, on the left; fighter_1 red, on the right. %>
+    <% [2, 1].each do |slot| %>
       <% kenshi = fight.public_send(:"fighter_#{slot}") # rubocop:disable Lint/UselessAssignment %>
       <% next unless kenshi %>
       <% side = (slot == 1) ? "fighter_1" : "fighter_2" # rubocop:disable Lint/UselessAssignment %>
       <% winner_here = fight.winner_id == kenshi.id # rubocop:disable Lint/UselessAssignment %>
 
       <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
+            "pool-match__side--#{(slot == 1) ? "red" : "white"}",
             ("pool-match__side--winner" if winner_here)] do %>
         <div class="pool-match__row">
           <span class="pool-match__name"><%= poster_names[kenshi.id] %></span>

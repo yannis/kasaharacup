@@ -24,6 +24,23 @@ RSpec.describe TeamPoolComponent, type: :component do
     expect(page).to have_css("#team_pool_standings_#{tc.id}_1 table.pool-standings")
   end
 
+  # Stored in the order CyclicPairing draws a pool of three — (1,2), (3,2),
+  # (3,1) — and listed in the order the pool fights them.
+  it "lists a pool's encounters in fighting order, 1 <> 2, 1 <> 3, 2 <> 3" do
+    tc = create(:team_category, team_size: 3, pool_size: 3)
+    first, second, third = %w[First Second Third].each_with_index.map do |name, index|
+      create(:team, team_category: tc, name: name, pool_number: 1, pool_position: index + 1)
+    end
+    [[first, second], [third, second], [third, first]].each do |white, red|
+      create(:encounter, team_category: tc, pool_number: 1, team_1: white, team_2: red)
+    end
+
+    render_inline(described_class.new(team_category: tc, pool_number: 1, admin: false))
+
+    expect(page.all("a").map(&:text).grep(/ vs /))
+      .to eq ["First vs Second", "Third vs First", "Third vs Second"]
+  end
+
   describe "inline encounter editors" do
     let(:tc) { create(:team_category, team_size: 3, pool_size: 3) }
     let(:t1) { create(:team, team_category: tc, pool_number: 1, pool_position: 1) }

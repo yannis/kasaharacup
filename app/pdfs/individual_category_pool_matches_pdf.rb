@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+# One match sheet per pool: the pool's fights in the order they are fought,
+# white on the left and red on the right, then a blank standings table.
+#
+# The fights are the pool's Fight records, not Pools::CyclicPairing's formula:
+# the admin pool card lists the same records by number, so the sheet and the
+# card agree on the order and on who is red — fighter_1 (Pools::FightOrder).
+# A kettei-sen is added during the pool, so it is written on by hand.
 class IndividualCategoryPoolMatchesPdf < Prawn::Document
   include PosterSize
 
@@ -11,9 +18,7 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
     # is printed. The standings table below used to scope that to the whole cup,
     # so a fighter with a namesake in another category was initialled there and
     # not in the match grid — two spellings of one name on one sheet.
-    poster_names = Kenshi.poster_names_for(
-      pools.flat_map { |pool| pool.participations.filter_map(&:kenshi) }, category: individual_category
-    )
+    poster_names = individual_category.pool_poster_names
 
     pools.each_with_index do |pool, i|
       unless i == 0
@@ -38,21 +43,11 @@ class IndividualCategoryPoolMatchesPdf < Prawn::Document
       bounding_box [bounds.left, bounds.top - 200], width: 580, align: :center do
         fill_color "000000"
         data = []
-        participations = pool.participations
         data << [nil, nil, nil, nil, nil, nil]
-        Pools::CyclicPairing.pairs_for(participations.size).each_with_index do |(low, high), i|
-          p_low = participations[low - 1]
-          p_high = participations[high - 1]
-          next if p_low.nil? || p_high.nil?
-
-          name_low = poster_names[p_low.kenshi_id]
-          name_high = poster_names[p_high.kenshi_id]
-
-          data << if i.even?
-            ["#{i + 1}.", name_low, nil, "x", nil, name_high]
-          else
-            ["#{i + 1}.", name_high, nil, "x", nil, name_low]
-          end
+        individual_category.pool_fights_by_number.fetch(pool.number, [])
+          .reject(&:tiebreaker).sort_by(&:number).each do |fight|
+          white, red = poster_names[fight.fighter_2_id], poster_names[fight.fighter_1_id]
+          data << ["#{fight.number}.", white, nil, "x", nil, red]
         end
         table(data, cell_style: {inline_format: true, size: 12}) do
           cells.padding = 5

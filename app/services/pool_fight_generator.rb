@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Creates an individual category's pool fights, numbered in the order and on
+# the sides Pools::FightOrder fights them: fighter_1 is red, fighter_2 white.
 class PoolFightGenerator
   def initialize(category, pool_number: nil)
     @category = category
@@ -24,10 +26,9 @@ class PoolFightGenerator
 
   private def generate_for(pool)
     participations = pool.participations
-    pairs = Pools::CyclicPairing.pairs_for(participations.size)
-    pairs.each_with_index do |(low, high), index|
-      participation_1 = participations[low - 1]
-      participation_2 = participations[high - 1]
+    Pools::FightOrder.sides_for(participations.size).each_with_index do |(white, red), index|
+      participation_1 = participations[red - 1]
+      participation_2 = participations[white - 1]
       next if participation_1.blank? || participation_2.blank?
 
       category.fights.create!(

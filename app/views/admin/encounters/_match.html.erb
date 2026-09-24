@@ -35,7 +35,9 @@
       <% team = teams[slot - 1] # rubocop:disable Lint/UselessAssignment %>
       <% winner_here = kenshi && fight.winner_id == kenshi.id # rubocop:disable Lint/UselessAssignment %>
 
+      <%# team_1 is white, on the left; team_2 red, on the right. %>
       <%= tag.div class: ["pool-match__side", "pool-match__side--#{side}",
+            "pool-match__side--#{(slot == 1) ? "white" : "red"}",
             ("pool-match__side--winner" if winner_here)] do %>
         <% reorderable = admin && !fight.daihyosen? # rubocop:disable Lint/UselessAssignment %>
         <%# Any present fighter is draggable, even one whose bout already has
