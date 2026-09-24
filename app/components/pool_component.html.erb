@@ -139,9 +139,11 @@
         <%= helpers.form_with url: helpers.admin_individual_category_pool_fights_path(category),
               method: :post, class: "pool-add-tiebreaker" do |f| %>
           <%= f.hidden_field "pool_fight[pool_number]", value: pool_number %>
-          <%= f.select "pool_fight[fighter_1_id]", kettei_sen_options %>
-          <span>vs</span>
+          <%# White (fighter_2) on the left and red (fighter_1) on the right, as
+              in the match rows above. %>
           <%= f.select "pool_fight[fighter_2_id]", kettei_sen_options %>
+          <span>vs</span>
+          <%= f.select "pool_fight[fighter_1_id]", kettei_sen_options %>
           <%= f.submit "Add kettei-sen", class: "pool-add-tiebreaker__submit" %>
         <% end %>
       <% end %>

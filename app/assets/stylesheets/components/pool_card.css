@@ -204,12 +204,15 @@
   position: relative;
 }
 
-.pool-match__side--fighter_1 {
-  background: rgba(251, 166, 152, 0.18);
+/* Styled by colour, not by fighter number: white is on the left and red on
+   the right for both kinds of pool, but a team encounter's white side is
+   team_1 and an individual fight's is fighter_2 (Pools::FightOrder). */
+.pool-match__side--white {
+  background: rgba(214, 212, 208, 0.25);
 }
 
-.pool-match__side--fighter_2 {
-  background: rgba(214, 212, 208, 0.25);
+.pool-match__side--red {
+  background: rgba(251, 166, 152, 0.18);
   text-align: right;
 }
 
@@ -225,7 +228,7 @@
   margin-bottom: 0.25rem;
 }
 
-.pool-match__side--fighter_2 .pool-match__row {
+.pool-match__side--red .pool-match__row {
   flex-direction: row-reverse;
 }
 
