@@ -215,6 +215,15 @@ ActiveAdmin.register TeamCategory do
     link_to "PDF", pdf_admin_team_category_path(team_category)
   end
 
+  member_action :pdf_recap do
+    @team_category = TeamCategory.find params[:id]
+    pdf = TeamCategoryPdfRecap.new(@team_category)
+    send_pdf pdf, filename: "#{@team_category.name}_recap"
+  end
+  action_item :pdf_recap, only: :show, if: proc { !resource.bracket_only? } do
+    link_to "PDF Recap", pdf_recap_admin_team_category_path(team_category)
+  end
+
   action_item :video_new, only: :show do
     link_to "New Video", new_admin_team_category_video_path(team_category)
   end

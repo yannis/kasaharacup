@@ -164,6 +164,14 @@ RSpec.describe "Query counts" do
       it_behaves_like "a page whose query count does not grow"
     end
 
+    context "the team category recap" do
+      let(:path) { pdf_recap_admin_team_category_path(team_category) }
+
+      it_behaves_like "a page whose query count does not grow" do
+        let(:grow) { -> { add_a_pool } }
+      end
+    end
+
     context "every kenshi's board" do
       let(:path) { pdfs_admin_kenshis_path }
 
