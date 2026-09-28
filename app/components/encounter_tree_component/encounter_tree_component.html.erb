@@ -14,7 +14,9 @@
           <% end %>
         </svg>
 
-        <% rounds.each_value do |round_encounters| %>
+        <% rounds.each do |round_number, round_encounters| %>
+          <h3 class="competition-tree__round competition-tree__round-title" style="left: <%= match_left(round_encounters.first) %>px;">Round <%= round_number %></h3>
+
           <% round_encounters.each do |encounter| %>
             <% next unless render_node?(encounter) %>
 
@@ -50,10 +52,14 @@
             <% else %>
               <article class="competition-tree__match" style="<%= match_style(encounter) %>">
                 <div class="competition-tree__match-header">
-                  <%= link_to "Encounter #{display_number(encounter)}", encounter_path(encounter),
-                        data: {turbo_frame: panel_dom_id} %>
+                  <% if admin %>
+                    <%= link_to "Encounter #{display_number(encounter)}", encounter_path(encounter),
+                          data: {turbo_frame: panel_dom_id} %>
+                  <% else %>
+                    <span>Encounter <%= display_number(encounter) %></span>
+                  <% end %>
                   <% if (line = score_line(encounter)) %>
-                    <span class="competition-tree__admin-summary"><%= line %></span>
+                    <span class="competition-tree__score"><%= line %></span>
                   <% end %>
                 </div>
                 <ol class="competition-tree__fighters">

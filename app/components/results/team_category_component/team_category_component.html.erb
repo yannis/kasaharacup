@@ -1,39 +1,48 @@
 <div class="bg-white shadow-xs overflow-hidden sm:rounded-lg mt-10">
-  <div class="px-4 py-5 sm:p-0">
-    <dl class="sm:divide-y sm:divide-gray-200">
-      <% @teams.each do |team| %>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-bold text-gray-500"><%= team.rank %>. <%= team.name %></dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= team.kenshis.order(:last_name, :first_name).map(&:full_name).join(", ") %></dd>
-        </div>
-      <% end %>
-      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium text-gray-500"></dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
-            <% @videos.each do |video| %>
-              <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                <div class="w-0 flex-1 flex items-center">
-                  <span class="ml-2 flex-1 w-0 truncate">Video:</span>
-                </div>
-                <div class="ml-4 shrink-0">
-                  <%= link_to video.name, video.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
-                </div>
-              </li>
-            <% end %>
-            <% @documents.each do |document| %>
-              <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                <div class="w-0 flex-1 flex items-center">
-                  <span class="ml-2 flex-1 w-0 truncate">Document:</span>
-                </div>
-                <div class="ml-4 shrink-0">
-                  <%= link_to document.file.filename, document.file.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        </dd>
-      </div>
-    </dl>
-  </div>
+  <% if bracket? %>
+    <div class="px-4 py-5">
+      <%= render EncounterTreeComponent.new(team_category: @team_category) %>
+    </div>
+  <% end %>
+  <% if @teams.any? || attachments? %>
+    <div class="<%= class_names("px-4 py-5 sm:p-0", "border-t border-gray-200" => bracket?) %>">
+      <dl class="sm:divide-y sm:divide-gray-200">
+        <% @teams.each do |team| %>
+          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-bold text-gray-500"><%= team.rank %>. <%= team.name %></dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= team.kenshis.order(:last_name, :first_name).map(&:full_name).join(", ") %></dd>
+          </div>
+        <% end %>
+        <% if attachments? %>
+          <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500"></dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                <% @videos.each do |video| %>
+                  <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                    <div class="w-0 flex-1 flex items-center">
+                      <span class="ml-2 flex-1 w-0 truncate">Video:</span>
+                    </div>
+                    <div class="ml-4 shrink-0">
+                      <%= link_to video.name, video.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+                    </div>
+                  </li>
+                <% end %>
+                <% @documents.each do |document| %>
+                  <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                    <div class="w-0 flex-1 flex items-center">
+                      <span class="ml-2 flex-1 w-0 truncate">Document:</span>
+                    </div>
+                    <div class="ml-4 shrink-0">
+                      <%= link_to document.file.filename, document.file.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+  <% end %>
 </div>

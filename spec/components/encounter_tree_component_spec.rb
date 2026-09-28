@@ -37,6 +37,31 @@ RSpec.describe EncounterTreeComponent, type: :component do
     )
   end
 
+  it "labels encounters without linking to the admin when rendered publicly" do
+    ranked_team(1)
+    ranked_team(2)
+    TeamCategoryBracketBuilder.new(tc).call
+
+    render_inline(described_class.new(team_category: tc))
+
+    expect(page).to have_text("Encounter 1")
+    expect(page).to have_no_link("Encounter 1")
+    expect(page).to have_no_css(".competition-tree__admin-summary")
+  end
+
+  it "titles each round, as the individual tree does" do
+    ranked_team(1)
+    ranked_team(2)
+    ranked_team(3)
+    ranked_team(4)
+    TeamCategoryBracketBuilder.new(tc).call
+
+    render_inline(described_class.new(team_category: tc))
+
+    expect(page).to have_css(".competition-tree__round-title", text: "Round 1")
+    expect(page).to have_css(".competition-tree__round-title", text: "Round 2")
+  end
+
   it "shows a 'Waiting for encounter N' placeholder for an unresolved round-2 slot" do
     ranked_team(1)
     ranked_team(2)

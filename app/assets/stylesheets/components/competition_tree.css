@@ -12,9 +12,12 @@
   color: #181512;
   font-size: 0.75rem;
   font-weight: 700;
-  margin: 0 0 0.25rem;
+  line-height: 1rem;
+  margin: 0;
   position: absolute;
-  top: 0;
+  /* Above the canvas, in .competition-tree's top padding: round 1's first
+     card starts at the canvas top, so a title at top: 0 sat under it. */
+  top: -1.25rem;
   text-transform: uppercase;
 }
 
@@ -140,6 +143,13 @@
 }
 
 .competition-tree__admin-summary {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+/* An encounter's score line: the summary's look without its disclosure
+   marker, since the score is not a toggle. */
+.competition-tree__score {
   color: #6b7280;
   font-size: 0.75rem;
 }

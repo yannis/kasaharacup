@@ -73,9 +73,8 @@ class EncounterTreeComponent < ViewComponent::Base
   # badge is to see at a glance how far the seeds got. The two never collide —
   # seed_label only shows for a slot no team has reached yet.
   #
-  # Admin only, matching CompetitionTreeComponent. Every call site renders this
-  # component with admin: true today, because there is no public team bracket;
-  # the guard is about the day one is added.
+  # Admin only, matching CompetitionTreeComponent: the past cup's results page
+  # renders this tree publicly.
   private def team_seed(encounter, slot)
     return unless admin
 

@@ -14,8 +14,8 @@ module Results
         .includes(:kenshi)
         .where(fighting_spirit: true)
         .order(:rank, "kenshis.last_name", "kenshis.first_name")
-      @videos = individual_category.videos.order(:name)
-      @documents = individual_category.documents
+      @videos = individual_category.videos.order(:name).to_a
+      @documents = individual_category.documents.to_a
     end
 
     private attr_reader :individual_category

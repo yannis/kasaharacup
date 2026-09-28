@@ -82,6 +82,27 @@ RSpec.describe IndividualCategory do
     end
   end
 
+  describe ".in_results_order" do
+    let(:cup) { create(:cup) }
+
+    it "lists the adult categories, Open before Ladies, then the juniors from oldest to youngest" do
+      u12 = create(:individual_category, cup: cup, name: "Junior U-12", max_age: 12)
+      ladies = create(:individual_category, cup: cup, name: "Ladies", min_age: 16, gender_restriction: "female")
+      u18 = create(:individual_category, cup: cup, name: "Junior U-18", min_age: 15, max_age: 18)
+      open = create(:individual_category, cup: cup, name: "Open", min_age: 16)
+      u15 = create(:individual_category, cup: cup, name: "Junior U-15", min_age: 12, max_age: 15)
+
+      expect(cup.individual_categories.in_results_order).to eq [open, ladies, u18, u15, u12]
+    end
+
+    it "puts Open before Ladies when Ladies carries no gender restriction" do
+      ladies = create(:individual_category, cup: cup, name: "Ladies", min_age: 16)
+      open = create(:individual_category, cup: cup, name: "Open", min_age: 16)
+
+      expect(cup.individual_categories.in_results_order).to eq [open, ladies]
+    end
+  end
+
   describe "A individual_category “open”" do
     let!(:individual_category) {
       create(:individual_category, name: "open", pool_size: 3, out_of_pool: 2,
