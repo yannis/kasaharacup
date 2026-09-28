@@ -29,7 +29,7 @@ gem "turbo-rails"
 # the schema lives in a hand-written migration rather than the gem's
 # generator, so a major bump that changes solid_cable_messages must be an
 # explicit decision, not a weekly Dependabot PR (issue #1296).
-gem "solid_cable", "~> 4.0"
+gem "solid_cable", "~> 4.1"
 
 # reCAPTCHA
 gem "recaptcha"
