@@ -11,9 +11,11 @@ module Results
     end
 
     # A category with no bracket, ranking or attachment yet would be an empty card.
-    def render? = bracket? || @teams.any? || attachments?
+    def render? = bracket? || list?
 
     private def bracket? = @bracket
+
+    private def list? = @teams.any? || attachments?
 
     private def attachments? = @videos.any? || @documents.any?
   end
