@@ -3,6 +3,11 @@
 require "rails_helper"
 
 RSpec.describe "StaticPages", :fr do
+  # The page speaks of the cup in the future tense until it has happened, so
+  # "today" is pinned before the 2026 edition rather than left to the calendar.
+  # Declared ahead of the let! below so the cup is created on that day too.
+  before { travel_to Date.new(2026, 9, 1) }
+
   let!(:cup) { create(:cup, start_on: Date.new(2026, 9, 26), end_on: Date.new(2026, 9, 27)) }
 
   describe "GET /about" do
