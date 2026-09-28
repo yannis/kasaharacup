@@ -84,7 +84,9 @@
                           <% points_for(fight, slot).each do |point| %>
                             <%= tag.li class: ["competition-tree__point", "competition-tree__point--#{point.kind}", ("competition-tree__point--first" if first_scoring_point?(fight, point))], data: {point_id: point.id} do %>
                               <span class="competition-tree__point-code"><%= point.code %></span>
-                              <%= button_to "×", admin_individual_category_fight_fight_point_path(category, fight, point), method: :delete, class: "competition-tree__point-remove", form: {class: "competition-tree__point-remove-form", data: {turbo: true}} %>
+                              <% unless point.hansoku_ippon? # removed with the hansoku that awarded it %>
+                                <%= button_to "×", admin_individual_category_fight_fight_point_path(category, fight, point), method: :delete, class: "competition-tree__point-remove", form: {class: "competition-tree__point-remove-form", data: {turbo: true}} %>
+                              <% end %>
                             <% end %>
                           <% end %>
                         </ol>

@@ -210,6 +210,14 @@
   color: #991b1b;
 }
 
+/* An H scores for the opponent of the fighter who took two hansoku: a point
+   in the hansoku colour, outlined so it reads apart from a △. */
+.competition-tree__point--hansoku_ippon {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #fca5a5;
+  color: #991b1b;
+}
+
 .competition-tree__point--first {
   text-decoration: underline;
 }

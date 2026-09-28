@@ -68,11 +68,13 @@
               <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}",
                     ("pool-match__point--first" if point.id == first_scoring_point_id)] do %>
                 <%= point.code %>
-                <%= button_to "×",
-                      admin_individual_category_pool_fight_fight_point_path(category, fight, point),
-                      method: :delete,
-                      class: "pool-match__point-remove",
-                      form: {class: "pool-match__point-remove-form", data: {turbo: true}} %>
+                <% unless point.hansoku_ippon? # removed with the hansoku that awarded it %>
+                  <%= button_to "×",
+                        admin_individual_category_pool_fight_fight_point_path(category, fight, point),
+                        method: :delete,
+                        class: "pool-match__point-remove",
+                        form: {class: "pool-match__point-remove-form", data: {turbo: true}} %>
+                <% end %>
               <% end %>
             <% end %>
           </ol>

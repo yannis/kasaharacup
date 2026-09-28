@@ -115,8 +115,8 @@ class EncounterComponent < ViewComponent::Base
   end
 
   # Mirrors the individual pool fights so the scoring buttons read identically
-  # (M/K/D/T/I and △ for hansoku).
+  # (M/K/D/T/I and △ for hansoku; the H is awarded, never entered).
   def point_codes
-    FightPoint::CODES
+    FightPoint::ENTERABLE_CODES
   end
 end
