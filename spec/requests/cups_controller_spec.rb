@@ -54,5 +54,24 @@ RSpec.describe CupsController do
         ]
       end
     end
+
+    describe "when GET to :show for a past cup with a team bracket" do
+      let!(:past_cup) { create(:cup, start_on: 1.year.ago.to_date, end_on: 1.year.ago.to_date + 1.day) }
+      let!(:team_category) { create(:team_category, cup: past_cup, pool_size: 3, out_of_pool: 1) }
+      let!(:team_1) { create(:team, team_category: team_category, pool_number: 1, pool_rank: 1) }
+      let!(:team_2) { create(:team, team_category: team_category, pool_number: 2, pool_rank: 1) }
+
+      before do
+        TeamCategoryBracketBuilder.new(team_category).call
+        get(cup_path(past_cup))
+      end
+
+      it "shows the team bracket, without links into the admin" do
+        tree = response.parsed_body.at_css(".competition-tree")
+        expect(tree).to be_present
+        expect(tree.text).to include(team_1.name, team_2.name, "Encounter 1")
+        expect(tree.css("a")).to be_empty
+      end
+    end
   end
 end
