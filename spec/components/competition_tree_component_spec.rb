@@ -195,6 +195,23 @@ RSpec.describe CompetitionTreeComponent, type: :component do
     expect(card).to have_css(".competition-tree__pool-position", text: "2.2")
   end
 
+  # A kenshi's seat in the pool (pool_position) is not where they finished in
+  # it (pool_rank). The prefix is the descriptor the slot was drawn from, so
+  # with out_of_pool 2 it never reads past N.2 — whoever sat fourth.
+  it "prefixes a resolved round-1 fighter with their pool rank, not their pool seat" do
+    local_category = create(:individual_category, pool_size: 4, out_of_pool: 2)
+    [1, 2].each do |pool|
+      create(:participation, category: local_category, pool_number: pool, pool_position: 4, pool_rank: 1)
+      create(:participation, category: local_category, pool_number: pool, pool_position: 3, pool_rank: 2)
+    end
+    IndividualCategoryBracketBuilder.new(local_category).call
+
+    render_inline(described_class.new(category: local_category.reload))
+
+    labels = page.all(".competition-tree__pool-position").map(&:text)
+    expect(labels).to match_array %w[1.1 1.2 2.1 2.2]
+  end
+
   it "does not render forecasted fights that only depend on hidden parents" do
     empty_fight = create_empty_fight(category, number: 3, round: 1, position: 2)
     orphan_fight = create_forecast_fight(category, number: 4, round: 2, position: 2, parent_fight_1: empty_fight)

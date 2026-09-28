@@ -247,13 +247,13 @@ class CompetitionTreePdf < Prawn::Document
   private def draw_bye_line(fight)
     slot = fight.bye_slot
     fighter = fight.bye_fighter
-    label = fighter ? prefixed_name(fight, fighter) : fallback_label(fight, slot)
+    label = fighter ? prefixed_name(fight, slot, fighter) : fallback_label(fight, slot)
     draw_card_text label, size: 10, bold: fighter.present?, italic: fighter.blank?
   end
 
   private def draw_fighter_line(fight, slot, left: 0, width: card_width)
     fighter = fight.public_send(:"resolved_fighter_#{slot}")
-    label = (fighter && prefixed_name(fight, fighter)) || fallback_label(fight, slot)
+    label = (fighter && prefixed_name(fight, slot, fighter)) || fallback_label(fight, slot)
     bold = fighter.present? && fight.winner == fighter
     italic = fighter.blank?
     points = points_for(fight, slot)
@@ -268,21 +268,21 @@ class CompetitionTreePdf < Prawn::Document
       background: background, suffix: suffix, suffix_fragments: suffix_fragments
   end
 
-  private def prefixed_name(fight, fighter)
+  private def prefixed_name(fight, slot, fighter)
     name = poster_name_for(fighter)
-    prefix = pool_prefix_for(fight, fighter)
+    prefix = pool_prefix_for(fight, slot)
     prefix ? "#{prefix} #{name}" : name
   end
 
-  private def pool_prefix_for(fight, fighter)
+  # The slot's descriptor, as CompetitionTreeComponent#fighter_pool_prefix
+  # reads it: the rank the slot was drawn from, not the kenshi's seat in the
+  # pool.
+  private def pool_prefix_for(fight, slot)
     return unless fight.round == 1
-    return if fighter.blank?
 
-    participations_by_kenshi_id[fighter.id]&.pool_label
-  end
-
-  private def participations_by_kenshi_id
-    @participations_by_kenshi_id ||= category.participations.index_by(&:kenshi_id)
+    pool_number = fight.public_send(:"fighter_#{slot}_pool_number")
+    pool_rank = fight.public_send(:"fighter_#{slot}_pool_rank")
+    "#{pool_number}.#{pool_rank}" if pool_number.present? && pool_rank.present?
   end
 
   private def points_for(fight, slot)
