@@ -13,6 +13,19 @@ class IndividualCategory < ApplicationRecord
 
   delegate :year, to: :cup
 
+  # Adults first (no max_age), Open ahead of Ladies, then the juniors from the
+  # oldest bracket down. Ordered on attributes rather than names, which have
+  # drifted over the years ("junior2", "Junior U15", "Junior U-15"); older
+  # Ladies rows have no gender_restriction, hence the name check on Open.
+  scope :in_results_order, -> {
+    order(
+      Arel.sql("individual_categories.max_age DESC NULLS FIRST"),
+      Arel.sql("individual_categories.gender_restriction IS NOT NULL"),
+      Arel.sql("LOWER(individual_categories.name) = 'open' DESC"),
+      :name
+    )
+  }
+
   def full_name
     "#{name} (#{cup.year})"
   end

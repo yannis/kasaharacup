@@ -30,5 +30,29 @@ RSpec.describe CupsController do
         expect(response.body).to include(CGI.escapeHTML(I18n.t("cups.show.fees.prepayment_transfer_fees")))
       end
     end
+
+    describe "when GET to :show for a past cup" do
+      let!(:past_cup) { create(:cup, start_on: 1.year.ago.to_date, end_on: 1.year.ago.to_date + 1.day) }
+
+      before do
+        create(:individual_category, cup: past_cup, name: "Junior U-12", max_age: 12)
+        create(:individual_category, cup: past_cup, name: "Ladies", min_age: 16, gender_restriction: "female")
+        create(:individual_category, cup: past_cup, name: "Junior U-18", min_age: 15, max_age: 18)
+        create(:individual_category, cup: past_cup, name: "Open", min_age: 16)
+        create(:individual_category, cup: past_cup, name: "Junior U-15", min_age: 12, max_age: 15)
+        create(:team_category, cup: past_cup)
+        get(cup_path(past_cup))
+      end
+
+      it "shows the results with Teams first, then Open, Ladies, U18, U15 and U12" do
+        expect(response).to render_template(:show_past)
+        headings = response.parsed_body.css("h3").map { |h3| h3.text.strip }.first(7)
+        expect(headings).to eq [
+          I18n.t("activerecord.models.team_category.one"),
+          I18n.t("activerecord.models.individual_category.other"),
+          "Open", "Ladies", "Junior u-18", "Junior u-15", "Junior u-12"
+        ]
+      end
+    end
   end
 end
