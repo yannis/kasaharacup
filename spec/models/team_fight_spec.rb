@@ -41,6 +41,17 @@ RSpec.describe TeamFight do
     expect(tf.reload).to have_attributes(winner_id: nil, draw: false)
   end
 
+  it "keeps an admin-marked hikiwake when a hansoku is recorded or removed" do
+    tf = fight
+    tf.update!(draw: true)
+
+    hansoku = point(tf, "fighter_1", kind: "hansoku")
+    expect(tf.reload).to have_attributes(winner_id: nil, draw: true)
+
+    hansoku.destroy!
+    expect(tf.reload).to have_attributes(winner_id: nil, draw: true)
+  end
+
   it "wins immediately at two points (sanbon-shobu)" do
     tf = fight
     point(tf, "fighter_1", kind: "men")
@@ -126,6 +137,13 @@ RSpec.describe TeamFight do
       tf = create(:team_fight, encounter: encounter, kenshi_1: a, kenshi_2: b)
       create(:fight_point, scorable: tf, fighter_side: "fighter_1", kind: "men")
       expect(tf.reload.hikiwake_eligible?).to be false
+    end
+
+    it "stays true when the only points are hansoku" do
+      tf = create(:team_fight, encounter: encounter, kenshi_1: a, kenshi_2: b)
+      create(:fight_point, scorable: tf, fighter_side: "fighter_1", kind: "hansoku")
+      create(:fight_point, scorable: tf, fighter_side: "fighter_2", kind: "hansoku")
+      expect(tf.reload.hikiwake_eligible?).to be true
     end
 
     it "is false for a winner-bearing bout" do

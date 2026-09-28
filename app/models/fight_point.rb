@@ -32,10 +32,14 @@ class FightPoint < ApplicationRecord
   # re-derive the outcome from points; when it did NOT change, ask the record to
   # refresh its own downstream state (pool standings for a Fight, the encounter
   # for a TeamFight) so a second viewer still sees a fresh, committed render.
+  #
+  # A hansoku never scores, so it cannot change the outcome — skip the
+  # recompute, which would otherwise read a hansoku-only bout as 0-0 and wipe
+  # an admin-marked hikiwake (#1343).
   private def recompute_scorable_outcome
     return if scorable.destroyed?
 
-    outcome_changed = scorable.recompute_outcome_from_points!
+    outcome_changed = !hansoku? && scorable.recompute_outcome_from_points!
     scorable.refresh_after_points unless outcome_changed
   end
 
