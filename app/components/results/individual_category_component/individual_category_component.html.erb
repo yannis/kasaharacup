@@ -22,33 +22,35 @@
           <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= fighting_spirit_participation.kenshi.full_name %> (<%= fighting_spirit_participation.kenshi.club %>)</dd>
         </div>
       <% end %>
-      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-        <dt class="text-sm font-medium text-gray-500"></dt>
-        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
-            <% @videos.each do |video| %>
-              <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                <div class="w-0 flex-1 flex items-center">
-                  <span class="ml-2 flex-1 w-0 truncate">Video:</span>
-                </div>
-                <div class="ml-4 shrink-0">
-                  <%= link_to video.name, video.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
-                </div>
-              </li>
-            <% end %>
-            <% @documents.each do |document| %>
-              <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                <div class="w-0 flex-1 flex items-center">
-                  <span class="ml-2 flex-1 w-0 truncate">Document:</span>
-                </div>
-                <div class="ml-4 shrink-0">
-                  <%= link_to document.file.filename, document.file.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        </dd>
-      </div>
+      <% if @videos.any? || @documents.any? %>
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500"></dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
+              <% @videos.each do |video| %>
+                <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                  <div class="w-0 flex-1 flex items-center">
+                    <span class="ml-2 flex-1 w-0 truncate">Video:</span>
+                  </div>
+                  <div class="ml-4 shrink-0">
+                    <%= link_to video.name, video.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+                  </div>
+                </li>
+              <% end %>
+              <% @documents.each do |document| %>
+                <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                  <div class="w-0 flex-1 flex items-center">
+                    <span class="ml-2 flex-1 w-0 truncate">Document:</span>
+                  </div>
+                  <div class="ml-4 shrink-0">
+                    <%= link_to document.file.filename, document.file.url, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </dd>
+        </div>
+      <% end %>
     </dl>
   </div>
 </div>

@@ -14,7 +14,9 @@
           <% end %>
         </svg>
 
-        <% rounds.each_value do |round_encounters| %>
+        <% rounds.each do |round_number, round_encounters| %>
+          <h3 class="competition-tree__round competition-tree__round-title" style="left: <%= match_left(round_encounters.first) %>px;">Round <%= round_number %></h3>
+
           <% round_encounters.each do |encounter| %>
             <% next unless render_node?(encounter) %>
 
