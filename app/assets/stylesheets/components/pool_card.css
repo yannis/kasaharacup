@@ -159,11 +159,12 @@
   text-transform: uppercase;
 }
 
-/* Hikiwake toggle lives in the bout header (right of the position label) so it
-   no longer needs its own row below the sides. */
+/* Hikiwake toggle lives in the bout header so it no longer needs its own row
+   below the sides. Centred between the two fighters, in the same slot as the
+   textual verdict it stands in for. */
 .pool-match__hikiwake-form {
-  grid-column: 3;
-  justify-self: end;
+  grid-column: 2;
+  justify-self: center;
   margin: 0;
 }
 

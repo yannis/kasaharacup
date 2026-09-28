@@ -47,11 +47,12 @@ class TeamFight < ApplicationRecord
 
   # A bout the admin may mark hikiwake by hand: a confirmed, both-present,
   # unscored, undecided regular bout. The 0-0 both-present case is the only one
-  # not already settled by points or forfeit resolution. Gating on the lineup
+  # not already settled by points or forfeit resolution. Hansoku never score, so
+  # a 0-0 carrying hansoku is still eligible (#1343). Gating on the lineup
   # flags matters because auto-seeded fighters persist before confirmation, and
   # a pre-confirmation draw would be wiped by resolve_lineup! on confirmation.
   def hikiwake_eligible?
-    !daihyosen? && !void? && forfeit.nil? && fight_points.none? &&
+    !daihyosen? && !void? && forfeit.nil? && fight_points.all?(&:hansoku?) &&
       winner_id.nil? && encounter.lineups_confirmed?
   end
 
