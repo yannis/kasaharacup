@@ -90,14 +90,6 @@ class CompetitionTreeComponent < ViewComponent::Base
     ""
   end
 
-  private def slot_placeholder_label(fight, slot)
-    pool_number = fight.public_send(:"fighter_#{slot}_pool_number")
-    pool_rank = fight.public_send(:"fighter_#{slot}_pool_rank")
-    return if pool_number.blank? || pool_rank.blank?
-
-    "#{pool_number}.#{pool_rank}"
-  end
-
   private def poster_name_for(kenshi)
     poster_names[kenshi.id] || kenshi.poster_name
   end
@@ -106,17 +98,18 @@ class CompetitionTreeComponent < ViewComponent::Base
     @poster_names ||= Kenshi.poster_names_for(kenshis_in_tree)
   end
 
+  # The descriptor the slot was drawn from ("the runner-up of pool 3" is 3.2),
+  # whether or not anyone has been resolved into it yet. Not the kenshi's
+  # Participation#pool_position: that is their seat in the pool, so a fourth
+  # seat who finished second would read 3.4 in a bracket only ranks 1-2 reach.
   private def fighter_pool_prefix(fight, slot)
     return unless fight.round == 1
 
-    fighter = fight.public_send(:"resolved_fighter_#{slot}")
-    return pool_prefix(fighter) if fighter.present?
+    pool_number = fight.public_send(:"fighter_#{slot}_pool_number")
+    pool_rank = fight.public_send(:"fighter_#{slot}_pool_rank")
+    return if pool_number.blank? || pool_rank.blank?
 
-    slot_placeholder_label(fight, slot)
-  end
-
-  private def pool_prefix(kenshi)
-    participations_by_kenshi_id[kenshi&.id]&.pool_label
+    "#{pool_number}.#{pool_rank}"
   end
 
   # One definition of the badge: it appears at three points in the tree (a bye,
