@@ -46,6 +46,7 @@ RSpec.describe EncounterTreeComponent, type: :component do
 
     expect(page).to have_text("Encounter 1")
     expect(page).to have_no_link("Encounter 1")
+    expect(page).to have_no_css(".competition-tree__admin-summary")
   end
 
   it "shows a 'Waiting for encounter N' placeholder for an unresolved round-2 slot" do
