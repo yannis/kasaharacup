@@ -78,7 +78,7 @@
               <%= tag.li class: ["pool-match__point", "pool-match__point--#{point.kind}",
                     ("pool-match__point--first" if point.id == first_scoring_point_id)] do %>
                 <%= point.code %>
-                <% if admin %>
+                <% if admin && !point.hansoku_ippon? # an H goes with the hansoku that awarded it %>
                   <%= button_to "×",
                         admin_team_category_encounter_team_fight_team_fight_point_path(
                           encounter.team_category, encounter, fight, point

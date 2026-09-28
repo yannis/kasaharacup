@@ -173,6 +173,6 @@ class CompetitionTreeComponent < ViewComponent::Base
   end
 
   private def point_kind_codes
-    FightPoint::CODES
+    FightPoint::ENTERABLE_CODES
   end
 end

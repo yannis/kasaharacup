@@ -139,6 +139,19 @@ RSpec.describe CompetitionTreeComponent, type: :component do
     expect(chip).to have_button("×", visible: :all)
   end
 
+  it "offers no H button and no remove button on an awarded H in admin mode" do
+    2.times { create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku") }
+    h_point = fight.fight_points.find_by!(kind: "hansoku_ippon")
+
+    render_inline(described_class.new(category: category.reload, admin: true))
+
+    match = page.find(".competition-tree__match", text: "Fight 1")
+    chip = match.find(".competition-tree__point[data-point-id='#{h_point.id}']", visible: :all)
+    expect(chip).to have_text("H")
+    expect(chip).to have_no_button("×", visible: :all)
+    expect(match).to have_no_button("H", visible: :all)
+  end
+
   it "shows each fighter's points as code chips next to their name on the card" do
     create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "men")
     create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "kote")

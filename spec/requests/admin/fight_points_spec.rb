@@ -36,6 +36,28 @@ RSpec.describe "Admin fight points" do
       expect(fight.fight_points.count).to eq 2
     end
 
+    it "awards the opponent an H on the second hansoku" do
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
+
+      post admin_individual_category_fight_fight_points_path(category, fight), params: {
+        fight_point: {fighter_side: "fighter_1", kind: "hansoku"}
+      }
+
+      expect(fight.fight_points.map { |point| [point.fighter_side, point.kind] }).to eq [
+        %w[fighter_1 hansoku], %w[fighter_1 hansoku], %w[fighter_2 hansoku_ippon]
+      ]
+      expect(fight.reload.winner).to eq fight.fighter_2
+    end
+
+    it "refuses an H entered by hand" do
+      post admin_individual_category_fight_fight_points_path(category, fight), params: {
+        fight_point: {fighter_side: "fighter_2", kind: "hansoku_ippon"}
+      }
+
+      expect(flash[:alert]).to include("An H point needs two hansoku on the opponent")
+      expect(fight.fight_points).to be_empty
+    end
+
     it "rejects an unknown fighter_side without raising" do
       post admin_individual_category_fight_fight_points_path(category, fight), params: {
         fight_point: {fighter_side: "fighter_99", kind: "men"}
@@ -54,6 +76,16 @@ RSpec.describe "Admin fight points" do
 
       expect(response).to redirect_to(admin_individual_category_path(category))
       expect(fight.fight_points).to be_empty
+    end
+
+    it "takes the H back with the hansoku that awarded it" do
+      create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
+      second = create(:fight_point, scorable: fight, fighter_side: "fighter_1", kind: "hansoku")
+
+      delete admin_individual_category_fight_fight_point_path(category, fight, second)
+
+      expect(fight.fight_points.map(&:kind)).to eq ["hansoku"]
+      expect(fight.reload.winner).to be_nil
     end
   end
 

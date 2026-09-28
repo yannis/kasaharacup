@@ -85,7 +85,7 @@ class PoolComponent < ViewComponent::Base
   end
 
   private def point_codes
-    FightPoint::CODES
+    FightPoint::ENTERABLE_CODES
   end
 
   private def regenerate_button_label
