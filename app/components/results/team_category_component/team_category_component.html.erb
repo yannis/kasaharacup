@@ -1,11 +1,6 @@
 <div class="bg-white shadow-xs overflow-hidden sm:rounded-lg mt-10">
-  <% if bracket? %>
-    <div class="px-4 py-5">
-      <%= render EncounterTreeComponent.new(team_category: @team_category) %>
-    </div>
-  <% end %>
-  <% if @teams.any? || attachments? %>
-    <div class="<%= class_names("px-4 py-5 sm:p-0", "border-t border-gray-200" => bracket?) %>">
+  <% if list? %>
+    <div class="px-4 py-5 sm:p-0">
       <dl class="sm:divide-y sm:divide-gray-200">
         <% @teams.each do |team| %>
           <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -43,6 +38,11 @@
           </div>
         <% end %>
       </dl>
+    </div>
+  <% end %>
+  <% if bracket? %>
+    <div class="<%= class_names("px-4 py-5", "border-t border-gray-200" => list?) %>">
+      <%= render EncounterTreeComponent.new(team_category: @team_category) %>
     </div>
   <% end %>
 </div>

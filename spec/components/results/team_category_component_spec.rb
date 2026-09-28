@@ -30,4 +30,15 @@ RSpec.describe Results::TeamCategoryComponent, type: :component do
 
     expect(page).to have_css("ul li", text: "Final")
   end
+
+  it "draws the bracket after the ranking" do
+    create(:team_category, pool_size: 3, out_of_pool: 1).then do |tc|
+      2.times { |i| create(:team, team_category: tc, pool_number: i + 1, pool_rank: 1, rank: i + 1) }
+      TeamCategoryBracketBuilder.new(tc).call
+
+      render_inline(described_class.new(team_category: tc))
+    end
+
+    expect(page).to have_css("div:has(dl) ~ div .competition-tree")
+  end
 end

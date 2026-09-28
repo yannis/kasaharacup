@@ -18,4 +18,12 @@ RSpec.describe Results::IndividualCategoryComponent, type: :component do
 
     expect(page).to have_css("ul li", text: "Final")
   end
+
+  it "draws the bracket after the winners" do
+    create(:fight, individual_category: individual_category)
+
+    render_inline(described_class.new(individual_category: individual_category))
+
+    expect(page).to have_css("div:has(dl) ~ div .competition-tree")
+  end
 end
