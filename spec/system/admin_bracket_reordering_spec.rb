@@ -8,6 +8,19 @@ describe "Admin bracket reordering", :js do
 
   def slot_selector(record, slot) = "[data-slot-id='#{record.id}-#{slot}']"
 
+  # What the tree re-renders on a move, as the SLOT's own answer to "what is in
+  # you now" rather than as its text.
+  #
+  # Not `within(slot) { have_content entry.label }`: every slot carries a "Move
+  # to…" select naming every other slot's entry, and Chrome hands Capybara the
+  # options' text as part of the element's text — so the destination slot reads
+  # as already containing "1.1" BEFORE the move. That assertion passes on the
+  # spot, the database read below it races the request that has not landed, and
+  # CI loses the race often enough to fail a run.
+  def slot_holding(record, slot, entry) = "#{slot_selector(record, slot)}[data-entry-key='#{entry.key}']"
+
+  def waiting_holding(entry) = ".bracket-waiting [data-entry-key='#{entry.key}']"
+
   shared_examples "a reorderable bracket" do
     it "swaps two round-1 entries by dragging one slot onto another" do
       first, second = round_one
@@ -19,9 +32,9 @@ describe "Admin bracket reordering", :js do
       find("#{slot_selector(first, 1)} .competition-tree__grip")
         .drag_to(find(slot_selector(second, 1)), html5: true)
 
-      # The response carries the redrawn tree, so wait on the rendered label
+      # The response carries the redrawn tree, so wait on the redrawn slot
       # before touching the database, or the assertion races the request.
-      within(slot_selector(second, 1)) { expect(page).to have_content moving_out.label }
+      expect(page).to have_css slot_holding(second, 1, moving_out)
       expect(first.reload.slot_entry(1).key).to eq moving_in.key
       expect(second.reload.slot_entry(1).key).to eq moving_out.key
     end
@@ -36,7 +49,7 @@ describe "Admin bracket reordering", :js do
       find("#{slot_selector(first, 1)} .competition-tree__grip")
         .drag_to(find(".bracket-waiting"), html5: true)
 
-      within(".bracket-waiting") { expect(page).to have_content pulled.label }
+      expect(page).to have_css waiting_holding(pulled)
       expect(first.reload).to be_bye
       expect(first.slot_entry(first.bye_slot).key).to eq survivor.key
     end
@@ -66,7 +79,7 @@ describe "Admin bracket reordering", :js do
         find(".competition-tree__move-select").find(:option, text: /#{Regexp.escape(destination.label)}/).select_option
       end
 
-      within(slot_selector(second, 1)) { expect(page).to have_content moving_out.label }
+      expect(page).to have_css slot_holding(second, 1, moving_out)
       expect(second.reload.slot_entry(1).key).to eq moving_out.key
     end
 
@@ -79,7 +92,7 @@ describe "Admin bracket reordering", :js do
       within(slot_selector(first, 1)) do
         find(".competition-tree__move-select").find(:option, text: "Remove from bracket").select_option
       end
-      within(".bracket-waiting") { expect(page).to have_content pulled.label }
+      expect(page).to have_css waiting_holding(pulled)
 
       within(".bracket-waiting") do
         find(".bracket-waiting__select").find(:option, text: /empty/).select_option
@@ -156,7 +169,7 @@ describe "Admin bracket reordering", :js do
           .drag_to(find(slot_selector(first, 1)), html5: true)
       end
 
-      within(slot_selector(first, 1)) { expect(page).to have_content moving_in.label }
+      expect(page).to have_css slot_holding(first, 1, moving_in)
       expect(first.reload.slot_entry(1).key).to eq moving_in.key
     end
   end
