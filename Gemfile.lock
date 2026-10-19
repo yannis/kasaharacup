@@ -139,7 +139,7 @@ GEM
     brakeman (8.0.6)
       racc
     builder (3.3.0)
-    cancancan (3.6.1)
+    cancancan (3.7.0)
     capybara (3.40.0)
       addressable
       matrix
