@@ -12,7 +12,7 @@
     "esbuild": "^0.28.2",
     "globals": "^17.11.0",
     "jquery": "^4.0.0",
-    "postcss": "^8.5.26",
+    "postcss": "^8.5.31",
     "select2": "^4.1.0",
     "stimulus-use": "^0.53.0",
     "tailwindcss": "^4.3.3"
